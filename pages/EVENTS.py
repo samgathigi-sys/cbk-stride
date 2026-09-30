@@ -157,8 +157,39 @@ with tab_reg:
     if not all_events:
         st.warning("No active events currently published. Use the 'Event Creator Wizard' tab to create your first event!")
     else:
-        # Determine event selection options
-        event_options = {f"{e['title']} ({e['event_id']})": e for e in all_events}
+        # Category Filter Pull-Down
+        col_flt1, col_flt2 = st.columns([1.4, 2])
+        with col_flt1:
+            cat_filter = st.selectbox(
+                "Filter Events by Type (Pull-Down):*",
+                [
+                    "🌟 All Events & Assemblies",
+                    "👔 Annual General Meetings (AGM) & Shareholder Assemblies",
+                    "🏆 Sports Tournaments & Derbies",
+                    "🏃 Marathons, Fun Runs & Athletics",
+                    "💡 Industry Conferences & Summits",
+                    "🎉 Corporate Galas & Dinners"
+                ],
+                key="pub_cat_filter"
+            )
+
+        # Filter events list based on category pull-down
+        filtered_events = all_events
+        if "AGM" in cat_filter:
+            filtered_events = [e for e in all_events if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper() or "GENERAL MEETING" in e['title'].upper()]
+        elif "Sports" in cat_filter:
+            filtered_events = [e for e in all_events if "SPORTS" in e['category'].upper() or "DERBY" in e['title'].upper()]
+        elif "Marathon" in cat_filter:
+            filtered_events = [e for e in all_events if "MARATHON" in e['category'].upper() or "RUN" in e['title'].upper()]
+        elif "Conference" in cat_filter:
+            filtered_events = [e for e in all_events if "CONFERENCE" in e['category'].upper() or "SUMMIT" in e['title'].upper()]
+        elif "Gala" in cat_filter:
+            filtered_events = [e for e in all_events if "GALA" in e['category'].upper() or "DINNER" in e['title'].upper()]
+
+        if not filtered_events:
+            filtered_events = all_events
+
+        event_options = {f"{e['title']} ({e['event_id']})": e for e in filtered_events}
         
         # Preselect if event_id is in query params
         default_idx = 0
@@ -175,10 +206,12 @@ with tab_reg:
             key="pub_reg_event_sel"
         )
         selected_event = event_options[selected_label]
+        is_agm = ("AGM" in selected_event['category'].upper() or "AGM" in selected_event['title'].upper() or "SHAREHOLDER" in selected_event['title'].upper() or "GENERAL MEETING" in selected_event['title'].upper())
 
         # Display Event Overview Card
+        badge_border_color = "#F5C542" if is_agm else "#00F2FE"
         st.markdown(f"""
-        <div style="background: linear-gradient(135deg, rgba(8, 28, 58, 0.8) 0%, rgba(4, 14, 30, 0.9) 100%); border: 1.5px solid rgba(245, 197, 66, 0.4); border-left: 5px solid #F5C542; border-radius: 12px; padding: 16px 20px; margin: 12px 0 20px 0;">
+        <div style="background: linear-gradient(135deg, rgba(8, 28, 58, 0.8) 0%, rgba(4, 14, 30, 0.9) 100%); border: 1.5px solid rgba(245, 197, 66, 0.4); border-left: 5px solid {badge_border_color}; border-radius: 12px; padding: 16px 20px; margin: 12px 0 20px 0;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
                 <div>
                     <span style="background: rgba(0, 242, 254, 0.15); color: #00F2FE; border: 1px solid rgba(0,242,254,0.3); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">
@@ -209,34 +242,89 @@ with tab_reg:
         with col_reg_f:
             st.markdown("#### 👤 Attendee Information")
             with st.form(key=f"form_pub_reg_{selected_event['event_id']}"):
-                # Ticket Tier Selection
                 std_p = float(selected_event.get("standard_price", 1000.0))
                 vip_p = float(selected_event.get("vip_price", 3500.0))
-                
-                tier_choice = st.radio(
-                    "Select Registration Tier:*",
-                    [
-                        f"Standard Athlete / Participant Pass — KES {std_p:,.0f}",
-                        f"VIP Executive Delegate (Includes Hospitality) — KES {vip_p:,.0f}"
-                    ],
-                    key="reg_tier_radio"
-                )
-                chosen_amt = std_p if "Standard" in tier_choice else vip_p
-                tier_clean_name = "Standard Pass" if "Standard" in tier_choice else "VIP Executive Pass"
+                is_free_event = (std_p == 0.0 and vip_p == 0.0)
 
-                att_name = st.text_input("Full Name (as per Official ID):*", placeholder="e.g. Wallace Mbugua")
+                # AGM-SPECIFIC ACCREDITATION PULL-DOWN
+                if is_agm:
+                    st.markdown("""
+                    <div style="background: rgba(245, 197, 66, 0.12); border: 1px solid #F5C542; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+                        <strong style="color: #F5C542; font-size: 0.88rem;">🏛️ Statutory AGM Shareholder Accreditation Mode</strong>
+                        <p style="margin: 2px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
+                            Please select your shareholder voting credential below to receive your certified voting pass and record your presence towards quorum.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    agm_del_status = st.selectbox(
+                        "Accredited Member / Shareholder Status (Pull-down):*",
+                        [
+                            "🗳️ Principal Shareholder / Voting Member (Direct Voting Rights)",
+                            "📜 Duly Appointed Proxy Holder (Signed Proxy Form Deposited)",
+                            "👔 Executive Board Director / Committee Member",
+                            "🏛️ Institutional Shareholder / Fund Representative",
+                            "⚖️ Company Secretary & Legal Counsel",
+                            "👁️ Independent Auditor / Regulatory Observer (CMA / SASRA)"
+                        ],
+                        key=f"agm_del_{selected_event['event_id']}"
+                    )
+
+                    agm_acc_num = st.text_input(
+                        "Shareholder / CDSC / Member Account Number:*",
+                        placeholder="e.g. CDSC-8492019 / SACCO-1049 / CBK-3428",
+                        key=f"agm_acc_{selected_event['event_id']}"
+                    )
+
+                    agm_voting_shares = st.selectbox(
+                        "Voting Power / Share Capital Bracket (Pull-down):*",
+                        [
+                            "1 Vote (Standard Ordinary Member / 1-Person 1-Vote)",
+                            "1,000 – 10,000 Shares (Tier 1 Voting Block)",
+                            "10,001 – 100,000 Shares (Tier 2 Voting Block)",
+                            "100,000+ Shares (Institutional Investor / Major Block)",
+                            "0 Votes (Non-Voting Delegate / Observer)"
+                        ],
+                        key=f"agm_shares_{selected_event['event_id']}"
+                    )
+
+                    tier_clean_name = agm_del_status.split("(")[0].strip()
+                    chosen_amt = 0.0 if is_free_event else std_p
+
+                else:
+                    # Standard Non-AGM Ticket Tier Selection
+                    tier_choice = st.radio(
+                        "Select Registration Tier:*",
+                        [
+                            f"Standard Athlete / Participant Pass — KES {std_p:,.0f}",
+                            f"VIP Executive Delegate (Includes Hospitality) — KES {vip_p:,.0f}"
+                        ],
+                        key="reg_tier_radio"
+                    )
+                    chosen_amt = std_p if "Standard" in tier_choice else vip_p
+                    tier_clean_name = "Standard Pass" if "Standard" in tier_choice else "VIP Executive Pass"
+
+                att_name = st.text_input("Full Name (as per Official ID / National ID):*", placeholder="e.g. Wallace Mbugua")
                 att_email = st.text_input("Email Address (for pass delivery):*", placeholder="e.g. wallace@enterprise.co.ke")
-                att_org = st.text_input("Organization / Department / Team:*", placeholder="e.g. Finance & Accounts / Equity Bank")
-                att_phone = st.text_input("Safaricom M-Pesa Phone Number:*", placeholder="07XX XXX XXX (for instant STK push)", help="Safaricom phone number that will receive the M-Pesa PIN prompt")
+                att_org = st.text_input("Organization / Company / Sacco Branch:*", placeholder="e.g. Finance & Accounts / Equity Bank")
+                att_phone = st.text_input("Safaricom M-Pesa Phone Number:*", placeholder="07XX XXX XXX", help="Mobile number for STK Push and SMS pass confirmation")
 
-                st.markdown(f"""
-                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px 14px; margin: 10px 0;">
-                    <span style="color: #34D399; font-weight: 800; font-size: 0.88rem;">💰 Total Payable: KES {chosen_amt:,.0f}</span><br>
-                    <span style="color: #94A3B8; font-size: 0.75rem;">Paybill: <strong>{selected_event['mpesa_paybill']}</strong> • Instant Automated Verification</span>
-                </div>
-                """, unsafe_allow_html=True)
-
-                btn_sub_ticket = st.form_submit_button("📲 Complete Registration & Pay via M-Pesa", type="primary", use_container_width=True)
+                if chosen_amt > 0:
+                    st.markdown(f"""
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px 14px; margin: 10px 0;">
+                        <span style="color: #34D399; font-weight: 800; font-size: 0.88rem;">💰 Total Payable: KES {chosen_amt:,.0f}</span><br>
+                        <span style="color: #94A3B8; font-size: 0.75rem;">Paybill: <strong>{selected_event['mpesa_paybill']}</strong> • Instant Automated Verification</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    btn_sub_ticket = st.form_submit_button("📲 Complete Registration & Pay via M-Pesa", type="primary", use_container_width=True)
+                else:
+                    st.markdown("""
+                    <div style="background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 8px; padding: 10px 14px; margin: 10px 0;">
+                        <span style="color: #00F2FE; font-weight: 800; font-size: 0.88rem;">🆓 Member Accreditation: Free (Complimentary)</span><br>
+                        <span style="color: #94A3B8; font-size: 0.75rem;">Accredited under corporate bylaws • Instant Quorum Registration</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    btn_sub_ticket = st.form_submit_button("🗳️ Confirm Shareholder Accreditation & Issue Pass", type="primary", use_container_width=True)
 
                 if btn_sub_ticket:
                     if not att_name.strip():
@@ -244,16 +332,20 @@ with tab_reg:
                     elif not att_email.strip() or "@" not in att_email:
                         st.error("Please provide a valid email address.")
                     elif not att_phone.strip() or len(att_phone.strip()) < 9:
-                        st.error("Please provide a valid Safaricom phone number for M-Pesa STK Push.")
+                        st.error("Please provide a valid Safaricom phone number.")
+                    elif is_agm and not agm_acc_num.strip():
+                        st.error("Please provide your Shareholder / CDSC / Member Account Number.")
                     else:
-                        # Generate simulated M-Pesa Transaction ID
-                        sim_tx = f"QK{int(time.time())}"[-10:]
+                        # Generate simulated M-Pesa Transaction ID or AGM Accreditation Ref
+                        sim_tx = f"AGM{int(time.time())}"[-10:] if chosen_amt == 0 else f"QK{int(time.time())}"[-10:]
+                        org_tag = f"{att_org.strip()} (Ref: {agm_acc_num.strip()})" if is_agm else att_org.strip()
+                        
                         ok_t, msg_t, tkt_obj = backend.register_event_ticket(
                             event_id=selected_event["event_id"],
                             attendee_name=att_name.strip(),
                             email=att_email.strip(),
                             phone=att_phone.strip(),
-                            organization=att_org.strip() or "Independent Participant",
+                            organization=org_tag or "Independent Delegate",
                             ticket_tier=tier_clean_name,
                             amount_paid=chosen_amt,
                             mpesa_trans_id=sim_tx
@@ -261,7 +353,7 @@ with tab_reg:
                         if ok_t:
                             st.session_state["pub_active_ticket"] = tkt_obj
                             st.session_state["pub_active_event"] = selected_event
-                            st.toast("🎉 M-Pesa payment confirmed! Digital pass generated.", icon="🎟️")
+                            st.toast("🎉 Accreditation confirmed! Official digital pass generated.", icon="🎟️")
                             st.rerun()
                         else:
                             st.error(msg_t)
@@ -342,67 +434,156 @@ with tab_wizard:
     wz_col1, wz_col2 = st.columns([1.4, 1])
 
     with wz_col1:
-        with st.form(key="form_create_event_wizard"):
-            st.markdown("#### 1️⃣ Event Identity & Host")
-            e_title = st.text_input("Official Event Name:*", placeholder="e.g. Kenya Airways Annual Sports Derby & Family Fun Day")
-            e_host = st.text_input("Host Company / Organizing Body:*", placeholder="e.g. KQ Sports Club Secretariat")
-            e_cat = st.selectbox(
-                "Event Category:*",
-                [
-                    "🏆 Sports Tournament & Derby",
-                    "👔 Corporate AGM & Shareholder Meeting",
-                    "🏃 Marathon, Fun Run & Athletics",
-                    "💡 Industry Conference & Tech Summit",
-                    "🎉 Corporate Gala Dinner & Awards",
-                    "🎓 School / University Sports Day",
-                    "💒 Private Reception / Social Gala"
-                ]
-            )
+        wz_cat = st.selectbox(
+            "Select Event Type / Assembly Category (Pull-Down):*",
+            [
+                "👔 Corporate AGM & Shareholder Assembly",
+                "🏆 Sports Tournament & Derby",
+                "🏃 Marathon, Fun Run & Athletics",
+                "💡 Industry Conference & Tech Summit",
+                "🎉 Corporate Gala Dinner & Awards",
+                "🎓 School / University Sports Day",
+                "💒 Private Reception / Social Gala"
+            ],
+            key="wz_event_category_selector"
+        )
+        is_wz_agm = ("AGM" in wz_cat or "Shareholder" in wz_cat)
 
-            st.markdown("#### 2️⃣ Schedule & Location")
-            ec1, ec2 = st.columns(2)
-            with ec1:
-                e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14))
-            with ec2:
-                e_time = st.text_input("Start / Kick-off Time:", value="08:30")
-            e_venue = st.text_input("Venue & Physical Address:*", placeholder="e.g. Ngong Racecourse Grounds, Nairobi")
+        with st.form(key=f"form_create_event_{wz_cat[:6]}"):
+            if is_wz_agm:
+                st.markdown("""
+                <div style="background: rgba(245, 197, 66, 0.1); border: 1px solid #F5C542; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;">
+                    <strong style="color: #F5C542; font-size: 0.88rem;">🏛️ AGM & Shareholder Statutory Governance Framework</strong>
+                    <div style="color: #CBD5E1; font-size: 0.76rem; margin-top: 2px;">
+                        Configures certified shareholder roll-call, proxy registration deposit windows, and live statutory quorum telemetry under the Companies Act 2015 / SACCO Societies Act.
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
-            st.markdown("#### 3️⃣ Ticketing & Accreditation Rules")
-            tc1, tc2, tc3 = st.columns(3)
-            with tc1:
-                e_paid = st.checkbox("Paid Event (Collect via M-Pesa)", value=True)
-            with tc2:
-                e_std_price = st.number_input("Standard Ticket (KES):", min_value=0.0, value=1000.0, step=100.0)
-            with tc3:
-                e_vip_price = st.number_input("VIP / Delegate (KES):", min_value=0.0, value=3500.0, step=500.0)
+                st.markdown("#### 1️⃣ Assembly Identity & Governance Body")
+                e_title = st.text_input("Official AGM / Assembly Name:*", value="58th Annual General Meeting & Shareholder Elections", placeholder="e.g. 58th Annual General Meeting of Shareholders & Delegates")
+                e_host = st.text_input("Society / Convening Corporate Body:*", value="Corporate Board of Directors & Club Secretariat", placeholder="e.g. Harambee Sacco Society Limited")
+                
+                c_agm_sub1, c_agm_sub2 = st.columns(2)
+                with c_agm_sub1:
+                    e_agm_subtype = st.selectbox(
+                        "Meeting Statutory Sub-Type (Pull-down):*",
+                        [
+                            "Annual General Meeting (Ordinary Business - Financial Statements & Elections)",
+                            "Extraordinary General Meeting (EGM - Special Resolutions & Bylaw Amendments)",
+                            "SACCO Annual Delegates Conference (ADC)",
+                            "Corporate Sports Club Annual General Meeting"
+                        ]
+                    )
+                with c_agm_sub2:
+                    e_quorum_threshold = st.selectbox(
+                        "Statutory Quorum Floor Rule (Pull-down):*",
+                        [
+                            "25 Members in Good Standing (Bylaws Standard Floor)",
+                            "50 Members or 15% Voting Capital",
+                            "100 Accredited Shareholders or Delegated Proxies",
+                            "150 Delegates (Tier-1 Sacco / Cooperative Quorum Floor)"
+                        ]
+                    )
 
-            e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200")
-            e_gate_mode = st.selectbox(
-                "Gate Scanning Protocol:*",
-                [
-                    "DUAL_GATE (Arrival Scan + Departure Scan for Allowance Floor Verification)",
-                    "SINGLE_GATE (Entry Scan Only for Galas, AGMs & Conferences)"
-                ]
-            )
-            clean_gate_mode = "DUAL_GATE" if "DUAL_GATE" in e_gate_mode else "SINGLE_GATE"
+                c_agm_prx1, c_agm_prx2 = st.columns(2)
+                with c_agm_prx1:
+                    e_proxy_cutoff = st.selectbox(
+                        "Proxy Form Deposit Cut-Off (Pull-down):*",
+                        [
+                            "48 Hours prior to meeting commencement (Statutory Standard)",
+                            "24 Hours prior to meeting commencement",
+                            "Deposited at Secretariat registration desk on arrival"
+                        ]
+                    )
+                with c_agm_prx2:
+                    e_admit_mode = st.selectbox(
+                        "Delegate Admission Model (Pull-down):*",
+                        [
+                            "Complimentary Free Admission (Accredited Shareholders & Proxies)",
+                            "Paid Annual Subscription / Clearance Fee (KES via M-Pesa STK)"
+                        ]
+                    )
 
-            e_desc = st.text_area("Event Description & Attendee Instructions:", placeholder="e.g. Official sports kit required. Breakfast and lunch provided at Pavilion A. Gate closes at 09:30.")
+                st.markdown("#### 2️⃣ Assembly Schedule & Venue")
+                ec1, ec2 = st.columns(2)
+                with ec1:
+                    e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14))
+                with ec2:
+                    e_time = st.text_input("Assembly Call-to-Order Time:", value="09:00")
+                e_venue = st.text_input("Assembly Hall & Physical Address:*", value="CBK Sports Complex Grand Pavilion, Ruaraka, Nairobi", placeholder="e.g. Radisson Blu Ballroom, Upper Hill, Nairobi")
+
+                st.markdown("#### 3️⃣ Ticketing & Quorum Gate Configuration")
+                if "Paid" in e_admit_mode:
+                    tc1, tc2 = st.columns(2)
+                    with tc1:
+                        e_std_price = st.number_input("Shareholder Clearance Fee (KES):", min_value=0.0, value=1000.0, step=100.0)
+                    with tc2:
+                        e_vip_price = st.number_input("VIP / Board Delegate (KES):", min_value=0.0, value=3500.0, step=500.0)
+                    e_paid = True
+                    e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200")
+                else:
+                    e_std_price = 0.0
+                    e_vip_price = 0.0
+                    e_paid = False
+                    e_paybill = "N/A (COMPLIMENTARY)"
+                    st.info("🎟️ All accredited shareholders and authorized proxy holders will receive complimentary admission passes.")
+
+                clean_gate_mode = "SINGLE_GATE"
+                e_desc = st.text_area(
+                    "Statutory Notice & Agenda to Shareholders:*",
+                    value="Notice is hereby given that the 58th Annual General Meeting will convene to: 1. Table the audited financial statements for FY2025. 2. Elect executive committee members. 3. Appoint external statutory auditors. 4. Transact any other ordinary business."
+                )
+
+            else:
+                # Standard Non-AGM Event Creation
+                st.markdown("#### 1️⃣ Event Identity & Host")
+                e_title = st.text_input("Official Event Name:*", placeholder="e.g. Kenya Airways Annual Sports Derby & Family Fun Day")
+                e_host = st.text_input("Host Company / Organizing Body:*", placeholder="e.g. KQ Sports Club Secretariat")
+                
+                st.markdown("#### 2️⃣ Schedule & Location")
+                ec1, ec2 = st.columns(2)
+                with ec1:
+                    e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14))
+                with ec2:
+                    e_time = st.text_input("Start / Kick-off Time:", value="08:30")
+                e_venue = st.text_input("Venue & Physical Address:*", placeholder="e.g. Ngong Racecourse Grounds, Nairobi")
+
+                st.markdown("#### 3️⃣ Ticketing & Accreditation Rules")
+                tc1, tc2, tc3 = st.columns(3)
+                with tc1:
+                    e_paid = st.checkbox("Paid Event (Collect via M-Pesa)", value=True)
+                with tc2:
+                    e_std_price = st.number_input("Standard Ticket (KES):", min_value=0.0, value=1000.0, step=100.0)
+                with tc3:
+                    e_vip_price = st.number_input("VIP / Delegate (KES):", min_value=0.0, value=3500.0, step=500.0)
+
+                e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200")
+                e_gate_mode = st.selectbox(
+                    "Gate Scanning Protocol:*",
+                    [
+                        "DUAL_GATE (Arrival Scan + Departure Scan for Allowance Floor Verification)",
+                        "SINGLE_GATE (Entry Scan Only for Galas, AGMs & Conferences)"
+                    ]
+                )
+                clean_gate_mode = "DUAL_GATE" if "DUAL_GATE" in e_gate_mode else "SINGLE_GATE"
+                e_desc = st.text_area("Event Description & Attendee Instructions:", placeholder="e.g. Official sports kit required. Breakfast and lunch provided at Pavilion A. Gate closes at 09:30.")
 
             btn_publish_event = st.form_submit_button("🚀 Publish Event & Activate Accreditation", type="primary", use_container_width=True)
 
             if btn_publish_event:
                 if not e_title.strip():
-                    st.error("Please provide an Event Name.")
+                    st.error("Please provide an Event / Assembly Name.")
                 elif not e_host.strip():
-                    st.error("Please provide the Host Company / Organizer Name.")
+                    st.error("Please provide the Host Company / Convening Body Name.")
                 elif not e_venue.strip():
-                    st.error("Please specify the Venue.")
+                    st.error("Please specify the Venue / Assembly Hall.")
                 else:
                     d_str = e_date.strftime("%Y-%m-%d")
                     ok_ev, msg_ev, new_eid = backend.create_event(
                         title=e_title.strip(),
                         organizer_name=e_host.strip(),
-                        category=e_cat,
+                        category=wz_cat,
                         event_date=d_str,
                         event_time=e_time.strip(),
                         venue=e_venue.strip(),
@@ -424,8 +605,8 @@ with tab_wizard:
 
     with wz_col2:
         st.markdown("#### 📱 Generated Gate Scanner & Shareable Links")
-        last_eid = st.session_state.get("wz_last_created_id", "EVT-2026-001")
-        last_title = st.session_state.get("wz_last_created_title", "2026 Inter-Bank Sports Championship")
+        last_eid = st.session_state.get("wz_last_created_id", "EVT-2026-002")
+        last_title = st.session_state.get("wz_last_created_title", "👔 Annual General Meeting & Corporate Gala")
 
         reg_share_url = f"https://cbk-stride.streamlit.app/EVENTS?event_id={last_eid}"
         gate_qr_img = f"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={reg_share_url}"
@@ -464,15 +645,15 @@ with tab_wizard:
 # ==============================================================================
 with tab_verify:
     st.markdown("### 📷 Gate Usher Entrance Scanner & Live Roster")
-    st.caption("Venue ushers and security coordinators: enter an attendee's Ticket ID or simulate scanning their QR code to verify admission and prevent pass sharing:")
+    st.caption("Venue ushers, security coordinators, and AGM scrutinizers: enter an attendee's Ticket ID or simulate scanning their QR code to verify admission, validate proxies, and track statutory quorum:")
 
     v_col1, v_col2 = st.columns([1.1, 1.4])
 
     with v_col1:
         st.markdown("#### 🔍 Gate Scanner Simulator")
-        test_tkt_id = st.text_input("Enter Ticket ID to Verify:*", value="TKT-", placeholder="e.g. TKT-837194-42", key="input_gate_verify_tkt")
+        test_tkt_id = st.text_input("Enter Ticket ID to Verify:*", value="TKT-849201-11", placeholder="e.g. TKT-849201-11", key="input_gate_verify_tkt")
         
-        btn_admit_gate = st.button("✅ Admit Attendee at Gate", type="primary", use_container_width=True)
+        btn_admit_gate = st.button("✅ Admit Attendee / Delegate at Gate", type="primary", use_container_width=True)
 
         if btn_admit_gate:
             if not test_tkt_id.strip() or test_tkt_id.strip() == "TKT-":
@@ -491,23 +672,82 @@ with tab_verify:
     with v_col2:
         st.markdown("#### 📋 Live Event Accredited Roster")
         v_evt_choice = st.selectbox(
-            "Filter Roster by Event:",
+            "Filter Roster by Event / Assembly (Pull-Down):",
             [e["event_id"] + " — " + e["title"] for e in all_events] if all_events else ["None"],
             key="sel_roster_evt"
         )
         if all_events and v_evt_choice != "None":
             target_eid = v_evt_choice.split("—")[0].strip()
             event_tickets = backend.get_tickets_by_event(target_eid)
-            
-            k_t1, k_t2, k_t3 = st.columns(3)
-            with k_t1:
-                st.metric("Total Passes Issued", len(event_tickets))
-            with k_t2:
-                admitted_cnt = len([t for t in event_tickets if t.get("gate_status") == "ADMITTED"])
-                st.metric("Admitted at Gate", admitted_cnt)
-            with k_t3:
-                rev_total = sum([float(t.get("amount_paid", 0.0)) for t in event_tickets])
-                st.metric("M-Pesa Revenue (KES)", f"{rev_total:,.0f}")
+            cur_roster_evt = backend.get_event_by_id(target_eid)
+            is_roster_agm = ("AGM" in target_eid or "AGM" in v_evt_choice.upper() or "SHAREHOLDER" in v_evt_choice.upper() or "GENERAL MEETING" in v_evt_choice.upper())
+
+            if is_roster_agm:
+                # STATUTORY AGM QUORUM DASHBOARD
+                admitted_tickets = [t for t in event_tickets if t.get("gate_status") == "ADMITTED"]
+                principals = [t for t in admitted_tickets if "Principal" in t.get("ticket_tier", "")]
+                proxies = [t for t in admitted_tickets if "Proxy" in t.get("ticket_tier", "")]
+                officers = [t for t in admitted_tickets if any(k in t.get("ticket_tier", "") for k in ["Director", "Secretary", "Auditor", "Observer", "Institutional"])]
+                
+                voting_delegates = len(principals) + len(proxies)
+                quorum_target = 25  # Statutory floor standard
+                quorum_pct = min(100, int((voting_delegates / quorum_target) * 100))
+
+                st.markdown("""
+                <div style="background: rgba(245, 197, 66, 0.12); border: 1.5px solid #F5C542; border-radius: 10px; padding: 12px 16px; margin-bottom: 12px;">
+                    <div style="font-weight: 800; color: #F5C542; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span>🏛️ STATUTORY AGM QUORUM & ACCREDITATION TELEMETRY</span>
+                        <span style="font-size: 0.72rem; background: rgba(245, 197, 66, 0.2); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(245, 197, 66, 0.4);">
+                            COMPANIES ACT 2015 § 284
+                        </span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                k_q1, k_q2, k_q3, k_q4 = st.columns(4)
+                with k_q1:
+                    st.metric("Quorum Threshold", f"{quorum_target} Members")
+                with k_q2:
+                    st.metric("Voting In Room", f"{voting_delegates}", delta=f"{voting_delegates - quorum_target} vs Floor" if voting_delegates >= quorum_target else f"-{quorum_target - voting_delegates} to Quorum")
+                with k_q3:
+                    st.metric("Principal Voting", f"{len(principals)}")
+                with k_q4:
+                    st.metric("Proxies Verified", f"{len(proxies)}")
+
+                # Quorum Status Banner
+                if voting_delegates >= quorum_target:
+                    st.markdown(f"""
+                    <div style="background: rgba(16, 185, 129, 0.2); border: 1.5px solid #10B981; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+                        <span style="color: #34D399; font-weight: 800; font-size: 0.85rem;">🟢 STATUTORY QUORUM ATTAINED ({voting_delegates}/{quorum_target} Voting Delegates Present • {quorum_pct}%)</span>
+                        <div style="color: #CBD5E1; font-size: 0.75rem; margin-top: 2px;">
+                            Assembly is lawfully constituted under corporate bylaws. The Chairman may call the meeting to order and proceed with table motions.
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    needed = quorum_target - voting_delegates
+                    st.markdown(f"""
+                    <div style="background: rgba(245, 197, 66, 0.15); border: 1.5px solid #F5C542; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+                        <span style="color: #F5C542; font-weight: 800; font-size: 0.85rem;">🟡 PENDING STATUTORY QUORUM ({voting_delegates}/{quorum_target} Voting Delegates Present • {needed} Needed)</span>
+                        <div style="color: #CBD5E1; font-size: 0.75rem; margin-top: 2px;">
+                            Door ushers and secretarial scrutinizers are accrediting arrivals. Quorum floor is required before resolutions can be enacted.
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                st.progress(voting_delegates / quorum_target if voting_delegates < quorum_target else 1.0)
+
+            else:
+                # Standard Event Metrics
+                k_t1, k_t2, k_t3 = st.columns(3)
+                with k_t1:
+                    st.metric("Total Passes Issued", len(event_tickets))
+                with k_t2:
+                    admitted_cnt = len([t for t in event_tickets if t.get("gate_status") == "ADMITTED"])
+                    st.metric("Admitted at Gate", admitted_cnt)
+                with k_t3:
+                    rev_total = sum([float(t.get("amount_paid", 0.0)) for t in event_tickets])
+                    st.metric("M-Pesa Revenue (KES)", f"{rev_total:,.0f}")
 
             if not event_tickets:
                 st.info("No tickets registered for this event yet.")
@@ -517,6 +757,16 @@ with tab_verify:
                     "amount_paid", "mpesa_trans_id", "gate_status", "checkin_time"
                 ]]
                 st.dataframe(df_tkt_show, use_container_width=True, hide_index=True)
+
+                # Export accreditation register
+                csv_data = df_tkt_show.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="📥 Download Official Statutory Accreditation Register (.csv)",
+                    data=csv_data,
+                    file_name=f"Accreditation_Register_{target_eid}.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
 
 # ------------------------------------------------------------------------------
 # FOOTER

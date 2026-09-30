@@ -827,6 +827,28 @@ class AttendanceBackend:
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, sample_events)
 
+        # Seed initial sample tickets for commercial & AGM events if empty
+        cur.execute("SELECT COUNT(*) FROM event_tickets_registry")
+        if cur.fetchone()[0] == 0:
+            sample_tickets = [
+                ("TKT-849201-11", "EVT-2026-002", "Wallace Mbugua", "wallace@enterprise.co.ke", "0722123456", "Apex Shareholder (Ref: CDSC-8492019)", "🗳️ Principal Shareholder / Voting Member", 0.0, "AGM8492019", "ADMITTED", f"{now_init} 16:45:10", now_init),
+                ("TKT-102948-22", "EVT-2026-002", "Dr. Beatrice Kiptoo", "beatrice.kiptoo@apexholdings.co.ke", "0733456789", "Apex Shareholder (Ref: CDSC-1029482)", "🗳️ Principal Shareholder / Voting Member", 0.0, "AGM1029482", "ADMITTED", f"{now_init} 16:52:33", now_init),
+                ("TKT-992018-33", "EVT-2026-002", "Eric Mwangi", "eric.mwangi@transcentury.co.ke", "0720987654", "Trans-Century Equity Fund (Ref: PROXY-9920184)", "📜 Duly Appointed Proxy Holder", 0.0, "AGM9920184", "ADMITTED", f"{now_init} 17:05:18", now_init),
+                ("TKT-342801-44", "EVT-2026-002", "Samuel Gathigi Njuguna", "gathigisn@centralbank.go.ke", "0712345678", "Executive Board Secretariat (Ref: CBK-3428)", "👔 Executive Board Director / Committee Member", 0.0, "AGM3428010", "ADMITTED", f"{now_init} 17:12:04", now_init),
+                ("TKT-881920-55", "EVT-2026-002", "Kenneth Mutai", "kmutai@kba.co.ke", "0721112233", "Kenya Bankers Association Fund (Ref: KBA-881920)", "🏛️ Institutional Shareholder / Fund Representative", 0.0, "AGM8819200", "ADMITTED", f"{now_init} 17:18:40", now_init),
+                ("TKT-449102-66", "EVT-2026-002", "Catherine Ochieng", "catherine.o@harambeesacco.com", "0725556677", "Harambee Sacco Block (Ref: SACCO-4491)", "📜 Duly Appointed Proxy Holder", 0.0, "AGM4491020", "ADMITTED", f"{now_init} 17:22:15", now_init),
+                ("TKT-202601-77", "EVT-2026-002", "Patrick Kamau", "pkamau@kpmg.co.ke", "0728990011", "KPMG Statutory Audit Team (Ref: AUD-2026)", "👁️ Independent Auditor / Regulatory Observer", 0.0, "AGM2026010", "ADMITTED", f"{now_init} 17:25:50", now_init),
+                ("TKT-552109-88", "EVT-2026-002", "Grace Ndung'u", "grace.ndungu@apexcapital.co.ke", "0723445566", "Apex Shareholder (Ref: CDSC-5521092)", "🗳️ Principal Shareholder / Voting Member", 0.0, "AGM5521092", "REGISTERED", "", now_init),
+                ("TKT-991024-99", "EVT-2026-001", "David Kiprono", "david.k@equitybank.co.ke", "0722334455", "Equity Bank Kenya", "Standard Pass", 1000.0, "QK99102451", "ADMITTED", f"{now_init} 07:45:12", now_init),
+                ("TKT-771829-10", "EVT-2026-001", "Mary Atieno", "mary.atieno@sc.com", "0733887766", "Standard Chartered Bank", "VIP Executive Pass", 3500.0, "QK77182933", "ADMITTED", f"{now_init} 08:02:44", now_init)
+            ]
+            cur.executemany("""
+                INSERT INTO event_tickets_registry (
+                    ticket_id, event_id, attendee_name, email, phone, organization,
+                    ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, sample_tickets)
+
         conn.commit()
         conn.close()
 
