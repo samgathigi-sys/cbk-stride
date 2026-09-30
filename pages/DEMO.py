@@ -179,11 +179,18 @@ with c_ban1:
 with c_ban2:
     st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
     st.markdown("""
-    <a href="/" target="_self" style="display: block; text-decoration: none;">
-        <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(245, 197, 66, 0.5); border-radius: 10px; padding: 10px 14px; text-align: center; color: #F5C542; font-weight: 800; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.2s ease;">
-            🏛️ Return to Official CBK Portal
-        </div>
-    </a>
+    <div style="display: flex; gap: 8px; flex-direction: column;">
+        <a href="/" target="_self" style="display: block; text-decoration: none;">
+            <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(245, 197, 66, 0.5); border-radius: 8px; padding: 7px 10px; text-align: center; color: #F5C542; font-weight: 800; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                🏛️ Official CBK Portal
+            </div>
+        </a>
+        <a href="/register" target="_self" style="display: block; text-decoration: none;">
+            <div style="background: rgba(0, 242, 254, 0.15); border: 1.5px solid #00F2FE; border-radius: 8px; padding: 7px 10px; text-align: center; color: #00F2FE; font-weight: 800; font-size: 0.8rem;">
+                🎟️ Public Registration & M-Pesa Gateway
+            </div>
+        </a>
+    </div>
     """, unsafe_allow_html=True)
 
 # ------------------------------------------------------------------------------
@@ -1034,6 +1041,6 @@ with tab_dict["⚙️ Sandbox Data Tools"]:
 st.markdown("""
 <div style="text-align: center; margin-top: 2.5rem; padding: 1.4rem; border-top: 1px solid rgba(245, 197, 66, 0.25); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.6); border-radius: 12px;">
     <strong style="color: #F5C542;">STRIDE™</strong> • Interactive Evaluation Sandbox & Corporate Sponsor Pavilion<br>
-    <span style="font-size: 0.75rem; color: #64748B;">Enterprise Sports Telemetry & Tournament Operations • <a href="/" style="color: #00F2FE; text-decoration: none;">Return to Official CBK Portal</a></span>
+    <span style="font-size: 0.75rem; color: #64748B;">Enterprise Sports Telemetry & Tournament Operations • <a href="/" style="color: #00F2FE; text-decoration: none;">Return to Official CBK Portal</a> • <a href="/register" style="color: #F5C542; text-decoration: none;">🎟️ Public Accreditation & Ticketing Gateway</a></span>
 </div>
 """, unsafe_allow_html=True)

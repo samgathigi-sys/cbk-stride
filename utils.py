@@ -15,6 +15,7 @@ import hashlib
 import sqlite3
 from datetime import datetime, date, timedelta, timezone
 from typing import Dict, List, Optional, Tuple, Any
+import random
 
 import pandas as pd
 from PIL import Image
@@ -648,6 +649,47 @@ class AttendanceBackend:
             )
         """)
 
+        # Create Commercial Events, Functions & Roster Registry Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS events_registry (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_id TEXT UNIQUE NOT NULL,
+                title TEXT NOT NULL,
+                organizer_name TEXT NOT NULL,
+                category TEXT NOT NULL,
+                event_date TEXT NOT NULL,
+                event_time TEXT DEFAULT '09:00',
+                venue TEXT NOT NULL,
+                description TEXT DEFAULT '',
+                gate_mode TEXT DEFAULT 'DUAL_GATE',
+                is_paid INTEGER DEFAULT 1,
+                standard_price REAL DEFAULT 1000.0,
+                vip_price REAL DEFAULT 3500.0,
+                mpesa_paybill TEXT DEFAULT '849200',
+                created_at TEXT NOT NULL,
+                status TEXT DEFAULT 'ACTIVE'
+            )
+        """)
+
+        # Create Event Tickets & Attendee Roster Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS event_tickets_registry (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ticket_id TEXT UNIQUE NOT NULL,
+                event_id TEXT NOT NULL,
+                attendee_name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                phone TEXT NOT NULL,
+                organization TEXT DEFAULT '',
+                ticket_tier TEXT NOT NULL,
+                amount_paid REAL DEFAULT 0.0,
+                mpesa_trans_id TEXT NOT NULL,
+                gate_status TEXT DEFAULT 'REGISTERED',
+                checkin_time TEXT DEFAULT '',
+                created_at TEXT NOT NULL
+            )
+        """)
+
         try:
             cur.execute("ALTER TABLE captain_credentials ADD COLUMN passkey_hash TEXT DEFAULT ''")
         except Exception:
@@ -769,6 +811,21 @@ class AttendanceBackend:
                     discipline, event_date, event_time, event_type, title, notes, venue, created_by, created_at
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, sample_fixtures)
+
+        # Seed initial sample commercial events if table is empty
+        cur.execute("SELECT COUNT(*) FROM events_registry")
+        if cur.fetchone()[0] == 0:
+            sample_events = [
+                ("EVT-2026-001", "🏆 2026 Inter-Bank Sports Championship", "Kenya Bankers Association Sports Council", "Sports Tournament", "2026-10-15", "08:00", "CBK Sports Complex, Ruaraka", "Annual corporate tournament across banking institutions in Kenya.", "DUAL_GATE", 1, 1000.0, 3500.0, "849200", now_init, "ACTIVE"),
+                ("EVT-2026-002", "👔 Annual General Meeting & Corporate Gala", "Apex Capital Group Holdings", "Corporate AGM & Dinner", "2026-10-24", "17:30", "Radisson Blu Ballroom, Upper Hill", "Annual shareholder assembly, strategy presentation, and executive gala dinner.", "SINGLE_GATE", 1, 2500.0, 7500.0, "849200", now_init, "ACTIVE"),
+                ("EVT-2026-003", "🏃 Great Rift Valley 10K Charity Marathon", "Rift Community Development Foundation", "Marathon / Fun Run", "2026-11-07", "06:30", "Naivasha Sports Club Grounds", "Charity marathon supporting water access and maternal health in the Rift Valley.", "SINGLE_GATE", 1, 1500.0, 4000.0, "849200", now_init, "ACTIVE")
+            ]
+            cur.executemany("""
+                INSERT INTO events_registry (
+                    event_id, title, organizer_name, category, event_date, event_time, venue, description,
+                    gate_mode, is_paid, standard_price, vip_price, mpesa_paybill, created_at, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, sample_events)
 
         conn.commit()
         conn.close()
@@ -2299,6 +2356,159 @@ class AttendanceBackend:
             return [dict(r) for r in rows]
         except Exception:
             return []
+
+    # ==========================================================================
+    # COMMERCIAL EVENTS, M-PESA TICKETING & PUBLIC FUNCTIONS METHODS
+    # ==========================================================================
+    def create_event(
+        self, title: str, organizer_name: str, category: str,
+        event_date: str, event_time: str, venue: str, description: str,
+        gate_mode: str = "DUAL_GATE", is_paid: bool = True,
+        standard_price: float = 1000.0, vip_price: float = 3500.0,
+        mpesa_paybill: str = "849200"
+    ) -> Tuple[bool, str, str]:
+        """Creates a new public or corporate event and returns (ok, message, event_id)."""
+        try:
+            now_dt = get_eat_now()
+            now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
+            event_id = f"EVT-{now_dt.strftime('%Y%m%d')}-{random.randint(100, 999)}"
+            
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO events_registry (
+                    event_id, title, organizer_name, category, event_date, event_time, venue,
+                    description, gate_mode, is_paid, standard_price, vip_price, mpesa_paybill,
+                    created_at, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVE')
+            """, (
+                event_id, title, organizer_name, category, event_date, event_time, venue,
+                description, gate_mode, 1 if is_paid else 0, standard_price, vip_price, mpesa_paybill, now_str
+            ))
+            conn.commit()
+            conn.close()
+
+            self.log_audit_event(
+                staff_id="ORGANIZER",
+                officer_name=organizer_name,
+                role="Event Organizer",
+                action_type="EVENT_CREATED",
+                resource_name=event_id,
+                notes=f"Created {category}: '{title}' at {venue}"
+            )
+            return True, f"Event '{title}' created successfully!", event_id
+        except Exception as e:
+            return False, f"Failed to create event: {e}", ""
+
+    def get_events(self, status: str = "ACTIVE") -> List[Dict[str, Any]]:
+        """Retrieves all registered events ordered by event_date."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            if status == "ALL":
+                cur.execute("SELECT * FROM events_registry ORDER BY event_date ASC, event_time ASC")
+            else:
+                cur.execute("SELECT * FROM events_registry WHERE status = ? ORDER BY event_date ASC, event_time ASC", (status,))
+            rows = cur.fetchall()
+            conn.close()
+            return [dict(r) for r in rows]
+        except Exception:
+            return []
+
+    def get_event_by_id(self, event_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves an event by its unique ID."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM events_registry WHERE event_id = ? LIMIT 1", (event_id,))
+            row = cur.fetchone()
+            conn.close()
+            return dict(row) if row else None
+        except Exception:
+            return None
+
+    def register_event_ticket(
+        self, event_id: str, attendee_name: str, email: str, phone: str,
+        organization: str, ticket_tier: str, amount_paid: float, mpesa_trans_id: str
+    ) -> Tuple[bool, str, Dict[str, Any]]:
+        """Registers an attendee ticket with verified M-Pesa receipt."""
+        try:
+            now_dt = get_eat_now()
+            now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
+            ticket_id = f"TKT-{mpesa_trans_id[-6:]}-{random.randint(10, 99)}"
+
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO event_tickets_registry (
+                    ticket_id, event_id, attendee_name, email, phone, organization,
+                    ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'REGISTERED', '', ?)
+            """, (
+                ticket_id, event_id, attendee_name, email, phone, organization,
+                ticket_tier, amount_paid, mpesa_trans_id, now_str
+            ))
+            conn.commit()
+            conn.close()
+
+            ticket_dict = {
+                "ticket_id": ticket_id,
+                "event_id": event_id,
+                "attendee_name": attendee_name,
+                "email": email,
+                "phone": phone,
+                "organization": organization,
+                "ticket_tier": ticket_tier,
+                "amount_paid": amount_paid,
+                "mpesa_trans_id": mpesa_trans_id,
+                "gate_status": "REGISTERED",
+                "created_at": now_str
+            }
+            return True, "Ticket registered successfully!", ticket_dict
+        except Exception as e:
+            return False, f"Ticket registration failed: {e}", {}
+
+    def get_tickets_by_event(self, event_id: str) -> List[Dict[str, Any]]:
+        """Retrieves all registered tickets for an event."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM event_tickets_registry WHERE event_id = ? ORDER BY id DESC", (event_id,))
+            rows = cur.fetchall()
+            conn.close()
+            return [dict(r) for r in rows]
+        except Exception:
+            return []
+
+    def verify_and_admit_ticket(self, ticket_id: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+        """Validates ticket QR code at gate, admits once, and prevents duplicate re-entry."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM event_tickets_registry WHERE ticket_id = ? LIMIT 1", (ticket_id,))
+            row = cur.fetchone()
+            if not row:
+                conn.close()
+                return False, "❌ INVALID TICKET: Ticket ID not found in accredited roster.", None
+
+            ticket = dict(row)
+            if ticket["gate_status"] == "ADMITTED":
+                conn.close()
+                return False, f"🛑 DUPLICATE SCAN DENIED: Pass was already admitted at {ticket.get('checkin_time', 'Earlier')}.", ticket
+
+            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+            cur.execute("UPDATE event_tickets_registry SET gate_status = 'ADMITTED', checkin_time = ? WHERE ticket_id = ?", (now_str, ticket_id))
+            conn.commit()
+            conn.close()
+            ticket["gate_status"] = "ADMITTED"
+            ticket["checkin_time"] = now_str
+            return True, f"✅ VALID TICKET: Welcome {ticket['attendee_name']}! Admitted successfully.", ticket
+        except Exception as e:
+            return False, f"Verification error: {e}", None
 
 
 
