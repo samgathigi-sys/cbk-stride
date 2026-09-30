@@ -823,7 +823,7 @@ def render_admin_security_lock(location_key: str = "default", required_perm: str
                     "Security Passkey:",
                     type="password",
                     key=f"sec_pin_{location_key}",
-                    placeholder="Enter passkey (e.g. 3428 or 2026)"
+                    placeholder="Enter confidential passkey"
                 )
             with c_p3:
                 st.write("")
@@ -888,22 +888,56 @@ with c_hdr_login:
             st.rerun()
     else:
         with st.popover("🔐 Officer Clearance Login", use_container_width=True):
-            st.caption("Authorized Secretariat, Audit, or Finance officers may log in to reveal privileged operational tabs:")
-            pop_sid = st.text_input("Staff ID / Payroll #:", key="pop_sec_sid", placeholder="e.g. 3428")
-            pop_pass = st.text_input("Security Passkey:", type="password", key="pop_sec_pass", placeholder="Enter passkey")
-            if st.button("🔓 Verify Clearance", key="btn_pop_auth", type="primary", use_container_width=True):
-                if pop_sid.strip() and pop_pass.strip():
-                    ok_p, msg_p, off_p = backend.authenticate_officer(pop_sid.strip(), pop_pass.strip())
-                    if ok_p and off_p:
-                        st.session_state["authenticated_officer"] = off_p
-                        st.session_state["admin_exports_unlocked"] = True
-                        st.session_state["officer_auth_time"] = time.time()
-                        st.toast(msg_p, icon="🔓")
-                        st.rerun()
+            st.caption("Authorized Secretariat, Audit, Finance & HR officers log in or activate clearance:")
+            pop_t1, pop_t2 = st.tabs(["🔑 Sign In", "🆕 Officer Activation"])
+            with pop_t1:
+                pop_sid = st.text_input("Staff ID / Payroll #:", key="pop_sec_sid", placeholder="e.g. 1042 or CBK-1042")
+                pop_pass = st.text_input("Security Passkey:", type="password", key="pop_sec_pass", placeholder="Enter security passkey")
+                if st.button("🔓 Verify Clearance", key="btn_pop_auth", type="primary", use_container_width=True):
+                    if pop_sid.strip() and pop_pass.strip():
+                        ok_p, msg_p, off_p = backend.authenticate_officer(pop_sid.strip(), pop_pass.strip())
+                        if ok_p and off_p:
+                            st.session_state["authenticated_officer"] = off_p
+                            st.session_state["admin_exports_unlocked"] = True
+                            st.session_state["officer_auth_time"] = time.time()
+                            st.toast(msg_p, icon="🔓")
+                            st.rerun()
+                        else:
+                            st.error(f"❌ {msg_p}")
                     else:
-                        st.error(f"❌ {msg_p}")
-                else:
-                    st.error("Please enter Staff ID and Passkey.")
+                        st.error("Please enter Staff ID and Passkey.")
+            with pop_t2:
+                st.caption("Appointed officers can activate their clearance passkey below:")
+                act_sid = st.text_input("Your Staff ID / Payroll #:", key="act_sec_sid", placeholder="e.g. 1042 or CBK-1042")
+                act_fn = st.text_input("Full Official Name:", key="act_sec_fn", placeholder="e.g. Mary Atieno")
+                act_dp = st.selectbox("Directorate / Department:", CBK_DEPARTMENTS, key="act_sec_dp")
+                act_role = st.selectbox("Institutional Role:", ["Secretariat Admin", "Secretariat Officer", "Finance & Internal Audit", "HR Compliance Lead"], key="act_sec_role")
+                act_pass1 = st.text_input("Set Secret Passkey (Min 4 digits):", type="password", key="act_sec_p1")
+                act_pass2 = st.text_input("Confirm Secret Passkey:", type="password", key="act_sec_p2")
+                if st.button("🛡️ Activate Officer Clearance", key="btn_act_sec_auth", type="primary", use_container_width=True):
+                    if not act_sid.strip() or not act_fn.strip():
+                        st.error("Please provide Staff ID and Full Name.")
+                    elif not act_pass1.strip() or len(act_pass1.strip()) < 4:
+                        st.error("Passkey must be at least 4 digits or characters.")
+                    elif act_pass1.strip() != act_pass2.strip():
+                        st.error("Passkeys do not match.")
+                    else:
+                        ok_act, msg_act, off_act = backend.register_officer_clearance(
+                            raw_staff_id=act_sid.strip(),
+                            full_name=act_fn.strip(),
+                            department=act_dp,
+                            role=act_role,
+                            new_passkey=act_pass1.strip()
+                        )
+                        if ok_act and off_act:
+                            st.session_state["authenticated_officer"] = off_act
+                            st.session_state["admin_exports_unlocked"] = True
+                            st.session_state["officer_auth_time"] = time.time()
+                            st.success(f"🎉 Welcome, {off_act['full_name']}! You have unlocked {off_act['role']} privileges.")
+                            st.balloons()
+                            st.rerun()
+                        else:
+                            st.error(msg_act)
 
 with c_hdr_info:
     if cur_officer:
@@ -973,30 +1007,32 @@ tab_titles = ["📋 Captain's Roll Call", "📱 Mobile Check-In", "🏷️ Capta
 
 if cur_officer:
     officer_role = cur_officer.get("role", "")
-    if officer_role == "Super Admin":
+    if officer_role in ["Super Admin", "Secretariat Admin"]:
         tab_titles.extend([
             "🏛️ Secretariat Operations",
             "📊 HR Analytics Command",
             "💰 Finance & Audit Portal",
             "⚙️ Integration & Settings"
         ])
-    elif officer_role == "Finance & Internal Audit":
+    elif officer_role in ["Secretariat Officer", "Secretariat Operations"]:
+        tab_titles.extend([
+            "🏛️ Secretariat Operations",
+            "📊 HR Analytics Command",
+            "💰 Finance & Audit Portal"
+        ])
+    elif officer_role in ["Finance & Internal Audit", "Finance Officer"]:
         tab_titles.extend([
             "💰 Finance & Audit Portal",
-            "🏛️ Secretariat Operations"
-        ])
-    elif officer_role == "Secretariat Officer":
-        tab_titles.extend([
             "🏛️ Secretariat Operations",
             "📊 HR Analytics Command"
         ])
-    elif officer_role == "HR Compliance Lead":
+    elif officer_role in ["HR Compliance Lead", "HR Officer"]:
         tab_titles.extend([
             "📊 HR Analytics Command",
             "🏛️ Secretariat Operations"
         ])
     else:
-        tab_titles.extend(["🏛️ Secretariat Operations"])
+        tab_titles.extend(["🏛️ Secretariat Operations", "📊 HR Analytics Command"])
 
 tabs = st.tabs(tab_titles)
 tab_dict = {title: tab for title, tab in zip(tab_titles, tabs)}

@@ -13,16 +13,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 PAGE1_INPUT = r"C:/Users/gathigisn.CBK.008/.gemini/antigravity/brain/00940864-5fa3-44bf-b1d9-02e121e7a052/.user_uploaded/media_1790766692303.jpg"
 LOGO_PATH = os.path.join(DIR, "cbk_logo_transparent.png")
 
-url_file = os.path.join(DIR, "CURRENT_LIVE_URL.txt")
-PORTAL_URL = "https://amend-jacket-drugs-bacterial.trycloudflare.com"
-if os.path.exists(url_file):
-    try:
-        with open(url_file, "r", encoding="utf-8") as f:
-            v = f.read().strip()
-            if v and v.startswith("http"):
-                PORTAL_URL = v
-    except Exception:
-        pass
+PORTAL_URL = "https://cbk-stride.streamlit.app/"
 
 WIDTH = 1080
 HEIGHT = 1920
@@ -290,11 +281,11 @@ draw.text((bot_x + 28, bot_y + 120), summary_p3, fill=C_SLATE, font=font_bottom_
 callout_y = bot_y + 162
 draw.rounded_rectangle([(bot_x + 25, callout_y), (bot_x + left_w - 15, callout_y + 126)], radius=12, fill=(4, 14, 28), outline=(0, 242, 254, 150), width=1)
 
-draw.text((bot_x + 38, callout_y + 12), "TEST THE LIVE PRODUCTION CLOUD PORTAL:", fill=C_CYAN, font=get_font("segoeuib.ttf", 15))
-draw.text((bot_x + 38, callout_y + 38), PORTAL_URL, fill=C_WHITE, font=get_font("segoeui.ttf", 13))
+draw.text((bot_x + 38, callout_y + 14), "OFFICIAL CENTRAL BANK PRODUCTION CLOUD:", fill=C_CYAN, font=get_font("segoeuib.ttf", 15))
+draw.text((bot_x + 38, callout_y + 38), "https://cbk-stride.streamlit.app/", fill=C_WHITE, font=get_font("segoeuib.ttf", 15))
 
-draw.text((bot_x + 38, callout_y + 68), "PRE-CONFIGURED AUDIT ACCESS CLEARANCE:", fill=C_GOLD, font=get_font("segoeuib.ttf", 15))
-draw.text((bot_x + 38, callout_y + 94), "Staff ID: 3428  |  Passkey: 3428 (Super Admin Full Clearance)", fill=C_ICE, font=get_font("segoeui.ttf", 14))
+draw.text((bot_x + 38, callout_y + 68), "ROLE-BASED AUDIT & GOVERNANCE ACCESS:", fill=C_GOLD, font=get_font("segoeuib.ttf", 15))
+draw.text((bot_x + 38, callout_y + 94), "Secretariat, Audit & HR access via institutional Officer Clearance Login.", fill=C_ICE, font=get_font("segoeui.ttf", 13))
 
 # Generate Live Portal QR Code
 qr = qrcode.QRCode(

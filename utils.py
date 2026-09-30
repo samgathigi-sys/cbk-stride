@@ -612,9 +612,9 @@ class AttendanceBackend:
 
         # Seed default Super Admin (Samuel Gathigi Njuguna, CBK-3428) if not already set
         cur.execute("SELECT COUNT(*) FROM security_access_control WHERE staff_id = 'CBK-3428'")
+        now_init = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if cur.fetchone()[0] == 0:
             default_hash = hashlib.sha256(b"3428").hexdigest()
-            now_init = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             cur.execute("""
                 INSERT INTO security_access_control (
                     staff_id, full_name, department, role,
@@ -626,8 +626,52 @@ class AttendanceBackend:
                 1, 1, 1, default_hash, "SYSTEM_ROOT", now_init
             ))
 
+        # Seed Secretariat Admin (Sports & Wellness Secretariat Lead)
+        cur.execute("SELECT COUNT(*) FROM security_access_control WHERE staff_id = 'CBK-SEC01'")
+        if cur.fetchone()[0] == 0:
+            sec_hash = hashlib.sha256(b"sec2026").hexdigest()
+            cur.execute("""
+                INSERT INTO security_access_control (
+                    staff_id, full_name, department, role,
+                    can_export_roster, can_export_finances, can_manage_roles,
+                    passkey_hash, granted_by, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                "CBK-SEC01", "Sports Secretariat Lead", "Governor's Office & Secretariat", "Secretariat Admin",
+                1, 1, 1, sec_hash, "SYSTEM_INIT", now_init
+            ))
+
+        # Seed Finance & Internal Audit Lead
+        cur.execute("SELECT COUNT(*) FROM security_access_control WHERE staff_id = 'CBK-FIN01'")
+        if cur.fetchone()[0] == 0:
+            fin_hash = hashlib.sha256(b"fin2026").hexdigest()
+            cur.execute("""
+                INSERT INTO security_access_control (
+                    staff_id, full_name, department, role,
+                    can_export_roster, can_export_finances, can_manage_roles,
+                    passkey_hash, granted_by, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                "CBK-FIN01", "Finance & Internal Audit Lead", "Finance & Internal Audit", "Finance & Internal Audit",
+                1, 1, 0, fin_hash, "SYSTEM_INIT", now_init
+            ))
+
+        # Seed HR Compliance Lead
+        cur.execute("SELECT COUNT(*) FROM security_access_control WHERE staff_id = 'CBK-HR01'")
+        if cur.fetchone()[0] == 0:
+            hr_hash = hashlib.sha256(b"hr2026").hexdigest()
+            cur.execute("""
+                INSERT INTO security_access_control (
+                    staff_id, full_name, department, role,
+                    can_export_roster, can_export_finances, can_manage_roles,
+                    passkey_hash, granted_by, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                "CBK-HR01", "HR Compliance Lead", "Human Resources Directorate", "HR Compliance Lead",
+                1, 0, 0, hr_hash, "SYSTEM_INIT", now_init
+            ))
+
         # Seed default Golf Captain for Samuel Gathigi Njuguna (CBK-3428) with passkey 3428
-        now_init = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         cur.execute("SELECT COUNT(*) FROM captain_credentials WHERE staff_id = 'CBK-3428' AND discipline = 'Golf'")
         if cur.fetchone()[0] == 0:
             default_golf_hash = hashlib.sha256(b"3428").hexdigest()
@@ -1899,6 +1943,73 @@ class AttendanceBackend:
             )
             return True, f"Clearance revoked for {sid}."
         return False, f"Staff ID {sid} was not found in the access control registry."
+
+    def register_officer_clearance(
+        self, raw_staff_id: str, full_name: str, department: str, role: str, new_passkey: str
+    ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+        """Allows authorized institutional officers (Secretariat, Finance, HR) to activate their clearance passkey."""
+        sid_clean = str(raw_staff_id).strip().upper()
+        if not sid_clean.startswith("CBK-") and sid_clean.replace("CBK", "").replace("-", "").isdigit():
+            sid_clean = f"CBK-{sid_clean.replace('CBK', '').replace('-', '')}"
+
+        pkey = str(new_passkey).strip()
+        if len(pkey) < 4:
+            return False, "Security passkey must be at least 4 characters or digits.", None
+
+        conn = sqlite3.connect(self.db_path, timeout=10)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+
+        pass_hash = self._hash_passkey(pkey)
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        can_exp_roster = 1
+        can_exp_fin = 1 if role in ["Super Admin", "Finance & Internal Audit", "Secretariat Admin"] else 0
+        can_manage = 1 if role in ["Super Admin", "Secretariat Admin"] else 0
+
+        cur.execute("SELECT * FROM security_access_control WHERE staff_id = ?", (sid_clean,))
+        existing = cur.fetchone()
+
+        if existing:
+            cur.execute("""
+                UPDATE security_access_control
+                SET passkey_hash = ?, full_name = ?, department = ?, role = ?,
+                    can_export_roster = ?, can_export_finances = ?, can_manage_roles = ?
+                WHERE staff_id = ?
+            """, (pass_hash, full_name, department, role, can_exp_roster, can_exp_fin, can_manage, sid_clean))
+        else:
+            cur.execute("""
+                INSERT INTO security_access_control (
+                    staff_id, full_name, department, role,
+                    can_export_roster, can_export_finances, can_manage_roles,
+                    passkey_hash, granted_by, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'SELF_ACCREDITATION', ?)
+            """, (sid_clean, full_name, department, role, can_exp_roster, can_exp_fin, can_manage, pass_hash, now_str))
+
+        conn.commit()
+        conn.close()
+
+        prof = {
+            "staff_id": sid_clean,
+            "full_name": full_name,
+            "department": department,
+            "role": role,
+            "can_export_roster": can_exp_roster,
+            "can_export_finances": can_exp_fin,
+            "can_manage_roles": can_manage
+        }
+
+        self.log_audit_event(
+            staff_id=sid_clean,
+            officer_name=full_name,
+            role=role,
+            action_type="OFFICER_CLEARANCE_ACTIVATED",
+            resource_name="SECURITY_RBAC",
+            status="SUCCESS",
+            notes=f"Institutional clearance activated for {full_name} ({role})"
+        )
+
+        return True, f"Clearance activated for {full_name} ({role})!", prof
 
     def get_all_authorized_officers(self) -> List[Dict[str, Any]]:
         """Returns the list of all registered authorized officers."""
