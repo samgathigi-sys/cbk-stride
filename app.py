@@ -1032,6 +1032,120 @@ if cur_officer:
     else:
         tab_titles.extend(["🏛️ Secretariat Operations", "📊 HR Analytics Command"])
 
+
+# ==============================================================================
+# CAPTAIN'S TACTICAL FIXTURES, DRILLS & CALENDAR DIARY
+# ==============================================================================
+def render_captain_calendar_section(discipline: str, is_authorized: bool, key_prefix: str = "cal"):
+    st.markdown("---")
+    st.markdown(f"#### 📅 Captain's Tactical Calendar & Squad Diary ({discipline})")
+    st.caption("Plan upcoming tournament fixtures, friendly matches, conditioning drills, and jot down tactical notes:")
+
+    events = backend.get_calendar_notes(discipline)
+
+    col_c1, col_c2 = st.columns([1.6, 1.1])
+
+    with col_c1:
+        st.markdown(f"##### 📋 Scheduled Fixtures & Squad Diary ({len(events)} Events)")
+        if not events:
+            st.info(f"No scheduled fixtures or tactical notes recorded for {discipline} yet. Add one on the right!")
+        else:
+            for ev in events:
+                ev_type = ev.get("event_type", "Conditioning Drill")
+                if "Tournament" in ev_type:
+                    badge_color = "#F5C542"
+                    badge_bg = "rgba(245, 197, 66, 0.2)"
+                    badge_icon = "🏆"
+                elif "Friendly" in ev_type:
+                    badge_color = "#00F2FE"
+                    badge_bg = "rgba(0, 242, 254, 0.2)"
+                    badge_icon = "⚽"
+                elif "Briefing" in ev_type or "Tactical" in ev_type:
+                    badge_color = "#A78BFA"
+                    badge_bg = "rgba(167, 139, 250, 0.2)"
+                    badge_icon = "📋"
+                elif "Medical" in ev_type or "Rest" in ev_type:
+                    badge_color = "#F87171"
+                    badge_bg = "rgba(248, 113, 113, 0.2)"
+                    badge_icon = "🩹"
+                else:
+                    badge_color = "#34D399"
+                    badge_bg = "rgba(52, 211, 153, 0.2)"
+                    badge_icon = "🏋️"
+
+                venue_txt = f"📍 {ev.get('venue')}" if ev.get('venue') else ""
+
+                st.markdown(f"""
+                <div style="background: rgba(8, 24, 48, 0.75); border: 1px solid rgba(245, 197, 66, 0.25); border-left: 4.5px solid {badge_color}; border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                        <div>
+                            <span style="background: {badge_bg}; color: {badge_color}; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">
+                                {badge_icon} {ev_type}
+                            </span>
+                            <h4 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.05rem; font-weight: 800;">{ev.get('title')}</h4>
+                            <p style="margin: 0; font-size: 0.8rem; color: #CBD5E1;">
+                                🗓️ <strong>{ev.get('event_date')}</strong> at <strong>{ev.get('event_time')}</strong> • {venue_txt}
+                            </p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.86rem; color: #94A3B8;">
+                        📝 <em>{ev.get('notes') or 'No additional tactical notes.'}</em>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                if is_authorized:
+                    if st.button("🗑️ Remove Fixture", key=f"del_ev_{key_prefix}_{ev['id']}", help="Delete this scheduled event"):
+                        backend.delete_calendar_note(ev['id'])
+                        st.toast("✅ Event removed from squad calendar.", icon="🗑️")
+                        st.rerun()
+
+    with col_c2:
+        st.markdown("##### ➕ Schedule Fixture or Jot Note")
+        if not is_authorized:
+            st.caption("🔒 Please authenticate as Captain or Secretariat to schedule fixtures and save tactical notes.")
+        else:
+            with st.form(key=f"form_add_cal_{key_prefix}_{discipline}"):
+                f_date = st.date_input("Event Date:", key=f"cal_d_{key_prefix}")
+                f_time = st.text_input("Kick-off / Start Time:", value="17:00", key=f"cal_t_{key_prefix}")
+                f_type = st.selectbox(
+                    "Event Category:",
+                    [
+                        "🏆 Tournament Fixture",
+                        "⚽ Friendly Match",
+                        "🏋️ Conditioning / Fitness Drill",
+                        "📋 Tactical Briefing",
+                        "🩹 Medical / Squad Rest Day"
+                    ],
+                    key=f"cal_type_{key_prefix}"
+                )
+                f_title = st.text_input("Event Title / Opponent:*", placeholder="e.g. Friendly Match vs KCB Lions", key=f"cal_title_{key_prefix}")
+                f_venue = st.text_input("Venue / Station:", value=CBK_DISCIPLINES.get(discipline, {}).get("default_venue", "Main Stadium"), key=f"cal_ven_{key_prefix}")
+                f_notes = st.text_area("Tactical Notes & Instructions:", placeholder="e.g. Full navy kit required, arrive 30 mins early for warm-ups. Sub in Peter for injured John.", key=f"cal_notes_{key_prefix}")
+
+                btn_save_cal = st.form_submit_button("💾 Save to Squad Calendar & Diary", use_container_width=True)
+                if btn_save_cal:
+                    if not f_title.strip():
+                        st.error("Please provide an Event Title or Opponent.")
+                    else:
+                        d_str = f_date.strftime("%Y-%m-%d")
+                        created_by_tag = f"Captain ({discipline})"
+                        ok = backend.add_calendar_note(
+                            discipline=discipline,
+                            event_date=d_str,
+                            event_time=f_time.strip(),
+                            event_type=f_type,
+                            title=f_title.strip(),
+                            notes=f_notes.strip(),
+                            venue=f_venue.strip(),
+                            created_by=created_by_tag
+                        )
+                        if ok:
+                            st.toast(f"✅ Added '{f_title}' to {discipline} tactical calendar!", icon="📅")
+                            st.rerun()
+                        else:
+                            st.error("Failed to save calendar event. Please retry.")
+
 tabs = st.tabs(tab_titles)
 tab_dict = {title: tab for title, tab in zip(tab_titles, tabs)}
 
@@ -1966,118 +2080,6 @@ with tab_dict["🏷️ Captain QR Station"]:
             # 5. CAPTAIN'S TACTICAL FIXTURES & DIARY SECTION
             render_captain_calendar_section(cap_discipline, is_authorized=bool(cur_officer or is_sandbox), key_prefix="qr_tab")
 
-# ==============================================================================
-# CAPTAIN'S TACTICAL FIXTURES, DRILLS & CALENDAR DIARY
-# ==============================================================================
-def render_captain_calendar_section(discipline: str, is_authorized: bool, key_prefix: str = "cal"):
-    st.markdown("---")
-    st.markdown(f"#### 📅 Captain's Tactical Calendar & Squad Diary ({discipline})")
-    st.caption("Plan upcoming tournament fixtures, friendly matches, conditioning drills, and jot down tactical notes:")
-
-    events = backend.get_calendar_notes(discipline)
-
-    col_c1, col_c2 = st.columns([1.6, 1.1])
-
-    with col_c1:
-        st.markdown(f"##### 📋 Scheduled Fixtures & Squad Diary ({len(events)} Events)")
-        if not events:
-            st.info(f"No scheduled fixtures or tactical notes recorded for {discipline} yet. Add one on the right!")
-        else:
-            for ev in events:
-                ev_type = ev.get("event_type", "Conditioning Drill")
-                if "Tournament" in ev_type:
-                    badge_color = "#F5C542"
-                    badge_bg = "rgba(245, 197, 66, 0.2)"
-                    badge_icon = "🏆"
-                elif "Friendly" in ev_type:
-                    badge_color = "#00F2FE"
-                    badge_bg = "rgba(0, 242, 254, 0.2)"
-                    badge_icon = "⚽"
-                elif "Briefing" in ev_type or "Tactical" in ev_type:
-                    badge_color = "#A78BFA"
-                    badge_bg = "rgba(167, 139, 250, 0.2)"
-                    badge_icon = "📋"
-                elif "Medical" in ev_type or "Rest" in ev_type:
-                    badge_color = "#F87171"
-                    badge_bg = "rgba(248, 113, 113, 0.2)"
-                    badge_icon = "🩹"
-                else:
-                    badge_color = "#34D399"
-                    badge_bg = "rgba(52, 211, 153, 0.2)"
-                    badge_icon = "🏋️"
-
-                venue_txt = f"📍 {ev.get('venue')}" if ev.get('venue') else ""
-
-                st.markdown(f"""
-                <div style="background: rgba(8, 24, 48, 0.75); border: 1px solid rgba(245, 197, 66, 0.25); border-left: 4.5px solid {badge_color}; border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
-                        <div>
-                            <span style="background: {badge_bg}; color: {badge_color}; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">
-                                {badge_icon} {ev_type}
-                            </span>
-                            <h4 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.05rem; font-weight: 800;">{ev.get('title')}</h4>
-                            <p style="margin: 0; font-size: 0.8rem; color: #CBD5E1;">
-                                🗓️ <strong>{ev.get('event_date')}</strong> at <strong>{ev.get('event_time')}</strong> • {venue_txt}
-                            </p>
-                        </div>
-                    </div>
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.86rem; color: #94A3B8;">
-                        📝 <em>{ev.get('notes') or 'No additional tactical notes.'}</em>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-                if is_authorized:
-                    if st.button("🗑️ Remove Fixture", key=f"del_ev_{key_prefix}_{ev['id']}", help="Delete this scheduled event"):
-                        backend.delete_calendar_note(ev['id'])
-                        st.toast("✅ Event removed from squad calendar.", icon="🗑️")
-                        st.rerun()
-
-    with col_c2:
-        st.markdown("##### ➕ Schedule Fixture or Jot Note")
-        if not is_authorized:
-            st.caption("🔒 Please authenticate as Captain or Secretariat to schedule fixtures and save tactical notes.")
-        else:
-            with st.form(key=f"form_add_cal_{key_prefix}_{discipline}"):
-                f_date = st.date_input("Event Date:", key=f"cal_d_{key_prefix}")
-                f_time = st.text_input("Kick-off / Start Time:", value="17:00", key=f"cal_t_{key_prefix}")
-                f_type = st.selectbox(
-                    "Event Category:",
-                    [
-                        "🏆 Tournament Fixture",
-                        "⚽ Friendly Match",
-                        "🏋️ Conditioning / Fitness Drill",
-                        "📋 Tactical Briefing",
-                        "🩹 Medical / Squad Rest Day"
-                    ],
-                    key=f"cal_type_{key_prefix}"
-                )
-                f_title = st.text_input("Event Title / Opponent:*", placeholder="e.g. Friendly Match vs KCB Lions", key=f"cal_title_{key_prefix}")
-                f_venue = st.text_input("Venue / Station:", value=CBK_DISCIPLINES.get(discipline, {}).get("default_venue", "Main Stadium"), key=f"cal_ven_{key_prefix}")
-                f_notes = st.text_area("Tactical Notes & Instructions:", placeholder="e.g. Full navy kit required, arrive 30 mins early for warm-ups. Sub in Peter for injured John.", key=f"cal_notes_{key_prefix}")
-
-                btn_save_cal = st.form_submit_button("💾 Save to Squad Calendar & Diary", use_container_width=True)
-                if btn_save_cal:
-                    if not f_title.strip():
-                        st.error("Please provide an Event Title or Opponent.")
-                    else:
-                        d_str = f_date.strftime("%Y-%m-%d")
-                        created_by_tag = f"Captain ({discipline})"
-                        ok = backend.add_calendar_note(
-                            discipline=discipline,
-                            event_date=d_str,
-                            event_time=f_time.strip(),
-                            event_type=f_type,
-                            title=f_title.strip(),
-                            notes=f_notes.strip(),
-                            venue=f_venue.strip(),
-                            created_by=created_by_tag
-                        )
-                        if ok:
-                            st.toast(f"✅ Added '{f_title}' to {discipline} tactical calendar!", icon="📅")
-                            st.rerun()
-                        else:
-                            st.error("Failed to save calendar event. Please retry.")
 
 # ==============================================================================
 # TAB: CAPTAIN'S SQUAD ROLL CALL (EASY 1-TAP & BATCH ATTENDANCE)
