@@ -2210,17 +2210,23 @@ class AttendanceBackend:
         except Exception:
             return False
 
-    def get_calendar_notes(self, discipline: str) -> List[Dict[str, Any]]:
-        """Retrieves all calendar events and tactical notes for a discipline ordered by date."""
+    def get_calendar_notes(self, discipline: Optional[str] = "ALL") -> List[Dict[str, Any]]:
+        """Retrieves all calendar events and tactical notes. If discipline is 'ALL' or None, returns all across all sports."""
         try:
             conn = sqlite3.connect(self.db_path, timeout=10)
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
-            cur.execute("""
-                SELECT * FROM captain_calendar_notes
-                WHERE discipline = ? OR discipline = ? OR discipline LIKE ?
-                ORDER BY event_date ASC, event_time ASC
-            """, (discipline, discipline.replace(" (Soccer)", ""), f"%{discipline.split()[0]}%"))
+            if not discipline or discipline.upper() == "ALL" or discipline == "🌟 All Disciplines":
+                cur.execute("""
+                    SELECT * FROM captain_calendar_notes
+                    ORDER BY event_date ASC, event_time ASC
+                """)
+            else:
+                cur.execute("""
+                    SELECT * FROM captain_calendar_notes
+                    WHERE discipline = ? OR discipline = ? OR discipline LIKE ?
+                    ORDER BY event_date ASC, event_time ASC
+                """, (discipline, discipline.replace(" (Soccer)", ""), f"%{discipline.split()[0]}%"))
             rows = cur.fetchall()
             conn.close()
             return [dict(r) for r in rows]

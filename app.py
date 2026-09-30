@@ -2830,6 +2830,172 @@ def render_tab_secretariat():
         hide_index=True
     )
 
+    st.markdown("---")
+    st.markdown("#### 📅 Executive Master Sports & Events Calendar (All 18 Disciplines)")
+    st.caption("Institution-wide scheduling oversight for Chairman (Mr. Angwenyi) and Sports Club Secretariat. View, filter, schedule, and coordinate fixtures, friendly matches, conditioning drills, and bank-wide events across all sporting disciplines:")
+
+    # Top Controls & Quick Filter
+    c_mc1, c_mc2 = st.columns([1.5, 1])
+    with c_mc1:
+        sec_filter_sport = st.selectbox(
+            "Filter Master Calendar by Sporting Discipline:",
+            ["🌟 All Disciplines"] + ALL_18_SPORTS,
+            key="sec_master_cal_filter"
+        )
+    
+    all_events = backend.get_calendar_notes(sec_filter_sport)
+    
+    with c_mc2:
+        m_ev_count = len(all_events)
+        m_tourn_count = len([e for e in all_events if "Tournament" in e.get("event_type", "")])
+        st.markdown(f"""
+        <div style="background: rgba(8, 24, 48, 0.7); border: 1px solid rgba(245, 197, 66, 0.3); border-radius: 8px; padding: 8px 14px; margin-top: 18px; display: flex; justify-content: space-around; text-align: center;">
+            <div>
+                <div style="font-size: 0.7rem; color: #94A3B8; text-transform: uppercase;">Total Events</div>
+                <div style="font-size: 1.15rem; font-weight: 800; color: #F5C542;">{m_ev_count}</div>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 10px;">
+                <div style="font-size: 0.7rem; color: #94A3B8; text-transform: uppercase;">Tournaments</div>
+                <div style="font-size: 1.15rem; font-weight: 800; color: #00F2FE;">{m_tourn_count}</div>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 10px;">
+                <div style="font-size: 0.7rem; color: #94A3B8; text-transform: uppercase;">Filtered View</div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: #34D399; margin-top: 2px;">{sec_filter_sport.split()[0]}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    col_m1, col_m2 = st.columns([1.6, 1.1])
+    with col_m1:
+        st.markdown(f"##### 📋 Scheduled Fixtures & Squad Diaries ({len(all_events)} Events)")
+        if not all_events:
+            st.info(f"No scheduled fixtures or events found for '{sec_filter_sport}'. Use the form on the right to schedule one!")
+        else:
+            for ev in all_events:
+                ev_type = ev.get("event_type", "Conditioning Drill")
+                if "Tournament" in ev_type:
+                    badge_color = "#F5C542"
+                    badge_bg = "rgba(245, 197, 66, 0.2)"
+                    badge_icon = "🏆"
+                elif "Friendly" in ev_type:
+                    badge_color = "#00F2FE"
+                    badge_bg = "rgba(0, 242, 254, 0.2)"
+                    badge_icon = "⚽"
+                elif "Briefing" in ev_type or "Tactical" in ev_type:
+                    badge_color = "#A78BFA"
+                    badge_bg = "rgba(167, 139, 250, 0.2)"
+                    badge_icon = "📋"
+                elif "Medical" in ev_type or "Rest" in ev_type:
+                    badge_color = "#F87171"
+                    badge_bg = "rgba(248, 113, 113, 0.2)"
+                    badge_icon = "🩹"
+                else:
+                    badge_color = "#34D399"
+                    badge_bg = "rgba(52, 211, 153, 0.2)"
+                    badge_icon = "🏋️"
+
+                venue_txt = f"📍 {ev.get('venue')}" if ev.get('venue') else ""
+                disc_txt = ev.get('discipline', 'All')
+
+                st.markdown(f"""
+                <div style="background: rgba(8, 24, 48, 0.75); border: 1px solid rgba(245, 197, 66, 0.25); border-left: 4.5px solid {badge_color}; border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                        <div>
+                            <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px;">
+                                <span style="background: {badge_bg}; color: {badge_color}; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">
+                                    {badge_icon} {ev_type}
+                                </span>
+                                <span style="background: rgba(0, 242, 254, 0.15); color: #00F2FE; border: 1px solid rgba(0,242,254,0.3); padding: 1px 7px; border-radius: 4px; font-size: 0.7rem; font-weight: 700;">
+                                    {disc_txt}
+                                </span>
+                            </div>
+                            <h4 style="margin: 4px 0 2px 0; color: #FFFFFF; font-size: 1.05rem; font-weight: 800;">{ev.get('title')}</h4>
+                            <p style="margin: 0; font-size: 0.8rem; color: #CBD5E1;">
+                                🗓️ <strong>{ev.get('event_date')}</strong> at <strong>{ev.get('event_time')}</strong> • {venue_txt}
+                            </p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.85rem; color: #94A3B8;">
+                        📝 <em>{ev.get('notes') or 'No additional tactical notes.'}</em>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                if st.button("🗑️ Cancel / Remove Event", key=f"del_sec_ev_{ev['id']}", help="Chairman/Secretariat override to cancel this scheduled fixture"):
+                    backend.delete_calendar_note(ev['id'])
+                    cur_off = get_current_officer() or {"staff_id": "CBK-CHAIRMAN", "full_name": "Executive Chairman", "role": "Sports Club Chairman"}
+                    backend.log_audit_event(
+                        staff_id=cur_off.get("staff_id", "CBK-CHAIRMAN"),
+                        officer_name=cur_off.get("full_name", "Mr. Angwenyi"),
+                        role=cur_off.get("role", "Executive Chairman"),
+                        action_type="CALENDAR_EVENT_DELETED",
+                        resource_name=f"EVENT_ID:{ev['id']}",
+                        notes=f"Cancelled {ev.get('event_type')}: '{ev.get('title')}' ({disc_txt})"
+                    )
+                    st.toast("✅ Event cancelled and removed from Master Calendar.", icon="🗑️")
+                    st.rerun()
+
+            if all_events:
+                df_cal_export = pd.DataFrame(all_events)
+                cols_to_exp = [c for c in ["event_date", "event_time", "discipline", "event_type", "title", "venue", "notes", "created_by"] if c in df_cal_export.columns]
+                st.download_button(
+                    label="📥 Download Master Sports Fixtures Schedule (.CSV)",
+                    data=df_cal_export[cols_to_exp].to_csv(index=False).encode('utf-8'),
+                    file_name=f"CBK_Master_Sports_Calendar_{now_dt.strftime('%Y%m%d')}.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+
+    with col_m2:
+        st.markdown("##### ➕ Schedule Institution / Team Event")
+        with st.form(key="form_sec_add_master_cal"):
+            target_sport = st.selectbox(
+                "Target Sporting Discipline or Function:*",
+                ["Bank-Wide (All Disciplines)"] + ALL_18_SPORTS,
+                key="sec_form_cal_sport"
+            )
+            mf_date = st.date_input("Event Date:", key="sec_form_cal_date")
+            mf_time = st.text_input("Start / Kick-off Time:", value="17:00", key="sec_form_cal_time")
+            mf_type = st.selectbox(
+                "Event Category:*",
+                [
+                    "🏆 Tournament Fixture",
+                    "⚽ Friendly Match",
+                    "🏋️ Conditioning / Fitness Drill",
+                    "📋 Tactical Briefing",
+                    "🩹 Medical / Squad Rest Day",
+                    "🎉 Sports Club Function / Gala",
+                    "📣 General Meeting / AGM"
+                ],
+                key="sec_form_cal_type"
+            )
+            mf_title = st.text_input("Event Title / Opponent:*", placeholder="e.g. Inter-Bank Championship Finals", key="sec_form_cal_title")
+            mf_venue = st.text_input("Venue / Grounds:*", value="CBK Sports Complex, Ruaraka", key="sec_form_cal_venue")
+            mf_notes = st.text_area("Operational Notes / Directives:", placeholder="e.g. Official transport departs Haile Selassie Ave at 15:30. Medical team on standby.", key="sec_form_cal_notes")
+
+            btn_save_m_cal = st.form_submit_button("💾 Schedule & Broadcast to Master Calendar", use_container_width=True)
+            if btn_save_m_cal:
+                if not mf_title.strip():
+                    st.error("Please specify an Event Title.")
+                else:
+                    d_str = mf_date.strftime("%Y-%m-%d")
+                    cur_off = get_current_officer() or {"staff_id": "CBK-CHAIRMAN", "full_name": "Executive Chairman", "role": "Sports Club Chairman"}
+                    ok = backend.add_calendar_note(
+                        discipline=target_sport,
+                        event_date=d_str,
+                        event_time=mf_time.strip(),
+                        event_type=mf_type,
+                        title=mf_title.strip(),
+                        notes=mf_notes.strip(),
+                        venue=mf_venue.strip(),
+                        created_by=f"{cur_off.get('role', 'Chairman')} ({cur_off.get('full_name', 'Secretariat')})"
+                    )
+                    if ok:
+                        st.toast(f"✅ Scheduled '{mf_title}' for {target_sport}!", icon="📅")
+                        st.rerun()
+                    else:
+                        st.error("Failed to save event to Master Calendar. Please retry.")
+
     render_admin_security_lock("sec_tab", required_perm="roster")
 
     c_s_btn1, c_s_btn2, c_s_btn3 = st.columns(3)
