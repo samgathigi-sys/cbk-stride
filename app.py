@@ -22,7 +22,8 @@ from utils import (
     CBK_COLORS, CBK_DEPARTMENTS, CBK_DISCIPLINES, CBK_ALLOWANCE_POLICY,
     DynamicQREngine, AttendanceBackend, CBKEmailDispatcher,
     compute_summary_kpis, compute_department_breakdown, compute_discipline_breakdown,
-    mask_name_banking, mask_phone, mask_email, mask_national_id
+    mask_name_banking, mask_phone, mask_email, mask_national_id,
+    get_eat_now, get_eat_today_str, EAT_TZ
 )
 
 # ==============================================================================
@@ -631,7 +632,7 @@ def search_staff_registry(query: str, limit: int = 12) -> List[Dict[str, Any]]:
 # ==============================================================================
 # HEADER & SYSTEM STATUS
 # ==============================================================================
-now_dt = datetime.now()
+now_dt = get_eat_now()
 sync_icon = "🟢 Google Sheets Synced" if backend.gspread_connected else "🟡 Local Storage Resilient (Zero Data Loss)"
 
 def get_active_portal_url() -> str:
@@ -703,7 +704,7 @@ st.markdown(f"""
                 {sync_icon}
             </div>
             <div style="color: #F5C542; font-size: 0.76rem; margin-top: 0.35rem; font-weight: 700; letter-spacing: 0.5px;">
-                {now_dt.strftime('%A, %d %B %Y | %H:%M:%S')}
+                🕒 {now_dt.strftime('%A, %d %B %Y | %H:%M:%S')} (EAT / GMT+3)
             </div>
         </div>
     </div>
@@ -1853,7 +1854,7 @@ with tab_dict["🏷️ Captain QR Station"]:
             st.markdown(f"#### 👥 Live {cap_discipline} Field Attendance Monitor")
 
             conn_roll = sqlite3.connect(backend.db_path)
-            today_str = datetime.now().strftime("%Y-%m-%d")
+            today_str = get_eat_today_str()
             df_today_cap = pd.read_sql_query("""
                 SELECT timestamp, staff_id, full_name, department, gate, validation_status, duration_minutes
                 FROM attendance_logs
@@ -3217,7 +3218,7 @@ def render_tab_settings():
             if st.button("📨 Dispatch Test Dual-Verification Email", use_container_width=True):
                 test_record = {
                     "id": 999,
-                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "timestamp": get_eat_now().strftime("%Y-%m-%d %H:%M:%S"),
                     "staff_id": "CBK-8888",
                     "full_name": "Test Officer",
                     "cbk_email": test_email,

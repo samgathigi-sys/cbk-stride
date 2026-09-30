@@ -13,7 +13,7 @@ import base64
 import hmac
 import hashlib
 import sqlite3
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from typing import Dict, List, Optional, Tuple, Any
 
 import pandas as pd
@@ -34,6 +34,22 @@ try:
     GSPREAD_AVAILABLE = True
 except ImportError:
     GSPREAD_AVAILABLE = False
+
+
+# ==============================================================================
+# EAST AFRICA TIMEZONE (EAT / GMT+3) HELPER
+# Standard for Central Bank of Kenya Headquarters & Field Operations (Nairobi)
+# Ensures accurate timestamps regardless of cloud host server location (e.g. UTC)
+# ==============================================================================
+EAT_TZ = timezone(timedelta(hours=3), name="EAT")
+
+def get_eat_now() -> datetime:
+    """Returns the current datetime in East Africa Time (EAT / GMT+3)."""
+    return datetime.now(timezone.utc).astimezone(EAT_TZ)
+
+def get_eat_today_str() -> str:
+    """Returns current date in EAT format 'YYYY-MM-DD'."""
+    return get_eat_now().strftime("%Y-%m-%d")
 
 
 # ==============================================================================
@@ -340,7 +356,7 @@ class DynamicQREngine:
         session_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """Creates a signed JSON payload for dynamic QR display."""
-        now = datetime.now()
+        now = get_eat_now()
         expires_at = now + timedelta(minutes=validity_minutes)
         if not session_id:
             session_id = f"SESS-{now.strftime('%Y%m%d')}-{discipline[:3].upper()}"
@@ -458,7 +474,7 @@ class DynamicQREngine:
                 return False, "Missing expiration timestamp"
 
             exp_dt = datetime.strptime(exp_str, "%Y-%m-%d %H:%M:%S")
-            if datetime.now() > exp_dt:
+            if get_eat_now().replace(tzinfo=None) > exp_dt:
                 return False, f"QR code expired at {exp_str}"
 
             # Verify signature
@@ -612,7 +628,7 @@ class AttendanceBackend:
 
         # Seed default Super Admin (Samuel Gathigi Njuguna, CBK-3428) if not already set
         cur.execute("SELECT COUNT(*) FROM security_access_control WHERE staff_id = 'CBK-3428'")
-        now_init = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now_init = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
         if cur.fetchone()[0] == 0:
             default_hash = hashlib.sha256(b"3428").hexdigest()
             cur.execute("""
@@ -787,7 +803,7 @@ class AttendanceBackend:
         If gate is POST_SPORT, automatically pairs with the most recent PRE_SPORT
         to evaluate session duration and stipend allowance eligibility.
         """
-        now = datetime.now()
+        now = get_eat_now()
         timestamp_str = now.strftime("%Y-%m-%d %H:%M:%S")
         date_str = now.strftime("%Y-%m-%d")
 
@@ -1088,7 +1104,7 @@ class AttendanceBackend:
                 cbk_email=excluded.cbk_email,
                 department=excluded.department,
                 primary_sport=excluded.primary_sport
-        """, (sid, full_name.strip(), cbk_email.strip().lower(), department, primary_sport, datetime.now().isoformat()))
+        """, (sid, full_name.strip(), cbk_email.strip().lower(), department, primary_sport, get_eat_now().isoformat()))
         conn.commit()
         conn.close()
 
@@ -1486,7 +1502,7 @@ class AttendanceBackend:
             or (officer.get("role") == "Super Admin" and pkey in ["3428", "2026", "CBK2026", "CBK-3428", "CBK-STRIDE"])
         )
 
-        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
 
         if is_valid:
             self._login_attempts[clean_sid] = []
@@ -1638,7 +1654,7 @@ class AttendanceBackend:
             is_valid_pass = (stored_hash and stored_hash == pkey_hash) or (row["temp_pin"] and row["temp_pin"] == pkey)
             if is_valid_pass:
                 self._login_attempts[lockout_key] = []
-                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
                 cur.execute("UPDATE captain_credentials SET last_login = ? WHERE id = ?", (now_str, row["id"]))
                 conn.commit()
                 conn.close()
@@ -1719,7 +1735,7 @@ class AttendanceBackend:
         email_clean = str(gmail_or_email).strip().lower()
 
         pkey_hash = self._hash_passkey(pkey)
-        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
 
         conn = sqlite3.connect(self.db_path, timeout=10)
         conn.row_factory = sqlite3.Row
@@ -1797,7 +1813,7 @@ class AttendanceBackend:
         import secrets
         temp_pin = f"{secrets.randbelow(900000) + 100000}"
         
-        now_dt = datetime.now()
+        now_dt = get_eat_now()
         now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
         expires_dt = now_dt + timedelta(hours=8)
         expires_str = expires_dt.strftime("%Y-%m-%d %H:%M:%S")
@@ -1875,7 +1891,7 @@ class AttendanceBackend:
                 }
                 return True, f"Master Admin clearance verified for {discipline}.", admin_profile
 
-        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
 
         conn = sqlite3.connect(self.db_path, timeout=10)
         conn.row_factory = sqlite3.Row
@@ -1931,7 +1947,7 @@ class AttendanceBackend:
             return False, "A security passkey must be provided for the officer."
 
         pass_hash = self._hash_passkey(passkey)
-        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
 
         conn = sqlite3.connect(self.db_path, timeout=10)
         cur = conn.cursor()
@@ -2012,7 +2028,7 @@ class AttendanceBackend:
         cur = conn.cursor()
 
         pass_hash = self._hash_passkey(pkey)
-        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
 
         can_exp_roster = 1
         can_exp_fin = 1 if role in ["Super Admin", "Finance & Internal Audit", "Secretariat Admin"] else 0
@@ -2085,7 +2101,7 @@ class AttendanceBackend:
     ):
         """Records an immutable forensic audit trail log for every export and governance event."""
         try:
-            now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
             conn = sqlite3.connect(self.db_path, timeout=10)
             cur = conn.cursor()
             cur.execute("""
@@ -2233,7 +2249,7 @@ class CBKEmailDispatcher:
         subject = f"CBK DSWAAP: Dual Verification Receipt - {record.get('discipline')} ({record.get('staff_id')})"
 
         dispatch_log = {
-            "dispatched_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "dispatched_at": get_eat_now().strftime("%Y-%m-%d %H:%M:%S"),
             "recipient": recipient,
             "subject": subject,
             "staff_id": record.get("staff_id"),
@@ -2357,7 +2373,7 @@ class CBKEmailDispatcher:
         """
 
         dispatch_log = {
-            "dispatched_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "dispatched_at": get_eat_now().strftime("%Y-%m-%d %H:%M:%S"),
             "recipient": cbk_email,
             "subject": subject,
             "staff_id": staff_id,

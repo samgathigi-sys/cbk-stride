@@ -6,3 +6,5 @@ cloudflared.log
 *.tmp
 .DS_Store
 Thumbs.db
+*.docx
+*Briefing_For_Dad*
