@@ -12,9 +12,16 @@ import datetime
 import time
 import os
 import sys
+import importlib
 
 # Ensure root directory is on sys.path for utils import
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import utils
+try:
+    importlib.reload(utils)
+except Exception:
+    pass
 
 from utils import (
     AttendanceBackend,

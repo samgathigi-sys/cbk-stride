@@ -17,7 +17,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 from PIL import Image
 
+import importlib
 import utils
+try:
+    importlib.reload(utils)
+except Exception:
+    pass
+
 from utils import (
     CBK_COLORS, CBK_DEPARTMENTS, CBK_DISCIPLINES, CBK_ALLOWANCE_POLICY,
     DynamicQREngine, AttendanceBackend, CBKEmailDispatcher,
