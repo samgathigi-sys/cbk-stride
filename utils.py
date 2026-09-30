@@ -724,6 +724,25 @@ class AttendanceBackend:
             )
         """)
 
+        # Create CBK Sports & Facility Feedback & NLP Sentiment Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS facility_feedback_registry (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                staff_id TEXT NOT NULL,
+                full_name TEXT NOT NULL,
+                department TEXT NOT NULL,
+                discipline TEXT NOT NULL,
+                rating INTEGER NOT NULL,
+                emoji TEXT NOT NULL,
+                feedback_text TEXT DEFAULT '',
+                sentiment_score REAL NOT NULL,
+                sentiment_label TEXT NOT NULL,
+                aspects_json TEXT DEFAULT '[]',
+                touchpoint TEXT DEFAULT 'PORTAL_FEEDBACK',
+                submitted_at TEXT NOT NULL
+            )
+        """)
+
         try:
             cur.execute("ALTER TABLE captain_credentials ADD COLUMN passkey_hash TEXT DEFAULT ''")
         except Exception:
@@ -882,6 +901,27 @@ class AttendanceBackend:
                     ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, sample_tickets)
+
+        # Seed initial sample facility feedback records if table is empty
+        cur.execute("SELECT COUNT(*) FROM facility_feedback_registry")
+        if cur.fetchone()[0] == 0:
+            sample_feedback = [
+                ("CBK-1008", "Sam Gathigi", "Governor's Office & Secretariat", "Swimming", 5, "🤩", "Water temperature was ideal at Crawford Tatu City and 50m lane markers were well prepared. Gate scan was instantaneous.", 0.95, "POSITIVE", json.dumps(["Pool & Aquatics", "Gate & Access Speed"]), "GATE2_CHECKOUT", f"{now_init} 08:30:15"),
+                ("CBK-2406", "Eric Mwangi", "Bank Supervision", "Golf", 5, "🤩", "Fairways and putting greens in immaculate condition. Seamless QR accreditation at pro shop.", 0.92, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Gate & Access Speed"]), "GATE2_CHECKOUT", f"{now_init} 09:15:20"),
+                ("CBK-2418", "Brian Odhiambo", "Currency Operations", "Physical Fitness & Aerobics", 4, "🙂", "Good morning circuit. Dumbbells and kettlebells clean, AC was refreshing and gym coach was supportive.", 0.82, "POSITIVE", json.dumps(["Gym & Fitness", "Hygiene & Changing Rooms"]), "PORTAL_FEEDBACK", f"{now_init} 07:45:00"),
+                ("CBK-2401", "James Omondi", "Financial Markets", "Football (Soccer)", 4, "🙂", "Great pitch turf, bibs and match balls ready. Allowances and transport processed promptly.", 0.78, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Allowances & Welfare"]), "GATE2_CHECKOUT", f"{now_init} 18:20:10"),
+                ("CBK-2404", "David Mutua", "Internal Audit", "Athletics & Track", 3, "😐", "Running track was well marked but changing room water pressure was low during morning peak.", 0.05, "NEUTRAL", json.dumps(["Pitches, Courts & Tracks", "Hygiene & Changing Rooms"]), "PORTAL_FEEDBACK", f"{now_init} 07:10:45"),
+                ("CBK-2411", "Collins Koech", "Payments & Settlement Systems", "Squash", 5, "🤩", "Glass court spotless and clean. Seamless check-in at viewing desk, fast QR scan.", 0.90, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Gate & Access Speed"]), "GATE2_CHECKOUT", f"{now_init} 12:40:00"),
+                ("CBK-2402", "Grace Wanjiku", "Human Resources", "Netball", 5, "🤩", "Safi sana, mazoezi yalienda vizuri na chai na maji yalipatikana kwa wakati.", 0.88, "POSITIVE", json.dumps(["Coaching & Team Morale", "Allowances & Welfare"]), "PORTAL_FEEDBACK", f"{now_init} 17:35:12"),
+                ("CBK-1033", "Kevin Kiprono", "IT & Digital Services", "Basketball", 4, "🙂", "Court surface clean and hoop nets in good shape. Very fast dual-gate checkout.", 0.80, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Gate & Access Speed"]), "GATE2_CHECKOUT", f"{now_init} 18:50:22")
+            ]
+            cur.executemany("""
+                INSERT INTO facility_feedback_registry (
+                    staff_id, full_name, department, discipline, rating, emoji,
+                    feedback_text, sentiment_score, sentiment_label, aspects_json,
+                    touchpoint, submitted_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, sample_feedback)
 
         conn.commit()
         conn.close()
@@ -2860,6 +2900,344 @@ class AttendanceBackend:
             rows.append(d)
         conn.close()
         return rows
+
+    # ==========================================================================
+    # CBK SPORTS & FACILITY NLP SATISFACTION ENGINE
+    # ==========================================================================
+    @staticmethod
+    def analyze_facility_feedback_nlp(text: str, rating: int = 3) -> Dict[str, Any]:
+        """
+        High-precision deterministic NLP pipeline calibrated for CBK sports & facility satisfaction.
+        Blends 5-point face rating baseline with linguistic sentiment in English & Swahili/Sheng.
+        """
+        rating_baselines = {
+            1: -0.90,
+            2: -0.55,
+            3: 0.00,
+            4: +0.65,
+            5: +0.95
+        }
+        base_polarity = rating_baselines.get(rating, 0.0)
+        
+        # If no text is provided (pure 1-click emoji tap), return emoji-driven baseline
+        if not text or not text.strip():
+            label = "POSITIVE" if base_polarity >= 0.15 else ("NEGATIVE" if base_polarity <= -0.15 else "NEUTRAL")
+            return {
+                "polarity": round(base_polarity, 2),
+                "label": label,
+                "aspects": ["General Facility Experience"],
+                "confidence": 0.88,
+                "matched_words": []
+            }
+            
+        text_lower = text.lower()
+        import re
+        tokens = re.findall(r"\b\w+\b", text_lower)
+        
+        # Facility and Sports Lexicon (English + Swahili / Sheng)
+        pos_lexicon = {
+            "fast": 0.8, "quick": 0.7, "smooth": 0.8, "seamless": 0.9, "great": 0.85, "excellent": 0.95,
+            "good": 0.6, "best": 0.9, "clean": 0.85, "spotless": 0.95, "warm": 0.75, "refreshing": 0.8,
+            "clear": 0.75, "punctual": 0.8, "organized": 0.8, "helpful": 0.7, "friendly": 0.8,
+            "spacious": 0.75, "modern": 0.8, "ready": 0.7, "safe": 0.8, "loved": 0.9, "superb": 0.95,
+            "vizuri": 0.85, "safi": 0.9, "poa": 0.75, "bora": 0.85, "haraka": 0.85, "salama": 0.8,
+            "furaha": 0.8, "kamili": 0.75, "flawless": 0.95, "ideal": 0.85, "immaculate": 0.95
+        }
+        
+        neg_lexicon = {
+            "slow": -0.8, "dirty": -0.9, "cold": -0.65, "bad": -0.75, "terrible": -0.95, "awful": -0.9,
+            "broken": -0.85, "damaged": -0.8, "crowded": -0.6, "smelly": -0.8, "noisy": -0.6,
+            "delayed": -0.8, "queue": -0.5, "queues": -0.5, "rude": -0.85, "poor": -0.75,
+            "cramped": -0.6, "chaotic": -0.85, "disappointed": -0.85, "missing": -0.65,
+            "chafu": -0.9, "polepole": -0.75, "kuchelewa": -0.8, "baridi": -0.6, "shida": -0.75,
+            "fujo": -0.85, "haribika": -0.85, "kero": -0.75, "bila maji": -0.85
+        }
+        
+        negation_words = {"not", "never", "no", "hardly", "barely", "si", "bila", "wala", "neither"}
+        
+        total_score = 0.0
+        match_count = 0
+        matched_words = []
+        
+        for idx, token in enumerate(tokens):
+            prev_token = tokens[idx - 1] if idx > 0 else ""
+            prev_prev = tokens[idx - 2] if idx > 1 else ""
+            is_negated = (prev_token in negation_words or prev_prev in negation_words)
+            
+            if token in pos_lexicon:
+                w_score = pos_lexicon[token]
+                if is_negated:
+                    w_score = -abs(w_score) * 0.8
+                total_score += w_score
+                match_count += 1
+                matched_words.append((token, w_score))
+            elif token in neg_lexicon:
+                w_score = neg_lexicon[token]
+                if is_negated:
+                    w_score = abs(w_score) * 0.6
+                total_score += w_score
+                match_count += 1
+                matched_words.append((token, w_score))
+                
+        # Aspect Categorization
+        aspects_matched = set()
+        
+        # 1. Pool & Aquatics
+        pool_kw = ["pool", "swimming", "swimmer", "lanes", "lane", "water", "chlorine", "dive", "diving", "lifeguard", "kuogelea", "crawford", "tatu"]
+        if any(k in text_lower for k in pool_kw):
+            aspects_matched.add("Pool & Aquatics")
+            
+        # 2. Gym & Fitness
+        gym_kw = ["gym", "weights", "workout", "treadmill", "dumbbell", "dumbbells", "dumbell", "bench", "aerobics", "fitness", "circuit", "vyuma", "mazoezi"]
+        if any(k in text_lower for k in gym_kw):
+            aspects_matched.add("Gym & Fitness")
+            
+        # 3. Pitches, Courts & Tracks
+        pitch_kw = ["pitch", "court", "grass", "turf", "track", "field", "hoop", "tennis", "squash", "badminton", "table tennis", "golf", "green", "fairway", "uwanja"]
+        if any(k in text_lower for k in pitch_kw):
+            aspects_matched.add("Pitches, Courts & Tracks")
+            
+        # 4. Gate & Access Speed
+        gate_kw = ["gate", "checkin", "checkout", "scan", "qr", "scanner", "camera", "queue", "queues", "fast", "slow", "delay", "mlango", "haraka", "kuchelewa"]
+        if any(k in text_lower for k in gate_kw):
+            aspects_matched.add("Gate & Access Speed")
+            
+        # 5. Hygiene & Changing Rooms
+        hyg_kw = ["shower", "showers", "washroom", "washrooms", "toilet", "toilets", "clean", "dirty", "smell", "locker", "lockers", "towel", "hygiene", "choo", "bafu", "usafi"]
+        if any(k in text_lower for k in hyg_kw):
+            aspects_matched.add("Hygiene & Changing Rooms")
+            
+        # 6. Allowances & Welfare
+        welf_kw = ["allowance", "allowances", "money", "kes", "cash", "stipend", "transport", "refreshment", "refreshments", "chai", "food", "hydration", "drinking water", "malipo", "pesa"]
+        if any(k in text_lower for k in welf_kw):
+            aspects_matched.add("Allowances & Welfare")
+            
+        # 7. Coaching & Team Coordination
+        coach_kw = ["coach", "captain", "training", "session", "fixtures", "calendar", "squad", "team", "tournament", "kba", "mafunzo"]
+        if any(k in text_lower for k in coach_kw):
+            aspects_matched.add("Coaching & Team Morale")
+            
+        if not aspects_matched:
+            aspects_matched.add("General Facility Experience")
+            
+        # Calculate text polarity
+        if match_count > 0:
+            text_polarity = max(-1.0, min(1.0, total_score / match_count))
+            # Blend: 45% emoji rating + 55% text polarity
+            blended_polarity = (0.45 * base_polarity) + (0.55 * text_polarity)
+        else:
+            blended_polarity = base_polarity
+            
+        norm_polarity = max(-1.0, min(1.0, blended_polarity))
+        
+        if norm_polarity >= 0.15:
+            label = "POSITIVE"
+        elif norm_polarity <= -0.15:
+            label = "NEGATIVE"
+        else:
+            label = "NEUTRAL"
+            
+        confidence = 0.80 + min(0.18, match_count * 0.05)
+        
+        return {
+            "polarity": round(norm_polarity, 2),
+            "label": label,
+            "aspects": sorted(list(aspects_matched)),
+            "confidence": round(confidence, 2),
+            "matched_words": matched_words
+        }
+
+    def submit_facility_feedback(
+        self,
+        staff_id: str,
+        full_name: str,
+        department: str,
+        discipline: str,
+        rating: int,
+        feedback_text: str = "",
+        touchpoint: str = "PORTAL_CHECKOUT"
+    ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+        """
+        Painless 1-tap feedback logger with NLP sentiment analysis.
+        Works with or without text. If text is omitted, calculates baseline sentiment from rating.
+        """
+        emoji_map = {1: "😡", 2: "🙁", 3: "😐", 4: "🙂", 5: "🤩"}
+        emoji = emoji_map.get(rating, "😐")
+        
+        nlp_res = self.analyze_facility_feedback_nlp(feedback_text, rating=rating)
+        now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+        aspects_json_str = json.dumps(nlp_res["aspects"])
+        
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO facility_feedback_registry (
+                    staff_id, full_name, department, discipline, rating, emoji,
+                    feedback_text, sentiment_score, sentiment_label, aspects_json,
+                    touchpoint, submitted_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                staff_id, full_name, department, discipline, rating, emoji,
+                feedback_text, nlp_res["polarity"], nlp_res["label"], aspects_json_str,
+                touchpoint, now_str
+            ))
+            new_id = cur.lastrowid
+            conn.commit()
+            conn.close()
+            
+            record = {
+                "id": new_id,
+                "staff_id": staff_id,
+                "full_name": full_name,
+                "department": department,
+                "discipline": discipline,
+                "rating": rating,
+                "emoji": emoji,
+                "feedback_text": feedback_text,
+                "sentiment_score": nlp_res["polarity"],
+                "sentiment_label": nlp_res["label"],
+                "aspects": nlp_res["aspects"],
+                "touchpoint": touchpoint,
+                "submitted_at": now_str
+            }
+            return True, f"Feedback recorded! Sentiment: {nlp_res['label']} ({nlp_res['polarity']:+.2f})", record
+        except Exception as e:
+            return False, f"Failed to record feedback: {e}", None
+
+    def update_facility_feedback_text(
+        self,
+        feedback_id: int,
+        feedback_text: str
+    ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+        """Updates an existing feedback record with text or aspect tags and re-runs NLP."""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            cur.execute("SELECT rating, staff_id, full_name, discipline FROM facility_feedback_registry WHERE id = ?", (feedback_id,))
+            row = cur.fetchone()
+            if not row:
+                conn.close()
+                return False, "Record not found", None
+            rating = row[0]
+            nlp_res = self.analyze_facility_feedback_nlp(feedback_text, rating=rating)
+            aspects_json_str = json.dumps(nlp_res["aspects"])
+            
+            cur.execute("""
+                UPDATE facility_feedback_registry
+                SET feedback_text = ?,
+                    sentiment_score = ?,
+                    sentiment_label = ?,
+                    aspects_json = ?
+                WHERE id = ?
+            """, (feedback_text, nlp_res["polarity"], nlp_res["label"], aspects_json_str, feedback_id))
+            conn.commit()
+            conn.close()
+            return True, "Feedback note updated with AI sentiment!", nlp_res
+        except Exception as e:
+            return False, f"Update error: {e}", None
+
+    def get_facility_feedback(self, discipline: Optional[str] = None, limit: int = 200) -> List[Dict[str, Any]]:
+        """Retrieves recent facility feedback records."""
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        if discipline and discipline != "All Sports":
+            cur.execute("SELECT * FROM facility_feedback_registry WHERE discipline = ? ORDER BY id DESC LIMIT ?", (discipline, limit))
+        else:
+            cur.execute("SELECT * FROM facility_feedback_registry ORDER BY id DESC LIMIT ?", (limit,))
+        rows = []
+        for r in cur.fetchall():
+            d = dict(r)
+            try:
+                d["aspects"] = json.loads(d.get("aspects_json", "[]"))
+            except Exception:
+                d["aspects"] = []
+            rows.append(d)
+        conn.close()
+        return rows
+
+    def get_facility_feedback_metrics(self, discipline: Optional[str] = None) -> Dict[str, Any]:
+        """Calculates Net Promoter Score, CSAT, aspect breakdowns, and discipline rankings."""
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        
+        if discipline and discipline != "All Sports":
+            cur.execute("SELECT * FROM facility_feedback_registry WHERE discipline = ? ORDER BY id DESC", (discipline,))
+        else:
+            cur.execute("SELECT * FROM facility_feedback_registry ORDER BY id DESC")
+            
+        rows = [dict(r) for r in cur.fetchall()]
+        conn.close()
+        
+        total = len(rows)
+        if total == 0:
+            return {
+                "total": 0,
+                "avg_rating": 0.0,
+                "nps": 0,
+                "positive_pct": 0,
+                "neutral_pct": 0,
+                "negative_pct": 0,
+                "aspects_count": {},
+                "discipline_rankings": [],
+                "recent_rows": []
+            }
+            
+        ratings = [r["rating"] for r in rows]
+        avg_rating = round(sum(ratings) / total, 2)
+        
+        # NPS: Promoters (4-5), Passives (3), Detractors (1-2)
+        promoters = sum(1 for r in ratings if r in (4, 5))
+        detractors = sum(1 for r in ratings if r in (1, 2))
+        passives = sum(1 for r in ratings if r == 3)
+        nps = round(((promoters - detractors) / total) * 100)
+        
+        pos_pct = round((promoters / total) * 100, 1)
+        neu_pct = round((passives / total) * 100, 1)
+        neg_pct = round((detractors / total) * 100, 1)
+        
+        # Aspect distribution
+        aspect_counts = {}
+        for r in rows:
+            try:
+                asp_list = json.loads(r.get("aspects_json", "[]"))
+                for a in asp_list:
+                    aspect_counts[a] = aspect_counts.get(a, 0) + 1
+            except Exception:
+                pass
+                
+        # Discipline ranking
+        disc_stats = {}
+        for r in rows:
+            d = r["discipline"]
+            if d not in disc_stats:
+                disc_stats[d] = {"ratings": [], "count": 0}
+            disc_stats[d]["ratings"].append(r["rating"])
+            disc_stats[d]["count"] += 1
+            
+        discipline_rankings = []
+        for d, s in disc_stats.items():
+            avg_d = round(sum(s["ratings"]) / s["count"], 2)
+            discipline_rankings.append({
+                "discipline": d,
+                "count": s["count"],
+                "avg_rating": avg_d
+            })
+        discipline_rankings.sort(key=lambda x: (x["avg_rating"], x["count"]), reverse=True)
+        
+        return {
+            "total": total,
+            "avg_rating": avg_rating,
+            "nps": nps,
+            "positive_pct": pos_pct,
+            "neutral_pct": neu_pct,
+            "negative_pct": neg_pct,
+            "aspects_count": aspect_counts,
+            "discipline_rankings": discipline_rankings,
+            "recent_rows": rows[:50]
+        }
 
 
 

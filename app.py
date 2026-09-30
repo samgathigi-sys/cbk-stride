@@ -579,7 +579,8 @@ required_backend_methods = [
     "get_staff_by_id", "search_staff", "get_players_by_discipline",
     "log_checkin", "upsert_staff", "get_pending_sync_count", "sync_pending_to_gsheets",
     "authenticate_officer", "grant_rights", "revoke_rights",
-    "get_all_authorized_officers", "log_audit_event", "get_audit_trail"
+    "get_all_authorized_officers", "log_audit_event", "get_audit_trail",
+    "submit_facility_feedback", "get_facility_feedback_metrics"
 ]
 needs_backend_reinit = (
     "backend" not in st.session_state 
@@ -1163,6 +1164,186 @@ def render_captain_calendar_section(discipline: str, is_authorized: bool, key_pr
                         else:
                             st.error("Failed to save calendar event. Please retry.")
 
+# ==============================================================================
+# PAINLESS 1-CLICK SATISFACTION REACTION WIDGET (AI POWERED NLP)
+# ==============================================================================
+def render_painless_satisfaction_widget(
+    staff_id: str = "CBK-ATHLETE",
+    full_name: str = "CBK Athlete",
+    department: str = "Operations",
+    discipline: str = "General",
+    touchpoint: str = "GATE_PASS",
+    key_prefix: str = "pass_sat"
+):
+    """
+    Renders an ultra-fast, painless 1-click satisfaction widget with 5 emoji faces:
+    😡 (1 - Frustrated), 🙁 (2 - Poor), 😐 (3 - Okay), 🙂 (4 - Good), 🤩 (5 - Loved It!).
+    Clicking any face logs the feedback instantly to SQLite without requiring typing.
+    Optionally reveals 1-tap aspect chips and an optional 1-sentence note for NLP processing.
+    """
+    sub_key = f"fb_state_{key_prefix}"
+    submitted = st.session_state.get(sub_key)
+
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, rgba(8, 24, 46, 0.95) 0%, rgba(4, 14, 28, 0.98) 100%);
+                border: 1.5px solid rgba(245, 197, 66, 0.45);
+                border-radius: 16px; padding: 16px 18px; margin-top: 16px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(0,242,254,0.12);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 0.74rem; font-weight: 800; color: #F5C542; text-transform: uppercase; letter-spacing: 0.8px;">
+                ⚡ 1-Tap Pulse • Facility & Session Satisfaction
+            </span>
+            <span style="background: rgba(0, 242, 254, 0.15); color: #00F2FE; font-size: 0.70rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(0, 242, 254, 0.3);">
+                AI Powered NLP
+            </span>
+        </div>
+        <h4 style="color: #FFFFFF; font-size: 1.05rem; font-weight: 800; margin: 0 0 4px 0;">
+            How was your facility & training experience today?
+        </h4>
+        <p style="color: #94A3B8; font-size: 0.82rem; margin: 0 0 8px 0; line-height: 1.4;">
+            Painless 1-click rating. Tap any face below to record your response immediately:
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    f1, f2, f3, f4, f5 = st.columns(5)
+    faces = [
+        ("😡", 1, "Frustrated", f1),
+        ("🙁", 2, "Poor", f2),
+        ("😐", 3, "Okay", f3),
+        ("🙂", 4, "Good", f4),
+        ("🤩", 5, "Loved It!", f5),
+    ]
+
+    for emoji_char, rating_val, desc, col in faces:
+        with col:
+            is_active = submitted and submitted.get("rating") == rating_val
+            btn_label = f"{emoji_char}\n{desc}"
+            if col.button(btn_label, key=f"{key_prefix}_face_{rating_val}", use_container_width=True, type="primary" if is_active else "secondary"):
+                clean_sid = str(staff_id or "CBK-ATHLETE").strip().upper()
+                if not clean_sid.startswith("CBK-"):
+                    clean_sid = f"CBK-{clean_sid}"
+                ok, msg, rec = backend.submit_facility_feedback(
+                    staff_id=clean_sid,
+                    full_name=full_name or "CBK Athlete",
+                    department=department or "Operations",
+                    discipline=discipline or "Sports",
+                    rating=rating_val,
+                    feedback_text="",
+                    touchpoint=touchpoint
+                )
+                if ok and rec:
+                    st.session_state[sub_key] = rec
+                    st.toast(f"{emoji_char} Thank you! Your {rating_val}-star rating was logged instantly.", icon="⭐")
+                    st.rerun()
+
+    if submitted:
+        rating_val = submitted.get("rating", 5)
+        emoji_val = submitted.get("emoji", "🤩")
+        sentiment_label = submitted.get("sentiment_label", "POSITIVE")
+        sentiment_score = submitted.get("sentiment_score", 0.95)
+        aspects = submitted.get("aspects", [])
+        rec_id = submitted.get("id")
+        cur_text = submitted.get("feedback_text", "")
+
+        badge_bg = "#059669" if sentiment_label == "POSITIVE" else ("#DC2626" if sentiment_label == "NEGATIVE" else "#D97706")
+
+        st.markdown(f"""
+        <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 12px; padding: 12px 16px; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #FFFFFF; font-weight: 800; font-size: 0.92rem;">
+                    {emoji_val} <strong>Logged: {rating_val}/5 Stars</strong>
+                </span>
+                <span style="background: {badge_bg}; color: white; padding: 2px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">
+                    NLP Sentiment: {sentiment_label} ({sentiment_score:+.2f})
+                </span>
+            </div>
+            <p style="color: #CBD5E1; font-size: 0.78rem; margin: 4px 0 0 0;">
+                Recognized Aspects: <strong style="color: #F5C542;">{', '.join(aspects) if aspects else 'General Facility Experience'}</strong>
+            </p>
+            {f'<p style="color: #94A3B8; font-size: 0.78rem; font-style: italic; margin: 4px 0 0 0;">"{cur_text}"</p>' if cur_text else ''}
+        </div>
+        """, unsafe_allow_html=True)
+
+        with st.expander("💬 Optional: Tell us why in one quick sentence or tap a chip", expanded=False):
+            st.caption("Tap any quick chip below or type in English/Swahili (e.g. pool cleanliness, gym AC, gate scan speed, allowance promptness):")
+
+            c_ch1, c_ch2, c_ch3 = st.columns(3)
+            with c_ch1:
+                if st.button("🏊 Clean Pool Water", key=f"{key_prefix}_chip_pool", use_container_width=True):
+                    backend.update_facility_feedback_text(rec_id, "Clean pool water and lane markers were great.")
+                    st.session_state[sub_key]["feedback_text"] = "Clean pool water and lane markers were great."
+                    st.toast("✅ Note updated!", icon="🏊")
+                    st.rerun()
+                if st.button("🚿 Clean Showers", key=f"{key_prefix}_chip_shower", use_container_width=True):
+                    backend.update_facility_feedback_text(rec_id, "Showers and changing rooms were spotless.")
+                    st.session_state[sub_key]["feedback_text"] = "Showers and changing rooms were spotless."
+                    st.toast("✅ Note updated!", icon="🚿")
+                    st.rerun()
+            with c_ch2:
+                if st.button("🏋️ Great Gym & AC", key=f"{key_prefix}_chip_gym", use_container_width=True):
+                    backend.update_facility_feedback_text(rec_id, "Gym weights and air conditioning were excellent.")
+                    st.session_state[sub_key]["feedback_text"] = "Gym weights and air conditioning were excellent."
+                    st.toast("✅ Note updated!", icon="🏋️")
+                    st.rerun()
+                if st.button("⏱️ Prompt Allowance", key=f"{key_prefix}_chip_allowance", use_container_width=True):
+                    backend.update_facility_feedback_text(rec_id, "Session attendance and allowance processed promptly.")
+                    st.session_state[sub_key]["feedback_text"] = "Session attendance and allowance processed promptly."
+                    st.toast("✅ Note updated!", icon="⏱️")
+                    st.rerun()
+            with c_ch3:
+                if st.button("⚡ Fast Gate Scan", key=f"{key_prefix}_chip_gate", use_container_width=True):
+                    backend.update_facility_feedback_text(rec_id, "Gate checkin QR scanning was instantaneous.")
+                    st.session_state[sub_key]["feedback_text"] = "Gate checkin QR scanning was instantaneous."
+                    st.toast("✅ Note updated!", icon="⚡")
+                    st.rerun()
+                if st.button("⚠️ Needs Maintenance", key=f"{key_prefix}_chip_maint", use_container_width=True):
+                    backend.update_facility_feedback_text(rec_id, "Equipment needs maintenance and repairs.")
+                    st.session_state[sub_key]["feedback_text"] = "Equipment needs maintenance and repairs."
+                    st.toast("✅ Note updated!", icon="⚠️")
+                    st.rerun()
+
+            note_val = st.text_input(
+                "Or type custom note (English or Swahili):",
+                value=cur_text,
+                placeholder="e.g. maji ya pool yalikuwa safi sana, gym AC ilikuwa nzuri...",
+                key=f"{key_prefix}_custom_note_input"
+            )
+
+            c_save_n, c_rst = st.columns([2, 1])
+            with c_save_n:
+                if st.button("💾 Save Note with NLP", key=f"{key_prefix}_btn_save_note", use_container_width=True, type="primary"):
+                    if note_val.strip() and rec_id:
+                        ok_up, msg_up, nlp_up = backend.update_facility_feedback_text(rec_id, note_val.strip())
+                        if ok_up:
+                            st.session_state[sub_key]["feedback_text"] = note_val.strip()
+                            if nlp_up:
+                                st.session_state[sub_key]["sentiment_score"] = nlp_up["polarity"]
+                                st.session_state[sub_key]["sentiment_label"] = nlp_up["label"]
+                                st.session_state[sub_key]["aspects"] = nlp_up["aspects"]
+                            st.toast("✅ Note saved and re-analyzed with AI sentiment!", icon="🤖")
+                            st.rerun()
+            with c_rst:
+                if st.button("🔄 Rate Again", key=f"{key_prefix}_btn_reset", use_container_width=True):
+                    if sub_key in st.session_state:
+                        del st.session_state[sub_key]
+                    st.rerun()
+
+# Global 1-Tap Facility Satisfaction Pulse for All Staff & Visitors
+with st.expander("⭐ Rate Today's Sports Facility & Session Experience (Painless 1-Click Emoji Pulse)", expanded=False):
+    cur_top_sid = cur_officer['staff_id'] if cur_officer else (cur_captain_top['staff_id'] if cur_captain_top else st.session_state.get('active_staff_id', 'CBK-STAFF'))
+    cur_top_fn = cur_officer['full_name'] if cur_officer else (cur_captain_top['full_name'] if cur_captain_top else 'CBK Athlete')
+    cur_top_dp = cur_officer['department'] if cur_officer else 'Operations'
+    cur_top_sp = cur_captain_top['discipline'] if cur_captain_top else st.session_state.get('active_discipline', 'General Wellness')
+    render_painless_satisfaction_widget(
+        staff_id=cur_top_sid,
+        full_name=cur_top_fn,
+        department=cur_top_dp,
+        discipline=cur_top_sp,
+        touchpoint="TOP_PORTAL_BANNER",
+        key_prefix="top_pulse"
+    )
+
 tabs = st.tabs(tab_titles)
 tab_dict = {title: tab for title, tab in zip(tab_titles, tabs)}
 
@@ -1685,6 +1866,16 @@ with tab_dict["📱 Mobile Check-In"]:
             if is_dual:
                 st.balloons()
                 st.success("✉️ Dual-Verification receipt sent to institutional email (@centralbank.go.ke)!")
+
+            # 1-Click Painless Satisfaction Reaction Widget (Post-Gate Checkout)
+            render_painless_satisfaction_widget(
+                staff_id=last_sub["staff_id"],
+                full_name=last_sub["full_name"],
+                department=last_sub["department"],
+                discipline=last_sub["discipline"],
+                touchpoint="GATE_CHECKOUT",
+                key_prefix="post_sub"
+            )
         elif profile or (active_full_name and active_staff_id):
             disp_badge_name = active_full_name if cur_officer else mask_name_banking(active_full_name)
             # Generate the personalized athlete pass with real dynamic QR code!
@@ -1751,6 +1942,16 @@ with tab_dict["📱 Mobile Check-In"]:
                     use_container_width=True,
                     key=f"dl_pass_{active_staff_id}"
                 )
+
+            # 1-Click Painless Satisfaction Reaction Widget under badge
+            render_painless_satisfaction_widget(
+                staff_id=active_staff_id,
+                full_name=active_full_name,
+                department=active_dept,
+                discipline=active_sport,
+                touchpoint="ATHLETE_BADGE",
+                key_prefix="badge_pass"
+            )
         else:
             # Standby waiting card
             st.markdown(f"""
@@ -1772,6 +1973,16 @@ with tab_dict["📱 Mobile Check-In"]:
                 </div>
             </div>
             """, unsafe_allow_html=True)
+
+            # Standby Painless Satisfaction Reaction Widget
+            render_painless_satisfaction_widget(
+                staff_id=st.session_state.get("active_staff_id", "CBK-ATHLETE"),
+                full_name=active_full_name or "CBK Athlete",
+                department="CBK Directorate",
+                discipline=active_sport,
+                touchpoint="STANDBY_VIEW",
+                key_prefix="standby_pass"
+            )
 
 # ==============================================================================
 # TAB 2: FIELD CAPTAIN TERMINAL (ONLINE/OFFLINE DEVICE CONSOLE)
@@ -3058,6 +3269,9 @@ def render_tab_secretariat():
                     use_container_width=True
                 )
 
+    with st.expander("🤖 Member Voice & Facility Sentiment Live Telemetry", expanded=False):
+        render_hr_satisfaction_nlp_dashboard()
+
 if "🏛️ Secretariat Operations" in tab_dict:
     with tab_dict["🏛️ Secretariat Operations"]:
         render_tab_secretariat()
@@ -3195,6 +3409,198 @@ def render_tab_hr():
                     """, unsafe_allow_html=True)
             else:
                 st.info("🌟 Leaderboard will populate as athletes complete verified sessions.")
+
+    # Executive AI Sentiment & Member Satisfaction Intelligence Hub
+    render_hr_satisfaction_nlp_dashboard()
+
+# ==============================================================================
+# EXECUTIVE REAL-TIME NLP SENTIMENT & MEMBER SATISFACTION DASHBOARD
+# ==============================================================================
+def render_hr_satisfaction_nlp_dashboard():
+    """
+    Renders the executive-grade real-time NLP sentiment intelligence board.
+    Displays Net Promoter Score (NPS), Average CSAT Star Rating,
+    aspect sentiment breakdown, discipline rankings, and live member voice feed.
+    """
+    st.markdown("---")
+    st.markdown("""
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+        <div>
+            <h3 style="margin: 0; color: #FFFFFF; font-size: 1.35rem; font-weight: 900;">
+                🤖 Member Voice & AI Sentiment Intelligence (Facility Pulse)
+            </h3>
+            <p style="margin: 3px 0 0 0; color: #94A3B8; font-size: 0.84rem;">
+                Continuous NLP sentiment monitoring across all 18 CBK sports facilities, gate checkpoints, equipment hygiene, and coaching.
+            </p>
+        </div>
+        <div>
+            <span style="background: rgba(245, 197, 66, 0.15); border: 1px solid #F5C542; color: #F5C542; padding: 4px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 800;">
+                LIVE NLP PIPELINE ACTIVE
+            </span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Filter by discipline if desired
+    c_f1, c_f2 = st.columns([1.5, 1])
+    with c_f1:
+        disc_filter = st.selectbox(
+            "Filter Satisfaction by Sporting Discipline:",
+            ["All Sports"] + ALL_18_SPORTS,
+            index=0,
+            key="sat_dash_disc_filter"
+        )
+    with c_f2:
+        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+        st.caption("Real-time telemetry updated with every 1-click face reaction.")
+
+    metrics = backend.get_facility_feedback_metrics(discipline=disc_filter)
+
+    # 4 Executive KPI Cards
+    k1, k2, k3, k4 = st.columns(4)
+    with k1:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #F5C542;">
+            <div class="kpi-title">Average Satisfaction</div>
+            <div class="kpi-value" style="color: #F5C542;">⭐ {metrics['avg_rating']:.2f} / 5.0</div>
+            <div class="kpi-sub">5-Point Emoji CSAT Scale</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k2:
+        nps_color = "#10B981" if metrics['nps'] >= 50 else ("#F5C542" if metrics['nps'] >= 0 else "#EF4444")
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {nps_color};">
+            <div class="kpi-title">Net Promoter Score (NPS)</div>
+            <div class="kpi-value" style="color: {nps_color};">+{metrics['nps']} NPS</div>
+            <div class="kpi-sub">% Promoters (4-5★) minus % Detractors</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k3:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #00F2FE;">
+            <div class="kpi-title">Verified Member Pulse</div>
+            <div class="kpi-value" style="color: #00F2FE;">{metrics['total']} Athletes</div>
+            <div class="kpi-sub">1-Click Reactions Recorded</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k4:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #10B981;">
+            <div class="kpi-title">Sentiment Polarity</div>
+            <div class="kpi-value" style="color: #10B981;">{metrics['positive_pct']}% Positive</div>
+            <div class="kpi-sub">{metrics['neutral_pct']}% Neutral • {metrics['negative_pct']}% Detractors</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    c_asp, c_rank = st.columns([1.1, 0.9])
+    with c_asp:
+        with st.container(border=True):
+            st.markdown("#### 🎯 Operational Aspect Mentions")
+            st.caption("Distribution of feedback across sports facility operational pillars:")
+            asp_counts = metrics.get("aspects_count", {})
+            if asp_counts:
+                asp_df = pd.DataFrame(list(asp_counts.items()), columns=["Aspect", "Mentions"]).sort_values(by="Mentions", ascending=True)
+                fig_asp = px.bar(
+                    asp_df,
+                    x="Mentions",
+                    y="Aspect",
+                    orientation="h",
+                    color="Mentions",
+                    color_continuous_scale=[[0, "#082142"], [0.5, "#00F2FE"], [1, "#F5C542"]]
+                )
+                fig_asp.update_layout(
+                    template="plotly_dark",
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    margin=dict(l=10, r=10, t=10, b=10),
+                    height=260,
+                    coloraxis_showscale=False,
+                    font=dict(color="#F1F5F9")
+                )
+                st.plotly_chart(fig_asp, use_container_width=True)
+            else:
+                st.info("Awaiting aspect feedback to plot operational metrics.")
+
+    with c_rank:
+        with st.container(border=True):
+            st.markdown("#### 🏆 Discipline Satisfaction Leaderboard")
+            st.caption("Ranked by average member star rating:")
+            rankings = metrics.get("discipline_rankings", [])
+            if rankings:
+                for idx, rk in enumerate(rankings[:6], start=1):
+                    med = "🥇" if idx == 1 else ("🥈" if idx == 2 else ("🥉" if idx == 3 else f"#{idx}"))
+                    st.markdown(f"""
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                        <div>
+                            <span style="font-size: 0.95rem; margin-right: 6px;">{med}</span>
+                            <strong style="color: #FFFFFF; font-size: 0.88rem;">{rk['discipline']}</strong>
+                            <div style="font-size: 0.72rem; color: #94A3B8; margin-left: 1.8rem;">{rk['count']} verified ratings</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="background: rgba(245, 197, 66, 0.15); border: 1px solid #F5C542; color: #F5C542; font-weight: 800; padding: 2px 8px; border-radius: 8px; font-size: 0.82rem;">
+                                ⭐ {rk['avg_rating']:.2f}
+                            </span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("Leaderboard will populate as athletes submit feedback.")
+
+    # Live Member Voice Feed
+    st.markdown("#### 💬 Live Member Voice & NLP Telemetry Feed")
+    st.caption("Real-time sentiment polarity scores, aspect classification, and attendee comments:")
+
+    recent_fb = metrics.get("recent_rows", [])
+    if recent_fb:
+        for fb in recent_fb[:8]:
+            s_label = fb.get("sentiment_label", "POSITIVE")
+            s_score = fb.get("sentiment_score", 0.0)
+            badge_color = "#059669" if s_label == "POSITIVE" else ("#DC2626" if s_label == "NEGATIVE" else "#D97706")
+            emoji_char = fb.get("emoji", "😐")
+            rating_num = fb.get("rating", 3)
+            staff_disp = fb.get("full_name", "Athlete") if is_export_authorized() else mask_name_banking(fb.get("full_name", "Athlete"))
+
+            try:
+                aspects_list = json.loads(fb.get("aspects_json", "[]"))
+            except Exception:
+                aspects_list = []
+
+            aspect_pills = " ".join([f"<span style='background: rgba(0, 242, 254, 0.15); color: #00F2FE; font-size: 0.70rem; padding: 1px 7px; border-radius: 10px; margin-right: 4px;'>{a}</span>" for a in aspects_list])
+
+            st.markdown(f"""
+            <div style="background: rgba(8, 24, 46, 0.75); border: 1px solid rgba(245, 197, 66, 0.25); border-radius: 12px; padding: 12px 16px; margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-size: 1.15rem; margin-right: 6px;">{emoji_char}</span>
+                        <strong style="color: #FFFFFF; font-size: 0.90rem;">{staff_disp}</strong>
+                        <span style="font-size: 0.75rem; color: #94A3B8;">({fb.get('staff_id')}) • <span style="color: #F5C542;">{fb.get('discipline')}</span></span>
+                    </div>
+                    <div>
+                        <span style="background: {badge_color}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.70rem; font-weight: 800;">
+                            {s_label} ({s_score:+.2f})
+                        </span>
+                        <span style="color: #64748B; font-size: 0.72rem; margin-left: 8px;">{fb.get('submitted_at')}</span>
+                    </div>
+                </div>
+                {f'<p style="color: #CBD5E1; font-size: 0.84rem; margin: 6px 0 6px 0; font-style: italic;">"{fb.get("feedback_text")}"</p>' if fb.get("feedback_text") else '<p style="color: #64748B; font-size: 0.78rem; margin: 4px 0 4px 0;"><em>1-Click Emoji Face Rating (No written note added)</em></p>'}
+                <div style="margin-top: 4px;">{aspect_pills}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Forensic CSV Export
+        if is_export_authorized("roster"):
+            fb_df = pd.DataFrame(recent_fb)
+            csv_data = fb_df.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                label="📥 Download Certified Facility Sentiment Audit (.CSV)",
+                data=csv_data,
+                file_name=f"CBK_Facility_Satisfaction_Sentiment_Ledger_{get_eat_today_str()}.csv",
+                mime="text/csv",
+                use_container_width=True,
+                key="btn_dl_facility_feedback_csv"
+            )
+    else:
+        st.info("No feedback records match the current filter.")
 
 if "📊 HR Analytics Command" in tab_dict:
     with tab_dict["📊 HR Analytics Command"]:
