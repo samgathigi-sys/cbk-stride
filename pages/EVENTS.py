@@ -296,7 +296,7 @@ with tab_reg:
                     )
 
                     tier_clean_name = agm_del_status.split("(")[0].strip()
-                    chosen_amt = 0.0 if is_free_event else std_p
+                    chosen_amt = 5000.0  # Statutory AGM Accreditation fee fixed at KES 5,000
 
                 else:
                     # Standard Non-AGM Ticket Tier Selection
@@ -314,24 +314,18 @@ with tab_reg:
                 att_name = st.text_input("Full Name (as per Official ID / National ID):*", placeholder="e.g. Wallace Mbugua")
                 att_email = st.text_input("Email Address (for pass delivery):*", placeholder="e.g. wallace@enterprise.co.ke")
                 att_org = st.text_input("Organization / Company / Sacco Branch:*", placeholder="e.g. Finance & Accounts / Equity Bank")
-                att_phone = st.text_input("Safaricom M-Pesa Phone Number:*", placeholder="07XX XXX XXX", help="Mobile number for STK Push and SMS pass confirmation")
+                att_phone = st.text_input("Safaricom M-Pesa Phone Number:*", placeholder="07XX XXX XXX", value="0722123456", help="Mobile number for STK Push prompt")
 
-                if chosen_amt > 0:
-                    st.markdown(f"""
-                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px 14px; margin: 10px 0;">
-                        <span style="color: #34D399; font-weight: 800; font-size: 0.88rem;">💰 Total Payable: KES {chosen_amt:,.0f}</span><br>
-                        <span style="color: #94A3B8; font-size: 0.75rem;">Paybill: <strong>{selected_event['mpesa_paybill']}</strong> • Instant Automated Verification</span>
+                st.markdown(f"""
+                <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #34D399; font-weight: 800; font-size: 0.92rem;">💰 Total Payable: KES {chosen_amt:,.0f}</span>
+                        <span style="background: #10B981; color: #020712; font-size: 0.68rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">DARAJA STK</span>
                     </div>
-                    """, unsafe_allow_html=True)
-                    btn_sub_ticket = st.form_submit_button("📲 Complete Registration & Pay via M-Pesa", type="primary", use_container_width=True)
-                else:
-                    st.markdown("""
-                    <div style="background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 8px; padding: 10px 14px; margin: 10px 0;">
-                        <span style="color: #00F2FE; font-weight: 800; font-size: 0.88rem;">🆓 Member Accreditation: Free (Complimentary)</span><br>
-                        <span style="color: #94A3B8; font-size: 0.75rem;">Accredited under corporate bylaws • Instant Quorum Registration</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    btn_sub_ticket = st.form_submit_button("🗳️ Confirm Shareholder Accreditation & Issue Pass", type="primary", use_container_width=True)
+                    <span style="color: #94A3B8; font-size: 0.74rem;">Paybill: <strong>{selected_event['mpesa_paybill']}</strong> • Instant Automated Handset Push</span>
+                </div>
+                """, unsafe_allow_html=True)
+                btn_sub_ticket = st.form_submit_button(f"📲 Pay KES {chosen_amt:,.0f} via M-Pesa STK & Register", type="primary", use_container_width=True)
 
                 if btn_sub_ticket:
                     if not att_name.strip():
@@ -343,35 +337,95 @@ with tab_reg:
                     elif is_agm and not agm_acc_num.strip():
                         st.error("Please provide your Shareholder / CDSC / Member Account Number.")
                     else:
-                        # Generate simulated M-Pesa Transaction ID or AGM Accreditation Ref
-                        sim_tx = f"AGM{int(time.time())}"[-10:] if chosen_amt == 0 else f"QK{int(time.time())}"[-10:]
                         org_tag = f"{att_org.strip()} (Ref: {agm_acc_num.strip()})" if is_agm else att_org.strip()
                         
-                        ok_t, msg_t, tkt_obj = backend.register_event_ticket(
-                            event_id=selected_event["event_id"],
-                            attendee_name=att_name.strip(),
-                            email=att_email.strip(),
-                            phone=att_phone.strip(),
-                            organization=org_tag or "Independent Delegate",
-                            ticket_tier=tier_clean_name,
-                            amount_paid=chosen_amt,
-                            mpesa_trans_id=sim_tx
-                        )
-                        if ok_t:
-                            st.session_state["pub_active_ticket"] = tkt_obj
-                            st.session_state["pub_active_event"] = selected_event
-                            st.toast("🎉 Accreditation confirmed! Official digital pass generated.", icon="🎟️")
-                            st.rerun()
-                        else:
-                            st.error(msg_t)
+                        # Set STK Pending Payload to trigger interactive handset simulator
+                        st.session_state["stk_pending_payload"] = {
+                            "event_id": selected_event["event_id"],
+                            "event_title": selected_event["title"],
+                            "attendee_name": att_name.strip(),
+                            "email": att_email.strip(),
+                            "phone": att_phone.strip(),
+                            "organization": org_tag or "Independent Delegate",
+                            "ticket_tier": tier_clean_name,
+                            "amount_paid": chosen_amt,
+                            "paybill": selected_event.get("mpesa_paybill", "849200"),
+                            "acc_num": agm_acc_num.strip() if is_agm else att_phone.strip()[-4:],
+                            "is_agm": is_agm
+                        }
+                        st.session_state["pub_active_ticket"] = None
+                        st.rerun()
 
         with col_reg_pass:
-            st.markdown("#### 🎟️ Digital Mobile Pass")
+            stk_p = st.session_state.get("stk_pending_payload", None)
             cur_ticket = st.session_state.get("pub_active_ticket", None)
             cur_evt = st.session_state.get("pub_active_event", selected_event)
 
-            if not cur_ticket:
-                st.info("👈 Fill out the registration form on the left and tap **'Complete Registration & Pay via M-Pesa'** to generate your official pass.")
+            if stk_p:
+                st.markdown("#### 📱 Safaricom M-Pesa STK Push Simulator")
+                st.markdown(f"""
+                <div style="background: radial-gradient(circle, #0F172A 0%, #020617 100%); border: 3px solid #22C55E; border-radius: 20px; padding: 22px; text-align: center; box-shadow: 0 14px 40px rgba(34, 197, 94, 0.45); margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(34, 197, 94, 0.3); padding-bottom: 8px;">
+                        <span style="color: #22C55E; font-weight: 900; font-size: 0.82rem; letter-spacing: 1.2px;">● SAFARICOM M-PESA DARAJA STK</span>
+                        <span style="background: rgba(34, 197, 94, 0.2); color: #4ADE80; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 10px;">HANDSET POPUP</span>
+                    </div>
+                    <div style="margin: 16px 0 6px 0; color: #FFFFFF; font-size: 1.15rem; font-weight: 800;">
+                        Pay KES {stk_p['amount_paid']:,.0f} to<br><span style="color: #38BDF8;">STRIDE™ AGM GATEWAY</span>?
+                    </div>
+                    <div style="font-size: 0.78rem; color: #94A3B8; margin-bottom: 12px;">
+                        Paybill: <strong>{stk_p['paybill']}</strong> • Ref: <strong>{stk_p['acc_num']}</strong><br>
+                        Prompt dispatched to: <strong>{stk_p['phone']}</strong>
+                    </div>
+                    <div style="background: rgba(30, 41, 59, 0.9); border: 1.5px solid #22C55E; border-radius: 8px; padding: 10px; margin: 12px 0; color: #22C55E; font-family: monospace; font-size: 1.4rem; letter-spacing: 6px;">
+                        ••••
+                    </div>
+                    <div style="font-size: 0.72rem; color: #94A3B8;">
+                        Tap below to simulate entering your M-Pesa PIN on handset:
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                c_s1, c_s2 = st.columns([1.5, 1])
+                with c_s1:
+                    btn_auth_stk = st.button(
+                        f"✅ Enter PIN & Authorize (KES {stk_p['amount_paid']:,.0f})",
+                        type="primary",
+                        use_container_width=True,
+                        key="btn_confirm_stk_handset"
+                    )
+                with c_s2:
+                    btn_cancel_stk = st.button("❌ Cancel", use_container_width=True, key="btn_cancel_stk_handset")
+
+                if btn_auth_stk:
+                    sim_tx = f"QK{int(time.time())}"[-10:]
+                    ok_t, msg_t, tkt_obj = backend.register_event_ticket(
+                        event_id=stk_p["event_id"],
+                        attendee_name=stk_p["attendee_name"],
+                        email=stk_p["email"],
+                        phone=stk_p["phone"],
+                        organization=stk_p["organization"],
+                        ticket_tier=stk_p["ticket_tier"],
+                        amount_paid=stk_p["amount_paid"],
+                        mpesa_trans_id=sim_tx
+                    )
+                    if ok_t:
+                        st.session_state["pub_active_ticket"] = tkt_obj
+                        st.session_state["pub_active_event"] = selected_event
+                        st.session_state["stk_pending_payload"] = None
+                        st.success(f"🎉 M-Pesa Confirmed! KES {stk_p['amount_paid']:,.0f} paid. Receipt: `{sim_tx}`. Digital pass issued.")
+                        st.balloons()
+                        st.rerun()
+                    else:
+                        st.error(msg_t)
+
+                if btn_cancel_stk:
+                    st.session_state["stk_pending_payload"] = None
+                    st.info("Transaction cancelled.")
+                    st.rerun()
+
+            elif not cur_ticket:
+                st.markdown("#### 🎟️ Digital Mobile Pass")
+                st.info("👈 Fill out the registration form on the left and tap **'Pay KES 5,000 via M-Pesa STK & Register'** to generate your official pass.")
                 st.markdown("""
                 <div style="background: rgba(8, 24, 48, 0.6); border: 2px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 40px 20px; text-align: center; color: #64748B;">
                     <div style="font-size: 3.5rem; margin-bottom: 10px;">🎟️</div>
@@ -380,6 +434,7 @@ with tab_reg:
                 </div>
                 """, unsafe_allow_html=True)
             else:
+                st.markdown("#### 🎟️ Digital Mobile Pass")
                 t_tx = cur_ticket["mpesa_trans_id"]
                 t_id = cur_ticket["ticket_id"]
                 t_name = cur_ticket["attendee_name"]
@@ -517,9 +572,9 @@ with tab_wizard:
             if "Paid" in e_admit_mode:
                 tc1, tc2 = st.columns(2)
                 with tc1:
-                    e_std_price = st.number_input("Shareholder Clearance Fee (KES):", min_value=0.0, value=1000.0, step=100.0, key="wz_std_price")
+                    e_std_price = st.number_input("Shareholder Clearance Fee (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_std_price")
                 with tc2:
-                    e_vip_price = st.number_input("VIP / Board Delegate (KES):", min_value=0.0, value=3500.0, step=500.0, key="wz_vip_price")
+                    e_vip_price = st.number_input("VIP / Board Delegate (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_vip_price")
                 e_paid = True
                 e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200", key="wz_paybill")
             else:
@@ -574,7 +629,7 @@ with tab_wizard:
             sc_scale = st.selectbox(
                 "Q1: Expected Delegate / Shareholder Attendance (Pull-Down):*",
                 [
-                    "🐥 Tier 1: Small Society / Club AGM (Up to 100 Delegates) — KES 15,000",
+                    "🐥 Tier 1: Small Society / Club AGM (Up to 100 Delegates) — KES 5,000",
                     "🏢 Tier 2: Mid-Sized Corporate / SACCO (101 – 500 Delegates) — KES 35,000",
                     "🏛️ Tier 3: Large Listed PLC / Tier-1 SACCO (501 – 2,500 Delegates) — KES 75,000",
                     "🌐 Tier 4: Mega National Assembly (2,500+ Delegates) — KES 150,000"
@@ -611,7 +666,7 @@ with tab_wizard:
             )
 
             # Calculation
-            base_fee = 15000.0 if "Tier 1" in sc_scale else (35000.0 if "Tier 2" in sc_scale else (75000.0 if "Tier 3" in sc_scale else 150000.0))
+            base_fee = 5000.0 if "Tier 1" in sc_scale else (35000.0 if "Tier 2" in sc_scale else (75000.0 if "Tier 3" in sc_scale else 150000.0))
             scale_tag = sc_scale.split("—")[0].strip()
 
             voting_fee = 0.0

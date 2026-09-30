@@ -817,7 +817,7 @@ class AttendanceBackend:
         if cur.fetchone()[0] == 0:
             sample_events = [
                 ("EVT-2026-001", "🏆 2026 Inter-Bank Sports Championship", "Kenya Bankers Association Sports Council", "Sports Tournament", "2026-10-15", "08:00", "CBK Sports Complex, Ruaraka", "Annual corporate tournament across banking institutions in Kenya.", "DUAL_GATE", 1, 1000.0, 3500.0, "849200", now_init, "ACTIVE"),
-                ("EVT-2026-002", "👔 Annual General Meeting & Corporate Gala", "Apex Capital Group Holdings", "Corporate AGM & Dinner", "2026-10-24", "17:30", "Radisson Blu Ballroom, Upper Hill", "Annual shareholder assembly, strategy presentation, and executive gala dinner.", "SINGLE_GATE", 1, 2500.0, 7500.0, "849200", now_init, "ACTIVE"),
+                ("EVT-2026-002", "👔 Annual General Meeting & Corporate Gala", "Apex Capital Group Holdings", "Corporate AGM & Dinner", "2026-10-24", "17:30", "Radisson Blu Ballroom, Upper Hill", "Annual shareholder assembly, strategy presentation, and executive gala dinner.", "SINGLE_GATE", 1, 5000.0, 7500.0, "849200", now_init, "ACTIVE"),
                 ("EVT-2026-003", "🏃 Great Rift Valley 10K Charity Marathon", "Rift Community Development Foundation", "Marathon / Fun Run", "2026-11-07", "06:30", "Naivasha Sports Club Grounds", "Charity marathon supporting water access and maternal health in the Rift Valley.", "SINGLE_GATE", 1, 1500.0, 4000.0, "849200", now_init, "ACTIVE")
             ]
             cur.executemany("""
