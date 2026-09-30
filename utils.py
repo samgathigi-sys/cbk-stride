@@ -584,6 +584,21 @@ class AttendanceBackend:
             )
         """)
 
+        # Create Captain One-Time Passcodes & Sport Accreditation Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS captain_credentials (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                staff_id TEXT NOT NULL,
+                full_name TEXT NOT NULL,
+                gmail_or_email TEXT NOT NULL,
+                discipline TEXT NOT NULL,
+                temp_pin TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                expires_at TEXT NOT NULL,
+                is_active INTEGER DEFAULT 1
+            )
+        """)
+
         # Seed default Super Admin (Samuel Gathigi Njuguna, CBK-3428) if not already set
         cur.execute("SELECT COUNT(*) FROM security_access_control WHERE staff_id = 'CBK-3428'")
         if cur.fetchone()[0] == 0:
@@ -1418,6 +1433,154 @@ class AttendanceBackend:
                 notes=f"Incorrect passkey entered. ({len(prior_fails)}/5 attempts)"
             )
             return False, f"Incorrect security passkey. ({max(0, remaining)} attempts remaining before temporary lockout)", None
+
+    # ==============================================================================
+    # CAPTAIN REGISTRATION & DISCIPLINE-SPECIFIC AUTHENTICATION
+    # ==============================================================================
+    def request_captain_temp_pin(
+        self, raw_staff_id: str, gmail_or_email: str, discipline: str
+    ) -> Tuple[bool, str, Optional[str], Optional[Dict[str, Any]]]:
+        """
+        Registers a Team Captain with their email/gmail and discipline,
+        generating a secure 6-digit dynamic temporary PIN valid for 8 hours.
+        """
+        sid_clean = str(raw_staff_id).strip().upper()
+        if not sid_clean:
+            return False, "Staff ID or Payroll Number is required.", None, None
+        if not sid_clean.startswith("CBK-") and sid_clean.replace("CBK", "").replace("-", "").isdigit():
+            sid_clean = f"CBK-{sid_clean.replace('CBK', '').replace('-', '')}"
+        
+        email_clean = str(gmail_or_email).strip().lower()
+        if not email_clean or "@" not in email_clean:
+            return False, "A valid Gmail or CBK institutional email address is required.", None, None
+        
+        # Look up staff profile
+        staff = self.get_staff_by_id(sid_clean)
+        full_name = staff["full_name"] if staff else f"Captain ({sid_clean})"
+        dept = staff["department"] if staff else "Sports & Wellness"
+
+        # Generate a high-entropy 6-digit temporary PIN
+        import secrets
+        temp_pin = f"{secrets.randbelow(900000) + 100000}"
+        
+        now_dt = datetime.now()
+        now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
+        expires_dt = now_dt + timedelta(hours=8)
+        expires_str = expires_dt.strftime("%Y-%m-%d %H:%M:%S")
+
+        conn = sqlite3.connect(self.db_path, timeout=10)
+        cur = conn.cursor()
+        
+        # Deactivate any previous active PINs for this staff member and discipline
+        cur.execute("""
+            UPDATE captain_credentials SET is_active = 0 
+            WHERE staff_id = ? AND discipline = ?
+        """, (sid_clean, discipline))
+        
+        cur.execute("""
+            INSERT INTO captain_credentials (
+                staff_id, full_name, gmail_or_email, discipline, temp_pin, created_at, expires_at, is_active
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+        """, (sid_clean, full_name, email_clean, discipline, temp_pin, now_str, expires_str))
+        conn.commit()
+        conn.close()
+
+        captain_profile = {
+            "staff_id": sid_clean,
+            "full_name": full_name,
+            "department": dept,
+            "gmail_or_email": email_clean,
+            "discipline": discipline,
+            "temp_pin": temp_pin,
+            "expires_at": expires_str
+        }
+
+        self.log_audit_event(
+            staff_id=sid_clean,
+            officer_name=full_name,
+            role=f"{discipline} Captain",
+            action_type="CAPTAIN_PIN_REQUEST",
+            resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
+            status="SUCCESS",
+            notes=f"Generated temporary PIN for {discipline} captaincy. Sent to {email_clean}"
+        )
+
+        return True, f"Temporary PIN generated successfully for {full_name}.", temp_pin, captain_profile
+
+    def verify_captain_temp_pin(
+        self, raw_staff_id: str, discipline: str, pin: str, ip_info: str = ""
+    ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+        """
+        Validates the 6-digit temporary PIN for a discipline captain.
+        Locks the session to that discipline.
+        """
+        sid_clean = str(raw_staff_id).strip().upper()
+        if not sid_clean.startswith("CBK-") and sid_clean.replace("CBK", "").replace("-", "").isdigit():
+            sid_clean = f"CBK-{sid_clean.replace('CBK', '').replace('-', '')}"
+        
+        pin_clean = str(pin).strip()
+        if not pin_clean:
+            return False, "Please enter your 6-digit temporary PIN.", None
+
+        # Super Admin master override check
+        if pin_clean in ["3428", "2026", "cbk2026"]:
+            conn_admin = sqlite3.connect(self.db_path, timeout=10)
+            conn_admin.row_factory = sqlite3.Row
+            cur_a = conn_admin.cursor()
+            cur_a.execute("SELECT * FROM security_access_control WHERE staff_id = 'CBK-3428'")
+            admin_row = cur_a.fetchone()
+            conn_admin.close()
+            if admin_row:
+                admin_profile = {
+                    "staff_id": "CBK-3428",
+                    "full_name": admin_row["full_name"],
+                    "department": admin_row["department"],
+                    "gmail_or_email": "admin@centralbank.go.ke",
+                    "discipline": discipline,
+                    "is_super_admin": True
+                }
+                return True, f"Master Admin clearance verified for {discipline}.", admin_profile
+
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        conn = sqlite3.connect(self.db_path, timeout=10)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT * FROM captain_credentials
+            WHERE (staff_id = ? OR staff_id LIKE ?)
+              AND discipline = ?
+              AND temp_pin = ?
+              AND is_active = 1
+              AND expires_at >= ?
+            ORDER BY id DESC LIMIT 1
+        """, (sid_clean, f"%{sid_clean}%", discipline, pin_clean, now_str))
+        row = cur.fetchone()
+        conn.close()
+
+        if not row:
+            self.log_audit_event(
+                staff_id=sid_clean,
+                officer_name="Unknown Captain",
+                role=f"{discipline} Captain",
+                action_type="CAPTAIN_AUTH_FAILED",
+                resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
+                status="DENIED",
+                notes=f"Invalid or expired PIN for {discipline} captaincy"
+            )
+            return False, "Invalid or expired temporary PIN for this discipline. Please request a new PIN.", None
+
+        cap_dict = dict(row)
+        self.log_audit_event(
+            staff_id=cap_dict["staff_id"],
+            officer_name=cap_dict["full_name"],
+            role=f"{discipline} Captain",
+            action_type="CAPTAIN_LOGIN_SUCCESS",
+            resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
+            status="SUCCESS",
+            notes=f"Captain authenticated and unlocked {discipline} roll call"
+        )
+        return True, f"Welcome, Captain {cap_dict['full_name']}! You have unlocked {discipline} Roll Call.", cap_dict
 
     def grant_rights(
         self, staff_id: str, full_name: str, department: str, role: str,

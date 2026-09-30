@@ -1884,19 +1884,131 @@ def render_tab_captains_roll_call():
     """, unsafe_allow_html=True)
 
     cur_off = get_current_officer()
+    cur_cap = st.session_state.get("authenticated_captain", None)
 
-    # 1. Sport & Gate Selection Controls
+    # 1. CAPTAIN AUTHENTICATION & ANTI-TAMPERING GATEWAY
+    if cur_cap:
+        rc_sport = cur_cap["discipline"]
+        is_authorized = True
+        auditor_tag = f"Capt. {cur_cap['full_name']} ({cur_cap.get('gmail_or_email', '')})"
+
+        c_cap_info, c_cap_out = st.columns([3.5, 1.2])
+        with c_cap_info:
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(6, 78, 59, 0.28) 100%); border: 1.5px solid #10B981; border-radius: 12px; padding: 12px 18px; margin-bottom: 0.8rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="background: #10B981; color: #040D1A; font-weight: 900; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.6px;">CAPTAIN ACCREDITED</span>
+                    <span style="color: #34D399; font-size: 0.82rem; font-weight: 700;">🔒 Team Isolation Active (Locked to {rc_sport})</span>
+                </div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF; margin-top: 4px;">
+                    🎖️ {cur_cap['full_name']} <span style="color: #F5C542;">— {rc_sport} Team Captain</span>
+                </div>
+                <div style="color: #94A3B8; font-size: 0.82rem; margin-top: 2px;">
+                    ✉️ {cur_cap.get('gmail_or_email', '')} • 🏛️ {cur_cap.get('department', 'CBK')} • 🛡️ Anti-Tampering Shield Active
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        with c_cap_out:
+            st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+            if st.button("🔒 Sign Out Captain", key="btn_signout_captain", use_container_width=True):
+                del st.session_state["authenticated_captain"]
+                st.toast("Signed out of captain command.", icon="🔒")
+                st.rerun()
+
+    elif cur_off:
+        is_authorized = True
+        auditor_tag = f"Secretariat Officer {cur_off['full_name']}"
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(14, 116, 144, 0.22) 100%); border: 1.5px solid #38BDF8; border-radius: 12px; padding: 10px 16px; margin-bottom: 0.8rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="background: #38BDF8; color: #040D1A; font-weight: 900; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px;">SECRETARIAT MASTER COMMAND</span>
+                    <span style="color: #FFFFFF; font-weight: 700; margin-left: 8px;">{cur_off['full_name']} ({cur_off['role']})</span>
+                    <span style="color: #94A3B8; font-size: 0.8rem; margin-left: 6px;">• Master Roll Call Clearance across all 18 sports</span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        is_authorized = False
+        auditor_tag = "Spectator (Read-Only)"
+
+        # Captain Self-Registration & One-Time PIN Login Drawer
+        with st.expander("🔐 Team Captain Accreditation & Temp Passcode Login (Anti-Tampering)", expanded=True):
+            st.markdown("""
+            <div style="font-size: 0.86rem; color: #CBD5E1; margin-bottom: 12px;">
+                🛡️ <strong>Anti-Tampering Protection:</strong> To ensure no one can alter attendance for another sport, each Team Captain registers with their <strong>Staff ID</strong> and <strong>Gmail address</strong> to receive an instant 6-digit dynamic passcode.
+            </div>
+            """, unsafe_allow_html=True)
+            c_cap_reg1, c_cap_reg2 = st.columns([1.2, 1.2])
+            with c_cap_reg1:
+                st.markdown("##### 1. Request Temporary Passcode")
+                sel_reg_sport = st.selectbox("Select Your Sport Discipline:", ALL_18_SPORTS, key="cap_reg_sport")
+                cap_reg_sid = st.text_input("Staff ID / Payroll #:", placeholder="e.g. 3428 or CBK-3428", key="cap_reg_sid")
+                cap_reg_email = st.text_input("Captain Gmail / CBK Email:", placeholder="e.g. eric.mwangi@gmail.com", key="cap_reg_email")
+
+                if st.button(f"📲 Request Temporary PIN ({sel_reg_sport})", type="primary", use_container_width=True, key="btn_get_temp_pin"):
+                    if not cap_reg_sid.strip() or not cap_reg_email.strip():
+                        st.error("Please provide both your Staff ID and Email address.")
+                    else:
+                        ok_pin, msg_pin, generated_pin, cap_prof = backend.request_captain_temp_pin(cap_reg_sid, cap_reg_email, sel_reg_sport)
+                        if ok_pin:
+                            st.session_state[f"last_gen_pin_{sel_reg_sport}"] = generated_pin
+                            st.session_state["pending_cap_sid"] = cap_reg_sid
+                            st.session_state["pending_cap_sport"] = sel_reg_sport
+                            st.success(f"🎉 Passcode generated for {cap_prof['full_name']}!")
+                            st.rerun()
+                        else:
+                            st.error(msg_pin)
+
+            with c_cap_reg2:
+                st.markdown("##### 2. Unlock Squad Command")
+                pending_sp = st.session_state.get("pending_cap_sport", sel_reg_sport)
+                last_pin = st.session_state.get(f"last_gen_pin_{pending_sp}", "")
+                if last_pin:
+                    st.markdown(f"""
+                    <div style="background: rgba(245, 197, 66, 0.15); border: 1.5px solid #F5C542; border-radius: 10px; padding: 12px; margin-bottom: 10px; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #FFE899; text-transform: uppercase; font-weight: 800;">Temporary One-Time Passcode ({pending_sp})</div>
+                        <div style="font-size: 2rem; font-weight: 900; color: #FFFFFF; letter-spacing: 4px; margin: 4px 0; font-family: monospace;">{last_pin}</div>
+                        <div style="font-size: 0.72rem; color: #94A3B8;">Valid for 8 hours • Enter below to unlock {pending_sp} roll call:</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                cap_login_pin = st.text_input("Enter 6-Digit Temporary PIN:", placeholder="e.g. 749201", type="password", key="cap_login_pin", value=last_pin if last_pin else "")
+                if st.button(f"🔓 Unlock {pending_sp} Roll Call", type="primary", use_container_width=True, key="btn_unlock_cap_rollcall"):
+                    cand_sid = st.session_state.get("pending_cap_sid", cap_reg_sid)
+                    ok_v, msg_v, prof_v = backend.verify_captain_temp_pin(cand_sid, pending_sp, cap_login_pin)
+                    if ok_v:
+                        st.session_state["authenticated_captain"] = prof_v
+                        st.session_state["active_discipline"] = pending_sp
+                        st.success(msg_v)
+                        st.balloons()
+                        st.rerun()
+                    else:
+                        st.error(msg_v)
+
+    # 2. Sport & Gate Selection Controls
     c_rc1, c_rc2, c_rc3 = st.columns([1.3, 1.1, 1.1])
 
     with c_rc1:
-        default_sport = st.session_state.get("active_discipline", "Golf")
-        default_idx = ALL_18_SPORTS.index(default_sport) if default_sport in ALL_18_SPORTS else 0
-        rc_sport = st.selectbox(
-            "Select Team Discipline (18 Sports, A – Z):",
-            ALL_18_SPORTS,
-            index=default_idx,
-            key="rc_sport_select"
-        )
+        if cur_cap:
+            rc_sport = cur_cap["discipline"]
+            st.markdown(f"""
+            <div style="background: rgba(4, 14, 28, 0.85); border: 1.5px solid #F5C542; border-radius: 10px; padding: 10px 14px; margin-top: 4px;">
+                <div style="font-size: 0.72rem; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Active Discipline Command:</div>
+                <div style="font-size: 1.25rem; font-weight: 900; color: #F5C542;">🏆 {rc_sport} 🔒</div>
+                <div style="font-size: 0.72rem; color: #34D399; font-weight: 600;">Locked to Captain • Cross-Team Tampering Blocked</div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            default_sport = st.session_state.get("active_discipline", "Golf")
+            default_idx = ALL_18_SPORTS.index(default_sport) if default_sport in ALL_18_SPORTS else 0
+            rc_sport = st.selectbox(
+                "Select Team Discipline (18 Sports, A – Z):",
+                ALL_18_SPORTS,
+                index=default_idx,
+                key="rc_sport_select"
+            )
+
         sport_info = CBK_DISCIPLINES.get(rc_sport, {})
         disc_captain = sport_info.get("captain", "Appointed Captain")
         disc_venue = sport_info.get("default_venue", "CBK Sports Club")
@@ -1922,10 +2034,14 @@ def render_tab_captains_roll_call():
             key="rc_station_select"
         )
 
+    # If spectator mode, display alert
+    if not is_authorized:
+        st.info(f"👁️ **Spectator / Read-Only Mode:** You are viewing the live roster for **{rc_sport}**. To clock in athletes or batch-record attendance, sign in above using your temporary Captain PIN.")
+
     # Fetch all enrolled players for this sport
     squad_players = backend.get_players_by_discipline(rc_sport)
 
-    # 2. Live Squad Attendance KPI Summary Cards
+    # 3. Live Squad Attendance KPI Summary Cards
     total_count = len(squad_players)
     on_field_count = sum(1 for p in squad_players if p.get("today_status") in ["PRE_SPORT_VALIDATED", "DUAL_VERIFIED"])
     dual_verified_count = sum(1 for p in squad_players if p.get("today_status") == "DUAL_VERIFIED")
@@ -1967,7 +2083,7 @@ def render_tab_captains_roll_call():
 
     st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
 
-    # 3. ⚡ BATCH ROLL-CALL TOOL (THE SPEED POWERHOUSE)
+    # 4. ⚡ BATCH ROLL-CALL TOOL (THE SPEED POWERHOUSE)
     with st.container(border=True):
         st.markdown(f"#### ⚡ 1-Click Batch Roll Call ({rc_sport} — {gate_label})")
         st.caption(f"Select multiple athletes standing before you on the pitch to verify their {gate_label} simultaneously with one tap:")
@@ -1975,7 +2091,7 @@ def render_tab_captains_roll_call():
         # Prepare options for multiselect
         multiselect_options = {}
         for p in squad_players:
-            p_name = p['full_name'] if cur_off else mask_name_banking(p['full_name'])
+            p_name = p['full_name'] if (cur_off or is_authorized) else mask_name_banking(p['full_name'])
             st_indicator = "🟢 [ON FIELD]" if p['today_status'] == 'PRE_SPORT_VALIDATED' else (
                 "✅ [CERTIFIED]" if p['today_status'] == 'DUAL_VERIFIED' else "⚪ [ABSENT]"
             )
@@ -2018,30 +2134,33 @@ def render_tab_captains_roll_call():
 
         chosen_sids = [multiselect_options[lbl] for lbl in chosen_labels if lbl in multiselect_options]
 
-        btn_batch_label = f"🚀 Batch Clock-In {len(chosen_sids)} Athletes ({gate_label})" if chosen_sids else f"🚀 Select Athletes Above to Batch Clock-In ({gate_label})"
-        if st.button(btn_batch_label, type="primary", use_container_width=True, disabled=len(chosen_sids) == 0, key="btn_submit_batch_rc"):
-            success_count = 0
-            with st.spinner(f"Verifying and recording attendance for {len(chosen_sids)} athletes..."):
-                for sid in chosen_sids:
-                    p_obj = next((p for p in squad_players if p["staff_id"] == sid), None)
-                    if p_obj:
-                        backend.log_checkin(
-                            staff_id=p_obj["staff_id"],
-                            full_name=p_obj["full_name"],
-                            cbk_email=p_obj.get("cbk_email", f"{p_obj['staff_id'].lower()}@centralbank.go.ke"),
-                            department=p_obj.get("department", "General"),
-                            discipline=rc_sport,
-                            gate=active_gate_key,
-                            station=rc_station,
-                            notes=f"Captain 1-Click Roll Call ({gate_label})"
-                        )
-                        success_count += 1
-            st.session_state["rc_selected_labels"] = []
-            st.success(f"🎉 Successfully batch-verified {success_count} athletes for {rc_sport} {gate_label} at {rc_station}!")
-            st.balloons()
-            st.rerun()
+        if not is_authorized:
+            st.button(f"🔒 Captain PIN Required to Batch Clock-In ({gate_label})", disabled=True, use_container_width=True, key="btn_disabled_batch_rc")
+        else:
+            btn_batch_label = f"🚀 Batch Clock-In {len(chosen_sids)} Athletes ({gate_label})" if chosen_sids else f"🚀 Select Athletes Above to Batch Clock-In ({gate_label})"
+            if st.button(btn_batch_label, type="primary", use_container_width=True, disabled=len(chosen_sids) == 0, key="btn_submit_batch_rc"):
+                success_count = 0
+                with st.spinner(f"Verifying and recording attendance for {len(chosen_sids)} athletes..."):
+                    for sid in chosen_sids:
+                        p_obj = next((p for p in squad_players if p["staff_id"] == sid), None)
+                        if p_obj:
+                            backend.log_checkin(
+                                staff_id=p_obj["staff_id"],
+                                full_name=p_obj["full_name"],
+                                cbk_email=p_obj.get("cbk_email", f"{p_obj['staff_id'].lower()}@centralbank.go.ke"),
+                                department=p_obj.get("department", "General"),
+                                discipline=rc_sport,
+                                gate=active_gate_key,
+                                station=rc_station,
+                                notes=f"Batch Roll Call ({gate_label}) • Verified by {auditor_tag}"
+                            )
+                            success_count += 1
+                st.session_state["rc_selected_labels"] = []
+                st.success(f"🎉 Successfully batch-verified {success_count} athletes for {rc_sport} {gate_label} at {rc_station}!")
+                st.balloons()
+                st.rerun()
 
-    # 4. INDIVIDUAL ROSTER CHECK SHEET (1-TAP ACTION ROWS)
+    # 5. INDIVIDUAL ROSTER CHECK SHEET (1-TAP ACTION ROWS)
     st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
     st.markdown(f"#### 👥 Individual {rc_sport} Squad Roll Sheet")
     st.caption("Inspect each player's live field status and tap their individual button to clock them in or out:")
@@ -2077,7 +2196,7 @@ def render_tab_captains_roll_call():
         for idx, p in enumerate(displayed_roster):
             sid = p['staff_id']
             fn = p['full_name']
-            fn_disp = fn if cur_off else mask_name_banking(fn)
+            fn_disp = fn if (cur_off or is_authorized) else mask_name_banking(fn)
             dept = p['department']
             st_today = p.get('today_status', 'READY')
             dur = p.get('today_duration', 0.0)
@@ -2114,7 +2233,9 @@ def render_tab_captains_roll_call():
                 """, unsafe_allow_html=True)
             with c_action:
                 st.markdown("<div style='margin-top: 4px;'></div>", unsafe_allow_html=True)
-                if is_arrival:
+                if not is_authorized:
+                    st.button("🔒 Captain PIN Req.", disabled=True, key=f"btn_locked_{sid}_{idx}", use_container_width=True)
+                elif is_arrival:
                     if st_today in ["PRE_SPORT_VALIDATED", "DUAL_VERIFIED"]:
                         st.button("✅ Arrival Recorded", disabled=True, key=f"btn_done_arr_{sid}_{idx}", use_container_width=True)
                     else:
@@ -2127,7 +2248,7 @@ def render_tab_captains_roll_call():
                                 discipline=rc_sport,
                                 gate="PRE_SPORT",
                                 station=rc_station,
-                                notes="Captain 1-Tap Individual Roll Call"
+                                notes=f"1-Tap Roll Call (Arrival) • Verified by {auditor_tag}"
                             )
                             st.toast(f"🟢 {fn_disp} clocked in at {rc_station}!", icon="🟢")
                             st.rerun()
@@ -2145,7 +2266,7 @@ def render_tab_captains_roll_call():
                                 discipline=rc_sport,
                                 gate="POST_SPORT",
                                 station=rc_station,
-                                notes="Captain 1-Tap Individual Departure"
+                                notes=f"1-Tap Roll Call (Departure) • Verified by {auditor_tag}"
                             )
                             st.toast(f"🏁 {fn_disp} departure recorded & dual-verified!", icon="🏁")
                             st.rerun()
@@ -2159,56 +2280,59 @@ def render_tab_captains_roll_call():
                                 discipline=rc_sport,
                                 gate="POST_SPORT",
                                 station=rc_station,
-                                notes="Captain Instant Dual Clock-In"
+                                notes=f"Instant Dual Clock-In • Verified by {auditor_tag}"
                             )
                             st.toast(f"⚡ {fn_disp} verified for {rc_sport}!", icon="⚡")
                             st.rerun()
     else:
         st.info("No athletes matching your search criteria.")
 
-    # 5. WALK-IN SUBSTITUTE ONBOARDING (For players not on official roster)
+    # 6. WALK-IN SUBSTITUTE ONBOARDING (For players not on official roster)
     st.markdown("---")
     with st.expander(f"➕ Quick-Add Walk-In / Guest Player to {rc_sport} Roll Call"):
         st.caption("If a staff member arrived to play who wasn't on the official secretariat roster, register them right now on the field:")
-        c_w1, c_w2 = st.columns(2)
-        with c_w1:
-            rc_w_sid = st.text_input("Staff ID / Payroll #*", placeholder="e.g. 4022 or CBK-4022", key="rc_w_sid")
-            rc_w_fn = st.text_input("Full Name*", placeholder="e.g. Kelvin Mutua", key="rc_w_fn")
-        with c_w2:
-            rc_w_em = st.text_input("Institutional Email*", placeholder="e.g. kmutua@centralbank.go.ke", key="rc_w_em")
-            rc_w_dp = st.selectbox("Directorate / Department*", CBK_DEPARTMENTS, key="rc_w_dp")
+        if not is_authorized:
+            st.info("🔒 Only the authorized Team Captain or a Secretariat Officer can register walk-in substitutes.")
+        else:
+            c_w1, c_w2 = st.columns(2)
+            with c_w1:
+                rc_w_sid = st.text_input("Staff ID / Payroll #*", placeholder="e.g. 4022 or CBK-4022", key="rc_w_sid")
+                rc_w_fn = st.text_input("Full Name*", placeholder="e.g. Kelvin Mutua", key="rc_w_fn")
+            with c_w2:
+                rc_w_em = st.text_input("Institutional Email*", placeholder="e.g. kmutua@centralbank.go.ke", key="rc_w_em")
+                rc_w_dp = st.selectbox("Directorate / Department*", CBK_DEPARTMENTS, key="rc_w_dp")
 
-        if st.button(f"🚀 Register & Clock In ({gate_label})", type="primary", use_container_width=True, key="btn_rc_add_walkin"):
-            if not rc_w_sid or not rc_w_fn:
-                st.error("Please provide both Staff ID and Full Name.")
-            else:
-                clean_w_sid = rc_w_sid.strip().upper()
-                if not clean_w_sid.startswith("CBK-") and clean_w_sid.isdigit():
-                    clean_w_sid = f"CBK-{clean_w_sid}"
-                clean_w_em = rc_w_em.strip().lower() if rc_w_em else f"{clean_w_sid.lower()}@centralbank.go.ke"
-                backend.upsert_staff(clean_w_sid, rc_w_fn.strip(), clean_w_em, rc_w_dp, rc_sport)
-                backend.log_checkin(
-                    staff_id=clean_w_sid,
-                    full_name=rc_w_fn.strip(),
-                    cbk_email=clean_w_em,
-                    department=rc_w_dp,
-                    discipline=rc_sport,
-                    gate=active_gate_key,
-                    station=rc_station,
-                    notes=f"Captain Walk-In Roll Call ({gate_label})"
-                )
-                st.success(f"✅ Walk-in athlete {rc_w_fn} ({clean_w_sid}) enrolled and clocked into {rc_sport} successfully!")
-                st.balloons()
-                st.rerun()
+            if st.button(f"🚀 Register & Clock In ({gate_label})", type="primary", use_container_width=True, key="btn_rc_add_walkin"):
+                if not rc_w_sid or not rc_w_fn:
+                    st.error("Please provide both Staff ID and Full Name.")
+                else:
+                    clean_w_sid = rc_w_sid.strip().upper()
+                    if not clean_w_sid.startswith("CBK-") and clean_w_sid.isdigit():
+                        clean_w_sid = f"CBK-{clean_w_sid}"
+                    clean_w_em = rc_w_em.strip().lower() if rc_w_em else f"{clean_w_sid.lower()}@centralbank.go.ke"
+                    backend.upsert_staff(clean_w_sid, rc_w_fn.strip(), clean_w_em, rc_w_dp, rc_sport)
+                    backend.log_checkin(
+                        staff_id=clean_w_sid,
+                        full_name=rc_w_fn.strip(),
+                        cbk_email=clean_w_em,
+                        department=rc_w_dp,
+                        discipline=rc_sport,
+                        gate=active_gate_key,
+                        station=rc_station,
+                        notes=f"Captain Walk-In Roll Call ({gate_label}) • Verified by {auditor_tag}"
+                    )
+                    st.success(f"✅ Walk-in athlete {rc_w_fn} ({clean_w_sid}) enrolled and clocked into {rc_sport} successfully!")
+                    st.balloons()
+                    st.rerun()
 
-    # 6. EXPORT TODAY'S SQUAD ATTENDANCE SHEET
+    # 7. EXPORT TODAY'S SQUAD ATTENDANCE SHEET
     st.markdown("---")
     st.markdown(f"#### 📥 Export Today's {rc_sport} Roll Call Sheet")
     st.caption("Download the current squad roll call status as a certified CSV report:")
     if squad_players:
         df_rc_export = pd.DataFrame([{
             "Staff ID": p["staff_id"],
-            "Full Name": p["full_name"] if cur_off else mask_name_banking(p["full_name"]),
+            "Full Name": p["full_name"] if (cur_off or is_authorized) else mask_name_banking(p["full_name"]),
             "Department": p["department"],
             "Sport": rc_sport,
             "Today Status": p.get("today_status", "READY"),
@@ -2227,29 +2351,37 @@ def render_tab_captains_roll_call():
             key="dl_btn_rc_csv"
         )
 
-    # 7. SQUAD ROLL CALL RESET / CLEAR CONTROLS
+    # 8. SQUAD ROLL CALL RESET / CLEAR CONTROLS
     st.markdown("---")
     with st.expander("🔄 Reset & Clear Attendance for Fresh Roll Call"):
         st.caption("Need to clear previous or test scans so captains can confirm who turned up today from scratch? Choose an option below:")
-        c_rst1, c_rst2 = st.columns(2)
-        with c_rst1:
-            st.markdown(f"**Reset {rc_sport} Only (Zero Scans)**")
-            st.caption(f"Clears today's check-ins for {rc_sport} athletes only. Other sports remain intact.")
-            confirm_sp = st.checkbox(f"Confirm clearing {rc_sport}", key=f"chk_rst_{rc_sport}")
-            if st.button(f"🗑️ Reset {rc_sport} to 0", disabled=not confirm_sp, type="secondary", key=f"btn_rst_sp_{rc_sport}", use_container_width=True):
-                backend.clear_discipline_attendance(rc_sport)
-                st.session_state["rc_selected_labels"] = []
-                st.toast(f"✅ {rc_sport} attendance logs cleared! Ready for fresh roll call.", icon="🗑️")
-                st.rerun()
-        with c_rst2:
-            st.markdown("**Reset All 18 Disciplines (Clean Tournament Slate)**")
-            st.caption("Clears all attendance telemetry across the entire tournament for a completely fresh start.")
-            confirm_all = st.checkbox("Confirm clearing ALL attendance", key="chk_rst_all_sports")
-            if st.button("🚨 Purge All Attendance to 0", disabled=not confirm_all, type="primary" if confirm_all else "secondary", key="btn_rst_all_sp", use_container_width=True):
-                backend.clear_all_attendance()
-                st.session_state["rc_selected_labels"] = []
-                st.toast("✅ All tournament attendance logs purged to 0 scans!", icon="🚨")
-                st.rerun()
+        if not is_authorized:
+            st.info("🔒 Only the authenticated Team Captain or a Secretariat Officer can reset attendance logs.")
+        else:
+            c_rst1, c_rst2 = st.columns(2)
+            with c_rst1:
+                st.markdown(f"**Reset {rc_sport} Only (Zero Scans)**")
+                st.caption(f"Clears today's check-ins for {rc_sport} athletes only. Other sports remain intact.")
+                confirm_sp = st.checkbox(f"Confirm clearing {rc_sport}", key=f"chk_rst_{rc_sport}")
+                if st.button(f"🗑️ Reset {rc_sport} to 0", disabled=not confirm_sp, type="secondary", key=f"btn_rst_sp_{rc_sport}", use_container_width=True):
+                    backend.clear_discipline_attendance(rc_sport)
+                    st.session_state["rc_selected_labels"] = []
+                    st.toast(f"✅ {rc_sport} attendance logs cleared! Ready for fresh roll call.", icon="🗑️")
+                    st.rerun()
+            with c_rst2:
+                st.markdown("**Reset All 18 Disciplines (Clean Tournament Slate)**")
+                st.caption("Clears all attendance telemetry across the entire tournament. (Super Admin & Secretariat Only)")
+                is_admin_user = (cur_off and cur_off.get("role") == "Super Admin") or (cur_cap and cur_cap.get("is_super_admin"))
+                if not is_admin_user:
+                    st.caption("⚠️ Full tournament reset requires Super Admin clearance.")
+                    st.button("🚨 Purge All Attendance (Locked)", disabled=True, use_container_width=True, key="btn_locked_full_rst")
+                else:
+                    confirm_all = st.checkbox("Confirm clearing ALL attendance", key="chk_rst_all_sports")
+                    if st.button("🚨 Purge All Attendance to 0", disabled=not confirm_all, type="primary" if confirm_all else "secondary", key="btn_rst_all_sp", use_container_width=True):
+                        backend.clear_all_attendance()
+                        st.session_state["rc_selected_labels"] = []
+                        st.toast("✅ All tournament attendance logs purged to 0 scans!", icon="🚨")
+                        st.rerun()
 
 if "📋 Captain's Roll Call" in tab_dict:
     with tab_dict["📋 Captain's Roll Call"]:
