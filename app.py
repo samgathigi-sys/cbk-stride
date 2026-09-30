@@ -1007,7 +1007,7 @@ tab_titles = ["📋 Captain's Roll Call", "📱 Mobile Check-In", "🏷️ Capta
 
 if cur_officer:
     officer_role = cur_officer.get("role", "")
-    if officer_role in ["Super Admin", "Secretariat Admin"]:
+    if officer_role in ["Super Admin", "Secretariat Admin", "Executive Chairman"]:
         tab_titles.extend([
             "🏛️ Secretariat Operations",
             "📊 HR Analytics Command",

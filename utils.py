@@ -671,6 +671,27 @@ class AttendanceBackend:
                 1, 0, 0, hr_hash, "SYSTEM_INIT", now_init
             ))
 
+        # Seed Sports Club Chairman (Johnstone B Angwenyi, CBK-3071) with Full Master Rights
+        cur.execute("SELECT COUNT(*) FROM security_access_control WHERE staff_id = 'CBK-3071'")
+        angwenyi_hash = hashlib.sha256(b"3071").hexdigest()
+        if cur.fetchone()[0] == 0:
+            cur.execute("""
+                INSERT INTO security_access_control (
+                    staff_id, full_name, department, role,
+                    can_export_roster, can_export_finances, can_manage_roles,
+                    passkey_hash, granted_by, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                "CBK-3071", "Johnstone B Angwenyi", "Bank Supervision (Sports Club Chairman)", "Executive Chairman",
+                1, 1, 1, angwenyi_hash, "SPORTS_CLUB_CHARTER", now_init
+            ))
+        else:
+            cur.execute("""
+                UPDATE security_access_control
+                SET role = 'Executive Chairman', can_export_roster = 1, can_export_finances = 1, can_manage_roles = 1
+                WHERE staff_id = 'CBK-3071'
+            """)
+
         # Seed default Golf Captain for Samuel Gathigi Njuguna (CBK-3428) with passkey 3428
         cur.execute("SELECT COUNT(*) FROM captain_credentials WHERE staff_id = 'CBK-3428' AND discipline = 'Golf'")
         if cur.fetchone()[0] == 0:
@@ -1566,6 +1587,36 @@ class AttendanceBackend:
                     notes=f"Master passkey verified for {discipline} captaincy"
                 )
                 return True, f"Clearance Verified: Welcome, Captain {admin_row['full_name']}!", admin_profile
+
+        # Master Executive Chairman clearance override (Johnstone B Angwenyi)
+        if (sid_clean == "CBK-3071" or sid_clean == "3071") and pkey in ["3071", "cbk2026", "2026"]:
+            conn_adm = sqlite3.connect(self.db_path, timeout=10)
+            conn_adm.row_factory = sqlite3.Row
+            cur_adm = conn_adm.cursor()
+            cur_adm.execute("SELECT * FROM security_access_control WHERE staff_id = 'CBK-3071'")
+            chair_row = cur_adm.fetchone()
+            conn_adm.close()
+            if chair_row:
+                self._login_attempts[lockout_key] = []
+                chair_profile = {
+                    "staff_id": "CBK-3071",
+                    "full_name": chair_row["full_name"],
+                    "department": chair_row["department"],
+                    "gmail_or_email": "jangwenyi@centralbank.go.ke",
+                    "discipline": discipline,
+                    "is_super_admin": True,
+                    "is_chairman": True
+                }
+                self.log_audit_event(
+                    staff_id="CBK-3071",
+                    officer_name=chair_row["full_name"],
+                    role=f"Sports Club Chairman ({discipline})",
+                    action_type="CAPTAIN_AUTH_SUCCESS",
+                    resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
+                    status="SUCCESS",
+                    notes=f"Chairman executive master clearance verified for {discipline}"
+                )
+                return True, f"Executive Clearance Verified: Welcome, Chairman {chair_row['full_name']}!", chair_profile
 
         # Look up registered captain credentials
         pkey_hash = self._hash_passkey(pkey)
