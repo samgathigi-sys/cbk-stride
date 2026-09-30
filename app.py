@@ -1930,20 +1930,26 @@ def render_tab_captains_roll_call():
         </div>
         """, unsafe_allow_html=True)
     else:
-        is_authorized = False
-        auditor_tag = "Spectator (Read-Only)"
-
-        # Captain Secret Passkey & Anti-Impersonation Gateway (Option A)
-        with st.expander("🛡️ Team Captain Authentication & Anti-Impersonation Shield", expanded=True):
-            st.markdown("""
-            <div style="font-size: 0.86rem; color: #CBD5E1; margin-bottom: 12px;">
-                🛡️ <strong>Anti-Impersonation Protection:</strong> To prevent anyone from pretending to be you or altering attendance for another sport, each Team Captain authenticates with their <strong>Staff ID</strong> and <strong>Secret Passkey</strong>.
+        # User is NOT authenticated as Captain or Secretariat
+        # STRICT PRIVACY & ANTI-TAMPERING: Do NOT show any rosters, names, or players!
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #091F3D 0%, #051326 100%); border: 1.5px solid rgba(245, 197, 66, 0.4); border-left: 5px solid #F5C542; border-radius: 14px; padding: 22px 24px; margin-bottom: 1.5rem; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <span style="font-size: 2.4rem;">🛡️🔒</span>
+                <div>
+                    <span style="background: linear-gradient(135deg, #FFE899 0%, #F5C542 50%, #D4AF37 100%); color: #040D1A; font-weight: 900; font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.8px;">RESTRICTED OPERATIONAL ZONE</span>
+                    <h3 style="margin: 4px 0 2px 0; color: #FFFFFF; font-size: 1.35rem; font-weight: 800;">Team Captain Authentication Required</h3>
+                    <p style="margin: 0; font-size: 0.84rem; color: #94A3B8;">Under Central Bank privacy & sports integrity policies, squad rosters, player identities, and roll-call telemetry are strictly confidential. Please authenticate with your accredited Staff ID and Secret Passkey to reveal and manage your team.</p>
+                </div>
             </div>
-            """, unsafe_allow_html=True)
-            
+        </div>
+        """, unsafe_allow_html=True)
+
+        with st.container(border=True):
+            st.markdown("#### 🔑 Team Captain Sign-In (Discipline Access Shield)")
             c_cap_l1, c_cap_l2, c_cap_l3 = st.columns([1.2, 1.1, 1.2])
             with c_cap_l1:
-                cap_sel_sport = st.selectbox("Your Sport Discipline:", ALL_18_SPORTS, key="cap_in_sport")
+                cap_sel_sport = st.selectbox("Select Your Sport Discipline:", ALL_18_SPORTS, key="cap_in_sport")
             with c_cap_l2:
                 cap_in_sid = st.text_input("Staff ID / Payroll #:", placeholder="e.g. 3428 or CBK-3428", key="cap_in_sid")
             with c_cap_l3:
@@ -1975,7 +1981,7 @@ def render_tab_captains_roll_call():
                 ft_staff = st.session_state.get("first_time_staff", {})
                 ft_sport = st.session_state.get("first_time_sport", cap_sel_sport)
                 st.markdown("---")
-                st.markdown(f"#### 🆕 First-Time Setup for {ft_staff.get('full_name', 'Captain')} ({ft_sport})")
+                st.markdown(f"#### 🆕 First-Time Passkey Setup for {ft_staff.get('full_name', 'Captain')} ({ft_sport})")
                 st.caption("You are accredited in the Central Bank athlete registry! Create your secret personal passkey below to activate your captaincy shield:")
                 c_ft1, c_ft2, c_ft3 = st.columns([1.4, 1.4, 1])
                 with c_ft1:
@@ -1999,7 +2005,10 @@ def render_tab_captains_roll_call():
                             else:
                                 st.error(msg_s)
 
-    # 2. Sport & Gate Selection Controls
+        # STRICT DATA PROTECTION: Stop execution here so no player names, IDs, or rosters are displayed!
+        return
+
+    # 2. Sport & Gate Selection Controls (For Authenticated Captains & Secretariat Officers)
     c_rc1, c_rc2, c_rc3 = st.columns([1.3, 1.1, 1.1])
 
     with c_rc1:
@@ -2046,10 +2055,6 @@ def render_tab_captains_roll_call():
             index=0,
             key="rc_station_select"
         )
-
-    # If spectator mode, display alert
-    if not is_authorized:
-        st.info(f"👁️ **Spectator / Read-Only Mode:** You are viewing the live roster for **{rc_sport}**. To clock in athletes or batch-record attendance, sign in above using your temporary Captain PIN.")
 
     # Fetch all enrolled players for this sport
     squad_players = backend.get_players_by_discipline(rc_sport)
