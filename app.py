@@ -1886,9 +1886,10 @@ def render_tab_captains_roll_call():
     # Captain Roll-Call Guide Download Hub
     with st.expander("📥 Download Official Team Captain Field Roll-Call Guide (PDF / Image / PPTX)"):
         c_f1, c_f2, c_f3 = st.columns(3)
-        flyer_pdf_path = os.path.join(DIR, "CBK_STRIDE_Captain_RollCall_Guide.pdf")
-        flyer_pptx_path = os.path.join(DIR, "CBK_STRIDE_Captain_RollCall_Guide.pptx")
-        flyer_jpg_path = os.path.join(DIR, "CBK_STRIDE_Captain_RollCall_Guide.jpg")
+        flyer_dir = os.path.dirname(os.path.abspath(__file__))
+        flyer_pdf_path = os.path.join(flyer_dir, "CBK_STRIDE_Captain_RollCall_Guide.pdf")
+        flyer_pptx_path = os.path.join(flyer_dir, "CBK_STRIDE_Captain_RollCall_Guide.pptx")
+        flyer_jpg_path = os.path.join(flyer_dir, "CBK_STRIDE_Captain_RollCall_Guide.jpg")
         
         with c_f1:
             if os.path.exists(flyer_pdf_path):
