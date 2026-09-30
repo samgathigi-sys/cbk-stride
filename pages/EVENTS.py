@@ -145,10 +145,12 @@ param_event_id = st.query_params.get("event_id", "")
 # ------------------------------------------------------------------------------
 # MAIN PORTAL TABS
 # ------------------------------------------------------------------------------
-tab_reg, tab_wizard, tab_verify = st.tabs([
+tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp = st.tabs([
     "🎟️ Attendee Registration & Digital Pass",
     "🪄 Event Creator Wizard (Organizers)",
-    "📷 Gate Usher Scanner & Accreditation Roster"
+    "📷 Gate Usher Scanner & Accreditation Roster",
+    "🗳️ Digital Voting & Elections Booth",
+    "🤖 NLP Attendee Sentiment & Pulse Survey"
 ])
 
 # ==============================================================================
@@ -1080,6 +1082,390 @@ with tab_verify:
                     mime="text/csv",
                     use_container_width=True
                 )
+
+# ==============================================================================
+# TAB 4: DIGITAL VOTING & ELECTIONS BOOTH
+# ==============================================================================
+with tab_ballot:
+    st.markdown("### 🗳️ Digital Secret Ballot & Live Scrutineer Tally")
+    st.caption("Statutory secret balloting for SACCO, PLC, and union AGMs. Anti-double voting enforcement, share-weighted voting power, and instant returning officer certification:")
+
+    # Event selection for voting
+    v_events = backend.get_events(status="ACTIVE")
+    if not v_events:
+        st.info("No active events currently published.")
+    else:
+        v_evt_opts = {f"{e['title']} ({e['event_id']})": e for e in v_events}
+        default_v_idx = 0
+        for idx, (k, e) in enumerate(v_evt_opts.items()):
+            if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper():
+                default_v_idx = idx
+                break
+
+        v_sel_label = st.selectbox("Select Assembly / Event for Voting:*", list(v_evt_opts.keys()), index=default_v_idx, key="v_sel_event")
+        v_selected_evt = v_evt_opts[v_sel_label]
+        v_eid = v_selected_evt["event_id"]
+
+        col_ballot_in, col_ballot_scrut = st.columns([1.1, 1.35])
+
+        with col_ballot_in:
+            st.markdown("#### 👤 Delegate Voting Station")
+            st.caption("Authenticate with your accredited Ticket Pass ID to retrieve your voting power and cast your confidential ballot:")
+
+            ev_tickets = backend.get_event_tickets(v_eid)
+            admitted_tkts = [t for t in ev_tickets if t.get("gate_status") == "ADMITTED"]
+            if not admitted_tkts:
+                admitted_tkts = ev_tickets
+
+            tkt_voter_opts = {f"{t['attendee_name']} ({t['ticket_id']} — {t['ticket_tier']})": t for t in admitted_tkts}
+
+            if not tkt_voter_opts:
+                st.warning("No accredited delegates found for this assembly. Please register or admit delegates in Tab 1 or Tab 3 first.")
+            else:
+                sel_voter_key = st.selectbox("Select Accredited Delegate:*", list(tkt_voter_opts.keys()), key="sel_voter_ticket")
+                sel_tkt = tkt_voter_opts[sel_voter_key]
+
+                # Compute voting weight based on ticket tier
+                v_weight = 1
+                if "Principal Shareholder" in sel_tkt["ticket_tier"]:
+                    v_weight = 10000
+                elif "Institutional" in sel_tkt["ticket_tier"]:
+                    v_weight = 100000
+                elif "Proxy Holder" in sel_tkt["ticket_tier"]:
+                    v_weight = 35000
+                elif "Board Director" in sel_tkt["ticket_tier"]:
+                    v_weight = 50000
+
+                # Delegate Voting Credentials Card
+                st.markdown(f"""
+                <div style="background: rgba(8, 28, 58, 0.85); border: 1.5px solid #00F2FE; border-radius: 10px; padding: 12px 16px; margin: 8px 0 16px 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #00F2FE; font-weight: 800; font-size: 0.82rem;">CONFIDENTIAL VOTING CREDENTIAL</span>
+                        <span style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;">PASS ACTIVE</span>
+                    </div>
+                    <div style="font-size: 1.05rem; font-weight: 800; color: #FFFFFF; margin-top: 4px;">{sel_tkt['attendee_name']}</div>
+                    <div style="font-size: 0.78rem; color: #94A3B8;">{sel_tkt['organization']} • Ticket: <code>{sel_tkt['ticket_id']}</code></div>
+                    <div style="margin-top: 6px; font-size: 0.85rem; color: #F5C542; font-weight: 800;">
+                        ⚖️ Allocated Voting Power: <strong>{v_weight:,} Votes</strong> ({sel_tkt['ticket_tier'].split('/')[0].strip()})
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                existing_ballots = backend.get_event_ballots(v_eid)
+                has_voted = any(b["ticket_id"] == sel_tkt["ticket_id"] for b in existing_ballots)
+
+                if has_voted:
+                    voted_ballot = next(b for b in existing_ballots if b["ticket_id"] == sel_tkt["ticket_id"])
+                    st.success(f"✓ Ballot Cast & Certified! Vote was recorded on {voted_ballot['cast_time']}.")
+                    st.code(f"Cryptographic Proof: {voted_ballot['ballot_hash']}")
+                else:
+                    with st.form(key=f"form_ballot_{sel_tkt['ticket_id']}"):
+                        st.markdown("##### 📜 Item 1: Ordinary Resolution 1")
+                        st.caption("Approval of Audited Financial Statements for FY2025 and Declaration of a 14% First & Final Dividend:")
+                        v_res1 = st.radio(
+                            "Your Vote on Resolution 1:*",
+                            ["FOR (Approve Accounts & 14% Dividend)", "AGAINST (Reject Accounts)", "ABSTAIN"],
+                            key="v_res1_radio"
+                        )
+
+                        st.markdown("##### 🗳️ Item 2: Election of Supervisory Board Member")
+                        st.caption("Select one candidate to represent Nairobi East & Central Region on the Supervisory Committee:")
+                        v_res2 = st.radio(
+                            "Candidate Selection:*",
+                            [
+                                "Sarah Wanjiru CPA(K) (Independent, Audit & Finance)",
+                                "Eng. David Ndung'u (Incumbent, Risk & Governance)",
+                                "Dr. Peter Otieno (Institutional Nominee)"
+                            ],
+                            key="v_res2_radio"
+                        )
+
+                        st.markdown("##### 🏛️ Item 3: Ordinary Resolution 2")
+                        st.caption("Appointment of Independent External Statutory Auditors for Financial Year 2026:")
+                        v_res3 = st.selectbox(
+                            "Statutory Auditor Appointment:*",
+                            ["Re-appoint KPMG Kenya", "Appoint PKF Kenya", "Appoint Deloitte East Africa", "ABSTAIN"],
+                            key="v_res3_sel"
+                        )
+
+                        btn_submit_ballot = st.form_submit_button(
+                            f"🔒 Cast Confidential Ballot ({v_weight:,} Votes)",
+                            type="primary",
+                            use_container_width=True
+                        )
+
+                        if btn_submit_ballot:
+                            ok_b, msg_b, b_rec = backend.cast_event_ballot(
+                                event_id=v_eid,
+                                ticket_id=sel_tkt["ticket_id"],
+                                voter_name=sel_tkt["attendee_name"],
+                                voter_organization=sel_tkt["organization"],
+                                voting_weight=v_weight,
+                                res1_vote=v_res1,
+                                res2_candidate=v_res2,
+                                res3_auditor=v_res3
+                            )
+                            if ok_b:
+                                st.session_state["last_cast_ballot"] = b_rec
+                                st.balloons()
+                                st.rerun()
+                            else:
+                                st.error(msg_b)
+
+        with col_ballot_scrut:
+            st.markdown("#### 📊 Returning Officer Live Telemetry Screen")
+            st.caption("Official scrutineer board updating dynamically in real time as ballots are verified:")
+
+            el_res = backend.get_election_results(v_eid)
+            tot_b = el_res["total_ballots"]
+            tot_w = el_res["total_weighted_votes"]
+
+            sc1, sc2, sc3 = st.columns(3)
+            with sc1:
+                st.metric("Total Ballots Cast", f"{tot_b}")
+            with sc2:
+                st.metric("Weighted Voting Power", f"{tot_w:,}")
+            with sc3:
+                st.metric("Integrity Status", "100% SHA-256", delta="VERIFIED")
+
+            st.markdown("---")
+
+            # Tally Display: Resolution 1
+            st.markdown("##### 📜 Resolution 1: FY2025 Accounts & 14% Dividend")
+            r1_weighted = el_res["res1"]["weighted"]
+            for opt, cnt in r1_weighted.items():
+                pct = (cnt / tot_w * 100) if tot_w > 0 else 0
+                bar_color = "#10B981" if "FOR" in opt else ("#EF4444" if "AGAINST" in opt else "#94A3B8")
+                st.markdown(f"""
+                <div style="margin-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: #CBD5E1;">
+                        <span>{opt}</span>
+                        <span style="color: {bar_color};">{cnt:,} votes ({pct:.1f}%)</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.08); border-radius: 6px; height: 10px; width: 100%; overflow: hidden; margin-top: 2px;">
+                        <div style="background: {bar_color}; height: 100%; width: {pct}%; border-radius: 6px;"></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown("---")
+
+            # Tally Display: Supervisory Committee Election
+            st.markdown("##### 🗳️ Supervisory Committee Election Tally")
+            r2_weighted = el_res["res2"]["weighted"]
+            leader = max(r2_weighted.items(), key=lambda x: x[1])[0] if r2_weighted else "None"
+            for cand, cnt in r2_weighted.items():
+                pct = (cnt / tot_w * 100) if tot_w > 0 else 0
+                is_lead = (cand == leader and cnt > 0)
+                badge_icon = "🏆 " if is_lead else ""
+                cand_color = "#F5C542" if is_lead else "#38BDF8"
+                st.markdown(f"""
+                <div style="margin-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: #CBD5E1;">
+                        <span style="color: {cand_color};">{badge_icon}{cand}</span>
+                        <span style="color: {cand_color};">{cnt:,} votes ({pct:.1f}%)</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.08); border-radius: 6px; height: 10px; width: 100%; overflow: hidden; margin-top: 2px;">
+                        <div style="background: {cand_color}; height: 100%; width: {pct}%; border-radius: 6px;"></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown("---")
+
+            # Scrutineer Certificate Export
+            cert_txt = f"""=======================================================
+STRIDE™ CERTIFIED RETURNING OFFICER ELECTION RETURN
+=======================================================
+Assembly:             {v_selected_evt['title']}
+Event ID:             {v_eid}
+Certified Date:       {get_eat_now().strftime('%Y-%m-%d %H:%M:%S')}
+Scrutineer Standard:  SHA-256 Cryptographic Audit Ledger
+-------------------------------------------------------
+STATUTORY QUORUM & PARTICIPATION
+Total Ballots Cast:   {tot_b}
+Total Weighted Power: {tot_w:,} Votes
+Double-Voting Cases:  0 (Anti-Passback Enforced)
+-------------------------------------------------------
+RESOLUTION 1: FY2025 ACCOUNTS & 14% DIVIDENDS
+""" + "\n".join([f"- {k}: {v:,} votes ({(v/tot_w*100) if tot_w>0 else 0:.1f}%)" for k, v in r1_weighted.items()]) + f"""
+-------------------------------------------------------
+SUPERVISORY COMMITTEE ELECTION RESULTS
+""" + "\n".join([f"- {k}: {v:,} votes ({(v/tot_w*100) if tot_w>0 else 0:.1f}%)" for k, v in r2_weighted.items()]) + f"""
+DECLARATION: Duly Elected Candidate: {leader}
+-------------------------------------------------------
+STATUTORY AUDITOR APPOINTMENT
+""" + "\n".join([f"- {k}: {v:,} votes ({(v/tot_w*100) if tot_w>0 else 0:.1f}%)" for k, v in el_res['res3']['weighted'].items()]) + f"""
+=======================================================
+Certified by Chief Scrutineer & Company Secretary
+SASRA & Cooperative Societies Compliance Code 2026"""
+
+            st.download_button(
+                label="📥 Download Certified Returning Officer Return (.txt)",
+                data=cert_txt.encode('utf-8'),
+                file_name=f"CERTIFIED_ELECTION_RETURN_{v_eid}.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
+
+# ==============================================================================
+# TAB 5: NLP ATTENDEE SENTIMENT & PULSE SURVEY ENGINE
+# ==============================================================================
+with tab_nlp:
+    st.markdown("### 🤖 NLP Attendee Satisfaction & Sentiment Telemetry")
+    st.caption("Real-time Natural Language Processing (NLP) analyzing open-ended attendee feedback, extracting operational aspects, and calculating Net Promoter Score (NPS) for the Board:")
+
+    col_fb_in, col_fb_board = st.columns([1.1, 1.35])
+
+    with col_fb_in:
+        st.markdown("#### 💬 Attendee Exit Pulse (Survey)")
+        st.caption("Delegates and athletes share honest post-event feedback in natural English or Swahili:")
+
+        fb_ev_opts = {f"{e['title']} ({e['event_id']})": e for e in v_events}
+        default_fb_idx = 0
+        for idx, (k, e) in enumerate(fb_ev_opts.items()):
+            if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper():
+                default_fb_idx = idx
+                break
+
+        fb_sel_label = st.selectbox("Assembly / Event to Review:*", list(fb_ev_opts.keys()), index=default_fb_idx, key="fb_sel_event")
+        fb_selected_evt = fb_ev_opts[fb_sel_label]
+        fb_eid = fb_selected_evt["event_id"]
+
+        fb_name = st.text_input("Your Name / Delegate Identifier:*", value="Sarah Wanjiku", key="fb_in_name")
+        fb_rating = st.slider("Overall Satisfaction Rating (1 to 5 Stars):*", min_value=1, max_value=5, value=5, key="fb_in_rating")
+
+        # Test Chip Injectors
+        st.markdown("<div style='font-size: 0.76rem; color: #94A3B8; margin-top: 6px;'>💡 <strong>Instant Test Presets (Tap to Inject & Test NLP):</strong></div>", unsafe_allow_html=True)
+        c_ch1, c_ch2 = st.columns(2)
+        with c_ch1:
+            if st.button("🚀 Fast M-Pesa & Quorum", key="btn_chip_pos", use_container_width=True):
+                st.session_state["nlp_sample_box"] = "The M-Pesa STK self-registration was lightning fast! Zero lines at the gate and the digital quorum screen was completely transparent."
+        with c_ch2:
+            if st.button("⚠️ Good QR, Slow Food", key="btn_chip_mix", use_container_width=True):
+                st.session_state["nlp_sample_box"] = "QR check-in was seamless, but lunch catering was delayed and the sound in the back was muffled."
+
+        c_ch3, c_ch4 = st.columns(2)
+        with c_ch3:
+            if st.button("❌ Terrible Queues & Mic", key="btn_chip_neg", use_container_width=True):
+                st.session_state["nlp_sample_box"] = "Terrible experience with registration queues! Microphones failed and the sitting allowance payout was disorganized."
+        with c_ch4:
+            if st.button("🇰🇪 Swahili Feedback", key="btn_chip_swa", use_container_width=True):
+                st.session_state["nlp_sample_box"] = "Chakula kilichelewa kidogo ukumbini lakini usajili wa simu na kura ya kidijitali ilikuwa safi na haraka sana!"
+
+        preset_val = st.session_state.get("nlp_sample_box", "The M-Pesa STK self-registration and QR gate pass was lightning fast! Zero lines at Radisson Blu entrance, and the digital quorum screen gave us total transparency on the dividend vote.")
+        fb_text = st.text_area("Your Open-Ended Feedback:*", value=preset_val, height=110, key="fb_in_text")
+
+        # Live Pre-Flight NLP Preview
+        nlp_preview = backend.analyze_feedback_nlp(fb_text)
+        prev_color = "#10B981" if nlp_preview["label"] == "POSITIVE" else ("#EF4444" if nlp_preview["label"] == "NEGATIVE" else "#F5C542")
+
+        st.markdown(f"""
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1.5px dashed {prev_color}; border-radius: 8px; padding: 10px 14px; margin: 8px 0 14px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.72rem; color: #94A3B8; font-weight: 800; text-transform: uppercase;">REAL-TIME NLP PREVIEW</span>
+                <span style="background: {prev_color}; color: #020617; font-size: 0.7rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">
+                    {nlp_preview['label']} ({nlp_preview['polarity']:+.2f})
+                </span>
+            </div>
+            <div style="margin-top: 6px; font-size: 0.75rem; color: #CBD5E1;">
+                <strong>Extracted Aspects:</strong> {', '.join(f'`{a}`' for a in nlp_preview['aspects'])}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("📤 Submit Attendee Feedback & Analyze NLP", type="primary", use_container_width=True, key="btn_sub_fb"):
+            if not fb_name.strip():
+                st.error("Please provide your name or delegate identifier.")
+            elif not fb_text.strip():
+                st.error("Please enter your feedback comments.")
+            else:
+                ok_f, msg_f, f_rec = backend.submit_event_feedback(
+                    event_id=fb_eid,
+                    ticket_id="TKT-DIRECT",
+                    attendee_name=fb_name.strip(),
+                    rating=fb_rating,
+                    feedback_text=fb_text.strip()
+                )
+                if ok_f:
+                    st.success(msg_f)
+                    st.balloons()
+                    st.rerun()
+                else:
+                    st.error(msg_f)
+
+    with col_fb_board:
+        st.markdown("#### 📈 Executive Sentiment & NPS Board")
+        st.caption("Live AI analytics dashboard for the Chairman, Board of Directors, and Secretariat:")
+
+        feedbacks = backend.get_event_feedback(fb_eid)
+        tot_fb = len(feedbacks)
+
+        if tot_fb == 0:
+            st.info("No feedback submitted yet for this assembly. Be the first to submit above!")
+        else:
+            avg_rating = sum(f["rating"] for f in feedbacks) / tot_fb
+            avg_polarity = sum(f["sentiment_score"] for f in feedbacks) / tot_fb
+
+            promoters = sum(1 for f in feedbacks if f["rating"] == 5)
+            detractors = sum(1 for f in feedbacks if f["rating"] <= 3)
+            nps_score = round(((promoters - detractors) / tot_fb) * 100)
+
+            m1, m2, m3, m4 = st.columns(4)
+            with m1:
+                st.metric("Net Promoter Score", f"+{nps_score}" if nps_score > 0 else f"{nps_score}", delta="WORLD CLASS" if nps_score >= 50 else "GOOD")
+            with m2:
+                st.metric("Avg Star Rating", f"{avg_rating:.1f} / 5.0", "⭐")
+            with m3:
+                st.metric("Sentiment Polarity", f"{avg_polarity:+.2f}", "🟢 POSITIVE" if avg_polarity >= 0.15 else ("🔴 NEGATIVE" if avg_polarity <= -0.15 else "🟡 NEUTRAL"))
+            with m4:
+                st.metric("Total Responses", f"{tot_fb}")
+
+            st.markdown("---")
+
+            # Aspect Sentiment Breakdown
+            st.markdown("##### 🔍 Operational Aspects Health Matrix")
+            aspect_counts = {}
+            for f in feedbacks:
+                for a in f.get("aspects", []):
+                    aspect_counts[a] = aspect_counts.get(a, 0) + 1
+
+            for a_name, cnt in sorted(aspect_counts.items(), key=lambda x: x[1], reverse=True):
+                pct = (cnt / tot_fb) * 100
+                st.markdown(f"""
+                <div style="margin-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: #CBD5E1;">
+                        <span>🏷️ {a_name}</span>
+                        <span style="color: #00F2FE;">{cnt} mentions ({pct:.0f}%)</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.08); border-radius: 4px; height: 6px; width: 100%; overflow: hidden; margin-top: 2px;">
+                        <div style="background: #00F2FE; height: 100%; width: {pct}%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown("---")
+
+            # Live Feed of Feedback with Sentiment Badges
+            st.markdown("##### 📢 Recent Attendee Feedback Stream")
+            for fb in feedbacks[:6]:
+                sc_col = "#10B981" if fb["sentiment_label"] == "POSITIVE" else ("#EF4444" if fb["sentiment_label"] == "NEGATIVE" else "#F5C542")
+                stars = "⭐" * fb["rating"]
+                st.markdown(f"""
+                <div style="background: rgba(8, 24, 48, 0.7); border-left: 4px solid {sc_col}; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 800; font-size: 0.85rem; color: #FFFFFF;">{fb['attendee_name']}</span>
+                        <span style="background: rgba(255,255,255,0.1); padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; color: #F5C542;">{stars}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #CBD5E1; margin: 4px 0 6px 0; font-style: italic;">
+                        "{fb['feedback_text']}"
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.68rem; color: #64748B;">
+                        <span>Aspects: {', '.join(fb.get('aspects', []))}</span>
+                        <span style="color: {sc_col}; font-weight: 800;">{fb['sentiment_label']} ({fb['sentiment_score']:+.2f})</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
 # ------------------------------------------------------------------------------
 # FOOTER

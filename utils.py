@@ -690,6 +690,40 @@ class AttendanceBackend:
             )
         """)
 
+        # Create Event Digital Ballots & Voting Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS event_ballots_registry (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_id TEXT NOT NULL,
+                ticket_id TEXT NOT NULL,
+                voter_name TEXT NOT NULL,
+                voter_organization TEXT DEFAULT '',
+                voting_weight INTEGER DEFAULT 1,
+                res1_vote TEXT NOT NULL,
+                res2_candidate TEXT NOT NULL,
+                res3_auditor TEXT NOT NULL,
+                ballot_hash TEXT NOT NULL,
+                cast_time TEXT NOT NULL,
+                UNIQUE(event_id, ticket_id)
+            )
+        """)
+
+        # Create Event Attendee Feedback & NLP Sentiment Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS event_feedback_registry (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_id TEXT NOT NULL,
+                ticket_id TEXT DEFAULT '',
+                attendee_name TEXT NOT NULL,
+                rating INTEGER NOT NULL,
+                feedback_text TEXT NOT NULL,
+                sentiment_score REAL NOT NULL,
+                sentiment_label TEXT NOT NULL,
+                aspects_json TEXT DEFAULT '[]',
+                submitted_at TEXT NOT NULL
+            )
+        """)
+
         try:
             cur.execute("ALTER TABLE captain_credentials ADD COLUMN passkey_hash TEXT DEFAULT ''")
         except Exception:
@@ -2531,6 +2565,301 @@ class AttendanceBackend:
             return True, f"✅ VALID TICKET: Welcome {ticket['attendee_name']}! Admitted successfully.", ticket
         except Exception as e:
             return False, f"Verification error: {e}", None
+
+    # ==========================================================================
+    # DIGITAL VOTING & BALLOTING ENGINE
+    # ==========================================================================
+    def cast_event_ballot(
+        self,
+        event_id: str,
+        ticket_id: str,
+        voter_name: str,
+        voter_organization: str,
+        voting_weight: int,
+        res1_vote: str,
+        res2_candidate: str,
+        res3_auditor: str
+    ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+        """
+        Records a single, tamper-evident cryptographic ballot for an accredited delegate.
+        Prevents double voting and calculates voting weight based on shareholdings/ordinary rights.
+        """
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            
+            # Check if this ticket already cast a ballot in this event
+            cur.execute("SELECT id, cast_time, ballot_hash FROM event_ballots_registry WHERE event_id = ? AND ticket_id = ?", (event_id, ticket_id))
+            prev = cur.fetchone()
+            if prev:
+                conn.close()
+                return False, f"🛑 DOUBLE-VOTING PREVENTED: Ballot for Ticket {ticket_id} was already cast at {prev[1]} (Proof: {prev[2]}).", None
+            
+            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+            raw_hash_seed = f"{event_id}|{ticket_id}|{voting_weight}|{res1_vote}|{res2_candidate}|{res3_auditor}|{now_str}".encode('utf-8')
+            ballot_hash = "SHA256:" + hashlib.sha256(raw_hash_seed).hexdigest()[:20]
+            
+            cur.execute("""
+                INSERT INTO event_ballots_registry (
+                    event_id, ticket_id, voter_name, voter_organization, voting_weight,
+                    res1_vote, res2_candidate, res3_auditor, ballot_hash, cast_time
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                event_id, ticket_id, voter_name, voter_organization, voting_weight,
+                res1_vote, res2_candidate, res3_auditor, ballot_hash, now_str
+            ))
+            conn.commit()
+            conn.close()
+            
+            ballot_record = {
+                "event_id": event_id,
+                "ticket_id": ticket_id,
+                "voter_name": voter_name,
+                "voter_organization": voter_organization,
+                "voting_weight": voting_weight,
+                "res1_vote": res1_vote,
+                "res2_candidate": res2_candidate,
+                "res3_auditor": res3_auditor,
+                "ballot_hash": ballot_hash,
+                "cast_time": now_str
+            }
+            return True, f"🗳️ Ballot Confirmed! Vote recorded with {voting_weight:,} voting power.", ballot_record
+        except Exception as e:
+            return False, f"Voting error: {e}", None
+
+    def get_event_ballots(self, event_id: str) -> List[Dict[str, Any]]:
+        """Retrieves all ballots cast for an event."""
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM event_ballots_registry WHERE event_id = ? ORDER BY id DESC", (event_id,))
+        rows = [dict(r) for r in cur.fetchall()]
+        conn.close()
+        return rows
+
+    def get_election_results(self, event_id: str) -> Dict[str, Any]:
+        """Calculates vote totals (both raw voter count and weighted voting power) for all resolutions."""
+        ballots = self.get_event_ballots(event_id)
+        total_ballots = len(ballots)
+        total_weighted_votes = sum(b.get("voting_weight", 1) for b in ballots)
+        
+        # Tally Res 1
+        res1_tally = {}
+        res1_weighted = {}
+        # Tally Res 2 (Candidates)
+        res2_tally = {}
+        res2_weighted = {}
+        # Tally Res 3 (Auditors)
+        res3_tally = {}
+        res3_weighted = {}
+        
+        for b in ballots:
+            w = b.get("voting_weight", 1)
+            # Res 1
+            r1 = b.get("res1_vote", "ABSTAIN")
+            res1_tally[r1] = res1_tally.get(r1, 0) + 1
+            res1_weighted[r1] = res1_weighted.get(r1, 0) + w
+            
+            # Res 2
+            r2 = b.get("res2_candidate", "Uncommitted")
+            res2_tally[r2] = res2_tally.get(r2, 0) + 1
+            res2_weighted[r2] = res2_weighted.get(r2, 0) + w
+            
+            # Res 3
+            r3 = b.get("res3_auditor", "ABSTAIN")
+            res3_tally[r3] = res3_tally.get(r3, 0) + 1
+            res3_weighted[r3] = res3_weighted.get(r3, 0) + w
+            
+        return {
+            "total_ballots": total_ballots,
+            "total_weighted_votes": total_weighted_votes,
+            "res1": {"raw": res1_tally, "weighted": res1_weighted},
+            "res2": {"raw": res2_tally, "weighted": res2_weighted},
+            "res3": {"raw": res3_tally, "weighted": res3_weighted},
+            "ballots": ballots
+        }
+
+    # ==========================================================================
+    # NLP ATTENDEE SENTIMENT & ASPECT EXTRACTION PIPELINE
+    # ==========================================================================
+    @staticmethod
+    def analyze_feedback_nlp(text: str) -> Dict[str, Any]:
+        """
+        High-precision deterministic NLP pipeline for attendee feedback.
+        Calculates sentiment polarity (-1.0 to +1.0), detects English & Swahili sentiment,
+        handles negation handling, and extracts operational aspects.
+        """
+        if not text or not text.strip():
+            return {
+                "polarity": 0.0,
+                "label": "NEUTRAL",
+                "aspects": ["General Experience"],
+                "confidence": 0.5,
+                "matched_words": []
+            }
+            
+        text_lower = text.lower()
+        import re
+        tokens = re.findall(r"\b\w+\b", text_lower)
+        
+        # Lexicons
+        pos_lexicon = {
+            "fast": 0.8, "quick": 0.7, "smooth": 0.8, "seamless": 0.9, "great": 0.8, "excellent": 0.95,
+            "good": 0.6, "best": 0.9, "transparent": 0.85, "fair": 0.7, "happy": 0.75, "prompt": 0.8,
+            "promptly": 0.85, "impressive": 0.9, "convenient": 0.8, "superb": 0.95, "loved": 0.85,
+            "easy": 0.7, "helpful": 0.7, "organized": 0.8, "professional": 0.85, "wonderful": 0.9,
+            "vizuri": 0.8, "safi": 0.85, "poa": 0.7, "bora": 0.85, "haraka": 0.8, "salama": 0.75,
+            "kuridhika": 0.8, "clear": 0.7, "top": 0.8, "flawless": 0.95
+        }
+        
+        neg_lexicon = {
+            "slow": -0.8, "terrible": -0.95, "bad": -0.75, "awful": -0.9, "delayed": -0.8, "late": -0.7,
+            "chaotic": -0.85, "rude": -0.85, "poor": -0.75, "broken": -0.8, "died": -0.8, "unorganized": -0.8,
+            "queue": -0.4, "queues": -0.5, "lines": -0.4, "waiting": -0.5, "wait": -0.4, "cold": -0.4,
+            "noise": -0.5, "noisy": -0.6, "loud": -0.4, "disappointed": -0.85, "dispute": -0.75,
+            "muffled": -0.6, "ran out": -0.8, "missing": -0.6, "confusing": -0.6, "expensive": -0.5,
+            "mbaya": -0.8, "polepole": -0.7, "kuchelewa": -0.8, "kero": -0.75, "fujo": -0.85, "shida": -0.7
+        }
+        
+        negation_words = {"not", "never", "no", "hardly", "barely", "scarcely", "neither", "bila", "si"}
+        
+        total_score = 0.0
+        match_count = 0
+        matched_words = []
+        
+        for idx, token in enumerate(tokens):
+            prev_token = tokens[idx - 1] if idx > 0 else ""
+            prev_prev = tokens[idx - 2] if idx > 1 else ""
+            is_negated = (prev_token in negation_words or prev_prev in negation_words)
+            
+            if token in pos_lexicon:
+                w_score = pos_lexicon[token]
+                if is_negated:
+                    w_score = -abs(w_score) * 0.8
+                total_score += w_score
+                match_count += 1
+                matched_words.append((token, w_score))
+            elif token in neg_lexicon:
+                w_score = neg_lexicon[token]
+                if is_negated:
+                    w_score = abs(w_score) * 0.6
+                total_score += w_score
+                match_count += 1
+                matched_words.append((token, w_score))
+                
+        # Aspect Keyword Mapping
+        aspects_matched = set()
+        
+        # 1. Gate & Registration
+        gate_kw = ["gate", "checkin", "check", "scan", "qr", "pass", "ticket", "queue", "queues", "entry", "registration", "m-pesa", "stk", "usajili", "mlango", "mstari"]
+        if any(k in text_lower for k in gate_kw):
+            aspects_matched.add("Gate & Registration")
+            
+        # 2. Catering & Hospitality
+        food_kw = ["food", "lunch", "tea", "breakfast", "catering", "water", "refreshments", "snacks", "coffee", "meal", "chakula", "chai", "maji"]
+        if any(k in text_lower for k in food_kw):
+            aspects_matched.add("Catering & Hospitality")
+            
+        # 3. Venue & Acoustics
+        venue_kw = ["hall", "venue", "acoustics", "sound", "mic", "microphone", "seating", "audio", "room", "air", "chairs", "screen", "projector", "sauti", "ukumbi"]
+        if any(k in text_lower for k in venue_kw):
+            aspects_matched.add("Venue & Acoustics")
+            
+        # 4. Dividends & Allowances
+        div_kw = ["dividend", "dividends", "allowance", "allowances", "payout", "money", "kes", "cash", "shares", "sitting", "pesa", "gawio", "malipo"]
+        if any(k in text_lower for k in div_kw):
+            aspects_matched.add("Dividends & Allowances")
+            
+        # 5. Voting & Transparency
+        vote_kw = ["vote", "voting", "ballot", "election", "elections", "transparent", "transparency", "resolution", "committee", "count", "kura", "uchaguzi"]
+        if any(k in text_lower for k in vote_kw):
+            aspects_matched.add("Voting & Transparency")
+            
+        if not aspects_matched:
+            aspects_matched.add("General Experience")
+            
+        # Normalization
+        if match_count > 0:
+            norm_polarity = max(-1.0, min(1.0, total_score / match_count))
+        else:
+            norm_polarity = 0.0
+            
+        if norm_polarity >= 0.15:
+            label = "POSITIVE"
+        elif norm_polarity <= -0.15:
+            label = "NEGATIVE"
+        else:
+            label = "NEUTRAL"
+            
+        confidence = 0.75 + min(0.20, match_count * 0.05)
+        
+        return {
+            "polarity": round(norm_polarity, 2),
+            "label": label,
+            "aspects": sorted(list(aspects_matched)),
+            "confidence": round(confidence, 2),
+            "matched_words": matched_words
+        }
+
+    def submit_event_feedback(
+        self,
+        event_id: str,
+        ticket_id: str,
+        attendee_name: str,
+        rating: int,
+        feedback_text: str
+    ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+        """Analyzes and stores feedback in event_feedback_registry."""
+        try:
+            nlp_res = self.analyze_feedback_nlp(feedback_text)
+            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+            aspects_json_str = json.dumps(nlp_res["aspects"])
+            
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO event_feedback_registry (
+                    event_id, ticket_id, attendee_name, rating, feedback_text,
+                    sentiment_score, sentiment_label, aspects_json, submitted_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                event_id, ticket_id, attendee_name, rating, feedback_text,
+                nlp_res["polarity"], nlp_res["label"], aspects_json_str, now_str
+            ))
+            conn.commit()
+            conn.close()
+            
+            feedback_record = {
+                "event_id": event_id,
+                "ticket_id": ticket_id,
+                "attendee_name": attendee_name,
+                "rating": rating,
+                "feedback_text": feedback_text,
+                "sentiment_score": nlp_res["polarity"],
+                "sentiment_label": nlp_res["label"],
+                "aspects": nlp_res["aspects"],
+                "submitted_at": now_str
+            }
+            return True, f"Feedback submitted successfully! NLP classified as {nlp_res['label']} ({nlp_res['polarity']:+.2f}).", feedback_record
+        except Exception as e:
+            return False, f"Feedback error: {e}", None
+
+    def get_event_feedback(self, event_id: str) -> List[Dict[str, Any]]:
+        """Retrieves all feedback records for an event."""
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM event_feedback_registry WHERE event_id = ? ORDER BY id DESC", (event_id,))
+        rows = []
+        for r in cur.fetchall():
+            d = dict(r)
+            try:
+                d["aspects"] = json.loads(d.get("aspects_json", "[]"))
+            except Exception:
+                d["aspects"] = []
+            rows.append(d)
+        conn.close()
+        return rows
 
 
 
