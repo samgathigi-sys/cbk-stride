@@ -907,7 +907,7 @@ with st.expander("📥 Download Official CBK STRIDE™ 2-Page Executive Flyer (P
                 )
 
 # Determine visible tabs based on authenticated officer clearance
-tab_titles = ["📱 Mobile Check-In", "🏷️ Captain QR Station"]
+tab_titles = ["📱 Mobile Check-In", "🏷️ Captain QR Station", "📋 Captain's Roll Call"]
 
 if cur_officer:
     officer_role = cur_officer.get("role", "")
@@ -1866,6 +1866,370 @@ with tab_dict["🏷️ Captain QR Station"]:
                         st.success(f"✅ Walk-in athlete {w_fn} ({clean_sid}) enrolled and checked in successfully!")
                         st.balloons()
                         st.rerun()
+
+# ==============================================================================
+# TAB: CAPTAIN'S SQUAD ROLL CALL (EASY 1-TAP & BATCH ATTENDANCE)
+# ==============================================================================
+def render_tab_captains_roll_call():
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #091F3D 0%, #051326 100%); border: 1.5px solid rgba(245, 197, 66, 0.4); border-left: 5px solid #F5C542; border-radius: 14px; padding: 14px 18px; margin-bottom: 1.2rem; box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 15px rgba(0,242,254,0.12);">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <div>
+                <span style="background: linear-gradient(135deg, #FFE899 0%, #F5C542 50%, #D4AF37 100%); color: #040D1A; font-weight: 900; font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.8px;">FIELD COMMAND</span>
+                <h3 style="margin: 4px 0 2px 0; color: #FFFFFF; font-size: 1.3rem; font-weight: 800;">📋 Captain's Digital Squad Roll Call</h3>
+                <p style="margin: 0; font-size: 0.82rem; color: #94A3B8;">1-Tap on-pitch attendance verification for team captains. Check off players present or batch-clock in your entire squad in seconds.</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    cur_off = get_current_officer()
+
+    # 1. Sport & Gate Selection Controls
+    c_rc1, c_rc2, c_rc3 = st.columns([1.3, 1.1, 1.1])
+
+    with c_rc1:
+        default_sport = st.session_state.get("active_discipline", "Golf")
+        default_idx = ALL_18_SPORTS.index(default_sport) if default_sport in ALL_18_SPORTS else 0
+        rc_sport = st.selectbox(
+            "Select Team Discipline (18 Sports, A – Z):",
+            ALL_18_SPORTS,
+            index=default_idx,
+            key="rc_sport_select"
+        )
+        sport_info = CBK_DISCIPLINES.get(rc_sport, {})
+        disc_captain = sport_info.get("captain", "Appointed Captain")
+        disc_venue = sport_info.get("default_venue", "CBK Sports Club")
+        disc_stations = sport_info.get("stations", ["Main Gate Checkpoint"])
+
+    with c_rc2:
+        rc_gate_mode = st.radio(
+            "Active Roll Call Gate:",
+            ["🟢 Gate 1: Arrival (Check-In)", "🏁 Gate 2: Departure (Clock-Out)"],
+            index=0,
+            horizontal=True,
+            key="rc_gate_mode_radio"
+        )
+        is_arrival = "Gate 1" in rc_gate_mode
+        active_gate_key = "PRE_SPORT" if is_arrival else "POST_SPORT"
+        gate_label = "Arrival" if is_arrival else "Departure"
+
+    with c_rc3:
+        rc_station = st.selectbox(
+            f"Checkpoint Post ({rc_sport}):",
+            disc_stations,
+            index=0,
+            key="rc_station_select"
+        )
+
+    # Fetch all enrolled players for this sport
+    squad_players = backend.get_players_by_discipline(rc_sport)
+
+    # 2. Live Squad Attendance KPI Summary Cards
+    total_count = len(squad_players)
+    on_field_count = sum(1 for p in squad_players if p.get("today_status") in ["PRE_SPORT_VALIDATED", "DUAL_VERIFIED"])
+    dual_verified_count = sum(1 for p in squad_players if p.get("today_status") == "DUAL_VERIFIED")
+    absent_count = sum(1 for p in squad_players if p.get("today_status") not in ["PRE_SPORT_VALIDATED", "DUAL_VERIFIED"])
+
+    k_rc1, k_rc2, k_rc3, k_rc4 = st.columns(4)
+    with k_rc1:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #38BDF8;">
+            <div class="kpi-title">Enrolled Squad</div>
+            <div class="kpi-value" style="color: #38BDF8;">{total_count}</div>
+            <div class="kpi-sub">Official {rc_sport} Roster</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k_rc2:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #F5C542;">
+            <div class="kpi-title">Present on Field</div>
+            <div class="kpi-value" style="color: #F5C542;">{on_field_count}</div>
+            <div class="kpi-sub">Gate 1 Logged Today</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k_rc3:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #10B981;">
+            <div class="kpi-title">Certified Dual-Gate</div>
+            <div class="kpi-value" style="color: #10B981;">{dual_verified_count}</div>
+            <div class="kpi-sub">Gate 2 Completed (≥45m)</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k_rc4:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #94A3B8;">
+            <div class="kpi-title">Awaiting Check-In</div>
+            <div class="kpi-value" style="color: #94A3B8;">{absent_count}</div>
+            <div class="kpi-sub">Not Yet Arrived on Field</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
+
+    # 3. ⚡ BATCH ROLL-CALL TOOL (THE SPEED POWERHOUSE)
+    with st.container(border=True):
+        st.markdown(f"#### ⚡ 1-Click Batch Roll Call ({rc_sport} — {gate_label})")
+        st.caption(f"Select multiple athletes standing before you on the pitch to verify their {gate_label} simultaneously with one tap:")
+
+        # Prepare options for multiselect
+        multiselect_options = {}
+        for p in squad_players:
+            p_name = p['full_name'] if cur_off else mask_name_banking(p['full_name'])
+            st_indicator = "🟢 [ON FIELD]" if p['today_status'] == 'PRE_SPORT_VALIDATED' else (
+                "✅ [CERTIFIED]" if p['today_status'] == 'DUAL_VERIFIED' else "⚪ [ABSENT]"
+            )
+            label = f"{p['staff_id']} — {p_name} ({p['department'][:18]}) {st_indicator}"
+            multiselect_options[label] = p['staff_id']
+
+        # Determine default candidates based on gate
+        if is_arrival:
+            default_candidates = [
+                lbl for lbl, sid in multiselect_options.items() 
+                if next((p for p in squad_players if p['staff_id'] == sid), {}).get("today_status") not in ["PRE_SPORT_VALIDATED", "DUAL_VERIFIED"]
+            ]
+        else:
+            default_candidates = [
+                lbl for lbl, sid in multiselect_options.items() 
+                if next((p for p in squad_players if p['staff_id'] == sid), {}).get("today_status") == "PRE_SPORT_VALIDATED"
+            ]
+
+        # Helper buttons for rapid bulk selection
+        c_hlp1, c_hlp2, c_hlp3 = st.columns([1.2, 1.2, 2.5])
+        with c_hlp1:
+            if st.button("☑️ Select All Eligible", key="btn_sel_all_elig"):
+                st.session_state["rc_selected_labels"] = default_candidates
+                st.rerun()
+        with c_hlp2:
+            if st.button("🔄 Clear Selections", key="btn_clear_sel"):
+                st.session_state["rc_selected_labels"] = []
+                st.rerun()
+
+        current_selected = st.session_state.get("rc_selected_labels", [])
+        current_selected = [lbl for lbl in current_selected if lbl in multiselect_options]
+
+        chosen_labels = st.multiselect(
+            f"Select Athletes for Batch {gate_label}:",
+            list(multiselect_options.keys()),
+            default=current_selected,
+            key="ms_rollcall_athletes"
+        )
+        st.session_state["rc_selected_labels"] = chosen_labels
+
+        chosen_sids = [multiselect_options[lbl] for lbl in chosen_labels if lbl in multiselect_options]
+
+        btn_batch_label = f"🚀 Batch Clock-In {len(chosen_sids)} Athletes ({gate_label})" if chosen_sids else f"🚀 Select Athletes Above to Batch Clock-In ({gate_label})"
+        if st.button(btn_batch_label, type="primary", use_container_width=True, disabled=len(chosen_sids) == 0, key="btn_submit_batch_rc"):
+            success_count = 0
+            with st.spinner(f"Verifying and recording attendance for {len(chosen_sids)} athletes..."):
+                for sid in chosen_sids:
+                    p_obj = next((p for p in squad_players if p["staff_id"] == sid), None)
+                    if p_obj:
+                        backend.log_checkin(
+                            staff_id=p_obj["staff_id"],
+                            full_name=p_obj["full_name"],
+                            cbk_email=p_obj.get("cbk_email", f"{p_obj['staff_id'].lower()}@centralbank.go.ke"),
+                            department=p_obj.get("department", "General"),
+                            discipline=rc_sport,
+                            gate=active_gate_key,
+                            station=rc_station,
+                            notes=f"Captain 1-Click Roll Call ({gate_label})"
+                        )
+                        success_count += 1
+            st.session_state["rc_selected_labels"] = []
+            st.success(f"🎉 Successfully batch-verified {success_count} athletes for {rc_sport} {gate_label} at {rc_station}!")
+            st.balloons()
+            st.rerun()
+
+    # 4. INDIVIDUAL ROSTER CHECK SHEET (1-TAP ACTION ROWS)
+    st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
+    st.markdown(f"#### 👥 Individual {rc_sport} Squad Roll Sheet")
+    st.caption("Inspect each player's live field status and tap their individual button to clock them in or out:")
+
+    # Search & Filter Controls
+    c_flt1, c_flt2 = st.columns([1.5, 1])
+    with c_flt1:
+        rc_search = st.text_input("🔍 Quick Search Roster (Name or Staff ID):", placeholder="e.g. 3428, Njuguna...", key="rc_roster_search")
+    with c_flt2:
+        rc_status_filter = st.selectbox(
+            "Filter by Status:",
+            ["All Squad Players", "⚪ Awaiting Arrival Only", "⏱️ On Field (Arrival Logged)", "✅ Dual-Verified & Certified"],
+            key="rc_filter_status"
+        )
+
+    # Filter squad players
+    displayed_roster = squad_players
+    if rc_search.strip():
+        q_clean = rc_search.strip().lower()
+        displayed_roster = [
+            p for p in displayed_roster 
+            if q_clean in p['staff_id'].lower() or q_clean in p['full_name'].lower() or q_clean in p['department'].lower()
+        ]
+
+    if rc_status_filter == "⚪ Awaiting Arrival Only":
+        displayed_roster = [p for p in displayed_roster if p.get("today_status") not in ["PRE_SPORT_VALIDATED", "DUAL_VERIFIED"]]
+    elif rc_status_filter == "⏱️ On Field (Arrival Logged)":
+        displayed_roster = [p for p in displayed_roster if p.get("today_status") == "PRE_SPORT_VALIDATED"]
+    elif rc_status_filter == "✅ Dual-Verified & Certified":
+        displayed_roster = [p for p in displayed_roster if p.get("today_status") == "DUAL_VERIFIED"]
+
+    if displayed_roster:
+        for idx, p in enumerate(displayed_roster):
+            sid = p['staff_id']
+            fn = p['full_name']
+            fn_disp = fn if cur_off else mask_name_banking(fn)
+            dept = p['department']
+            st_today = p.get('today_status', 'READY')
+            dur = p.get('today_duration', 0.0)
+
+            # Determine row style and badge
+            if st_today == "DUAL_VERIFIED":
+                badge_html = f'<span style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">✅ DUAL-VERIFIED ({int(dur)}m)</span>'
+                card_border = "#10B981"
+            elif st_today == "PRE_SPORT_VALIDATED":
+                badge_html = f'<span style="background: rgba(0, 242, 254, 0.18); border: 1px solid #00F2FE; color: #38BDF8; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;"><span class="live-pulse"></span> ON FIELD</span>'
+                card_border = "#00F2FE"
+            elif st_today == "INSUFFICIENT_DURATION":
+                badge_html = f'<span style="background: rgba(239, 68, 68, 0.2); border: 1px solid #EF4444; color: #F87171; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">🛑 SHORT SESSION ({int(dur)}m)</span>'
+                card_border = "#EF4444"
+            else:
+                badge_html = f'<span style="background: rgba(148, 163, 184, 0.15); border: 1px solid #64748B; color: #94A3B8; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700;">⚪ AWAITING ARRIVAL</span>'
+                card_border = "rgba(245, 197, 66, 0.25)"
+
+            c_info, c_action = st.columns([3, 1.4])
+            with c_info:
+                st.markdown(f"""
+                <div style="background: rgba(9, 24, 48, 0.85); border: 1px solid {card_border}; border-radius: 10px; padding: 10px 14px; margin-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-weight: 800; color: #00F2FE; font-family: monospace; font-size: 0.84rem;">{sid}</span>
+                            <strong style="color: #FFFFFF; font-size: 0.95rem; margin-left: 8px;">{fn_disp}</strong>
+                            <span style="color: #94A3B8; font-size: 0.78rem; margin-left: 8px;">• {dept[:25]}</span>
+                        </div>
+                        <div>
+                            {badge_html}
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            with c_action:
+                st.markdown("<div style='margin-top: 4px;'></div>", unsafe_allow_html=True)
+                if is_arrival:
+                    if st_today in ["PRE_SPORT_VALIDATED", "DUAL_VERIFIED"]:
+                        st.button("✅ Arrival Recorded", disabled=True, key=f"btn_done_arr_{sid}_{idx}", use_container_width=True)
+                    else:
+                        if st.button(f"🟢 Clock In Arrival", key=f"btn_arr_{sid}_{idx}", type="primary", use_container_width=True):
+                            backend.log_checkin(
+                                staff_id=sid,
+                                full_name=fn,
+                                cbk_email=p.get("cbk_email", f"{sid.lower()}@centralbank.go.ke"),
+                                department=dept,
+                                discipline=rc_sport,
+                                gate="PRE_SPORT",
+                                station=rc_station,
+                                notes="Captain 1-Tap Individual Roll Call"
+                            )
+                            st.toast(f"🟢 {fn_disp} clocked in at {rc_station}!", icon="🟢")
+                            st.rerun()
+                else:
+                    # Departure Mode
+                    if st_today == "DUAL_VERIFIED":
+                        st.button("🏁 Completed & Certified", disabled=True, key=f"btn_done_dep_{sid}_{idx}", use_container_width=True)
+                    elif st_today == "PRE_SPORT_VALIDATED":
+                        if st.button(f"🏁 Clock Out Departure", key=f"btn_dep_{sid}_{idx}", type="primary", use_container_width=True):
+                            backend.log_checkin(
+                                staff_id=sid,
+                                full_name=fn,
+                                cbk_email=p.get("cbk_email", f"{sid.lower()}@centralbank.go.ke"),
+                                department=dept,
+                                discipline=rc_sport,
+                                gate="POST_SPORT",
+                                station=rc_station,
+                                notes="Captain 1-Tap Individual Departure"
+                            )
+                            st.toast(f"🏁 {fn_disp} departure recorded & dual-verified!", icon="🏁")
+                            st.rerun()
+                    else:
+                        if st.button(f"⚡ Instant Dual Clock-In", key=f"btn_dual_{sid}_{idx}", use_container_width=True):
+                            backend.log_checkin(
+                                staff_id=sid,
+                                full_name=fn,
+                                cbk_email=p.get("cbk_email", f"{sid.lower()}@centralbank.go.ke"),
+                                department=dept,
+                                discipline=rc_sport,
+                                gate="POST_SPORT",
+                                station=rc_station,
+                                notes="Captain Instant Dual Clock-In"
+                            )
+                            st.toast(f"⚡ {fn_disp} verified for {rc_sport}!", icon="⚡")
+                            st.rerun()
+    else:
+        st.info("No athletes matching your search criteria.")
+
+    # 5. WALK-IN SUBSTITUTE ONBOARDING (For players not on official roster)
+    st.markdown("---")
+    with st.expander(f"➕ Quick-Add Walk-In / Guest Player to {rc_sport} Roll Call"):
+        st.caption("If a staff member arrived to play who wasn't on the official secretariat roster, register them right now on the field:")
+        c_w1, c_w2 = st.columns(2)
+        with c_w1:
+            rc_w_sid = st.text_input("Staff ID / Payroll #*", placeholder="e.g. 4022 or CBK-4022", key="rc_w_sid")
+            rc_w_fn = st.text_input("Full Name*", placeholder="e.g. Kelvin Mutua", key="rc_w_fn")
+        with c_w2:
+            rc_w_em = st.text_input("Institutional Email*", placeholder="e.g. kmutua@centralbank.go.ke", key="rc_w_em")
+            rc_w_dp = st.selectbox("Directorate / Department*", CBK_DEPARTMENTS, key="rc_w_dp")
+
+        if st.button(f"🚀 Register & Clock In ({gate_label})", type="primary", use_container_width=True, key="btn_rc_add_walkin"):
+            if not rc_w_sid or not rc_w_fn:
+                st.error("Please provide both Staff ID and Full Name.")
+            else:
+                clean_w_sid = rc_w_sid.strip().upper()
+                if not clean_w_sid.startswith("CBK-") and clean_w_sid.isdigit():
+                    clean_w_sid = f"CBK-{clean_w_sid}"
+                clean_w_em = rc_w_em.strip().lower() if rc_w_em else f"{clean_w_sid.lower()}@centralbank.go.ke"
+                backend.upsert_staff(clean_w_sid, rc_w_fn.strip(), clean_w_em, rc_w_dp, rc_sport)
+                backend.log_checkin(
+                    staff_id=clean_w_sid,
+                    full_name=rc_w_fn.strip(),
+                    cbk_email=clean_w_em,
+                    department=rc_w_dp,
+                    discipline=rc_sport,
+                    gate=active_gate_key,
+                    station=rc_station,
+                    notes=f"Captain Walk-In Roll Call ({gate_label})"
+                )
+                st.success(f"✅ Walk-in athlete {rc_w_fn} ({clean_w_sid}) enrolled and clocked into {rc_sport} successfully!")
+                st.balloons()
+                st.rerun()
+
+    # 6. EXPORT TODAY'S SQUAD ATTENDANCE SHEET
+    st.markdown("---")
+    st.markdown(f"#### 📥 Export Today's {rc_sport} Roll Call Sheet")
+    st.caption("Download the current squad roll call status as a certified CSV report:")
+    if squad_players:
+        df_rc_export = pd.DataFrame([{
+            "Staff ID": p["staff_id"],
+            "Full Name": p["full_name"] if cur_off else mask_name_banking(p["full_name"]),
+            "Department": p["department"],
+            "Sport": rc_sport,
+            "Today Status": p.get("today_status", "READY"),
+            "Duration (Mins)": p.get("today_duration", 0),
+            "Gate Mode": gate_label,
+            "Station": rc_station,
+            "Certified Attendance": "1 UNIT (CERTIFIED)" if p.get("today_status") == "DUAL_VERIFIED" else "0 UNITS (PENDING)"
+        } for p in squad_players])
+        csv_rc = df_rc_export.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label=f"📥 Download {rc_sport} Roll Call CSV",
+            data=csv_rc,
+            file_name=f"CBK_RollCall_{rc_sport.replace(' ', '_')}_{now_dt.strftime('%Y%m%d')}.csv",
+            mime="text/csv",
+            use_container_width=True,
+            key="dl_btn_rc_csv"
+        )
+
+if "📋 Captain's Roll Call" in tab_dict:
+    with tab_dict["📋 Captain's Roll Call"]:
+        render_tab_captains_roll_call()
 
 # ==============================================================================
 # TAB 3: SECRETARIAT OPERATIONAL VIEW
