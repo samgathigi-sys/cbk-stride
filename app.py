@@ -1135,7 +1135,18 @@ def render_captain_calendar_section(discipline: str, is_authorized: bool, key_pr
                         st.error("Please provide an Event Title or Opponent.")
                     else:
                         d_str = f_date.strftime("%Y-%m-%d")
-                        created_by_tag = f"Captain ({discipline})"
+                        cur_cap = st.session_state.get("authenticated_captain", None)
+                        cur_off = get_current_officer()
+                        if cur_cap and cur_cap.get("staff_id"):
+                            created_by_tag = f"Captain ({cur_cap['staff_id']})"
+                        elif cur_off and cur_off.get("staff_id"):
+                            created_by_tag = f"Secretariat ({cur_off['staff_id']})"
+                        else:
+                            cap_rec = backend.get_captain_for_discipline(discipline)
+                            if cap_rec and cap_rec.get("staff_id"):
+                                created_by_tag = f"Captain ({cap_rec['staff_id']})"
+                            else:
+                                created_by_tag = f"Captain ({discipline})"
                         ok = backend.add_calendar_note(
                             discipline=discipline,
                             event_date=d_str,
