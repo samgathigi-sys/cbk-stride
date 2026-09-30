@@ -2036,17 +2036,28 @@ def render_tab_captains_roll_call():
         """, unsafe_allow_html=True)
 
         with st.container(border=True):
-            st.markdown("#### 🔑 Team Captain Sign-In (Discipline Access Shield)")
-            c_cap_l1, c_cap_l2, c_cap_l3 = st.columns([1.2, 1.1, 1.2])
-            with c_cap_l1:
-                cap_sel_sport = st.selectbox("Select Your Sport Discipline:", ALL_18_SPORTS, key="cap_in_sport")
-            with c_cap_l2:
-                cap_in_sid = st.text_input("Staff ID / Payroll #:", placeholder="e.g. 3428 or CBK-3428", key="cap_in_sid")
-            with c_cap_l3:
-                cap_in_pass = st.text_input("Secret Captain Passkey:", type="password", placeholder="Enter secret passkey", key="cap_in_pass")
+            cap_sub_tab1, cap_sub_tab2 = st.tabs([
+                "🔑 Existing Captain Sign-In",
+                "🆕 Register as Team Captain (Set Your Secret Passkey)"
+            ])
 
-            c_sub1, c_sub2 = st.columns([2, 1.5])
-            with c_sub1:
+            with cap_sub_tab1:
+                st.markdown("#### 🔑 Team Captain Sign-In (Discipline Access Shield)")
+                c_cap_l1, c_cap_l2, c_cap_l3 = st.columns([1.2, 1.1, 1.2])
+                with c_cap_l1:
+                    cap_sel_sport = st.selectbox("Select Your Sport Discipline:", ALL_18_SPORTS, key="cap_in_sport")
+                with c_cap_l2:
+                    cap_in_sid = st.text_input("Staff ID / Payroll #:", placeholder="e.g. 3428 or CBK-3428", key="cap_in_sid")
+                with c_cap_l3:
+                    cap_in_pass = st.text_input("Secret Captain Passkey:", type="password", placeholder="Enter secret passkey", key="cap_in_pass")
+
+                # Show accreditation status for selected discipline
+                acc_cap = backend.get_captain_for_discipline(cap_sel_sport)
+                if acc_cap:
+                    st.caption(f"🛡️ Accredited Captain for {cap_sel_sport}: **Capt. {acc_cap['full_name']}** ({acc_cap['staff_id']})")
+                else:
+                    st.caption(f"ℹ️ No captain registered yet for {cap_sel_sport}. Appointed captains can switch to the **'🆕 Register as Team Captain'** tab above to activate!")
+
                 if st.button(f"🔓 Verify Passkey & Unlock {cap_sel_sport} Roll Call", type="primary", use_container_width=True, key="btn_auth_cap_pass"):
                     if not cap_in_sid.strip() or not cap_in_pass.strip():
                         st.error("Please enter both your Staff ID and Secret Passkey.")
@@ -2060,40 +2071,71 @@ def render_tab_captains_roll_call():
                             st.balloons()
                             st.rerun()
                         elif msg_cap == "FIRST_TIME_SETUP":
-                            st.session_state["show_first_time_setup"] = True
-                            st.session_state["first_time_staff"] = prof_cap
-                            st.session_state["first_time_sport"] = cap_sel_sport
-                            st.rerun()
+                            st.info(f"💡 You are accredited in the Central Bank athlete registry as {prof_cap.get('full_name', 'Captain')}! Please click the **'🆕 Register as Team Captain'** tab above to choose your personal passkey.")
                         else:
                             st.error(msg_cap)
 
-            if st.session_state.get("show_first_time_setup"):
-                ft_staff = st.session_state.get("first_time_staff", {})
-                ft_sport = st.session_state.get("first_time_sport", cap_sel_sport)
-                st.markdown("---")
-                st.markdown(f"#### 🆕 First-Time Passkey Setup for {ft_staff.get('full_name', 'Captain')} ({ft_sport})")
-                st.caption("You are accredited in the Central Bank athlete registry! Create your secret personal passkey below to activate your captaincy shield:")
-                c_ft1, c_ft2, c_ft3 = st.columns([1.4, 1.4, 1])
-                with c_ft1:
-                    ft_email = st.text_input("Your Gmail / CBK Email:", value=ft_staff.get("cbk_email", ""), key="ft_cap_email")
-                with c_ft2:
-                    ft_new_pass = st.text_input("Create Secret Passkey (Min 4 digits):", type="password", key="ft_cap_pass")
-                with c_ft3:
-                    st.markdown("<div style='margin-top: 28px;'></div>", unsafe_allow_html=True)
-                    if st.button("🛡️ Activate Shield", type="primary", use_container_width=True, key="btn_save_ft_pass"):
-                        if not ft_new_pass.strip() or len(ft_new_pass.strip()) < 4:
-                            st.error("Passkey must be at least 4 digits/characters.")
+            with cap_sub_tab2:
+                st.markdown("#### 🆕 Team Captain Registration & Passkey Setup")
+                st.caption("Appointed captains: Register your discipline, link your email, and create your secret personal passkey to activate pitch roll call:")
+
+                c_reg1, c_reg2 = st.columns([1.2, 1.2])
+                with c_reg1:
+                    reg_sport = st.selectbox("Sport Discipline You Are Captaining:", ALL_18_SPORTS, key="reg_cap_sport")
+                    reg_sid = st.text_input("Your Staff ID / Payroll #:", placeholder="e.g. 1042 or CBK-1042", key="reg_cap_sid")
+                    
+                    reg_staff_match = None
+                    if reg_sid.strip():
+                        clean_check_sid = reg_sid.strip().upper()
+                        if not clean_check_sid.startswith("CBK-") and clean_check_sid.replace("CBK", "").replace("-", "").isdigit():
+                            clean_check_sid = f"CBK-{clean_check_sid.replace('CBK', '').replace('-', '')}"
+                        reg_staff_match = backend.get_staff_by_id(clean_check_sid)
+                        if reg_staff_match:
+                            st.success(f"✅ Verified CBK Staff: **{reg_staff_match['full_name']}** ({reg_staff_match['department']})")
+
+                with c_reg2:
+                    default_name = reg_staff_match["full_name"] if reg_staff_match else ""
+                    reg_full_name = st.text_input("Full Official Name (as on CBK ID):", value=default_name, placeholder="e.g. Jane Wanjiku", key="reg_cap_fullname")
+                    
+                    default_email = reg_staff_match.get("cbk_email", "") if reg_staff_match else ""
+                    reg_email = st.text_input("Your Personal / CBK Email (for verification):", value=default_email, placeholder="e.g. captain@gmail.com", key="reg_cap_email")
+
+                c_reg_p1, c_reg_p2 = st.columns(2)
+                with c_reg_p1:
+                    reg_pass1 = st.text_input("Create Secret Passkey (Min 4 digits):", type="password", placeholder="e.g. 4-digit PIN", key="reg_cap_pass1")
+                with c_reg_p2:
+                    reg_pass2 = st.text_input("Confirm Secret Passkey:", type="password", placeholder="Re-enter passkey", key="reg_cap_pass2")
+
+                st.caption("🛡️ **Anti-Tampering Guarantee:** Your passkey ensures only you can mark attendance and clock out athletes for your squad.")
+
+                if st.button(f"🛡️ Register & Unlock {reg_sport} Roll Call", type="primary", use_container_width=True, key="btn_submit_reg_cap"):
+                    if not reg_sid.strip():
+                        st.error("Please enter your Staff ID / Payroll number.")
+                    elif not reg_full_name.strip():
+                        st.error("Please enter your Full Official Name.")
+                    elif not reg_email.strip() or "@" not in reg_email:
+                        st.error("Please enter a valid Gmail or CBK Email address.")
+                    elif not reg_pass1.strip() or len(reg_pass1.strip()) < 4:
+                        st.error("Passkey must be at least 4 digits or characters.")
+                    elif reg_pass1.strip() != reg_pass2.strip():
+                        st.error("The two passkeys do not match! Please check and re-enter.")
+                    else:
+                        ok_reg, msg_reg, prof_reg = backend.setup_first_time_captain_passkey(
+                            raw_staff_id=reg_sid.strip(),
+                            discipline=reg_sport,
+                            gmail_or_email=reg_email.strip(),
+                            new_passkey=reg_pass1.strip(),
+                            custom_full_name=reg_full_name.strip()
+                        )
+                        if ok_reg:
+                            st.session_state["authenticated_captain"] = prof_reg
+                            st.session_state["active_discipline"] = reg_sport
+                            st.session_state["show_first_time_setup"] = False
+                            st.success(f"🎉 Welcome, Captain {prof_reg['full_name']}! You have successfully registered and unlocked {reg_sport} Roll Call.")
+                            st.balloons()
+                            st.rerun()
                         else:
-                            ok_s, msg_s, prof_s = backend.setup_first_time_captain_passkey(ft_staff["staff_id"], ft_sport, ft_email, ft_new_pass)
-                            if ok_s:
-                                st.session_state["authenticated_captain"] = prof_s
-                                st.session_state["active_discipline"] = ft_sport
-                                st.session_state["show_first_time_setup"] = False
-                                st.success(f"🎉 Passkey configured! Welcome, Captain {prof_s['full_name']}!")
-                                st.balloons()
-                                st.rerun()
-                            else:
-                                st.error(msg_s)
+                            st.error(msg_reg)
 
         # STRICT DATA PROTECTION: Stop execution here so no player names, IDs, or rosters are displayed!
         return

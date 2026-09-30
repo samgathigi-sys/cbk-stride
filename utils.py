@@ -1585,10 +1585,25 @@ class AttendanceBackend:
             # First time setup
             return False, "FIRST_TIME_SETUP", staff
 
+    def get_captain_for_discipline(self, discipline: str) -> Optional[Dict[str, Any]]:
+        """Retrieves accredited captain information for a specific sporting discipline."""
+        conn = sqlite3.connect(self.db_path, timeout=10)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT staff_id, full_name, gmail_or_email, discipline, created_at, last_login
+            FROM captain_credentials
+            WHERE discipline = ? AND is_active = 1 AND passkey_hash != ''
+            ORDER BY id DESC LIMIT 1
+        """, (discipline,))
+        row = cur.fetchone()
+        conn.close()
+        return dict(row) if row else None
+
     def setup_first_time_captain_passkey(
-        self, raw_staff_id: str, discipline: str, gmail_or_email: str, new_passkey: str
+        self, raw_staff_id: str, discipline: str, gmail_or_email: str, new_passkey: str, custom_full_name: str = ""
     ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
-        """Initializes a new secret passkey for a first-time team captain."""
+        """Initializes or updates a secret passkey for a team captain with cross-sport anti-tampering."""
         sid_clean = str(raw_staff_id).strip().upper()
         if not sid_clean.startswith("CBK-") and sid_clean.replace("CBK", "").replace("-", "").isdigit():
             sid_clean = f"CBK-{sid_clean.replace('CBK', '').replace('-', '')}"
@@ -1598,7 +1613,13 @@ class AttendanceBackend:
             return False, "Secret passkey must be at least 4 characters or digits.", None
 
         staff = self.get_staff_by_id(sid_clean)
-        full_name = staff["full_name"] if staff else f"Captain ({sid_clean})"
+        if custom_full_name.strip():
+            full_name = custom_full_name.strip()
+        elif staff and staff.get("full_name"):
+            full_name = staff["full_name"]
+        else:
+            full_name = f"Captain ({sid_clean})"
+            
         dept = staff["department"] if staff else "Central Bank of Kenya"
         email_clean = str(gmail_or_email).strip().lower()
 
@@ -1606,12 +1627,33 @@ class AttendanceBackend:
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         conn = sqlite3.connect(self.db_path, timeout=10)
+        conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+
+        # Anti-Impersonation Check: Verify if another captain is already accredited for this sport
         cur.execute("""
-            INSERT INTO captain_credentials (
-                staff_id, full_name, gmail_or_email, discipline, passkey_hash, created_at, is_active
-            ) VALUES (?, ?, ?, ?, ?, ?, 1)
-        """, (sid_clean, full_name, email_clean, discipline, pkey_hash, now_str))
+            SELECT * FROM captain_credentials
+            WHERE discipline = ? AND is_active = 1 AND passkey_hash != ''
+            ORDER BY id DESC LIMIT 1
+        """, (discipline,))
+        existing = cur.fetchone()
+        if existing and existing["staff_id"] != sid_clean:
+            conn.close()
+            return False, f"⚠️ {discipline} already has an accredited Team Captain ({existing['full_name']} - {existing['staff_id']}). To prevent unauthorized squad tampering, only the accredited captain or Secretariat can reassign access.", None
+
+        if existing and existing["staff_id"] == sid_clean:
+            cur.execute("""
+                UPDATE captain_credentials
+                SET passkey_hash = ?, gmail_or_email = ?, full_name = ?
+                WHERE id = ?
+            """, (pkey_hash, email_clean, full_name, existing["id"]))
+        else:
+            cur.execute("""
+                INSERT INTO captain_credentials (
+                    staff_id, full_name, gmail_or_email, discipline, passkey_hash, created_at, is_active
+                ) VALUES (?, ?, ?, ?, ?, ?, 1)
+            """, (sid_clean, full_name, email_clean, discipline, pkey_hash, now_str))
+
         conn.commit()
         conn.close()
 
@@ -1630,9 +1672,9 @@ class AttendanceBackend:
             action_type="CAPTAIN_PASSKEY_INITIALIZED",
             resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
             status="SUCCESS",
-            notes=f"Initial secret passkey configured by {full_name} for {discipline} captaincy"
+            notes=f"Captain passkey configured for {full_name} ({discipline})"
         )
-        return True, f"🎉 Secret passkey configured! Captain {full_name} is now accredited for {discipline}.", cap_profile
+        return True, f"🎉 Passkey configured! Welcome, Captain {full_name}! You are accredited for {discipline}.", cap_profile
 
     def request_captain_temp_pin(
         self, raw_staff_id: str, gmail_or_email: str, discipline: str
