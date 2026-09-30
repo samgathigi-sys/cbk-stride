@@ -2218,16 +2218,19 @@ def render_tab_captains_roll_call():
             dept = p['department']
             st_today = p.get('today_status', 'READY')
             dur = p.get('today_duration', 0.0)
+            ts_str = p.get('timestamp', '')
+            ts_time = ts_str.split(' ')[1] if ts_str and ' ' in ts_str else ''
+            time_badge = f" • {ts_time}" if ts_time else ""
 
             # Determine row style and badge
             if st_today == "DUAL_VERIFIED":
-                badge_html = f'<span style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">✅ DUAL-VERIFIED ({int(dur)}m)</span>'
+                badge_html = f'<span style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">✅ DUAL-VERIFIED ({int(dur)}m{time_badge})</span>'
                 card_border = "#10B981"
             elif st_today == "PRE_SPORT_VALIDATED":
-                badge_html = f'<span style="background: rgba(0, 242, 254, 0.18); border: 1px solid #00F2FE; color: #38BDF8; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;"><span class="live-pulse"></span> ON FIELD</span>'
+                badge_html = f'<span style="background: rgba(0, 242, 254, 0.18); border: 1px solid #00F2FE; color: #38BDF8; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;"><span class="live-pulse"></span> ON FIELD ({ts_time if ts_time else "Gate 1"})</span>'
                 card_border = "#00F2FE"
             elif st_today == "INSUFFICIENT_DURATION":
-                badge_html = f'<span style="background: rgba(239, 68, 68, 0.2); border: 1px solid #EF4444; color: #F87171; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">🛑 SHORT SESSION ({int(dur)}m)</span>'
+                badge_html = f'<span style="background: rgba(239, 68, 68, 0.2); border: 1px solid #EF4444; color: #F87171; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">🛑 SHORT SESSION ({int(dur)}m{time_badge})</span>'
                 card_border = "#EF4444"
             else:
                 badge_html = f'<span style="background: rgba(148, 163, 184, 0.15); border: 1px solid #64748B; color: #94A3B8; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700;">⚪ AWAITING ARRIVAL</span>'
@@ -2357,6 +2360,8 @@ def render_tab_captains_roll_call():
             "Duration (Mins)": p.get("today_duration", 0),
             "Gate Mode": gate_label,
             "Station": rc_station,
+            "Check-In Timestamp": p.get("timestamp", "—"),
+            "Verified By": auditor_tag,
             "Certified Attendance": "1 UNIT (CERTIFIED)" if p.get("today_status") == "DUAL_VERIFIED" else "0 UNITS (PENDING)"
         } for p in squad_players])
         csv_rc = df_rc_export.to_csv(index=False).encode('utf-8')
