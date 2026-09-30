@@ -870,13 +870,21 @@ def render_admin_security_lock(location_key: str = "default", required_perm: str
 # ==============================================================================
 cur_officer = get_current_officer()
 
-c_hdr_info, c_hdr_login = st.columns([3, 1.3])
+cur_captain_top = st.session_state.get("authenticated_captain", None)
+
+c_hdr_info, c_hdr_login = st.columns([3, 1.4])
 with c_hdr_login:
     if cur_officer:
-        if st.button(f"🔒 Lock Workspace", key="btn_top_signout", use_container_width=True):
+        if st.button("🔒 Lock Secretariat", key="btn_top_signout", use_container_width=True):
             st.session_state["authenticated_officer"] = None
             st.session_state["admin_exports_unlocked"] = False
             st.toast("🔒 Officer signed out. Public athlete mode active.", icon="🔒")
+            st.rerun()
+    elif cur_captain_top:
+        first_n = cur_captain_top['full_name'].split()[0]
+        if st.button(f"🔒 Sign Out Capt. {first_n}", key="btn_top_signout_cap", use_container_width=True, type="secondary"):
+            del st.session_state["authenticated_captain"]
+            st.toast(f"🔒 Signed out of {cur_captain_top['discipline']} captain command.", icon="🔒")
             st.rerun()
     else:
         with st.popover("🔐 Officer Clearance Login", use_container_width=True):
@@ -903,6 +911,14 @@ with c_hdr_info:
         <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 6px 12px; margin-bottom: 6px;">
             <span style="color: #34D399; font-weight: 700; font-size: 0.84rem;">
                 🔓 <strong>Officer Workspace Active:</strong> {cur_officer['full_name']} ({cur_officer['staff_id']}) • <span style="background: rgba(16, 185, 129, 0.2); padding: 1px 6px; border-radius: 4px;">{cur_officer['role']}</span>
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
+    elif cur_captain_top:
+        st.markdown(f"""
+        <div style="background: rgba(245, 197, 66, 0.12); border: 1.5px solid rgba(245, 197, 66, 0.45); border-radius: 8px; padding: 6px 12px; margin-bottom: 6px;">
+            <span style="color: #FFE58F; font-weight: 700; font-size: 0.84rem;">
+                🎖️ <strong>Accredited Captain:</strong> {cur_captain_top['full_name']} ({cur_captain_top['staff_id']}) • <span style="background: rgba(245, 197, 66, 0.25); color: #FFF; padding: 1px 8px; border-radius: 4px;">{cur_captain_top['discipline']}</span>
             </span>
         </div>
         """, unsafe_allow_html=True)
@@ -2537,6 +2553,25 @@ def render_tab_captains_roll_call():
                         st.session_state["rc_selected_labels"] = []
                         st.toast("✅ All tournament attendance logs purged to 0 scans!", icon="🚨")
                         st.rerun()
+
+    # 9. ROLL CALL COMPLETION & CAPTAIN SIGN-OUT
+    if cur_cap:
+        st.markdown("---")
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, rgba(8, 24, 48, 0.95) 0%, rgba(4, 14, 28, 0.98) 100%); border: 1.5px solid rgba(245, 197, 66, 0.4); border-radius: 14px; padding: 18px 22px; margin-top: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h4 style="margin: 0; color: #FFFFFF; font-size: 1.15rem; font-weight: 800;">🏁 Done With Today's Squad Roll Call?</h4>
+                    <p style="margin: 4px 0 0 0; color: #94A3B8; font-size: 0.84rem;">Click below to safely sign out, lock the squad roster from view, and preserve attendance integrity.</p>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
+        if st.button("🔒 Finish Roll Call & Sign Out Captain", type="primary", use_container_width=True, key="btn_bottom_signout_captain"):
+            del st.session_state["authenticated_captain"]
+            st.toast("✅ Signed out successfully. Squad roster locked.", icon="🔒")
+            st.rerun()
 
 if "📋 Captain's Roll Call" in tab_dict:
     with tab_dict["📋 Captain's Roll Call"]:
