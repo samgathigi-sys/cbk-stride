@@ -1,0 +1,680 @@
+staff_id,full_name,cbk_email,department,primary_sport,sub_discipline,phone_number,national_id,gender_category,created_at
+CBK-10002,Sammy Twaem,stwaem@centralbank.go.ke,Mombasa Branch,Athletics & Track,Athletics Men (Track & Field),+254 721 776 065,25690248,Men,2026-09-30 11:19:58
+CBK-10007,Gerald Mgandi,gmgandi@centralbank.go.ke,Mombasa Branch,Athletics & Track,Athletics Men (Track & Field),+254 727 753 948,28397923,Men,2026-09-30 11:19:58
+CBK-10008,Loise Rehema,lrehema@centralbank.go.ke,Mombasa Branch,Tug of War,Tug of War Ladies,+254 704 434 870,29528913,Ladies,2026-09-30 11:19:59
+CBK-10009,Ramtu Abdallah,rabdallah@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Men,+254 111 703 047,32803770,Men,2026-09-30 11:19:58
+CBK-10011,Joseph Were,jwere@centralbank.go.ke,Mombasa Branch,Swimming,Swimming Men,+254 714 150 777,29896168,Men,2026-09-30 11:19:59
+CBK-10019,Brian Korir,bkorir@centralbank.go.ke,Eldoret Branch,Handball,Handball Men,+254 799 122 744,,Men,2026-09-30 11:19:58
+CBK-10020,Kipkorir Tonui,ktonui@centralbank.go.ke,Eldoret Branch,Athletics & Track,Athletics Men (Track & Field),+254 720 171 071,,Men,2026-09-30 11:19:58
+CBK-10022,Martin Mugendi,mmugendi@centralbank.go.ke,Eldoret Branch,Tug of War,Tug of War Men,+254 727 131 928,25354471,Men,2026-09-30 11:19:59
+CBK-10029,Patrick Barkoshiom Kangogo,pkangogo@centralbank.go.ke,Kisumu Branch,Athletics & Track,Athletics Men (Track & Field),+254 728 973 919,,Men,2026-09-30 11:19:58
+CBK-10036,Lydia Bukachi,lbukachi@centralbank.go.ke,Nakuru Currency Centre,Handball,Handball Ladies,+254 701 049 963,32411011,Ladies,2026-09-30 11:19:58
+CBK-10036,Lydia Bukachi,lbukachi@centralbank.go.ke,Nakuru Currency Centre,Volleyball,Volleyball Ladies,+254 729 059 675,32411011,Ladies,2026-09-30 11:19:59
+CBK-10042,Duncan Wangama,dwangama@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 716 905 585,26569149,Men,2026-09-30 11:19:58
+CBK-10046,John Kilua Loisula,jloisula@centralbank.go.ke,Meru Currency Centre,Athletics & Track,Athletics Men (Track & Field),+254 724 243 677,26803787,Men,2026-09-30 11:19:58
+CBK-10047,David Ndwiga,dndwiga@centralbank.go.ke,Meru Currency Centre,Football (Soccer),Football Men,+254 724 007 422,22897852,Men,2026-09-30 11:19:58
+CBK-10050,Lerias Lenairoshi,llenairoshi@centralbank.go.ke,Meru Currency Centre,Athletics & Track,Athletics Men (Track & Field),+254 724 522 813,34473123,Men,2026-09-30 11:19:58
+CBK-10052,Frankline Mutuma,fmutuma@centralbank.go.ke,Meru Currency Centre,Football (Soccer),Football Men,+254 700 333 792,30009794,Men,2026-09-30 11:19:58
+CBK-10052,Franklin Mutuma,fmutuma@centralbank.go.ke,Meru Currency Centre,Tug of War,Tug of War Men,+254 700 333 792,30009794,Men,2026-09-30 11:19:59
+CBK-10053,James Lokichei,jlokichei@centralbank.go.ke,Meru Currency Centre,Athletics & Track,Athletics Men (Track & Field),+254 758 011 780,31878647,Men,2026-09-30 11:19:58
+CBK-10054,Norman Mbogo,nmbogo@centralbank.go.ke,IT & Digital Services,Tug of War,Tug of War Men,+254 729 540 974,25411002,Men,2026-09-30 11:19:59
+CBK-10062,Henry Ngure,hngure@centralbank.go.ke,Nyeri Currency Centre,Athletics & Track,Athletics Men (Track & Field),+254 715 843 030,26015603,Men,2026-09-30 11:19:58
+CBK-10063,Benson Korir,bkorir@centralbank.go.ke,Eldoret Branch,Tug of War,Tug of War Men,+254 729 105 165,24022241,Men,2026-09-30 11:19:59
+CBK-10064,Mohamed Jillo,mjillo@centralbank.go.ke,Mombasa Branch,Swimming,Swimming Men,+254 708 485 324,31109658,Men,2026-09-30 11:19:59
+CBK-10074,Ben Lusweti,blusweti@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 722 934 870,22501870,Men,2026-09-30 11:19:59
+CBK-10133,Petronilla Wachiya,pwachiya@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Ladies,+254 729 655 965,28103511,Ladies,2026-09-30 11:19:58
+CBK-10141,Balkizz Saina Suyianka,bsuyianka@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Ladies,+254 727 163 331,28183351,Ladies,2026-09-30 11:19:58
+CBK-10144,Purity Mutheu Musau,pmusau@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Ladies (Track & Field),+254 714 889 104,31844672,Ladies,2026-09-30 11:19:58
+CBK-10149,Anthony Gikuyu,agikuyu@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 713 918 754,33111594,Men,2026-09-30 11:19:59
+CBK-10150,Patrick Nyule,pnyule@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 714 318 163,30343520,Men,2026-09-30 11:19:58
+CBK-10153,Gilbert Mukangula,gmukangula@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 725 517 113,30078875,Men,2026-09-30 11:19:59
+CBK-10159,Joshua Magwe,jmagwe@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Men (Track & Field),+254 707 691 877,29372293,Men,2026-09-30 11:19:58
+CBK-10166,Fatuma Ramadhani,framadhani@centralbank.go.ke,Governor's Executive Office,Volleyball,Volleyball Ladies,+254 726 019 248,25964022,Ladies,2026-09-30 11:19:59
+CBK-10169,Jaka Juma,jjuma@centralbank.go.ke,Governor's Executive Office,Handball,Handball Men,+254 791 565 683,32024656,Men,2026-09-30 11:19:58
+CBK-10170,Hosea Kakach,hkakach@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 719 604 598,33528946,Men,2026-09-30 11:19:59
+CBK-10172,Michael Wangonya Minai,mminai@centralbank.go.ke,Governor's Executive Office,Handball,Handball Men,+254 729 437 366,27995520,Men,2026-09-30 11:19:58
+CBK-10186,Abdiweli Alio,aalio@centralbank.go.ke,Governor's Executive Office,Handball,Handball Men,+254 757 866 259,29640779,Men,2026-09-30 11:19:58
+CBK-10187,Peter Kamau,pkamau@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 716 388 536,26976076,Men,2026-09-30 11:19:58
+CBK-10188,Barako Galgalo,bgalgalo@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 714 610 230,32401289,Men,2026-09-30 11:19:58
+CBK-10199,Elius Ireri,eireri@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 714 077 524,32122850,Men,2026-09-30 11:19:58
+CBK-10208,Raymond Bwire,rbwire@centralbank.go.ke,Mombasa Branch,Tug of War,Tug of War Men,+254 723 035 883,,Men,2026-09-30 11:19:59
+CBK-10210,Shakue Fahmy,sfahmy@centralbank.go.ke,Mombasa Branch,Swimming,Swimming Men,+254 715 535 291,30188877,Men,2026-09-30 11:19:59
+CBK-10213,Mwafondo Antony,mantony@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Men,+254 729 668 128,31793853,Men,2026-09-30 11:19:58
+CBK-10220,Mathew Mosp,mmosp@centralbank.go.ke,Eldoret Branch,Athletics & Track,Athletics Men (Track & Field),+254 719 112 021,,Men,2026-09-30 11:19:58
+CBK-10223,John Eregae,jeregae@centralbank.go.ke,Eldoret Branch,Football (Soccer),Football Men,+254 710 645 310,28073329,Men,2026-09-30 11:19:58
+CBK-10224,Daniel Nyando,dnyando@centralbank.go.ke,Eldoret Branch,Athletics & Track,Athletics Men (Track & Field),+254 729 802 627,,Men,2026-09-30 11:19:58
+CBK-10231,Christine Maalimo,cmaalimo@centralbank.go.ke,Governor's Executive Office,Handball,Handball Ladies,+254 716 139 811,29237741,Ladies,2026-09-30 11:19:58
+CBK-10248,Boniface Thuo,bthuo@centralbank.go.ke,Meru Currency Centre,Football (Soccer),Football Men,+254 728 543 347,29727854,Men,2026-09-30 11:19:58
+CBK-10250,Daniel Muhindi,dmuhindi@centralbank.go.ke,Meru Currency Centre,Football (Soccer),Football Men,+254 702 072 238,33278193,Men,2026-09-30 11:19:58
+CBK-10254,Naomi Sabato Lekuchula,nlekuchula@centralbank.go.ke,Nyeri Currency Centre,Darts,Darts Ladies,+254 712 714 644,28410841,Ladies,2026-09-30 11:19:58
+CBK-10261,Peter Mjomba,pmjomba@centralbank.go.ke,Nyeri Currency Centre,Football (Soccer),Football Men,+254 707 745 404,29608342,Men,2026-09-30 11:19:58
+CBK-10262,Godfrey Makasa,gmakasa@centralbank.go.ke,Nyeri Currency Centre,Handball,Handball Men,+254 713 722 819,29856167,Men,2026-09-30 11:19:58
+CBK-10279,Linah Chelangat,lchelangat@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Ladies (Track & Field),+254 726 945 346,32641585,Ladies,2026-09-30 11:19:58
+CBK-10307,Dominic Rosana Ogega,dogega@centralbank.go.ke,Nakuru Currency Centre,Football (Soccer),Football Men,+254 705 260 653,33408094,Men,2026-09-30 11:19:58
+CBK-10317,Ephraim Kimaru,ekimaru@centralbank.go.ke,Nyeri Currency Centre,Football (Soccer),Football Men,+254 719 426 879,30084129,Men,2026-09-30 11:19:58
+CBK-10320,Elizabeth Gathoni Warui,ewarui@centralbank.go.ke,Nyeri Currency Centre,Volleyball,Volleyball Ladies,+254 703 215 452,30372143,Ladies,2026-09-30 11:19:59
+CBK-10327,Sylvia Parkeri,sparkeri@centralbank.go.ke,Governor's Executive Office,Volleyball,Volleyball Ladies,+254 716 799 675,30619036,Ladies,2026-09-30 11:19:59
+CBK-10335,Christine Muthoni Wanjiru,cwanjiru@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Ladies (Track & Field),+254 726 379 081,32704964,Ladies,2026-09-30 11:19:58
+CBK-10335,Christine Muthoni,cmuthoni@centralbank.go.ke,Governor's Executive Office,Handball,Handball Ladies,+254 726 379 081,32704964,Ladies,2026-09-30 11:19:58
+CBK-10335,Christine Muthoni,cmuthoni@centralbank.go.ke,Governor's Executive Office,Scrabble,Scrabble Ladies,+254 726 379 081,32704964,Ladies,2026-09-30 11:19:58
+CBK-10335,Christine Muthoni,cmuthoni@centralbank.go.ke,Governor's Executive Office,Volleyball,Volleyball Ladies,+254 726 379 081,32704964,Ladies,2026-09-30 11:19:59
+CBK-10336,Harrison Adenyo,hadenyo@centralbank.go.ke,Governor's Executive Office,Scrabble,Scrabble Men,+254 720 207 691,22392856,Men,2026-09-30 11:19:59
+CBK-10344,Sharon Jeruto,sjeruto@centralbank.go.ke,Governor's Executive Office,Volleyball,Volleyball Ladies,+254 723 556 995,37799506,Ladies,2026-09-30 11:19:59
+CBK-10347,Vincent Otieno,votieno@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 717 517 742,27686558,Men,2026-09-30 11:19:58
+CBK-10361,Paul Gitau,pgitau@centralbank.go.ke,IT & Digital Services,Athletics & Track,Athletics Men (Track & Field),+254 727 594 145,28277894,Men,2026-09-30 11:19:58
+CBK-10366,David Kimathi,dkimathi@centralbank.go.ke,Kenya School of Monetary Studies (KSMS),Handball,Handball Men,+254 728 061 307,30175077,Men,2026-09-30 11:19:58
+CBK-10376,Paul Sirengo,psirengo@centralbank.go.ke,Eldoret Branch,Handball,Handball Men,+254 728 744 370,,Men,2026-09-30 11:19:58
+CBK-10377,Josiah Maroa Daniel,jdaniel@centralbank.go.ke,Eldoret Branch,Athletics & Track,Athletics Men (Track & Field),+254 728 550 289,,Men,2026-09-30 11:19:58
+CBK-108607,Richard Opiyo,ropiyo@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 791 584 864,30280222,Men,2026-09-30 11:19:58
+CBK-109126,Oscar Abuya,oabuya@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 702 423 874,30842903,Men,2026-09-30 11:19:58
+CBK-112471,Joseph Kirimi,jkirimi@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 725 916 205,29825088,Men,2026-09-30 11:19:58
+CBK-17612,Nelly Nyevu,nnyevu@centralbank.go.ke,Governor's Executive Office,Draughts,Draughts Ladies,+254 782 824 041,,Ladies,2026-09-30 11:19:58
+CBK-2073,Karisa Chembe,kchembe@centralbank.go.ke,Mombasa Branch,Table Tennis,Table Tennis Men,+254 722 290 040,9204362,Men,2026-09-30 11:19:59
+CBK-2074,Joyce Nasieku,jnasieku@centralbank.go.ke,Banking Services & National Payments,Squash,Squash Ladies,+254 721 177 889,8823510,Ladies,2026-09-30 11:19:59
+CBK-2175,Beatrice Juma,bjuma@centralbank.go.ke,IT & Digital Services,Swimming,Swimming Ladies,+254 722 707 648,10475648,Ladies,2026-09-30 11:19:59
+CBK-2187,Philbert Nthiomi Majau,pmajau@centralbank.go.ke,Banking Services & National Payments,Golf,Golf,+254 722 783 611,,Mixed,2026-09-30 11:19:58
+CBK-2208,Joseph Ngetich,jngetich@centralbank.go.ke,Kisumu Branch,Chess,Chess Men,+254 722 793 268,9233213,Men,2026-09-30 11:19:58
+CBK-2246,Steve Chivatsi,schivatsi@centralbank.go.ke,Banking Services & National Payments,Swimming,Swimming Men,+254 726 541 414,9774053,Men,2026-09-30 11:19:59
+CBK-2263,Irene Tuda,ituda@centralbank.go.ke,General Services & Procurement,Squash,Squash Ladies,+254 723 464 523,10474787,Ladies,2026-09-30 11:19:59
+CBK-2282,Joel Kyalo Kaindi,jkaindi@centralbank.go.ke,Banking Services & National Payments,Golf,Golf,+254 722 759 960,,Mixed,2026-09-30 11:19:58
+CBK-2312,Irene Njoroge,injoroge@centralbank.go.ke,Human Resources,Golf,Golf,+254 721 954 977,,Mixed,2026-09-30 11:19:58
+CBK-2324,Mary Chege,mchege@centralbank.go.ke,Eldoret Branch,Scrabble,Scrabble Ladies,+254 722 747 659,9136281,Ladies,2026-09-30 11:19:58
+CBK-2328,Sarah Mwaniki,smwaniki@centralbank.go.ke,General Services & Procurement,Lawn Tennis,Lawn Tennis Ladies,+254 722 820 518,1033097,Ladies,2026-09-30 11:19:58
+CBK-2358,William Kibet,wkibet@centralbank.go.ke,General Services & Procurement,Table Tennis,Table Tennis Men,+254 726 654 304,9150348,Men,2026-09-30 11:19:59
+CBK-2360,Julie Gwala,jgwala@centralbank.go.ke,Financial Markets & Reserves,Basketball,Basketball Ladies,+254 722 306 046,9985682,Ladies,2026-09-30 11:19:58
+CBK-2364,Margaret Chege,mchege@centralbank.go.ke,Currency Operations & Logistics,Netball,Netball,+254 722 228 815,9708194,Ladies,2026-09-30 11:19:58
+CBK-2380,Peres Kogo,pkogo@centralbank.go.ke,Research & Policy Analysis,Volleyball,Volleyball Ladies,+254 721 712 576,10761692,Ladies,2026-09-30 11:19:59
+CBK-2386,George Ongoro,gongoro@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 721 404 130,8536300,Men,2026-09-30 11:19:59
+CBK-2405,Maina Matheri,mmatheri@centralbank.go.ke,Banking Services & National Payments,Table Tennis,Table Tennis Men,+254 722 799 849,10225415,Men,2026-09-30 11:19:59
+CBK-2406,Oscar Ilavonga,oilavonga@centralbank.go.ke,Human Resources,Basketball,Basketball Men,+254 722 749 609,9088194,Men,2026-09-30 11:19:58
+CBK-2410,Shelmith Wanja Muraguri,smuraguri@centralbank.go.ke,Bank Supervision,Golf,Golf,+254 720 585 103,,Mixed,2026-09-30 11:19:58
+CBK-2413,Eric Mutai,emutai@centralbank.go.ke,Bank Supervision,Badminton,Badminton Men,+254 720 385 826,19512521,Men,2026-09-30 11:19:58
+CBK-2423,David Rufus,drufus@centralbank.go.ke,Financial Markets & Reserves,Table Tennis,Table Tennis Men,+254 721 546 700,9833702,Men,2026-09-30 11:19:59
+CBK-2435,Phylis Kimutai,pkimutai@centralbank.go.ke,Kisumu Branch,Basketball,Basketball Ladies,+254 721 663 918,7061717,Ladies,2026-09-30 11:19:58
+CBK-2441,Winsome Kossom,wkossom@centralbank.go.ke,Financial Markets & Reserves,Volleyball,Volleyball Ladies,+254 721 711 694,10761942,Ladies,2026-09-30 11:19:59
+CBK-2452,Irene Sarah Wanjiku Njiru,injiru@centralbank.go.ke,Mombasa Branch,Golf,Golf,+254 723 714 927,,Mixed,2026-09-30 11:19:58
+CBK-2487,Simon Muthomi Karemu,skaremu@centralbank.go.ke,IT & Digital Services,Golf,Golf,+254 724 344 199,,Mixed,2026-09-30 11:19:58
+CBK-2494,Moses Lepiren,mlepiren@centralbank.go.ke,Kisumu Branch,Golf,Golf,+254 722 887 553,,Mixed,2026-09-30 11:19:58
+CBK-2495,Mary Katana,mkatana@centralbank.go.ke,Mombasa Branch,Scrabble,Scrabble Ladies,+254 722 236 092,10970289,Ladies,2026-09-30 11:19:58
+CBK-2524,Asenath Bore,abore@centralbank.go.ke,Human Resources,Darts,Darts Ladies,+254 727 319 615,9778276,Ladies,2026-09-30 11:19:58
+CBK-2530,Livingstone Rono,lrono@centralbank.go.ke,Nakuru Currency Centre,Snooker / Pool,Snooker / Pool,+254 704 805 150,8762989,Mixed,2026-09-30 11:19:59
+CBK-2538,Thomas Chirchir,tchirchir@centralbank.go.ke,Kisumu Branch,Chess,Chess Men,+254 722 497 160,,Men,2026-09-30 11:19:58
+CBK-2559,Diana Rutto,drutto@centralbank.go.ke,Human Resources,Athletics & Track,Athletics Ladies (Track & Field),+254 722 293 668,7445800,Ladies,2026-09-30 11:19:58
+CBK-2560,Lucy L Elipan,lelipan@centralbank.go.ke,General Services & Procurement,Basketball,Basketball Ladies,+254 722 800 248,9788967,Ladies,2026-09-30 11:19:58
+CBK-2636,Lazarus Mwanthi,lmwanthi@centralbank.go.ke,Currency Operations & Logistics,Athletics & Track,Athletics Men (Track & Field),+254 721 451 663,10435236,Men,2026-09-30 11:19:58
+CBK-2651,Robert Kavita,rkavita@centralbank.go.ke,Nyeri Currency Centre,Draughts,Draughts Men,+254 718 019 186,13224208,Men,2026-09-30 11:19:58
+CBK-2652,Francis Cheruiyot,fcheruiyot@centralbank.go.ke,Eldoret Branch,Snooker / Pool,Snooker / Pool,+254 720 361 365,12826362,Mixed,2026-09-30 11:19:59
+CBK-2660,Joyce C B Mutai,jmutai@centralbank.go.ke,Financial Markets & Reserves,Badminton,Badminton Ladies,+254 724 226 426,10030751,Ladies,2026-09-30 11:19:58
+CBK-2684,Peter Kering,pkering@centralbank.go.ke,Mombasa Branch,Golf,Golf,+254 722 524 021,,Mixed,2026-09-30 11:19:58
+CBK-2691,Betsy Koskei,bkoskei@centralbank.go.ke,Human Resources,Badminton,Badminton Ladies,+254 722 698 703,11843895,Ladies,2026-09-30 11:19:58
+CBK-2693,Lucy Oyolla,loyolla@centralbank.go.ke,Human Resources,Lawn Tennis,Lawn Tennis Ladies,+254 722 885 745,13427975,Ladies,2026-09-30 11:19:58
+CBK-2695,Beatrice Korir,bkorir@centralbank.go.ke,Eldoret Branch,Table Tennis,Table Tennis Ladies,+254 722 572 401,11791576,Ladies,2026-09-30 11:19:59
+CBK-2702,Margret Kibet,mkibet@centralbank.go.ke,Currency Operations & Logistics,Badminton,Badminton Ladies,+254 722 828 743,13613426,Ladies,2026-09-30 11:19:58
+CBK-2703,Samson N Aling’,saling@centralbank.go.ke,Meru Currency Centre,Football (Soccer),Football Men,+254 722 685 972,9180910,Men,2026-09-30 11:19:58
+CBK-2716,Dorothy Matolo,dmatolo@centralbank.go.ke,IT & Digital Services,Squash,Squash Ladies,+254 722 862 064,12722063,Ladies,2026-09-30 11:19:59
+CBK-2718,Benson Machibi,bmachibi@centralbank.go.ke,Financial Markets & Reserves,Darts,Darts Men,+254 722 581 913,8989610,Men,2026-09-30 11:19:58
+CBK-2726,Fulgence Mwangecho,fmwangecho@centralbank.go.ke,IT & Digital Services,Draughts,Draughts Men,+254 722 857 652,10754576,Men,2026-09-30 11:19:58
+CBK-2729,Lydiah Nganga,lnganga@centralbank.go.ke,Currency Operations & Logistics,Tug of War,Tug of War Ladies,+254 722 672 738,14487227,Ladies,2026-09-30 11:19:59
+CBK-2730,Jackline Koini,jkoini@centralbank.go.ke,Governor's Executive Office,Basketball,Basketball Ladies,+254 723 338 373,13070058,Ladies,2026-09-30 11:19:58
+CBK-2731,Daniel Kwedho,dkwedho@centralbank.go.ke,Banking Services & National Payments,Basketball,Basketball Men,+254 722 210 306,13062000,Men,2026-09-30 11:19:58
+CBK-2740,Blandina Mpingu,bmpingu@centralbank.go.ke,Nyeri Currency Centre,Volleyball,Volleyball Ladies,+254 722 584 508,10951570,Ladies,2026-09-30 11:19:59
+CBK-2759,Titus Sawe,tsawe@centralbank.go.ke,Kisii Currency Centre,Snooker / Pool,Snooker / Pool,+254 722 736 623,13550726,Mixed,2026-09-30 11:19:59
+CBK-2760,Elizabeth Wanjiru Wanjohi Kariuki,ekariuki@centralbank.go.ke,Financial Markets & Reserves,Swimming,Swimming Ladies,+254 722 587 560,10474733,Ladies,2026-09-30 11:19:59
+CBK-2781,Peter Kariuki Gatere,pgatere@centralbank.go.ke,IT & Digital Services,Golf,Golf,+254 721 341 237,,Mixed,2026-09-30 11:19:58
+CBK-2787,Walter Onyino,wonyino@centralbank.go.ke,IT & Digital Services,Golf,Golf,+254 721 665 221,,Mixed,2026-09-30 11:19:58
+CBK-2792,Caroline Jeruoiyot Kiplagat Rotich,crotich@centralbank.go.ke,Internal Audit & Risk,Athletics & Track,Athletics Ladies (Track & Field),+254 722 321 737,12830481,Ladies,2026-09-30 11:19:58
+CBK-2794,Christine Tuitoek,ctuitoek@centralbank.go.ke,Research & Policy Analysis,Tug of War,Tug of War Ladies,+254 722 386 969,11078220,Ladies,2026-09-30 11:19:59
+CBK-2796,Sammy Kyalo,skyalo@centralbank.go.ke,Currency Operations & Logistics,Snooker / Pool,Snooker / Pool,+254 722 271 573,13642085,Mixed,2026-09-30 11:19:59
+CBK-2797,Audrey Arunga,aarunga@centralbank.go.ke,Human Resources,Badminton,Badminton Ladies,+254 722 507 459,13070515,Ladies,2026-09-30 11:19:58
+CBK-2801,David Anyenda,danyenda@centralbank.go.ke,IT & Digital Services,Basketball,Basketball Men,+254 720 738 377,12939784,Men,2026-09-30 11:19:58
+CBK-2804,Lydia Gachari,lgachari@centralbank.go.ke,IT & Digital Services,Basketball,Basketball Ladies,+254 722 352 432,13773919,Ladies,2026-09-30 11:19:58
+CBK-2808,Patrick Kiprop,pkiprop@centralbank.go.ke,Currency Operations & Logistics,Basketball,Basketball Men,+254 727 560 600,12677248,Men,2026-09-30 11:19:58
+CBK-2809,Edwin K Torotich,etorotich@centralbank.go.ke,Nakuru Currency Centre,Swimming,Swimming Men,+254 728 915 978,20256731,Men,2026-09-30 11:19:59
+CBK-2813,Mathew Ojwando,mojwando@centralbank.go.ke,Banking Services & National Payments,Badminton,Badminton Men,+254 724 883 250,11282611,Men,2026-09-30 11:19:58
+CBK-2815,Fredrick Chanzu,fchanzu@centralbank.go.ke,Kisumu Branch,Tug of War,Tug of War Men,+254 720 865 113,14433958,Men,2026-09-30 11:19:59
+CBK-2818,Caroline Anyango Weda,cweda@centralbank.go.ke,Human Resources,Badminton,Badminton Ladies,+254 729 500 039,13389764,Ladies,2026-09-30 11:19:58
+CBK-2829,James Mbugua,jmbugua@centralbank.go.ke,Currency Operations & Logistics,Tug of War,Tug of War Men,+254 724 953 000,13428967,Men,2026-09-30 11:19:59
+CBK-2832,Zechariah Chebii,zchebii@centralbank.go.ke,Kisumu Branch,Draughts,Draughts Men,+254 722 375 193,,Men,2026-09-30 11:19:58
+CBK-2836,Edwin Maua,emaua@centralbank.go.ke,Bank Supervision,Scrabble,Scrabble Men,+254 722 791 108,10547062,Men,2026-09-30 11:19:58
+CBK-2852,Samuel Ndulya,sndulya@centralbank.go.ke,Human Resources,Draughts,Draughts Men,+254 715 109 130,,Men,2026-09-30 11:19:58
+CBK-2853,Judy Wanjiru Kinori Wambua,jwambua@centralbank.go.ke,Human Resources,Golf,Golf,+254 720 832 560,,Mixed,2026-09-30 11:19:58
+CBK-2854,Thomas Kipkirui Ruttoh,truttoh@centralbank.go.ke,Eldoret Branch,Scrabble,Scrabble Men,+254 722 452 245,20288046,Men,2026-09-30 11:19:58
+CBK-2855,Francis Mule,fmule@centralbank.go.ke,General Services & Procurement,Athletics & Track,Athletics Men (Track & Field),+254 702 612 885,20781726,Men,2026-09-30 11:19:58
+CBK-2862,Stephen Gichia Njuguna,snjuguna@centralbank.go.ke,Human Resources,Golf,Golf,+254 722 449 887,,Mixed,2026-09-30 11:19:58
+CBK-2863,Priscilla Keitany,pkeitany@centralbank.go.ke,Banking Services & National Payments,Volleyball,Volleyball Ladies,+254 722 334 333,11775701,Ladies,2026-09-30 11:19:59
+CBK-2868,Evalyn Nafula,enafula@centralbank.go.ke,IT & Digital Services,Squash,Squash Ladies,+254 722 257 060,10856342,Ladies,2026-09-30 11:19:59
+CBK-2878,Cryus Muiga,cmuiga@centralbank.go.ke,Financial Markets & Reserves,Darts,Darts Men,+254 722 846 673,11630315,Men,2026-09-30 11:19:58
+CBK-2890,Winnie Wambua,wwambua@centralbank.go.ke,IT & Digital Services,Netball,Netball,+254 727 630 168,11017980,Ladies,2026-09-30 11:19:58
+CBK-2893,Ann Mwanzia,amwanzia@centralbank.go.ke,Eldoret Branch,Tug of War,Tug of War Ladies,+254 712 229 090,8346467,Ladies,2026-09-30 11:19:59
+CBK-2909,Richard Kwach Jr,rjr@centralbank.go.ke,Banking Services & National Payments,Lawn Tennis,Lawn Tennis Men,+254 796 676 649,10731432,Men,2026-09-30 11:19:58
+CBK-2916,Rose Lagat,rlagat@centralbank.go.ke,IT & Digital Services,Handball,Handball Ladies,+254 722 609 171,21752929,Ladies,2026-09-30 11:19:58
+CBK-2921,Peter Njogu Gikanga,pgikanga@centralbank.go.ke,Bank Supervision,Golf,Golf,+254 722 234 642,,Mixed,2026-09-30 11:19:58
+CBK-2930,Hillary Kiprono Chepkwony,hchepkwony@centralbank.go.ke,Kisumu Branch,Scrabble,Scrabble Men,+254 724 949 992,13020516,Men,2026-09-30 11:19:58
+CBK-2932,Catherine Kioko,ckioko@centralbank.go.ke,Governor's Executive Office,Chess,Chess Ladies,+254 722 274 580,13572217,Ladies,2026-09-30 11:19:58
+CBK-2935,Daniel Njunge Muguima,dmuguima@centralbank.go.ke,Bank Supervision,Golf,Golf,+254 717 284 033,,Mixed,2026-09-30 11:19:58
+CBK-2956,George Wesonga,gwesonga@centralbank.go.ke,IT & Digital Services,Tug of War,Tug of War Men,+254 722 898 024,,Men,2026-09-30 11:19:59
+CBK-2966,Joseph Mutisya,jmutisya@centralbank.go.ke,Human Resources,Snooker / Pool,Snooker / Pool,+254 712 556 388,22161919,Mixed,2026-09-30 11:19:59
+CBK-2967,Sandra Nyagaka,snyagaka@centralbank.go.ke,Human Resources,Athletics & Track,Athletics Ladies (Track & Field),+254 721 596 083,22170053,Ladies,2026-09-30 11:19:58
+CBK-2974,Philip Wabomba Watti,pwatti@centralbank.go.ke,Financial Markets & Reserves,Golf,Golf,+254 722 577 004,,Mixed,2026-09-30 11:19:58
+CBK-2998,Geofrey Mwangi Mugo,gmugo@centralbank.go.ke,IT & Digital Services,Golf,Golf,+254 712 433 472,,Mixed,2026-09-30 11:19:58
+CBK-3004,Jonathan Boit,jboit@centralbank.go.ke,Financial Markets & Reserves,Snooker / Pool,Snooker / Pool,+254 722 613 817,10770020,Mixed,2026-09-30 11:19:59
+CBK-3019,Danson Muriithi,dmuriithi@centralbank.go.ke,Human Resources,Tug of War,Tug of War Men,+254 722 304 198,11316238,Men,2026-09-30 11:19:59
+CBK-3040,Chris Gacicio,cgacicio@centralbank.go.ke,Governor's Executive Office,Golf,Golf,+254 722 516 069,,Mixed,2026-09-30 11:19:58
+CBK-3054,Yasmin Roshen Kaka,ykaka@centralbank.go.ke,IT & Digital Services,Table Tennis,Table Tennis Ladies,+254 722 707 075,9013423,Ladies,2026-09-30 11:19:59
+CBK-3068,Susan Nyamu,snyamu@centralbank.go.ke,Banking Services & National Payments,Swimming,Swimming Ladies,+254 721 977 322,12926536,Ladies,2026-09-30 11:19:59
+CBK-3071,Johnstone B Angwenyi,jangwenyi@centralbank.go.ke,Bank Supervision,Tug of War,Tug of War Men,+254 723 217 619,,Men,2026-09-30 11:19:59
+CBK-3076,Stephen Mukonzi,smukonzi@centralbank.go.ke,Governor's Executive Office,Badminton,Badminton Men,+254 723 833 627,11164149,Men,2026-09-30 11:19:58
+CBK-3076,Paul Mwambada,pmwambada@centralbank.go.ke,Mombasa Branch,Snooker / Pool,Snooker / Pool,+254 722 112 057,10397192,Mixed,2026-09-30 11:19:59
+CBK-3082,Peris Gaita,pgaita@centralbank.go.ke,CBK Head Office (Executive),Table Tennis,Table Tennis Ladies,+254 721 742 289,22098042,Ladies,2026-09-30 11:19:59
+CBK-3096,Terry Maina,tmaina@centralbank.go.ke,Finance & Accounts,Badminton,Badminton Ladies,+254 722 755 376,10177313,Ladies,2026-09-30 11:19:58
+CBK-3105,Rose Korongo,rkorongo@centralbank.go.ke,Currency Operations & Logistics,Tug of War,Tug of War Ladies,+254 722 405 620,9660543,Ladies,2026-09-30 11:19:59
+CBK-3108,Bernadette Mkindi,bmkindi@centralbank.go.ke,Mombasa Branch,Handball,Handball Ladies,+254 724 582 771,11654189,Ladies,2026-09-30 11:19:58
+CBK-3112,Gladys Kemuma Otieri,gotieri@centralbank.go.ke,Kisumu Branch,Scrabble,Scrabble Ladies,+254 726 796 414,13566537,Ladies,2026-09-30 11:19:58
+CBK-3118,Agnes Kanoi,akanoi@centralbank.go.ke,Governor's Executive Office,Volleyball,Volleyball Ladies,+254 722 363 831,9935861,Ladies,2026-09-30 11:19:59
+CBK-3130,Jedidah Wambugu,jwambugu@centralbank.go.ke,IT & Digital Services,Lawn Tennis,Lawn Tennis Ladies,+254 722 429 253,21997072,Ladies,2026-09-30 11:19:58
+CBK-3137,Lilian Gichane,lgichane@centralbank.go.ke,Mombasa Branch,Basketball,Basketball Ladies,+254 722 621 313,13543327,Ladies,2026-09-30 11:19:58
+CBK-3139,Beatrice Wanjiru Gathu,bgathu@centralbank.go.ke,Governor's Executive Office,Golf,Golf,+254 721 390 610,,Mixed,2026-09-30 11:19:58
+CBK-3140,Catherine Musau,cmusau@centralbank.go.ke,IT & Digital Services,Netball,Netball,+254 722 333 803,11725682,Ladies,2026-09-30 11:19:58
+CBK-3144,Felister Wanyoike,fwanyoike@centralbank.go.ke,Currency Operations & Logistics,Badminton,Badminton Ladies,+254 722 917 186,13431407,Ladies,2026-09-30 11:19:58
+CBK-3147,John Kimani,jkimani@centralbank.go.ke,Eldoret Branch,Tug of War,Tug of War Men,+254 721 665 688,,Men,2026-09-30 11:19:59
+CBK-3149,Rebecca Pkiror,rpkiror@centralbank.go.ke,Governor's Executive Office,Basketball,Basketball Ladies,+254 720 206 729,20012997,Ladies,2026-09-30 11:19:58
+CBK-3152,Agnes Maina,amaina@centralbank.go.ke,Governor's Executive Office,Netball,Netball,+254 722 496 763,9270240,Ladies,2026-09-30 11:19:58
+CBK-3153,Jacob Kiyeng,jkiyeng@centralbank.go.ke,Nakuru Currency Centre,Scrabble,Scrabble Men,+254 722 841 396,9779927,Men,2026-09-30 11:19:59
+CBK-3155,Bernadette Ngoci,bngoci@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Ladies,+254 722 299 208,8473586,Ladies,2026-09-30 11:19:59
+CBK-3157,Anthony Karia,akaria@centralbank.go.ke,Governor's Executive Office,Lawn Tennis,Lawn Tennis Men,+254 722 755 001,11413443,Men,2026-09-30 11:19:58
+CBK-3158,Bernard Kaginya Lewa,blewa@centralbank.go.ke,Mombasa Branch,Scrabble,Scrabble Men,+254 722 502 264,10769417,Men,2026-09-30 11:19:58
+CBK-3164,Oscar Cherwon,ocherwon@centralbank.go.ke,Bank Supervision,Chess,Chess Men,+254 720 850 348,21738341,Men,2026-09-30 11:19:58
+CBK-3173,Leonard Ongoro,longoro@centralbank.go.ke,Kisii Currency Centre,Tug of War,Tug of War Men,+254 721 310 965,13467565,Men,2026-09-30 11:19:59
+CBK-3179,Dedan Kimathi,dkimathi@centralbank.go.ke,Finance & Accounts,Basketball,Basketball Men,+254 726 494 017,22855993,Men,2026-09-30 11:19:58
+CBK-3182,Agnes Kambo,akambo@centralbank.go.ke,Meru Currency Centre,Volleyball,Volleyball Ladies,+254 712 014 118,9873751,Ladies,2026-09-30 11:19:59
+CBK-3183,James Gathenya,jgathenya@centralbank.go.ke,IT & Digital Services,Darts,Darts Men,+254 722 454 424,21706778,Men,2026-09-30 11:19:58
+CBK-3213,Samuel Okello,sokello@centralbank.go.ke,Finance & Accounts,Badminton,Badminton Men,+254 710 583 366,20512593,Men,2026-09-30 11:19:58
+CBK-3219,Milka Kakurui,mkakurui@centralbank.go.ke,Currency Operations & Logistics,Tug of War,Tug of War Ladies,+254 721 690 098,13842470,Ladies,2026-09-30 11:19:59
+CBK-3222,Josiah Macharia,jmacharia@centralbank.go.ke,Mombasa Branch,Tug of War,Tug of War Men,+254 721 593 348,13882362,Men,2026-09-30 11:19:59
+CBK-3224,Christine Njuguna,cnjuguna@centralbank.go.ke,IT & Digital Services,Darts,Darts Ladies,+254 706 107 444,20756738,Ladies,2026-09-30 11:19:58
+CBK-3226,Beatrice Moraa Ondiga,bondiga@centralbank.go.ke,Nakuru Currency Centre,Darts,Darts Ladies,+254 733 888 162,11700533,Ladies,2026-09-30 11:19:58
+CBK-32275312,Vincent Ouma,vouma@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 717 790 309,32275312,Men,2026-09-30 11:19:58
+CBK-3228,Winnie Wangechi,wwangechi@centralbank.go.ke,General Services & Procurement,Darts,Darts Ladies,+254 724 688 789,14688538,Ladies,2026-09-30 11:19:58
+CBK-3231,Buke Roba,broba@centralbank.go.ke,General Services & Procurement,Darts,Darts Ladies,+254 720 233 561,12431855,Ladies,2026-09-30 11:19:58
+CBK-3232,Betty Kirera,bkirera@centralbank.go.ke,Currency Operations & Logistics,Tug of War,Tug of War Ladies,+254 721 817 481,14414779,Ladies,2026-09-30 11:19:59
+CBK-3233,David Kiiru,dkiiru@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Men,+254 721 669 220,13307500,Men,2026-09-30 11:19:58
+CBK-3236,Edna Monari,emonari@centralbank.go.ke,General Services & Procurement,Chess,Chess Ladies,+254 710 472 900,21839312,Ladies,2026-09-30 11:19:58
+CBK-3237,Philis Ngugi,pngugi@centralbank.go.ke,Human Resources,Tug of War,Tug of War Ladies,+254 720 869 358,11769879,Ladies,2026-09-30 11:19:59
+CBK-3242,Patricia Kamosu,pkamosu@centralbank.go.ke,Currency Operations & Logistics,Darts,Darts Ladies,+254 728 019 727,13311871,Ladies,2026-09-30 11:19:58
+CBK-3243,Loice Jemutai,ljemutai@centralbank.go.ke,Mombasa Branch,Volleyball,Volleyball Ladies,+254 720 985 016,11615757,Ladies,2026-09-30 11:19:59
+CBK-3250,Raechel Karugia,rkarugia@centralbank.go.ke,General Services & Procurement,Tug of War,Tug of War Ladies,+254 724 620 474,12522696,Ladies,2026-09-30 11:19:59
+CBK-3251,Jennifer Chelimo,jchelimo@centralbank.go.ke,Kisumu Branch,Handball,Handball Ladies,+254 724 262 095,214337728,Ladies,2026-09-30 11:19:58
+CBK-3252,Rebecca Madu,rmadu@centralbank.go.ke,Currency Operations & Logistics,Netball,Netball,+254 723 699 926,12967498,Ladies,2026-09-30 11:19:58
+CBK-3255,Charles Ngugi,cngugi@centralbank.go.ke,Currency Operations & Logistics,Athletics & Track,Athletics Men (Track & Field),+254 720 766 887,14514870,Men,2026-09-30 11:19:58
+CBK-3260,Moses Muriu,mmuriu@centralbank.go.ke,Financial Markets & Reserves,Lawn Tennis,Lawn Tennis Men,+254 720 869 762,13676487,Men,2026-09-30 11:19:58
+CBK-3262,Dan Nyatindo,dnyatindo@centralbank.go.ke,Currency Operations & Logistics,Football (Soccer),Football Men,+254 720 333 216,13811017,Men,2026-09-30 11:19:58
+CBK-3263,Joseph Rotich,jrotich@centralbank.go.ke,Currency Operations & Logistics,Athletics & Track,Athletics Men (Track & Field),+254 726 812 976,20929019,Men,2026-09-30 11:19:58
+CBK-3264,Margaret Kamau,mkamau@centralbank.go.ke,Governor's Executive Office,Darts,Darts Ladies,+254 720 853 855,13842322,Ladies,2026-09-30 11:19:58
+CBK-3265,Janet Macharia,jmacharia@centralbank.go.ke,Nyeri Currency Centre,Table Tennis,Table Tennis Ladies,+254 722 104 834,12781658,Ladies,2026-09-30 11:19:59
+CBK-3266,Sarah Odero,sodero@centralbank.go.ke,Currency Operations & Logistics,Squash,Squash Ladies,+254 723 847 279,20668656,Ladies,2026-09-30 11:19:59
+CBK-3269,Beatrice Kibore,bkibore@centralbank.go.ke,Kisii Currency Centre,Volleyball,Volleyball Ladies,+254 727 312 832,20018317,Ladies,2026-09-30 11:19:59
+CBK-3274,Paul Chemwok,pchemwok@centralbank.go.ke,General Services & Procurement,Darts,Darts Men,+254 723 785 059,8770304,Men,2026-09-30 11:19:58
+CBK-3277,Michael Muthoka,mmuthoka@centralbank.go.ke,General Services & Procurement,Basketball,Basketball Men,+254 720 284 027,21498609,Men,2026-09-30 11:19:58
+CBK-3278,Guyo Orto,gorto@centralbank.go.ke,General Services & Procurement,Darts,Darts Men,+254 711 662 016,21247439,Men,2026-09-30 11:19:58
+CBK-3279,Kennedy Odera,kodera@centralbank.go.ke,Currency Operations & Logistics,Lawn Tennis,Lawn Tennis Men,+254 717 043 141,22360264,Men,2026-09-30 11:19:58
+CBK-3282,Jacinta Francis,jfrancis@centralbank.go.ke,Currency Operations & Logistics,Netball,Netball,+254 722 599 973,14413306,Ladies,2026-09-30 11:19:58
+CBK-3284,Richard Shibadu,rshibadu@centralbank.go.ke,Eldoret Branch,Table Tennis,Table Tennis Men,+254 708 219 627,22136181,Men,2026-09-30 11:19:59
+CBK-3290,Julius M Maina,jmaina@centralbank.go.ke,Kisumu Branch,Draughts,Draughts Men,+254 722 445 129,10245931,Men,2026-09-30 11:19:58
+CBK-3293,Hassan Mungai,hmungai@centralbank.go.ke,General Services & Procurement,Squash,Squash Men,+254 721 961 845,13072083,Men,2026-09-30 11:19:59
+CBK-3304,Kenneth Ndau,kndau@centralbank.go.ke,IT & Digital Services,Snooker / Pool,Snooker / Pool,+254 721 405 418,21857110,Mixed,2026-09-30 11:19:59
+CBK-3307,Tom Osikuku,tosikuku@centralbank.go.ke,Eldoret Branch,Badminton,Badminton Men,+254 072 517 169,11787218,Men,2026-09-30 11:19:58
+CBK-3309,Thomson Leitwan Mpakanyi,tmpakanyi@centralbank.go.ke,Eldoret Branch,Scrabble,Scrabble Men,+254 707 760 355,10377643,Men,2026-09-30 11:19:58
+CBK-3310,Pamela Makokha,pmakokha@centralbank.go.ke,Eldoret Branch,Scrabble,Scrabble Ladies,+254 729 222 908,22590567,Ladies,2026-09-30 11:19:58
+CBK-3324,Martin Gitu,mgitu@centralbank.go.ke,Bank Supervision,Table Tennis,Table Tennis Men,+254 711 825 307,14402695,Men,2026-09-30 11:19:59
+CBK-3328,Benta Anot,banot@centralbank.go.ke,Finance & Accounts,Golf,Golf,+254 721 632 266,,Mixed,2026-09-30 11:19:58
+CBK-3330,Richard Katwei Kioko,rkioko@centralbank.go.ke,Bank Supervision,Swimming,Swimming Men,+254 722 431 422,22232498,Men,2026-09-30 11:19:59
+CBK-3335,Joy Kaburu,jkaburu@centralbank.go.ke,Finance & Accounts,Draughts,Draughts Ladies,+254 720 937 283,22510269,Ladies,2026-09-30 11:19:58
+CBK-3341,Bernard Njiru,bnjiru@centralbank.go.ke,Banking Services & National Payments,Table Tennis,Table Tennis Men,+254 734 557 067,21364404,Men,2026-09-30 11:19:59
+CBK-3342,Evans M Ngare,engare@centralbank.go.ke,Bank Supervision,Scrabble,Scrabble Men,+254 722 265 897,21051199,Men,2026-09-30 11:19:58
+CBK-3343,Tom Yegon,tyegon@centralbank.go.ke,Kisumu Branch,Tug of War,Tug of War Men,+254 728 336 454,14579206,Men,2026-09-30 11:19:59
+CBK-3346,Maurice Ombese,mombese@centralbank.go.ke,IT & Digital Services,Chess,Chess Men,+254 727 516 912,22800729,Men,2026-09-30 11:19:58
+CBK-3350,Stephen Wambua,swambua@centralbank.go.ke,Banking Services & National Payments,Lawn Tennis,Lawn Tennis Men,+254 722 478 792,20019904,Men,2026-09-30 11:19:58
+CBK-3353,Eva Ngaruiya,engaruiya@centralbank.go.ke,Banking Services & National Payments,Volleyball,Volleyball Ladies,+254 721 858 603,23638404,Ladies,2026-09-30 11:19:59
+CBK-3354,James Njoroge,jnjoroge@centralbank.go.ke,Finance & Accounts,Table Tennis,Table Tennis Men,+254 721 524 711,22926593,Men,2026-09-30 11:19:59
+CBK-3359,Kelvin Kalama,kkalama@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Men,+254 705 979 227,24730676,Men,2026-09-30 11:19:58
+CBK-3366,Andrew Ogola,aogola@centralbank.go.ke,IT & Digital Services,Chess,Chess Men,+254 726 103 890,23582325,Men,2026-09-30 11:19:58
+CBK-3374,Edna A Ojowi,eojowi@centralbank.go.ke,IT & Digital Services,Swimming,Swimming Ladies,+254 720 872 097,23535086,Ladies,2026-09-30 11:19:59
+CBK-3377,Sophie Adhiambo Ongalo,songalo@centralbank.go.ke,Kisii Currency Centre,Golf,Golf,+254 723 394 668,,Mixed,2026-09-30 11:19:58
+CBK-3379,Isaac Mwangi,imwangi@centralbank.go.ke,Research & Policy Analysis,Lawn Tennis,Lawn Tennis Men,+254 721 395 781,22452418,Men,2026-09-30 11:19:58
+CBK-3379,Isaac Mwangi,imwangi@centralbank.go.ke,Research & Policy Analysis,Squash,Squash Men,+254 721 395 781,22452418,Men,2026-09-30 11:19:59
+CBK-3381,John Munene,jmunene@centralbank.go.ke,IT & Digital Services,Lawn Tennis,Lawn Tennis Men,+254 723 727 343,22577208,Men,2026-09-30 11:19:58
+CBK-3384,Teresia Mbaku,tmbaku@centralbank.go.ke,Governor's Executive Office,Darts,Darts Ladies,+254 723 361 756,21616316,Ladies,2026-09-30 11:19:58
+CBK-3387,Martha Karambu,mkarambu@centralbank.go.ke,Meru Currency Centre,Tug of War,Tug of War Ladies,+254 723 059 034,24861340,Ladies,2026-09-30 11:19:59
+CBK-3388,Dorcus Akinyi,dakinyi@centralbank.go.ke,Human Resources,Handball,Handball Ladies,+254 725 656 832,22307023,Ladies,2026-09-30 11:19:58
+CBK-3390,Peter Mwangi,pmwangi@centralbank.go.ke,IT & Digital Services,Darts,Darts Men,+254 722 799 238,11592480,Men,2026-09-30 11:19:58
+CBK-3391,Peninah Mugo,pmugo@centralbank.go.ke,Governor's Executive Office,Darts,Darts Ladies,+254 720 724 630,13263955,Ladies,2026-09-30 11:19:58
+CBK-3392,Symon Lemiyon,slemiyon@centralbank.go.ke,Governor's Executive Office,Chess,Chess Men,+254 721 925 026,21841230,Men,2026-09-30 11:19:58
+CBK-3394,Lucy Gakii,lgakii@centralbank.go.ke,IT & Digital Services,Scrabble,Scrabble Ladies,+254 722 604 779,,Ladies,2026-09-30 11:19:58
+CBK-3395,Beatrice Kivinya,bkivinya@centralbank.go.ke,Nyeri Currency Centre,Badminton,Badminton Ladies,+254 721 945 577,13422307,Ladies,2026-09-30 11:19:58
+CBK-3399,Kelvin Mureithi,kmureithi@centralbank.go.ke,Governor's Executive Office,Handball,Handball Men,+254 723 205 943,23665268,Men,2026-09-30 11:19:58
+CBK-3400,Francis Ngumi,fngumi@centralbank.go.ke,Nyeri Currency Centre,Squash,Squash Men,+254 725 495 078,22747821,Men,2026-09-30 11:19:59
+CBK-3406,Joel Lele,jlele@centralbank.go.ke,Mombasa Branch,Snooker / Pool,Snooker / Pool,+254 722 669 298,12535993,Mixed,2026-09-30 11:19:59
+CBK-3407,Hussein Galgallo,hgalgallo@centralbank.go.ke,Nyeri Currency Centre,Scrabble,Scrabble Men,+254 721 449 296,13729627,Men,2026-09-30 11:19:59
+CBK-3411,Bernard Wanjofu,bwanjofu@centralbank.go.ke,General Services & Procurement,Draughts,Draughts Men,+254 721 491 632,13719049,Men,2026-09-30 11:19:58
+CBK-3415,Victor Mwanthi,vmwanthi@centralbank.go.ke,Governor's Executive Office,Scrabble,Scrabble Men,+254 720 442 979,11358406,Men,2026-09-30 11:19:58
+CBK-3418,Charles Kivo,ckivo@centralbank.go.ke,Mombasa Branch,Draughts,Draughts Men,+254 724 393 578,11871862,Men,2026-09-30 11:19:58
+CBK-3420,Sarah Miringu,smiringu@centralbank.go.ke,Human Resources,Darts,Darts Ladies,+254 722 375 765,13395937,Ladies,2026-09-30 11:19:58
+CBK-3425,Mike Ombuna,mombuna@centralbank.go.ke,Bank Supervision,Basketball,Basketball Men,+254 721 651 760,2241374,Men,2026-09-30 11:19:58
+CBK-3425,Mike Ombuna,mombuna@centralbank.go.ke,Bank Supervision,Squash,Squash Men,+254 721 651 760,22413746,Men,2026-09-30 11:19:59
+CBK-3428,Samuel Gathigi Njuguna,sgathigi@centralbank.go.ke,IT & Digital Services,Golf,Golf,+254 725 321 365,,Mixed,2026-09-30 11:19:58
+CBK-3432,Stanley Gicho,sgicho@centralbank.go.ke,Bank Supervision,Football (Soccer),Football Men,+254 715 747 300,27141163,Men,2026-09-30 11:19:58
+CBK-3433,Veronica Maina,vmaina@centralbank.go.ke,General Services & Procurement,Badminton,Badminton Ladies,+254 721 732 715,22839148,Ladies,2026-09-30 11:19:58
+CBK-3434,Rachel Musyoka,rmusyoka@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Ladies (Track & Field),+254 727 467 973,25451725,Ladies,2026-09-30 11:19:58
+CBK-3436,Ndegwa Nyambura,nnyambura@centralbank.go.ke,Mombasa Branch,Swimming,Swimming Men,+254 725 943 055,25504185,Men,2026-09-30 11:19:59
+CBK-3439,Leah Anyanga,lanyanga@centralbank.go.ke,Nyeri Currency Centre,Squash,Squash Ladies,+254 726 245 838,23161518,Ladies,2026-09-30 11:19:59
+CBK-3440,Wairimu J Waitara,wwaitara@centralbank.go.ke,Research & Policy Analysis,Swimming,Swimming Ladies,+254 722 377 440,21693991,Ladies,2026-09-30 11:19:59
+CBK-3443,Peter Wamalwa,pwamalwa@centralbank.go.ke,Research & Policy Analysis,Lawn Tennis,Lawn Tennis Men,+254 728 417 935,23387492,Men,2026-09-30 11:19:58
+CBK-3448,Christopher Amdany,camdany@centralbank.go.ke,Research & Policy Analysis,Snooker / Pool,Snooker / Pool,+254 723 572 181,22059464,Mixed,2026-09-30 11:19:59
+CBK-3450,Rita Maina,rmaina@centralbank.go.ke,Finance & Accounts,Lawn Tennis,Lawn Tennis Ladies,+254 723 733 434,24588369,Ladies,2026-09-30 11:19:58
+CBK-3452,Charles Weda,cweda@centralbank.go.ke,Mombasa Branch,Scrabble,Scrabble Men,+254 724 821 368,21077554,Men,2026-09-30 11:19:59
+CBK-3454,Mwaniki Mugo,mmugo@centralbank.go.ke,Financial Markets & Reserves,Handball,Handball Men,+254 722 803 875,24044956,Men,2026-09-30 11:19:58
+CBK-3454,Mwaniki Mugo,mmugo@centralbank.go.ke,Financial Markets & Reserves,Table Tennis,Table Tennis Men,+254 722 803 875,24044956,Men,2026-09-30 11:19:59
+CBK-3458,Julius R Oketch,joketch@centralbank.go.ke,Research & Policy Analysis,Squash,Squash Men,+254 722 942 512,24621844,Men,2026-09-30 11:19:59
+CBK-3460,Mary B Maroro,mmaroro@centralbank.go.ke,General Services & Procurement,Scrabble,Scrabble Ladies,+254 720 971 315,22188302,Ladies,2026-09-30 11:19:58
+CBK-3463,Maureen Mukhangai,mmukhangai@centralbank.go.ke,Human Resources,Tug of War,Tug of War Ladies,+254 727 172 440,22601145,Ladies,2026-09-30 11:19:59
+CBK-3466,Karen Cheserem,kcheserem@centralbank.go.ke,Bank Supervision,Table Tennis,Table Tennis Ladies,+254 720 730 789,24612587,Ladies,2026-09-30 11:19:59
+CBK-3468,Lily Hiuhu,lhiuhu@centralbank.go.ke,Human Resources,Lawn Tennis,Lawn Tennis Ladies,+254 722 233 444,11288132,Ladies,2026-09-30 11:19:58
+CBK-3469,Catherine Kimingi,ckimingi@centralbank.go.ke,Financial Markets & Reserves,Swimming,Swimming Ladies,+254 724 895 432,23266923,Ladies,2026-09-30 11:19:59
+CBK-3475,Zachary Okungu,zokungu@centralbank.go.ke,Bank Supervision,Darts,Darts Men,+254 722 695 698,12708461,Men,2026-09-30 11:19:58
+CBK-3488,Christopher Wanyoike,cwanyoike@centralbank.go.ke,IT & Digital Services,Golf,Golf,+254 722 370 749,,Mixed,2026-09-30 11:19:58
+CBK-3489,Andrew Lentoijoni,alentoijoni@centralbank.go.ke,Human Resources,Darts,Darts Men,+254 722 249 599,21202433,Men,2026-09-30 11:19:58
+CBK-3490,Caroline Murugo,cmurugo@centralbank.go.ke,Finance & Accounts,Lawn Tennis,Lawn Tennis Ladies,+254 722 525 448,14648923,Ladies,2026-09-30 11:19:58
+CBK-3495,Resina Lerno,rlerno@centralbank.go.ke,Mombasa Branch,Athletics & Track,Athletics Ladies (Track & Field),+254 717 941 572,25014801,Ladies,2026-09-30 11:19:58
+CBK-3502,Steve Wamagata,swamagata@centralbank.go.ke,IT & Digital Services,Squash,Squash Men,+254 721 227 379,22528649,Men,2026-09-30 11:19:59
+CBK-3506,Francis Viti,fviti@centralbank.go.ke,Governor's Executive Office,Snooker / Pool,Snooker / Pool,,,Mixed,2026-09-30 11:19:59
+CBK-3511,Joseph Gacheru,jgacheru@centralbank.go.ke,General Services & Procurement,Snooker / Pool,Snooker / Pool,+254 726 576 955,22570079,Mixed,2026-09-30 11:19:59
+CBK-3515,Samuel Odhiambo,sodhiambo@centralbank.go.ke,IT & Digital Services,Draughts,Draughts Men,+254 725 602 583,23886893,Men,2026-09-30 11:19:58
+CBK-3516,Clouse Wasomi,cwasomi@centralbank.go.ke,Kisumu Branch,Tug of War,Tug of War Men,+254 724 561 200,22442292,Men,2026-09-30 11:19:59
+CBK-3518,Dennis Oniala,doniala@centralbank.go.ke,Kisumu Branch,Tug of War,Tug of War Men,+254 721 916 677,21661683,Men,2026-09-30 11:19:59
+CBK-3520,Onesmus M Kirimi,okirimi@centralbank.go.ke,IT & Digital Services,Squash,Squash Men,+254 720 845 601,24393778,Men,2026-09-30 11:19:59
+CBK-3529,Samuel Ndirangu,sndirangu@centralbank.go.ke,IT & Digital Services,Snooker / Pool,Snooker / Pool,+254 721 636 064,23621976,Mixed,2026-09-30 11:19:59
+CBK-3530,Micheal Gichigo,mgichigo@centralbank.go.ke,General Services & Procurement,Darts,Darts Men,+254 720 269 627,23350724,Men,2026-09-30 11:19:58
+CBK-3536,Stephen Otieno Akello,sakello@centralbank.go.ke,Currency Operations & Logistics,Badminton,Badminton Men,+254 721 334 576,22485489,Men,2026-09-30 11:19:58
+CBK-3544,Salma D Abdulgani,sabdulgani@centralbank.go.ke,Financial Markets & Reserves,Basketball,Basketball Ladies,07379333324,25157374,Ladies,2026-09-30 11:19:58
+CBK-3546,Julius K Bett,jbett@centralbank.go.ke,Research & Policy Analysis,Squash,Squash Men,+254 725 465 078,22925538,Men,2026-09-30 11:19:59
+CBK-3547,Charity Muriithi,cmuriithi@centralbank.go.ke,Finance & Accounts,Badminton,Badminton Ladies,+254 796 864 790,24957572,Ladies,2026-09-30 11:19:58
+CBK-3552,Pauline Ochieng,pochieng@centralbank.go.ke,Bank Supervision,Chess,Chess Ladies,+254 721 980 346,21746903,Ladies,2026-09-30 11:19:58
+CBK-3553,Kevin Ndegwa,kndegwa@centralbank.go.ke,Bank Supervision,Chess,Chess Men,+254 724 940 322,23863937,Men,2026-09-30 11:19:58
+CBK-3554,Evanson Mburu,emburu@centralbank.go.ke,Nyeri Currency Centre,Handball,Handball Men,+254 728 746 186,24157308,Men,2026-09-30 11:19:58
+CBK-3557,Nicholas Kahuro,nkahuro@centralbank.go.ke,Financial Markets & Reserves,Basketball,Basketball Men,+254 720 447 295,24229147,Men,2026-09-30 11:19:58
+CBK-3560,Joan Omesa,jomesa@centralbank.go.ke,Bank Supervision,Chess,Chess Ladies,+254 726 702 622,27428689,Ladies,2026-09-30 11:19:58
+CBK-3561,Benjamin Ongeri,bongeri@centralbank.go.ke,Eldoret Branch,Football (Soccer),Football Men,+254 723 337 733,25128119,Men,2026-09-30 11:19:58
+CBK-3563,Peninah Kwamuma,pkwamuma@centralbank.go.ke,Financial Markets & Reserves,Darts,Darts Ladies,+254 722 576 792,23057598,Ladies,2026-09-30 11:19:58
+CBK-3566,Gilbert Owambo,gowambo@centralbank.go.ke,Finance & Accounts,Basketball,Basketball Men,+254 720 951 386,24206892,Men,2026-09-30 11:19:58
+CBK-3568,Maymuna Kadhi,mkadhi@centralbank.go.ke,Bank Supervision,Badminton,Badminton Ladies,+254 725 406 088,28104510,Ladies,2026-09-30 11:19:58
+CBK-3570,Teddy Ronoh,tronoh@centralbank.go.ke,Financial Markets & Reserves,Athletics & Track,Athletics Men (Track & Field),+254 723 718 306,25082578,Men,2026-09-30 11:19:58
+CBK-3575,Ruth Sainah,rsainah@centralbank.go.ke,Bank Supervision,Football (Soccer),Football Ladies,+254 725 644 752,25478582,Ladies,2026-09-30 11:19:58
+CBK-3578,Diana Nthiga,dnthiga@centralbank.go.ke,Human Resources,Athletics & Track,Athletics Ladies (Track & Field),+254 722 299 504,25507717,Ladies,2026-09-30 11:19:58
+CBK-3588,Monica Kariuki,mkariuki@centralbank.go.ke,Kisii Currency Centre,Volleyball,Volleyball Ladies,+254 710 874 291,27814069,Ladies,2026-09-30 11:19:59
+CBK-3593,Vincent Asiago Ondieki,vondieki@centralbank.go.ke,Kisumu Branch,Athletics & Track,Athletics Men (Track & Field),+254 726 707 873,,Men,2026-09-30 11:19:58
+CBK-3595,Razia Chemjor,rchemjor@centralbank.go.ke,Bank Supervision,Badminton,Badminton Ladies,+254 721 792 190,24077614,Ladies,2026-09-30 11:19:58
+CBK-3597,Hilary Kiplagat Maina,hmaina@centralbank.go.ke,Pensions & Welfare,Golf,Golf,+254 722 846 654,,Mixed,2026-09-30 11:19:58
+CBK-3601,Patrick Muriuki,pmuriuki@centralbank.go.ke,Internal Audit & Risk,Lawn Tennis,Lawn Tennis Men,+254 722 619 779,21573962,Men,2026-09-30 11:19:58
+CBK-3614,Ken Kibos,kkibos@centralbank.go.ke,Bank Supervision,Athletics & Track,Athletics Men (Track & Field),+254 722 755 994,24040324,Men,2026-09-30 11:19:58
+CBK-3615,Shirline Patiat,spatiat@centralbank.go.ke,Financial Markets & Reserves,Basketball,Basketball Ladies,+254 728 230 648,26176931,Ladies,2026-09-30 11:19:58
+CBK-3620,Noah Nyanganda,nnyanganda@centralbank.go.ke,Eldoret Branch,Athletics & Track,Athletics Men (Track & Field),+254 729 899 849,,Men,2026-09-30 11:19:58
+CBK-3623,Rachel Kamau,rkamau@centralbank.go.ke,Internal Audit & Risk,Darts,Darts Ladies,+254 721 589 038,21986576,Ladies,2026-09-30 11:19:58
+CBK-3624,Hosea Kimaiyo,hkimaiyo@centralbank.go.ke,Eldoret Branch,Football (Soccer),Football Men,+254 718 440 440,28375049,Men,2026-09-30 11:19:58
+CBK-3625,Emmanuel M Kismir,ekismir@centralbank.go.ke,Bank Supervision,Scrabble,Scrabble Men,+254 723 570 583,22606835,Men,2026-09-30 11:19:58
+CBK-3626,Wambui Mwangi,wmwangi@centralbank.go.ke,Banking Services & National Payments,Lawn Tennis,Lawn Tennis Ladies,+254 721 856 240,28063888,Ladies,2026-09-30 11:19:58
+CBK-3627,Eunice Supuko,esupuko@centralbank.go.ke,Banking Services & National Payments,Basketball,Basketball Ladies,72530747,26226361,Ladies,2026-09-30 11:19:58
+CBK-3629,Eric Owuor,eowuor@centralbank.go.ke,Banking Services & National Payments,Basketball,Basketball Men,+254 720 138 244,22611748,Men,2026-09-30 11:19:58
+CBK-3630,Newton Njenga,nnjenga@centralbank.go.ke,Financial Markets & Reserves,Chess,Chess Men,+254 721 805 038,21975115,Men,2026-09-30 11:19:58
+CBK-3632,David Orwako,dorwako@centralbank.go.ke,General Services & Procurement,Basketball,Basketball Men,+254 721 724 659,24116567,Men,2026-09-30 11:19:58
+CBK-3638,Mohammed B Abkula,mabkula@centralbank.go.ke,Meru Currency Centre,Athletics & Track,Athletics Men (Track & Field),+254 723 300 977,23120821,Men,2026-09-30 11:19:58
+CBK-3639,Calleb O Adhanja,cadhanja@centralbank.go.ke,Governor's Executive Office,Scrabble,Scrabble Men,+254 720 935 995,20255698,Men,2026-09-30 11:19:58
+CBK-3644,Patrick Muriithi,pmuriithi@centralbank.go.ke,IT & Digital Services,Athletics & Track,Athletics Men (Track & Field),+254 727 655 103,25080225,Men,2026-09-30 11:19:58
+CBK-3646,Damaris Wanjiku Kanyi,dkanyi@centralbank.go.ke,IT & Digital Services,Swimming,Swimming Ladies,+254 721 366 720,27288905,Ladies,2026-09-30 11:19:59
+CBK-3652,Miriam Gathigia,mgathigia@centralbank.go.ke,Nakuru Currency Centre,Chess,Chess Ladies,+254 723 755 752,22510797,Ladies,2026-09-30 11:19:58
+CBK-3659,Paul Kamondo,pkamondo@centralbank.go.ke,Research & Policy Analysis,Golf,Golf,+254 710 261 927,,Mixed,2026-09-30 11:19:58
+CBK-3662,Jane Githinji,jgithinji@centralbank.go.ke,Governor's Executive Office,Darts,Darts Ladies,+254 722 280 178,12781009,Ladies,2026-09-30 11:19:58
+CBK-3663,Sarah Malicha,smalicha@centralbank.go.ke,Governor's Executive Office,Darts,Darts Ladies,+254 726 219 199,24137332,Ladies,2026-09-30 11:19:58
+CBK-3664,Augustine Oduor,aoduor@centralbank.go.ke,Bank Supervision,Basketball,Basketball Men,+254 700 706 795,25143805,Men,2026-09-30 11:19:58
+CBK-3668,Simon Munene,smunene@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 724 821 368,23584602,Men,2026-09-30 11:19:59
+CBK-3669,Bahati Kitsao,bkitsao@centralbank.go.ke,Mombasa Branch,Basketball,Basketball Ladies,+254 721 810 953,22634590,Ladies,2026-09-30 11:19:58
+CBK-3671,Christopher Muthee,cmuthee@centralbank.go.ke,Meru Currency Centre,Snooker / Pool,Snooker / Pool,+254 724 457 739,22105510,Mixed,2026-09-30 11:19:59
+CBK-3673,Daniel Kagai Mugo,dmugo@centralbank.go.ke,Eldoret Branch,Swimming,Swimming Men,+254 721 534 459,27379780,Men,2026-09-30 11:19:59
+CBK-3675,Rose Chepkemoi,rchepkemoi@centralbank.go.ke,IT & Digital Services,Golf,Golf,+254 723 993 174,,Mixed,2026-09-30 11:19:58
+CBK-3676,Josephine Kiai,jkiai@centralbank.go.ke,General Services & Procurement,Volleyball,Volleyball Ladies,+254 721 725 337,21412136,Ladies,2026-09-30 11:19:59
+CBK-3677,Richard Mmare,rmmare@centralbank.go.ke,Nyeri Currency Centre,Handball,Handball Men,+254 729 474 975,27560972,Men,2026-09-30 11:19:58
+CBK-3679,Mark Berem,mberem@centralbank.go.ke,IT & Digital Services,Badminton,Badminton Men,+254 727 224 107,25721657,Men,2026-09-30 11:19:58
+CBK-3680,Sharon Wanjiru,swanjiru@centralbank.go.ke,Financial Markets & Reserves,Swimming,Swimming Ladies,+254 721 552 079,25661329,Ladies,2026-09-30 11:19:59
+CBK-3681,Ong’aro Moses,omoses@centralbank.go.ke,Research & Policy Analysis,Squash,Squash Men,+254 723 060 600,24559142,Men,2026-09-30 11:19:59
+CBK-3683,Karama Mbarak,kmbarak@centralbank.go.ke,Mombasa Branch,Chess,Chess Men,+254 721 895 744,25071691,Men,2026-09-30 11:19:58
+CBK-3686,Hope Ndigho,hndigho@centralbank.go.ke,Human Resources,Tug of War,Tug of War Ladies,+254 723 612 650,26175855,Ladies,2026-09-30 11:19:59
+CBK-3691,Joel Mugo,jmugo@centralbank.go.ke,Financial Markets & Reserves,Handball,Handball Men,+254 725 491 236,25419801,Men,2026-09-30 11:19:58
+CBK-3692,Marianne Murugi Kaburu,mkaburu@centralbank.go.ke,Financial Markets & Reserves,Volleyball,Volleyball Ladies,+254 704 597 385,28710257,Ladies,2026-09-30 11:19:59
+CBK-3694,Felista Nduta Gathigi,fgathigi@centralbank.go.ke,Research & Policy Analysis,Swimming,Swimming Ladies,+254 721 681 156,28143255,Ladies,2026-09-30 11:19:59
+CBK-3701,Soila Jovina,sjovina@centralbank.go.ke,Human Resources,Darts,Darts Ladies,+254 726 375 818,24841778,Ladies,2026-09-30 11:19:58
+CBK-3702,Wandaka Lewis,wlewis@centralbank.go.ke,Research & Policy Analysis,Squash,Squash Men,+254 723 720 992,25128628,Men,2026-09-30 11:19:59
+CBK-3714,Mercy Chebet,mchebet@centralbank.go.ke,Banking Services & National Payments,Football (Soccer),Football Ladies,+254 727 830 057,25485518,Ladies,2026-09-30 11:19:58
+CBK-3716,Dorah Otieno,dotieno@centralbank.go.ke,Bank Supervision,Chess,Chess Ladies,+254 724 112 201,28023876,Ladies,2026-09-30 11:19:58
+CBK-3721,Amos Mwangi,amwangi@centralbank.go.ke,Bank Supervision,Chess,Chess Men,+254 725 326 659,24437347,Men,2026-09-30 11:19:58
+CBK-3724,Eshter W Munene,emunene@centralbank.go.ke,Bank Supervision,Scrabble,Scrabble Ladies,+254 727 831 664,25877896,Ladies,2026-09-30 11:19:58
+CBK-3725,Kelvin Mburu,kmburu@centralbank.go.ke,Bank Supervision,Chess,Chess Men,+254 726 499 499,25130123,Men,2026-09-30 11:19:58
+CBK-3728,Ambrose Kiprop,akiprop@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Men (Track & Field),+254 722 982 511,20623303,Men,2026-09-30 11:19:58
+CBK-3729,Vincent Kemboi,vkemboi@centralbank.go.ke,Human Resources,Badminton,Badminton Men,+254 718 950 045,27800712,Men,2026-09-30 11:19:58
+CBK-3730,Winfrida Maina,wmaina@centralbank.go.ke,Human Resources,Lawn Tennis,Lawn Tennis Ladies,+254 726 868 871,26710487,Ladies,2026-09-30 11:19:58
+CBK-3731,Dennis Mwangi,dmwangi@centralbank.go.ke,Eldoret Branch,Chess,Chess Men,+254 725 307 375,27092307,Men,2026-09-30 11:19:58
+CBK-3734,Harry Opala,hopala@centralbank.go.ke,Currency Operations & Logistics,Football (Soccer),Football Men,+254 725 655 466,24048898,Men,2026-09-30 11:19:58
+CBK-3735,Susan Ndinguri,sndinguri@centralbank.go.ke,Finance & Accounts,Volleyball,Volleyball Ladies,+254 720 081 083,22056542,Ladies,2026-09-30 11:19:59
+CBK-3736,Nick Wadulo,nwadulo@centralbank.go.ke,Mombasa Branch,Handball,Handball Men,+254 713 758 357,28148096,Men,2026-09-30 11:19:58
+CBK-3737,Mercy Karuga,mkaruga@centralbank.go.ke,General Services & Procurement,Table Tennis,Table Tennis Ladies,+254 722 361 534,29468651,Ladies,2026-09-30 11:19:59
+CBK-3738,Jennifer Kariuki,jkariuki@centralbank.go.ke,Bank Supervision,Scrabble,Scrabble Ladies,+254 792 639 081,25334226,Ladies,2026-09-30 11:19:58
+CBK-3739,Derrick Kahombi,dkahombi@centralbank.go.ke,Human Resources,Handball,Handball Men,+254 700 514 578,29429227,Men,2026-09-30 11:19:58
+CBK-3741,Elias J Odera,eodera@centralbank.go.ke,Governor's Executive Office,Scrabble,Scrabble Men,+254 728 588 015,21269569,Men,2026-09-30 11:19:58
+CBK-3742,Irene Okeri,iokeri@centralbank.go.ke,Nyeri Currency Centre,Darts,Darts Ladies,+254 726 645 370,23620012,Ladies,2026-09-30 11:19:58
+CBK-3744,Esther Mailu,emailu@centralbank.go.ke,General Services & Procurement,Draughts,Draughts Ladies,+254 716 134 784,26074554,Ladies,2026-09-30 11:19:58
+CBK-3745,Irine Ingoi,iingoi@centralbank.go.ke,General Services & Procurement,Draughts,Draughts Ladies,+254 792 405 908,29911806,Ladies,2026-09-30 11:19:58
+CBK-3747,Bonga Maxwel Okumu,bokumu@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 718 549 429,28187792,Men,2026-09-30 11:19:58
+CBK-3748,Damaris Odeny,dodeny@centralbank.go.ke,Financial Markets & Reserves,Netball,Netball,+254 721 816 256,21808303,Ladies,2026-09-30 11:19:58
+CBK-3751,Veronica Nyamiru,vnyamiru@centralbank.go.ke,General Services & Procurement,Table Tennis,Table Tennis Ladies,+254 733 178 787,24309913,Ladies,2026-09-30 11:19:59
+CBK-3752,Winnie Mbaka,wmbaka@centralbank.go.ke,General Services & Procurement,Football (Soccer),Football Ladies,+254 705 984 167,28396728,Ladies,2026-09-30 11:19:58
+CBK-3754,Irene Mwangi,imwangi@centralbank.go.ke,Nyeri Currency Centre,Handball,Handball Ladies,+254 727 212 222,25834592,Ladies,2026-09-30 11:19:58
+CBK-3755,Kelvin Agesa,kagesa@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 719 158 277,32078115,Men,2026-09-30 11:19:58
+CBK-3756,Sophie G Mugodo,smugodo@centralbank.go.ke,Finance & Accounts,Scrabble,Scrabble Ladies,+254 711 337 504,24789565,Ladies,2026-09-30 11:19:58
+CBK-3757,Caroline Kirui,ckirui@centralbank.go.ke,General Services & Procurement,Football (Soccer),Football Ladies,+254 721 284 861,24724654,Ladies,2026-09-30 11:19:58
+CBK-3759,Lucia Kyalo,lkyalo@centralbank.go.ke,Human Resources,Draughts,Draughts Ladies,+254 717 651 474,27532972,Ladies,2026-09-30 11:19:58
+CBK-3760,Martin Ngatia,mngatia@centralbank.go.ke,Mombasa Branch,Handball,Handball Men,+254 720 690 057,28066923,Men,2026-09-30 11:19:58
+CBK-3762,Jecinta Munyendo,jmunyendo@centralbank.go.ke,Currency Operations & Logistics,Netball,Netball,+254 720 268 184,21808278,Ladies,2026-09-30 11:19:58
+CBK-3763,Loise Kibandi,lkibandi@centralbank.go.ke,Banking Services & National Payments,Football (Soccer),Football Ladies,+254 724 040 750,28439732,Ladies,2026-09-30 11:19:58
+CBK-3764,Japheth Muyuka,jmuyuka@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Men,+254 723 582 748,24815281,Men,2026-09-30 11:19:58
+CBK-3766,Serah Mutuku,smutuku@centralbank.go.ke,Currency Operations & Logistics,Athletics & Track,Athletics Ladies (Track & Field),+254 712 486 127,25407988,Ladies,2026-09-30 11:19:58
+CBK-3766,Sarah Mutuku,smutuku@centralbank.go.ke,Currency Operations & Logistics,Draughts,Draughts Ladies,+254 790 434 552,,Ladies,2026-09-30 11:19:58
+CBK-3768,Joshua Michael Mwambu,jmwambu@centralbank.go.ke,Banking Services & National Payments,Football (Soccer),Football Men,+254 721 141 038,28049698,Men,2026-09-30 11:19:58
+CBK-3772,Caroline Akinyi,cakinyi@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Ladies,+254 725 497 425,29693255,Ladies,2026-09-30 11:19:58
+CBK-3774,Jonathan Mwero,jmwero@centralbank.go.ke,Currency Operations & Logistics,Draughts,Draughts Men,+254 726 283 192,24461721,Men,2026-09-30 11:19:58
+CBK-3780,Vivet Odhiambo,vodhiambo@centralbank.go.ke,Financial Markets & Reserves,Basketball,Basketball Ladies,+254 710 972 837,29483207,Ladies,2026-09-30 11:19:58
+CBK-3782,Vincent Langat,vlangat@centralbank.go.ke,Financial Markets & Reserves,Football (Soccer),Football Men,+254 729 749 099,28222704,Men,2026-09-30 11:19:58
+CBK-3782,Vincent Langat,vlangat@centralbank.go.ke,Financial Markets & Reserves,Handball,Handball Men,+254 729 749 099,28222704,Men,2026-09-30 11:19:58
+CBK-3786,Barbra Simiren,bsimiren@centralbank.go.ke,Financial Markets & Reserves,Athletics & Track,Athletics Ladies (Track & Field),+254 726 405 037,28177065,Ladies,2026-09-30 11:19:58
+CBK-3787,Philister Nyabande,pnyabande@centralbank.go.ke,Strategic Management & Risk,Handball,Handball Ladies,+254 728 759 904,28814931,Ladies,2026-09-30 11:19:58
+CBK-3797,Cynthia Habakkuk,chabakkuk@centralbank.go.ke,Financial Markets & Reserves,Football (Soccer),Football Ladies,+254 727 694 860,28892199,Ladies,2026-09-30 11:19:58
+CBK-3799,Joshua Muema,jmuema@centralbank.go.ke,Financial Markets & Reserves,Handball,Handball Men,+254 719 881 938,28270920,Men,2026-09-30 11:19:58
+CBK-3802,Kelvin Evans Muthuri,kmuthuri@centralbank.go.ke,Banking Services & National Payments,Badminton,Badminton Men,+254 722 818 249,29373640,Men,2026-09-30 11:19:58
+CBK-3804,Paul Kagecha,pkagecha@centralbank.go.ke,Finance & Accounts,Badminton,Badminton Men,+254 729 967 718,11787218,Men,2026-09-30 11:19:58
+CBK-3805,David Wairimu,dwairimu@centralbank.go.ke,Financial Markets & Reserves,Handball,Handball Men,+254 705 033 583,31133270,Men,2026-09-30 11:19:58
+CBK-3806,Damaris Mwaniki,dmwaniki@centralbank.go.ke,Banking Services & National Payments,Handball,Handball Ladies,+254 718 363 261,28496997,Ladies,2026-09-30 11:19:58
+CBK-3807,Michael Wakhungu,mwakhungu@centralbank.go.ke,Finance & Accounts,Handball,Handball Men,+254 727 177 001,27940953,Men,2026-09-30 11:19:58
+CBK-3810,Paul Roba,proba@centralbank.go.ke,Finance & Accounts,Snooker / Pool,Snooker / Pool,+254 722 285 736,28868656,Mixed,2026-09-30 11:19:59
+CBK-3811,Tonny Simiyu,tsimiyu@centralbank.go.ke,Financial Markets & Reserves,Draughts,Draughts Men,+254 726 021 423,24219345,Men,2026-09-30 11:19:58
+CBK-3813,Margaret Stacey Odhiambo,modhiambo@centralbank.go.ke,Banking Services & National Payments,Volleyball,Volleyball Ladies,+254 723 897 565,29479146,Ladies,2026-09-30 11:19:59
+CBK-3819,Winnie Murero,wmurero@centralbank.go.ke,Kisii Currency Centre,Swimming,Swimming Ladies,+254 748 895 949,27504447,Ladies,2026-09-30 11:19:59
+CBK-3820,Derrick Orimba,dorimba@centralbank.go.ke,General Services & Procurement,Snooker / Pool,Snooker / Pool,,,Mixed,2026-09-30 11:19:59
+CBK-3821,Collins Maweu Mwanzia,cmwanzia@centralbank.go.ke,Meru Currency Centre,Swimming,Swimming Men,+254 712 069 778,30090599,Men,2026-09-30 11:19:59
+CBK-3822,Ian Masidza,imasidza@centralbank.go.ke,General Services & Procurement,Football (Soccer),Football Men,+254 722 536 999,27271983,Men,2026-09-30 11:19:58
+CBK-3823,Winnie Oduor,woduor@centralbank.go.ke,General Services & Procurement,Basketball,Basketball Ladies,+254 710 141 893,28944757,Ladies,2026-09-30 11:19:58
+CBK-3826,Harrizon Kasera,hkasera@centralbank.go.ke,Governor's Executive Office,Draughts,Draughts Men,+254 711 627 435,,Men,2026-09-30 11:19:58
+CBK-3832,Antony Njuguna,anjuguna@centralbank.go.ke,General Services & Procurement,Squash,Squash Men,+254 721 624 480,27145806,Men,2026-09-30 11:19:59
+CBK-3834,Antony Madundu,amadundu@centralbank.go.ke,Kisii Currency Centre,Handball,Handball Men,+254 704 140 375,29611587,Men,2026-09-30 11:19:58
+CBK-3835,Bethwel Mayaka,bmayaka@centralbank.go.ke,Currency Operations & Logistics,Basketball,Basketball Men,+254 713 521 563,27561649,Men,2026-09-30 11:19:58
+CBK-3836,Douglas Nyamao,dnyamao@centralbank.go.ke,Banking Services & National Payments,Chess,Chess Men,+254 725 056 999,27054939,Men,2026-09-30 11:19:58
+CBK-3838,Anthony Mugo,amugo@centralbank.go.ke,Finance & Accounts,Badminton,Badminton Men,+254 726 773 101,27396394,Men,2026-09-30 11:19:58
+CBK-3839,Damaris Nginya,dnginya@centralbank.go.ke,Banking Services & National Payments,Squash,Squash Ladies,+254 720 599 922,28599639,Ladies,2026-09-30 11:19:59
+CBK-3843,Geofrey Chege,gchege@centralbank.go.ke,Banking Services & National Payments,Draughts,Draughts Men,+254 727 679 101,28524439,Men,2026-09-30 11:19:58
+CBK-3847,Rophina Kisaka,rkisaka@centralbank.go.ke,Banking Services & National Payments,Badminton,Badminton Ladies,+254 702 008 349,27276833,Ladies,2026-09-30 11:19:58
+CBK-3848,Irine Kimaru,ikimaru@centralbank.go.ke,Finance & Accounts,Draughts,Draughts Ladies,+254 722 240 624,29875200,Ladies,2026-09-30 11:19:58
+CBK-3849,Betty Mueni,bmueni@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Ladies,+254 702 851 746,29515493,Ladies,2026-09-30 11:19:58
+CBK-3850,Mercy Nganga,mnganga@centralbank.go.ke,Human Resources,Tug of War,Tug of War Ladies,+254 726 630 551,25132074,Ladies,2026-09-30 11:19:59
+CBK-3856,Ian Ogoti,iogoti@centralbank.go.ke,Banking Services & National Payments,Badminton,Badminton Men,+254 707 027 400,30729242,Men,2026-09-30 11:19:58
+CBK-3861,Evans Peter Ochieng,eochieng@centralbank.go.ke,Human Resources,Lawn Tennis,Lawn Tennis Men,+254 725 989 805,24992387,Men,2026-09-30 11:19:58
+CBK-3865,Nancy Mwongela,nmwongela@centralbank.go.ke,Currency Operations & Logistics,Chess,Chess Ladies,,,Ladies,2026-09-30 11:19:58
+CBK-3868,Teresia Ngero,tngero@centralbank.go.ke,Nakuru Currency Centre,Volleyball,Volleyball Ladies,+254 719 740 073,22302728,Ladies,2026-09-30 11:19:59
+CBK-3869,Raechel Mathenge,rmathenge@centralbank.go.ke,Currency Operations & Logistics,Tug of War,Tug of War Ladies,+254 721 851 183,21815123,Ladies,2026-09-30 11:19:59
+CBK-3874,Nyaga Esther,nesther@centralbank.go.ke,Currency Operations & Logistics,Chess,Chess Ladies,+254 724 493 455,22103928,Ladies,2026-09-30 11:19:58
+CBK-3876,Mishi Hamza,mhamza@centralbank.go.ke,Currency Operations & Logistics,Draughts,Draughts Ladies,+254 727 391 810,13456181,Ladies,2026-09-30 11:19:58
+CBK-3881,Peninah Sammy,psammy@centralbank.go.ke,Currency Operations & Logistics,Draughts,Draughts Ladies,+254 722 606 833,21086898,Ladies,2026-09-30 11:19:58
+CBK-3884,Lynnetty Muriungi,lmuriungi@centralbank.go.ke,Currency Operations & Logistics,Netball,Netball,+254 726 832 024,24727296,Ladies,2026-09-30 11:19:58
+CBK-3886,Lucy Nyokabi,lnyokabi@centralbank.go.ke,Kisumu Branch,Table Tennis,Table Tennis Ladies,+254 726 623 144,23180156,Ladies,2026-09-30 11:19:59
+CBK-3887,Christine Ibiiri,cibiiri@centralbank.go.ke,Kisii Currency Centre,Handball,Handball Ladies,+254 721 482 165,21197609,Ladies,2026-09-30 11:19:58
+CBK-3890,Gladys Kosgei,gkosgei@centralbank.go.ke,Currency Operations & Logistics,Athletics & Track,Athletics Ladies (Track & Field),+254 724 460 602,28401029,Ladies,2026-09-30 11:19:58
+CBK-3901,Zephaniah O Odongo,zodongo@centralbank.go.ke,IT & Digital Services,Badminton,Badminton Men,+254 717 710 801,32968337,Men,2026-09-30 11:19:58
+CBK-3905,Eunice Wanja,ewanja@centralbank.go.ke,Bank Supervision,Scrabble,Scrabble Ladies,+254 729 137 181,28560145,Ladies,2026-09-30 11:19:58
+CBK-3909,Annastasia Mbuvi,ambuvi@centralbank.go.ke,Meru Currency Centre,Squash,Squash Ladies,+254 722 282 018,12531134,Ladies,2026-09-30 11:19:59
+CBK-3910,Daniel Omune,domune@centralbank.go.ke,Kisumu Branch,Snooker / Pool,Snooker / Pool,+254 720 777 181,24271741,Mixed,2026-09-30 11:19:59
+CBK-3911,Charlotte Mwaka,cmwaka@centralbank.go.ke,Nyeri Currency Centre,Basketball,Basketball Ladies,+254 713 831 941,26219526,Ladies,2026-09-30 11:19:58
+CBK-3913,Vivian Manza,vmanza@centralbank.go.ke,Governor's Executive Office,Basketball,Basketball Ladies,+254 702 589 733,26254026,Ladies,2026-09-30 11:19:58
+CBK-3914,Brigid Wandera,bwandera@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Ladies,+254 712 037 010,29511139,Ladies,2026-09-30 11:19:58
+CBK-3915,Elizabeth Abai,eabai@centralbank.go.ke,Governor's Executive Office,Handball,Handball Ladies,+254 726 805 488,23090677,Ladies,2026-09-30 11:19:58
+CBK-3916,Letoya Kaparo,lkaparo@centralbank.go.ke,Governor's Executive Office,Darts,Darts Men,+254 721 789 795,23511302,Men,2026-09-30 11:19:58
+CBK-3917,Patrick Wangari,pwangari@centralbank.go.ke,Nyeri Currency Centre,Athletics & Track,Athletics Men (Track & Field),+254 722 604 885,24779448,Men,2026-09-30 11:19:58
+CBK-3918,Idoy Ahmed,iahmed@centralbank.go.ke,Mombasa Branch,Darts,Darts Ladies,+254 723 274 296,29371435,Ladies,2026-09-30 11:19:58
+CBK-3920,Nicholas Kasyoki,nkasyoki@centralbank.go.ke,Kenya School of Monetary Studies (KSMS),Handball,Handball Men,+254 727 850 586,25219807,Men,2026-09-30 11:19:58
+CBK-3920,Nicholas Kasyoki,nkasyoki@centralbank.go.ke,IT & Digital Services,Swimming,Swimming Men,+254 718 303 597,29159809,Men,2026-09-30 11:19:59
+CBK-3922,Lindah Kadhambi,lkadhambi@centralbank.go.ke,Kisumu Branch,Tug of War,Tug of War Ladies,+254 720 274 606,23725294,Ladies,2026-09-30 11:19:59
+CBK-3924,Paul Bowen,pbowen@centralbank.go.ke,Nakuru Currency Centre,Tug of War,Tug of War Men,+254 720 597 256,,Men,2026-09-30 11:19:59
+CBK-3925,Rachel Njambi,rnjambi@centralbank.go.ke,Nyeri Currency Centre,Football (Soccer),Football Ladies,+254 722 638 016,24069521,Ladies,2026-09-30 11:19:58
+CBK-3926,Lena K Kamuyu,lkamuyu@centralbank.go.ke,Governor's Executive Office,Basketball,Basketball Ladies,+254 721 801 472,24036785,Ladies,2026-09-30 11:19:58
+CBK-3929,Catherine Ogulla,cogulla@centralbank.go.ke,Human Resources,Basketball,Basketball Ladies,+254 722 898 536,28944757,Ladies,2026-09-30 11:19:58
+CBK-3931,Daniel Mbatha,dmbatha@centralbank.go.ke,Human Resources,Lawn Tennis,Lawn Tennis Men,+254 710 759 868,26473660,Men,2026-09-30 11:19:58
+CBK-3933,Julia Njagi,jnjagi@centralbank.go.ke,Human Resources,Lawn Tennis,Lawn Tennis Ladies,+254 727 905 308,24747868,Ladies,2026-09-30 11:19:58
+CBK-3936,Antony Njogu,anjogu@centralbank.go.ke,Governor's Executive Office,Darts,Darts Men,+254 722 114 393,20384031,Men,2026-09-30 11:19:58
+CBK-3937,Kenneth Buong,kbuong@centralbank.go.ke,Kisumu Branch,Football (Soccer),Football Men,+254 721 543 955,20007288,Men,2026-09-30 11:19:58
+CBK-3938,Bonface Mitau,bmitau@centralbank.go.ke,Nyeri Currency Centre,Tug of War,Tug of War Men,+254 725 947 396,22361269,Men,2026-09-30 11:19:59
+CBK-3939,Christopher Thoya,cthoya@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Men,+254 721 618 743,20601309,Men,2026-09-30 11:19:58
+CBK-3941,Lawrence K Mugubi,lmugubi@centralbank.go.ke,Currency Operations & Logistics,Draughts,Draughts Men,+254 727 062 870,,Men,2026-09-30 11:19:58
+CBK-3943,Everlyn Kasyoki,ekasyoki@centralbank.go.ke,Governor's Executive Office,Netball,Netball,+254 723 786 139,22509447,Ladies,2026-09-30 11:19:58
+CBK-3944,Daphine Kwamboka,dkwamboka@centralbank.go.ke,IT & Digital Services,Tug of War,Tug of War Ladies,+254 726 924 105,24679321,Ladies,2026-09-30 11:19:59
+CBK-3945,Mary Kimondo,mkimondo@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Ladies,+254 725 621 614,24140812,Ladies,2026-09-30 11:19:59
+CBK-3952,Stanley K Mutiga,smutiga@centralbank.go.ke,Human Resources,Scrabble,Scrabble Men,+254 724 337 787,24020668,Men,2026-09-30 11:19:58
+CBK-3955,Emma Otieno,eotieno@centralbank.go.ke,Human Resources,Draughts,Draughts Ladies,+254 713 020 718,24487826,Ladies,2026-09-30 11:19:58
+CBK-3964,Bonface Ocheing,bocheing@centralbank.go.ke,Kisumu Branch,Tug of War,Tug of War Men,+254 720 615 817,23629263,Men,2026-09-30 11:19:59
+CBK-3967,Kevin Ndiege,kndiege@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Men,+254 719 356 533,28478198,Men,2026-09-30 11:19:58
+CBK-3969,Mary Ongera,mongera@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Ladies,+254 721 789 585,22504290,Ladies,2026-09-30 11:19:59
+CBK-3972,Jane Nyagah,jnyagah@centralbank.go.ke,Kisumu Branch,Tug of War,Tug of War Ladies,+254 721 890 170,21400583,Ladies,2026-09-30 11:19:59
+CBK-3987,Maurice Muthune,mmuthune@centralbank.go.ke,Bank Supervision,Handball,Handball Men,+254 711 470 048,29876755,Men,2026-09-30 11:19:58
+CBK-3988,Wilberforce Wanyonyi,wwanyonyi@centralbank.go.ke,General Services & Procurement,Football (Soccer),Football Men,+254 726 798 129,23705308,Men,2026-09-30 11:19:58
+CBK-3991,Risper Muholo,rmuholo@centralbank.go.ke,General Services & Procurement,Scrabble,Scrabble Ladies,+254 720 452 614,22071276,Ladies,2026-09-30 11:19:58
+CBK-4000,Wallace Mbugua,wmbugua@centralbank.go.ke,Finance & Accounts,Golf,Golf,+254 725 281 335,,Mixed,2026-09-30 11:19:58
+CBK-4003,Anne Kibiku,akibiku@centralbank.go.ke,Strategic Management & Risk,Netball,Netball,+254 721 669 249,11591721,Ladies,2026-09-30 11:19:58
+CBK-4009,Rahab A Runoh,rrunoh@centralbank.go.ke,Banking Services & National Payments,Basketball,Basketball Ladies,+254 722 744 646,21975028,Ladies,2026-09-30 11:19:58
+CBK-4015,Alvin Chebii,achebii@centralbank.go.ke,IT & Digital Services,Squash,Squash Men,+254 722 595 630,22107017,Men,2026-09-30 11:19:59
+CBK-4015,Alvin Chebii,achebii@centralbank.go.ke,IT & Digital Services,Swimming,Swimming Men,+254 722 595 630,22107017,Men,2026-09-30 11:19:59
+CBK-4016,Bevaline Amboka,bamboka@centralbank.go.ke,IT & Digital Services,Lawn Tennis,Lawn Tennis Ladies,+254 723 448 720,22080630,Ladies,2026-09-30 11:19:58
+CBK-4034,Vitalis Nyariaro,vnyariaro@centralbank.go.ke,IT & Digital Services,Football (Soccer),Football Men,+254 724 066 508,13649913,Men,2026-09-30 11:19:58
+CBK-4037,William Apollo,wapollo@centralbank.go.ke,Human Resources,Football (Soccer),Football Men,+254 720 871 063,27557568,Men,2026-09-30 11:19:58
+CBK-4039,Geoffrey Karunji,gkarunji@centralbank.go.ke,Nyeri Currency Centre,Football (Soccer),Football Men,+254 720 832 640,23440950,Men,2026-09-30 11:19:58
+CBK-4043,John Kilonzo Wambua,jwambua@centralbank.go.ke,IT & Digital Services,Tug of War,Tug of War Men,+254 710 895 279,23477409,Men,2026-09-30 11:19:59
+CBK-4046,Richard Kipkore,rkipkore@centralbank.go.ke,Governor's Executive Office,Darts,Darts Men,+254 724 492 622,28476436,Men,2026-09-30 11:19:58
+CBK-4047,Meja Mwagomba,mmwagomba@centralbank.go.ke,Mombasa Branch,Draughts,Draughts Men,+254 708 390 789,,Men,2026-09-30 11:19:58
+CBK-4047,John Mwangi,jmwangi@centralbank.go.ke,Governor's Executive Office,Snooker / Pool,Snooker / Pool,,,Mixed,2026-09-30 11:19:59
+CBK-4048,Peter Wanjama,pwanjama@centralbank.go.ke,Governor's Executive Office,Darts,Darts Men,+254 722 151 224,23531869,Men,2026-09-30 11:19:58
+CBK-4050,Micah Kiprotich,mkiprotich@centralbank.go.ke,Governor's Executive Office,Darts,Darts Men,+254 722 770 645,11062233,Men,2026-09-30 11:19:58
+CBK-4051,Luke Suter,lsuter@centralbank.go.ke,Governor's Executive Office,Darts,Darts Men,+254 723 744 419,24601015,Men,2026-09-30 11:19:58
+CBK-4058,Anne Bowen,abowen@centralbank.go.ke,Governor's Executive Office,Volleyball,Volleyball Ladies,+254 724 867 873,22615989,Ladies,2026-09-30 11:19:59
+CBK-4059,David Kipkogei Kimitei,dkimitei@centralbank.go.ke,Kisumu Branch,Athletics & Track,Athletics Men (Track & Field),+254 721 629 490,,Men,2026-09-30 11:19:58
+CBK-4065,Raymond Mutunga,rmutunga@centralbank.go.ke,Human Resources,Tug of War,Tug of War Men,+254 723 508 938,24153553,Men,2026-09-30 11:19:59
+CBK-4068,Wanjiku Ndoria,wndoria@centralbank.go.ke,IT & Digital Services,Golf,Golf,+254 729 824 334,,Mixed,2026-09-30 11:19:58
+CBK-4070,Oscar Otieno Ademba,oademba@centralbank.go.ke,IT & Digital Services,Swimming,Swimming Men,+254 702 433 858,32391954,Men,2026-09-30 11:19:59
+CBK-4072,Collins Aligula,caligula@centralbank.go.ke,IT & Digital Services,Swimming,Swimming Men,+254 702 708 589,32381452,Men,2026-09-30 11:19:59
+CBK-4073,Joshua Kioko,jkioko@centralbank.go.ke,IT & Digital Services,Chess,Chess Men,,,Men,2026-09-30 11:19:58
+CBK-4074,Jacob Mwaniki,jmwaniki@centralbank.go.ke,IT & Digital Services,Chess,Chess Men,+254 706 124 690,30030682,Men,2026-09-30 11:19:58
+CBK-4078,Phoebe Bundi,pbundi@centralbank.go.ke,IT & Digital Services,Lawn Tennis,Lawn Tennis Ladies,+254 721 856 242,27619875,Ladies,2026-09-30 11:19:58
+CBK-4081,Winnie Nkirote,wnkirote@centralbank.go.ke,Financial Markets & Reserves,Netball,Netball,+254 713 618 634,28800818,Ladies,2026-09-30 11:19:58
+CBK-4083,Winnie Barasa,wbarasa@centralbank.go.ke,IT & Digital Services,Draughts,Draughts Ladies,+254 726 272 796,28821129,Ladies,2026-09-30 11:19:58
+CBK-4084,Michelina Echwa,mechwa@centralbank.go.ke,Research & Policy Analysis,Football (Soccer),Football Ladies,+254 715 108 604,29643731,Ladies,2026-09-30 11:19:58
+CBK-4088,Alex Kibowen,akibowen@centralbank.go.ke,Financial Markets & Reserves,Chess,Chess Men,+254 728 037 470,29136272,Men,2026-09-30 11:19:58
+CBK-4089,Fred Sirengo,fsirengo@centralbank.go.ke,Financial Markets & Reserves,Athletics & Track,Athletics Men (Track & Field),+254 798 996 939,35053976,Men,2026-09-30 11:19:58
+CBK-4090,Regina Kasyoki,rkasyoki@centralbank.go.ke,Financial Markets & Reserves,Football (Soccer),Football Ladies,+254 700 345 263,28650297,Ladies,2026-09-30 11:19:58
+CBK-4091,Rose Wanjala,rwanjala@centralbank.go.ke,Financial Markets & Reserves,Basketball,Basketball Ladies,+254 717 868 136,32075216,Ladies,2026-09-30 11:19:58
+CBK-4092,Michelle Mwaka Mwandoro,mmwandoro@centralbank.go.ke,Financial Markets & Reserves,Swimming,Swimming Ladies,+254 702 989 286,32610188,Ladies,2026-09-30 11:19:59
+CBK-4094,Beatrice Mulunda,bmulunda@centralbank.go.ke,Financial Markets & Reserves,Scrabble,Scrabble Ladies,+254 712 025 324,33149079,Ladies,2026-09-30 11:19:58
+CBK-4095,Lavenda Ndonji,lndonji@centralbank.go.ke,Financial Markets & Reserves,Swimming,Swimming Ladies,+254 700 357 399,31565852,Ladies,2026-09-30 11:19:59
+CBK-4096,Oscar Kabanga Kimemia,okimemia@centralbank.go.ke,Financial Markets & Reserves,Basketball,Basketball Men,+254 791 800 579,34106921,Men,2026-09-30 11:19:58
+CBK-4097,Samuel Mwau,smwau@centralbank.go.ke,Finance & Accounts,Basketball,Basketball Men,+254 711 851 045,28545735,Men,2026-09-30 11:19:58
+CBK-4102,Joshua Makanga,jmakanga@centralbank.go.ke,Financial Markets & Reserves,Swimming,Swimming Men,+254 791 661 300,34318497,Men,2026-09-30 11:19:59
+CBK-4103,Jeff Munyao,jmunyao@centralbank.go.ke,Financial Markets & Reserves,Swimming,Swimming Men,+254 706 528 145,36873495,Men,2026-09-30 11:19:59
+CBK-4104,Jerusa Matende,jmatende@centralbank.go.ke,Human Resources,Football (Soccer),Football Ladies,+254 704 418 610,32526103,Ladies,2026-09-30 11:19:58
+CBK-4107,Wesley Onchonga,wonchonga@centralbank.go.ke,Finance & Accounts,Chess,Chess Men,+254 705 633 129,34955868,Men,2026-09-30 11:19:58
+CBK-4107,Wesley Onchonga,wonchonga@centralbank.go.ke,Finance & Accounts,Tug of War,Tug of War Men,+254 705 633 129,34955868,Men,2026-09-30 11:19:59
+CBK-4109,Christine Mukonyo,cmukonyo@centralbank.go.ke,Finance & Accounts,Athletics & Track,Athletics Ladies (Track & Field),+254 726 483 602,26960952,Ladies,2026-09-30 11:19:58
+CBK-4109,Christine Mukonyo,cmukonyo@centralbank.go.ke,Finance & Accounts,Handball,Handball Ladies,+254 726 483 602,26960952,Ladies,2026-09-30 11:19:58
+CBK-4110,Anita Motika,amotika@centralbank.go.ke,Finance & Accounts,Volleyball,Volleyball Ladies,+254 729 858 742,27484671,Ladies,2026-09-30 11:19:59
+CBK-4113,Shirleen Mwiti,smwiti@centralbank.go.ke,Finance & Accounts,Lawn Tennis,Lawn Tennis Ladies,+254 704 239 789,31551206,Ladies,2026-09-30 11:19:58
+CBK-4114,Titus Kithuku,tkithuku@centralbank.go.ke,Finance & Accounts,Handball,Handball Men,+254 702 191 697,32018267,Men,2026-09-30 11:19:58
+CBK-4116,Alice Munyuny,amunyuny@centralbank.go.ke,Finance & Accounts,Handball,Handball Ladies,+254 703 709 247,32224981,Ladies,2026-09-30 11:19:58
+CBK-4118,Chebet Chepkwony,cchepkwony@centralbank.go.ke,Human Resources,Swimming,Swimming Ladies,+254 701 204 377,33121993,Ladies,2026-09-30 11:19:59
+CBK-4121,Natalie Agina,nagina@centralbank.go.ke,Human Resources,Swimming,Swimming Ladies,+254 721 416 060,29334576,Ladies,2026-09-30 11:19:59
+CBK-4123,Sharon Jeruto Kurui,skurui@centralbank.go.ke,Human Resources,Darts,Darts Ladies,+254 701 585 868,32785353,Ladies,2026-09-30 11:19:58
+CBK-4125,Sharon Amayo,samayo@centralbank.go.ke,Eldoret Branch,Athletics & Track,Athletics Ladies (Track & Field),+254 726 143 001,29734410,Ladies,2026-09-30 11:19:58
+CBK-4126,Christine Mbaka,cmbaka@centralbank.go.ke,Currency Operations & Logistics,Badminton,Badminton Ladies,+254 718 902 008,31708305,Ladies,2026-09-30 11:19:58
+CBK-4126,Christine Mbaka,cmbaka@centralbank.go.ke,Eldoret Branch,Scrabble,Scrabble Ladies,+254 718 902 008,31708305,Ladies,2026-09-30 11:19:58
+CBK-4127,Justus Opere,jopere@centralbank.go.ke,Meru Currency Centre,Chess,Chess Men,+254 702 715 936,35002072,Men,2026-09-30 11:19:58
+CBK-4128,Mary Mwangi,mmwangi@centralbank.go.ke,Currency Operations & Logistics,Tug of War,Tug of War Ladies,+254 715 913 900,3333410,Ladies,2026-09-30 11:19:59
+CBK-4129,Edith Muriithi,emuriithi@centralbank.go.ke,Currency Operations & Logistics,Tug of War,Tug of War Ladies,+254 714 063 088,27814163,Ladies,2026-09-30 11:19:59
+CBK-4131,Stella Soy,ssoy@centralbank.go.ke,Nakuru Currency Centre,Football (Soccer),Football Ladies,+254 714 242 544,28178990,Ladies,2026-09-30 11:19:58
+CBK-4133,Faith Jemutai,fjemutai@centralbank.go.ke,Currency Operations & Logistics,Football (Soccer),Football Ladies,+254 705 678 724,32581696,Ladies,2026-09-30 11:19:58
+CBK-4135,George Kemboi,gkemboi@centralbank.go.ke,Kisii Currency Centre,Handball,Handball Men,+254 724 018 564,34871247,Men,2026-09-30 11:19:58
+CBK-4138,Violet Aguta,vaguta@centralbank.go.ke,Internal Audit & Risk,Tug of War,Tug of War Ladies,+254 728 761 527,27964193,Ladies,2026-09-30 11:19:59
+CBK-4139,Winnie Chelimo,wchelimo@centralbank.go.ke,Internal Audit & Risk,Netball,Netball,+254 722 734 006,34350543,Ladies,2026-09-30 11:19:58
+CBK-4146,Titus Lamaon,tlamaon@centralbank.go.ke,Eldoret Branch,Football (Soccer),Football Men,+254 726 148 575,29208625,Men,2026-09-30 11:19:58
+CBK-4153,Kevin Powon,kpowon@centralbank.go.ke,Bank Supervision,Lawn Tennis,Lawn Tennis Men,+254 706 994 996,31480001,Men,2026-09-30 11:19:58
+CBK-4154,Desmond Osoro,dosoro@centralbank.go.ke,Bank Supervision,Tug of War,Tug of War Men,+254 705 747 542,31631137,Men,2026-09-30 11:19:59
+CBK-4156,Leon Maru,lmaru@centralbank.go.ke,Bank Supervision,Tug of War,Tug of War Men,+254 727 473 345,32398044,Men,2026-09-30 11:19:59
+CBK-4158,Nderito Gatere,ngatere@centralbank.go.ke,Bank Supervision,Swimming,Swimming Men,+254 720 160 777,33600600,Men,2026-09-30 11:19:59
+CBK-4162,Aldrine Kimtai,akimtai@centralbank.go.ke,Research & Policy Analysis,Badminton,Badminton Men,+254 722 836 600,28203108,Men,2026-09-30 11:19:58
+CBK-4164,Sharon Kidambale,skidambale@centralbank.go.ke,Bank Supervision,Scrabble,Scrabble Ladies,+254 726 345 388,29713200,Ladies,2026-09-30 11:19:58
+CBK-4166,Tabitha Gitonga,tgitonga@centralbank.go.ke,Bank Supervision,Volleyball,Volleyball Ladies,+254 719 425 636,28599212,Ladies,2026-09-30 11:19:59
+CBK-4167,Brian Baliach,bbaliach@centralbank.go.ke,Bank Supervision,Golf,Golf,+254 710 999 033,,Mixed,2026-09-30 11:19:58
+CBK-4172,Melody Mbula,mmbula@centralbank.go.ke,Bank Supervision,Squash,Squash Ladies,+254 743 733 024,32485494,Ladies,2026-09-30 11:19:59
+CBK-4173,Cheptoo Chirchir,cchirchir@centralbank.go.ke,Financial Markets & Reserves,Swimming,Swimming Ladies,+44 7730 483299,31713361,Ladies,2026-09-30 11:19:59
+CBK-4175,Daniel Maluki,dmaluki@centralbank.go.ke,Bank Supervision,Tug of War,Tug of War Men,,,Men,2026-09-30 11:19:59
+CBK-4179,Lennart Namus,lnamus@centralbank.go.ke,Bank Supervision,Snooker / Pool,Snooker / Pool,,,Mixed,2026-09-30 11:19:59
+CBK-4181,Victor Ochola,vochola@centralbank.go.ke,Mombasa Branch,Swimming,Swimming Men,+254 711 287 041,29957318,Men,2026-09-30 11:19:59
+CBK-4186,Maureen Mwambi,mmwambi@centralbank.go.ke,Banking Services & National Payments,Badminton,Badminton Ladies,+254 723 368 700,27276832,Ladies,2026-09-30 11:19:58
+CBK-4188,Caroline Gikibi,cgikibi@centralbank.go.ke,Banking Services & National Payments,Golf,Golf,+254 703 475 782,,Mixed,2026-09-30 11:19:58
+CBK-4194,Brenda Kibarbet,bkibarbet@centralbank.go.ke,Banking Services & National Payments,Squash,Squash Ladies,+254 728 472 877,34955930,Ladies,2026-09-30 11:19:59
+CBK-4195,Amos Leyian Letoluo,aletoluo@centralbank.go.ke,Kisumu Branch,Football (Soccer),Football Men,+254 728 027 207,31929580,Men,2026-09-30 11:19:58
+CBK-4196,Claire Muthoni,cmuthoni@centralbank.go.ke,CBK Head Office (Executive),Scrabble,Scrabble Ladies,+254 728 881 656,28821869,Ladies,2026-09-30 11:19:58
+CBK-4197,Martha Bosibori Nyangau,mnyangau@centralbank.go.ke,Banking Services & National Payments,Table Tennis,Table Tennis Ladies,+254 729 505 930,29401113,Ladies,2026-09-30 11:19:59
+CBK-4199,Paul Oyinga,poyinga@centralbank.go.ke,Banking Services & National Payments,Basketball,Basketball Men,+254 715 474 864,34106921,Men,2026-09-30 11:19:58
+CBK-4200,Divina Ongubo,dongubo@centralbank.go.ke,Banking Services & National Payments,Squash,Squash Ladies,+254 700 329 995,30597935,Ladies,2026-09-30 11:19:59
+CBK-4204,Jokha Mwabili,jmwabili@centralbank.go.ke,Banking Services & National Payments,Football (Soccer),Football Ladies,+254 715 068 768,37248424,Ladies,2026-09-30 11:19:58
+CBK-4206,Ruth Muthuni,rmuthuni@centralbank.go.ke,Research & Policy Analysis,Basketball,Basketball Ladies,+254 726 033 444,27559612,Ladies,2026-09-30 11:19:58
+CBK-4211,Erick Onyango,eonyango@centralbank.go.ke,Human Resources,Squash,Squash Men,+254 708 007 775,29501252,Men,2026-09-30 11:19:59
+CBK-4212,Joyce Muchuka,jmuchuka@centralbank.go.ke,Internal Audit & Risk,Basketball,Basketball Ladies,+254 715 235 205,30046678,Ladies,2026-09-30 11:19:58
+CBK-4218,Elkana Komen,ekomen@centralbank.go.ke,General Services & Procurement,Snooker / Pool,Snooker / Pool,,,Mixed,2026-09-30 11:19:59
+CBK-4219,Bernard Mburu,bmburu@centralbank.go.ke,IT & Digital Services,Draughts,Draughts Men,+254 727 040 953,,Men,2026-09-30 11:19:58
+CBK-4220,Elizabeth Jelagat,ejelagat@centralbank.go.ke,General Services & Procurement,Draughts,Draughts Ladies,+254 724 044 745,21093244,Ladies,2026-09-30 11:19:58
+CBK-4221,John Ng Ang A,ja@centralbank.go.ke,General Services & Procurement,Draughts,Draughts Men,+254 720 765 109,14496339,Men,2026-09-30 11:19:58
+CBK-4223,Iddi Mbarak,imbarak@centralbank.go.ke,Mombasa Branch,Football (Soccer),Football Men,+254 745 497 581,38405077,Men,2026-09-30 11:19:58
+CBK-4224,Kennedy Omondi Otana,kotana@centralbank.go.ke,General Services & Procurement,Football (Soccer),Football Men,+254 705 804 504,28544605,Men,2026-09-30 11:19:58
+CBK-4225,Dennis Owiti,dowiti@centralbank.go.ke,Governor's Executive Office,Basketball,Basketball Men,+254 705 652 650,33655948,Men,2026-09-30 11:19:58
+CBK-4226,Dennis Kiprono Bii,dbii@centralbank.go.ke,Kisumu Branch,Athletics & Track,Athletics Men (Track & Field),+254 721 675 944,,Men,2026-09-30 11:19:58
+CBK-4228,Victor Kigen,vkigen@centralbank.go.ke,Nakuru Currency Centre,Athletics & Track,Athletics Men (Track & Field),+254 708 926 760,,Men,2026-09-30 11:19:58
+CBK-4232,Gloria Ogaro,gogaro@centralbank.go.ke,General Services & Procurement,Scrabble,Scrabble Ladies,+254 724 501 754,25373956,Ladies,2026-09-30 11:19:58
+CBK-4234,Rosemary Githome,rgithome@centralbank.go.ke,General Services & Procurement,Tug of War,Tug of War Ladies,+254 720 308 916,24088618,Ladies,2026-09-30 11:19:59
+CBK-4240,Onesmus Karoney,okaroney@centralbank.go.ke,General Services & Procurement,Darts,Darts Men,+254 727 015 695,,Men,2026-09-30 11:19:58
+CBK-4244,Isaac Abdi,iabdi@centralbank.go.ke,General Services & Procurement,Athletics & Track,Athletics Men (Track & Field),+254 702 205 994,27684691,Men,2026-09-30 11:19:58
+CBK-4246,Mary Macharia,mmacharia@centralbank.go.ke,General Services & Procurement,Football (Soccer),Football Ladies,+254 723 978 755,24468981,Ladies,2026-09-30 11:19:58
+CBK-4249,Lewis Ndegwa,lndegwa@centralbank.go.ke,Governor's Executive Office,Chess,Chess Men,+254 716 534 625,,Men,2026-09-30 11:19:58
+CBK-4250,George Kamau,gkamau@centralbank.go.ke,Governor's Executive Office,Chess,Chess Men,+254 736 224 063,23620525,Men,2026-09-30 11:19:58
+CBK-4252,Duncan Mbiu,dmbiu@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 700 199 033,31176461,Men,2026-09-30 11:19:58
+CBK-4253,Mark Okwara,mokwara@centralbank.go.ke,Kisii Currency Centre,Tug of War,Tug of War Men,+254 721 816 321,22889795,Men,2026-09-30 11:19:59
+CBK-4254,Mark Mirondia,mmirondia@centralbank.go.ke,IT & Digital Services,Draughts,Draughts Men,+254 721 434 837,22316964,Men,2026-09-30 11:19:58
+CBK-4264,Michael Wanjiru,mwanjiru@centralbank.go.ke,Banking Services & National Payments,Darts,Darts Men,+254 721 147 630,28476436,Men,2026-09-30 11:19:58
+CBK-4266,Cindy Jeruto,cjeruto@centralbank.go.ke,Governor's Executive Office,Swimming,Swimming Ladies,+254 700 305 144,34160749,Ladies,2026-09-30 11:19:59
+CBK-4268,Dickson Langat,dlangat@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Men (Track & Field),+254 768 587 594,36951196,Men,2026-09-30 11:19:58
+CBK-4269,Nicholas K Lagat,nlagat@centralbank.go.ke,General Services & Procurement,Draughts,Draughts Men,+254 720 812 267,,Men,2026-09-30 11:19:58
+CBK-4270,Paul Ogula,pogula@centralbank.go.ke,General Services & Procurement,Athletics & Track,Athletics Men (Track & Field),+254 729 785 831,23654998,Men,2026-09-30 11:19:58
+CBK-4270,Paul Wafula Ogulla,pogulla@centralbank.go.ke,General Services & Procurement,Draughts,Draughts Men,+254 729 785 837,,Men,2026-09-30 11:19:58
+CBK-4271,Washington Musa,wmusa@centralbank.go.ke,General Services & Procurement,Athletics & Track,Athletics Men (Track & Field),+254 710 534 750,24000473,Men,2026-09-30 11:19:58
+CBK-4272,Lydia Leley,lleley@centralbank.go.ke,General Services & Procurement,Athletics & Track,Athletics Ladies (Track & Field),+254 727 449 870,27204791,Ladies,2026-09-30 11:19:58
+CBK-4272,Lydia Leley,lleley@centralbank.go.ke,Governor's Executive Office,Handball,Handball Ladies,+254 727 449 870,27204791,Ladies,2026-09-30 11:19:58
+CBK-4273,Loyatum Chenangat,lchenangat@centralbank.go.ke,General Services & Procurement,Chess,Chess Ladies,+254 713 262 570,23614183,Ladies,2026-09-30 11:19:58
+CBK-4275,Peter Mwinzi,pmwinzi@centralbank.go.ke,General Services & Procurement,Athletics & Track,Athletics Men (Track & Field),+254 715 697 144,28404900,Men,2026-09-30 11:19:58
+CBK-4276,Kelvin M Kimathi,kkimathi@centralbank.go.ke,Meru Currency Centre,Football (Soccer),Football Men,+254 703 292 556,34920882,Men,2026-09-30 11:19:58
+CBK-4277,Ali Mazera,amazera@centralbank.go.ke,General Services & Procurement,Athletics & Track,Athletics Men (Track & Field),+254 111 368 642,32065981,Men,2026-09-30 11:19:58
+CBK-4278,Wambura Akinyi,wakinyi@centralbank.go.ke,General Services & Procurement,Draughts,Draughts Ladies,+254 714 979 377,21822885,Ladies,2026-09-30 11:19:58
+CBK-4280,Nana Mohamed,nmohamed@centralbank.go.ke,General Services & Procurement,Scrabble,Scrabble Ladies,+254 722 134 859,26024493,Ladies,2026-09-30 11:19:58
+CBK-4281,Reginah Wanjiru Wanjohi,rwanjohi@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Ladies (Track & Field),+254 714 581 741,30306214,Ladies,2026-09-30 11:19:58
+CBK-4282,Lydia Nyagaki,lnyagaki@centralbank.go.ke,Governor's Executive Office,Handball,Handball Ladies,+254 703 490 700,29614597,Ladies,2026-09-30 11:19:58
+CBK-4283,Jane Resiato Naikulenkop,jnaikulenkop@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Ladies,+254 727 057 026,27593275,Ladies,2026-09-30 11:19:58
+CBK-4286,Daniel Kithuku,dkithuku@centralbank.go.ke,Governor's Executive Office,Handball,Handball Men,+254 713 862 430,25339356,Men,2026-09-30 11:19:58
+CBK-4291,Leonard Kirui,lkirui@centralbank.go.ke,General Services & Procurement,Athletics & Track,Athletics Men (Track & Field),+254 722 609 243,29773911,Men,2026-09-30 11:19:58
+CBK-4294,Catherine Ngina,cngina@centralbank.go.ke,General Services & Procurement,Darts,Darts Ladies,+254 720 909 481,23693826,Ladies,2026-09-30 11:19:58
+CBK-4295,Priscilla Rop,prop@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Ladies,+254 722 897 746,11296429,Ladies,2026-09-30 11:19:59
+CBK-4297,Phoebe Odhiambo,podhiambo@centralbank.go.ke,Branch Administration & Operations,Netball,Netball,+254 725 217 140,20433477,Ladies,2026-09-30 11:19:58
+CBK-4299,Kelvin Omondi,komondi@centralbank.go.ke,Eldoret Branch,Athletics & Track,Athletics Men (Track & Field),+254 715 099 787,,Men,2026-09-30 11:19:58
+CBK-4299,Paul Igesa,pigesa@centralbank.go.ke,General Services & Procurement,Handball,Handball Men,+254 710 480 432,31905061,Men,2026-09-30 11:19:58
+CBK-4302,Benta Opiyo,bopiyo@centralbank.go.ke,Human Resources,Lawn Tennis,Lawn Tennis Ladies,+254 720 300 370,24052953,Ladies,2026-09-30 11:19:58
+CBK-4308,Kelvin Mutethia,kmutethia@centralbank.go.ke,General Services & Procurement,Darts,Darts Men,+254 713 355 745,27138948,Men,2026-09-30 11:19:58
+CBK-4309,Linet Momanyi,lmomanyi@centralbank.go.ke,General Services & Procurement,Tug of War,Tug of War Ladies,+254 721 205 362,21756294,Ladies,2026-09-30 11:19:59
+CBK-4319,Michelle Meeme,mmeeme@centralbank.go.ke,Governor's Executive Office,Lawn Tennis,Lawn Tennis Ladies,+254 710 403 990,33967887,Ladies,2026-09-30 11:19:58
+CBK-4322,Caroline Karanja,ckaranja@centralbank.go.ke,Banking Services & National Payments,Chess,Chess Ladies,+254 703 292 114,29123593,Ladies,2026-09-30 11:19:58
+CBK-4323,Esther Gitoto,egitoto@centralbank.go.ke,General Services & Procurement,Scrabble,Scrabble Ladies,+254 723 944 788,22568820,Ladies,2026-09-30 11:19:58
+CBK-4325,Enock Kimutai,ekimutai@centralbank.go.ke,IT & Digital Services,Football (Soccer),Football Men,+254 713 356 151,32424016,Men,2026-09-30 11:19:58
+CBK-4326,Mercy Kiragu,mkiragu@centralbank.go.ke,Research & Policy Analysis,Volleyball,Volleyball Ladies,+254 724 344 153,28570407,Ladies,2026-09-30 11:19:59
+CBK-4327,Ann Cherotich,acherotich@centralbank.go.ke,Financial Markets & Reserves,Netball,Netball,+254 716 332 662,2652814,Ladies,2026-09-30 11:19:58
+CBK-4329,Kenneth Okwach,kokwach@centralbank.go.ke,Research & Policy Analysis,Chess,Chess Men,+254 725 996 272,,Men,2026-09-30 11:19:58
+CBK-4332,Bernard Kiema,bkiema@centralbank.go.ke,Governor's Executive Office,Draughts,Draughts Men,+254 726 581 348,24146658,Men,2026-09-30 11:19:58
+CBK-4339,Bensley Ambundo,bambundo@centralbank.go.ke,Human Resources,Lawn Tennis,Lawn Tennis Men,+254 725 097 823,30644010,Men,2026-09-30 11:19:58
+CBK-4340,Annabel Nyikal,anyikal@centralbank.go.ke,Human Resources,Squash,Squash Ladies,+254 725 174 101,21725693,Ladies,2026-09-30 11:19:59
+CBK-4351,Faith Kiprotich,fkiprotich@centralbank.go.ke,Human Resources,Football (Soccer),Football Ladies,+254 714 266 632,35807208,Ladies,2026-09-30 11:19:58
+CBK-4353,Leah Kigen,lkigen@centralbank.go.ke,IT & Digital Services,Tug of War,Tug of War Ladies,+254 705 693 222,130222139,Ladies,2026-09-30 11:19:59
+CBK-4354,Caroline Omondi,comondi@centralbank.go.ke,IT & Digital Services,Draughts,Draughts Ladies,+254 724 126 381,25669735,Ladies,2026-09-30 11:19:58
+CBK-4355,Esher Joyce,ejoyce@centralbank.go.ke,IT & Digital Services,Table Tennis,Table Tennis Ladies,+254 727 050 032,28220638,Ladies,2026-09-30 11:19:59
+CBK-4356,Lilian Kamau,lkamau@centralbank.go.ke,IT & Digital Services,Squash,Squash Ladies,+254 725 795 980,24690263,Ladies,2026-09-30 11:19:59
+CBK-4358,Elizabeth Akinyi Kagumba,ekagumba@centralbank.go.ke,IT & Digital Services,Football (Soccer),Football Ladies,+254 706 327 275,33092827,Ladies,2026-09-30 11:19:58
+CBK-4359,Angela Beryl Yambo,ayambo@centralbank.go.ke,IT & Digital Services,Basketball,Basketball Ladies,+254 722 966 570,22484232,Ladies,2026-09-30 11:19:58
+CBK-4363,Dorin Mumbi,dmumbi@centralbank.go.ke,IT & Digital Services,Tug of War,Tug of War Ladies,+254 707 178 211,28017688,Ladies,2026-09-30 11:19:59
+CBK-4366,Mercy Mugane,mmugane@centralbank.go.ke,IT & Digital Services,Squash,Squash Ladies,+254 726 083 475,27387566,Ladies,2026-09-30 11:19:59
+CBK-4367,Dorcas Kiptoo,dkiptoo@centralbank.go.ke,Banking Services & National Payments,Football (Soccer),Football Ladies,+254 707 507 924,27583423,Ladies,2026-09-30 11:19:58
+CBK-4368,Blair Muturi,bmuturi@centralbank.go.ke,IT & Digital Services,Lawn Tennis,Lawn Tennis Men,+254 724 258 588,33329760,Men,2026-09-30 11:19:58
+CBK-4370,Benjamin Kimuhu,bkimuhu@centralbank.go.ke,IT & Digital Services,Table Tennis,Table Tennis Men,+254 720 373 420,20865170,Men,2026-09-30 11:19:59
+CBK-4371,Carolyne Mucheru,cmucheru@centralbank.go.ke,IT & Digital Services,Table Tennis,Table Tennis Ladies,+254 729 661 115,25258182,Ladies,2026-09-30 11:19:59
+CBK-4372,Zablon Mwakitele,zmwakitele@centralbank.go.ke,Corporate Communications,Swimming,Swimming Men,+254 722 555 287,27825801,Men,2026-09-30 11:19:59
+CBK-4377,Lilian Rasugu,lrasugu@centralbank.go.ke,IT & Digital Services,Athletics & Track,Athletics Ladies (Track & Field),+254 724 168 588,27885851,Ladies,2026-09-30 11:19:58
+CBK-4378,Frashiah Wanjiku Mwangi,fmwangi@centralbank.go.ke,IT & Digital Services,Athletics & Track,Athletics Ladies (Track & Field),+254 725 217 140,22937941,Ladies,2026-09-30 11:19:58
+CBK-4378,Frasia Wanjiku,fwanjiku@centralbank.go.ke,IT & Digital Services,Netball,Netball,+254 725 217 140,22937941,Ladies,2026-09-30 11:19:58
+CBK-4384,Ronny Ouma,rouma@centralbank.go.ke,IT & Digital Services,Table Tennis,Table Tennis Men,+254 716 857 675,32678293,Men,2026-09-30 11:19:59
+CBK-4388,Grace Mutua,gmutua@centralbank.go.ke,IT & Digital Services,Table Tennis,Table Tennis Ladies,+254 710 848 285,31553232,Ladies,2026-09-30 11:19:59
+CBK-4389,Damack Nyambeki,dnyambeki@centralbank.go.ke,IT & Digital Services,Football (Soccer),Football Ladies,+254 716 617 097,34176437,Ladies,2026-09-30 11:19:58
+CBK-4390,Joshua Juma,jjuma@centralbank.go.ke,Human Resources,Athletics & Track,Athletics Men (Track & Field),+254 724 297 811,25911813,Men,2026-09-30 11:19:58
+CBK-4391,Samuel Kataka,skataka@centralbank.go.ke,Human Resources,Squash,Squash Men,+254 727 114 700,22979457,Men,2026-09-30 11:19:59
+CBK-4410,Bilha Jepchumba,bjepchumba@centralbank.go.ke,Branch Administration & Operations,Football (Soccer),Football Ladies,+254 795 902 701,41815680,Ladies,2026-09-30 11:19:58
+CBK-6005,Ruth Kiragu,rkiragu@centralbank.go.ke,IT & Digital Services,Lawn Tennis,Lawn Tennis Ladies,+254 724 518 959,24529869,Ladies,2026-09-30 11:19:58
+CBK-6023,Paul Kinyua,pkinyua@centralbank.go.ke,IT & Digital Services,Lawn Tennis,Lawn Tennis Men,+254 728 242 081,33133141,Men,2026-09-30 11:19:58
+CBK-6048,Judith Chemeitoi,jchemeitoi@centralbank.go.ke,IT & Digital Services,Football (Soccer),Football Ladies,+254 724 673 501,25311487,Ladies,2026-09-30 11:19:58
+CBK-7604,Linet Wangari,lwangari@centralbank.go.ke,General Services & Procurement,Badminton,Badminton Ladies,+254 706 454 362,40077853,Ladies,2026-09-30 11:19:58
+CBK-7615,Rampa Ndegwa,rndegwa@centralbank.go.ke,Finance & Accounts,Chess,Chess Men,+254 741 388 052,39649660,Men,2026-09-30 11:19:58
+CBK-7617,Breda Kathuri,bkathuri@centralbank.go.ke,IT & Digital Services,Chess,Chess Ladies,+254 790 229 517,39387396,Ladies,2026-09-30 11:19:58
+CBK-9337,Simon Karema,skarema@centralbank.go.ke,Governor's Executive Office,Snooker / Pool,Snooker / Pool,+254 722 531 247,28394631,Mixed,2026-09-30 11:19:59
+CBK-9712,Fridah Kiburi,fkiburi@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Ladies,+254 721 781 801,23314941,Ladies,2026-09-30 11:19:59
+CBK-9721,Benson Musyoki,bmusyoki@centralbank.go.ke,Governor's Executive Office,Basketball,Basketball Men,+254 728 962 831,27242520,Men,2026-09-30 11:19:58
+CBK-9721,Martin Chomba Muriuki,mmuriuki@centralbank.go.ke,IT & Digital Services,Darts,Darts Men,+254 700 463 099,28999842,Men,2026-09-30 11:19:58
+CBK-9734,John Githirwa,jgithirwa@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Men (Track & Field),+254 710 668 310,30192306,Men,2026-09-30 11:19:58
+CBK-9736,Gibson Nganga,gnganga@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 725 393 557,27792810,Men,2026-09-30 11:19:59
+CBK-9739,Elias Gichuru,egichuru@centralbank.go.ke,Governor's Executive Office,Darts,Darts Men,+254 722 265 358,23152914,Men,2026-09-30 11:19:58
+CBK-9835,Erick Kimaita,ekimaita@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 726 285 191,25595229,Men,2026-09-30 11:19:59
+CBK-9838,Hawo Mohammed,hmohammed@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Ladies,+254 714 626 857,27044806,Ladies,2026-09-30 11:19:58
+CBK-9846,Godana Balo Abdere,gabdere@centralbank.go.ke,Mombasa Branch,Swimming,Swimming Men,+254 711 169 203,30677054,Men,2026-09-30 11:19:59
+CBK-9860,Kennedy Nakeel,knakeel@centralbank.go.ke,Governor's Executive Office,Handball,Handball Men,+254 795 034 122,34554937,Men,2026-09-30 11:19:58
+CBK-9901,Faith Gitau,fgitau@centralbank.go.ke,Governor's Executive Office,Handball,Handball Ladies,+254 729 172 020,28473199,Ladies,2026-09-30 11:19:58
+CBK-9928,Stephen Mwai Machiri,smachiri@centralbank.go.ke,Kenya School of Monetary Studies (KSMS),Handball,Handball Men,+254 720 348 746,23821420,Men,2026-09-30 11:19:58
+CBK-9934,Osman Gabow,ogabow@centralbank.go.ke,Meru Currency Centre,Football (Soccer),Football Men,+254 728 792 576,38123187,Men,2026-09-30 11:19:58
+CBK-9946,George Kundu,gkundu@centralbank.go.ke,IT & Digital Services,Tug of War,Tug of War Men,+254 729 334 166,25169752,Men,2026-09-30 11:19:59
+CBK-9956,James Kamau,jkamau@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Men (Track & Field),+254 719 174 732,32936376,Men,2026-09-30 11:19:58
+CBK-9961,Dennis Njiru,dnjiru@centralbank.go.ke,Governor's Executive Office,Basketball,Basketball Men,+254 723 050 902,28957511,Men,2026-09-30 11:19:58
+CBK-9962,Andrew Chepsergon Laisa,alaisa@centralbank.go.ke,Governor's Executive Office,Handball,Handball Men,+254 720 847 024,27718301,Men,2026-09-30 11:19:58
+CBK-9963,Richard Kiio,rkiio@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 725 462 530,26723812,Men,2026-09-30 11:19:58
+CBK-9967,Ibrahim Kinya,ikinya@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 724 902 429,,Men,2026-09-30 11:19:59
+CBK-9968,Vincent Evalia,vevalia@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 712 965 914,28797641,Men,2026-09-30 11:19:59
+CBK-9970,Ken Mwenda,kmwenda@centralbank.go.ke,Governor's Executive Office,Snooker / Pool,Snooker / Pool,,,Mixed,2026-09-30 11:19:59
+CBK-9973,Abdikheir Osman,aosman@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Men,+254 798 142 021,34099950,Men,2026-09-30 11:19:58
+CBK-9975,Levi Leshao,lleshao@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Men (Track & Field),+254 729 248 427,33910631,Men,2026-09-30 11:19:58
+CBK-9979,James Muthuri,jmuthuri@centralbank.go.ke,Governor's Executive Office,Tug of War,Tug of War Men,+254 724 948 310,24955326,Men,2026-09-30 11:19:59
+CBK-9981,Gladys Chepkemoi,gchepkemoi@centralbank.go.ke,Governor's Executive Office,Football (Soccer),Football Ladies,+254 728 068 882,25819424,Ladies,2026-09-30 11:19:58
+CBK-9982,Selina Chepchirchir Kipngetuny,skipngetuny@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Ladies (Track & Field),+254 726 259 346,23627601,Ladies,2026-09-30 11:19:58
+CBK-9987,Douglas Onguti,donguti@centralbank.go.ke,IT & Digital Services,Tug of War,Tug of War Men,+254 718 950 956,24348882,Men,2026-09-30 11:19:59
+CBK-9989,Daniel Saruni,dsaruni@centralbank.go.ke,IT & Digital Services,Tug of War,Tug of War Men,+254 724 959 098,,Men,2026-09-30 11:19:59
+CBK-9994,Urbanus Kioko,ukioko@centralbank.go.ke,Governor's Executive Office,Athletics & Track,Athletics Men (Track & Field),+254 721 122 336,23720745,Men,2026-09-30 11:19:58
+CBK-ID22055010,Rebecca Bala,rbala@centralbank.go.ke,IT & Digital Services,Draughts,Draughts Ladies,,22055010,Ladies,2026-09-30 11:19:58
+CBK-ID28124176,Nobert Wambua,nwambua@centralbank.go.ke,CBK Head Office (Executive),Scrabble,Scrabble Men,+254 717 748 068,28124176,Men,2026-09-30 11:19:59
+CBK-K6030,Moses Mbithi,mmbithi@centralbank.go.ke,IT & Digital Services,Table Tennis,Table Tennis Men,+254 757 627 102,29008272,Men,2026-09-30 11:19:59
+CBK-TMP408,Ian Ondieki,iondieki@centralbank.go.ke,Kisumu Branch,Handball,Handball Men,,,Men,2026-09-30 11:19:58

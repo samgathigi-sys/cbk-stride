@@ -1,0 +1,8 @@
+mingit/
+__pycache__/
+*.pyc
+cloudflared.exe
+cloudflared.log
+*.tmp
+.DS_Store
+Thumbs.db
