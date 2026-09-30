@@ -635,17 +635,18 @@ def search_staff_registry(query: str, limit: int = 12) -> List[Dict[str, Any]]:
 now_dt = get_eat_now()
 sync_icon = "🟢 Google Sheets Synced" if backend.gspread_connected else "🟡 Local Storage Resilient (Zero Data Loss)"
 
-# Check for tester / sandbox mode via query param or session state
+# Check for tester / sandbox mode query param and redirect to dedicated demo page
 qp = st.query_params
 mode_param = qp.get("mode", "").lower()
 sandbox_param = qp.get("sandbox", "").lower()
 
 if mode_param in ["tester", "demo", "sandbox"] or sandbox_param in ["1", "true", "yes"]:
-    st.session_state["sandbox_mode"] = True
-elif mode_param in ["live", "prod", "production"]:
-    st.session_state["sandbox_mode"] = False
+    try:
+        st.switch_page("pages/-DEMO.py")
+    except Exception:
+        pass
 
-is_sandbox = st.session_state.get("sandbox_mode", False)
+is_sandbox = False
 
 def get_active_portal_url() -> str:
     """Detects latest active public Cloudflare tunnel or defaults to local Wi-Fi host."""
@@ -719,48 +720,6 @@ st.markdown(f"""
                 🕒 {now_dt.strftime('%A, %d %B %Y | %H:%M:%S')} (EAT / GMT+3)
             </div>
         </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# ------------------------------------------------------------------------------
-# 1. TESTER SANDBOX ENVIRONMENT BANNER (IF ACTIVE)
-# ------------------------------------------------------------------------------
-if is_sandbox:
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, rgba(245, 197, 66, 0.16) 0%, rgba(0, 242, 254, 0.14) 100%); border: 2px solid #F5C542; border-radius: 14px; padding: 14px 20px; margin-bottom: 1rem; box-shadow: 0 8px 30px rgba(245, 197, 66, 0.25);">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-            <div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="background: #F5C542; color: #040E1C; font-weight: 900; font-size: 0.75rem; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.8px; text-transform: uppercase;">
-                        🧪 TESTER SANDBOX ACTIVE
-                    </span>
-                    <span style="color: #34D399; font-weight: 700; font-size: 0.82rem;">● Full Capabilities Unlocked with Synthetic Data</span>
-                </div>
-                <h3 style="margin: 6px 0 2px 0; color: #FFE899; font-size: 1.18rem; font-weight: 900;">Interactive Demonstration Environment</h3>
-                <p style="margin: 0; color: #CBD5E1; font-size: 0.86rem;">
-                    All executive operations (Secretariat Operations, HR Analytics Command, Finance Audit, Dynamic QR, and Tactical Diary) are unlocked for evaluation. Test check-ins, exports, and analytics safely without altering live bank records.
-                </p>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# ------------------------------------------------------------------------------
-# 2. CORPORATE SPONSOR & TOURNAMENT BRAND PARTNER RIBBON
-# ------------------------------------------------------------------------------
-st.markdown("""
-<div style="background: linear-gradient(135deg, rgba(8, 24, 48, 0.95) 0%, rgba(4, 14, 28, 0.98) 100%); border: 1.5px solid rgba(245, 197, 66, 0.35); border-radius: 12px; padding: 9px 18px; margin-bottom: 1.2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <span style="background: linear-gradient(135deg, #FFE899 0%, #F5C542 100%); color: #040D1A; font-weight: 900; font-size: 0.72rem; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.8px; text-transform: uppercase;">
-            🏆 Official Brand Partners
-        </span>
-        <span style="color: #FFFFFF; font-size: 0.83rem; font-weight: 600;">
-            <strong style="color: #F5C542;">KCB Bank Group</strong> (Title) &bull; <strong style="color: #34D399;">Safaricom M-Pesa</strong> (Fintech) &bull; <strong style="color: #00F2FE;">Britam</strong> (Wellness & Health) &bull; <strong style="color: #F7941D;">Brookside Dairy</strong> (Hydration)
-        </span>
-    </div>
-    <div>
-        <span style="font-size: 0.76rem; color: #94A3B8;">Direct Mobile Reach: <strong>1,500+ Corporate Athletes</strong></span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -940,19 +899,9 @@ cur_officer = get_current_officer()
 
 cur_captain_top = st.session_state.get("authenticated_captain", None)
 
-c_hdr_info, c_hdr_login = st.columns([2.8, 1.6])
+c_hdr_info, c_hdr_login = st.columns([2.8, 1.4])
 with c_hdr_login:
-    if is_sandbox:
-        c_sb1, c_sb2 = st.columns([1, 1.2])
-        with c_sb1:
-            st.markdown("<div style='text-align: right; padding-top: 6px;'><span style='background: rgba(245,197,66,0.22); color: #FFE899; font-weight: 800; font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(245,197,66,0.4);'>🧪 SANDBOX</span></div>", unsafe_allow_html=True)
-        with c_sb2:
-            if st.button("🏛️ Exit Sandbox", key="btn_exit_sandbox_top", use_container_width=True, type="primary"):
-                st.session_state["sandbox_mode"] = False
-                st.query_params.clear()
-                st.toast("Switched to live production mode.", icon="🏛️")
-                st.rerun()
-    elif cur_officer and not cur_officer.get("is_demo"):
+    if cur_officer:
         if st.button("🔒 Lock Secretariat", key="btn_top_signout", use_container_width=True):
             st.session_state["authenticated_officer"] = None
             st.session_state["admin_exports_unlocked"] = False
@@ -965,45 +914,31 @@ with c_hdr_login:
             st.toast(f"🔒 Signed out of {cur_captain_top['discipline']} captain command.", icon="🔒")
             st.rerun()
     else:
-        c_l1, c_l2 = st.columns([1.1, 1])
-        with c_l1:
-            with st.popover("🔐 Officer Login", use_container_width=True):
-                st.caption("Authorized Secretariat, Audit, Finance & HR officers log in with institutional clearance:")
-                pop_sid = st.text_input("Staff ID / Payroll #:", key="pop_sec_sid", placeholder="e.g. 3071, 3428, or CBK-...")
-                pop_pass = st.text_input("Security Passkey:", type="password", key="pop_sec_pass", placeholder="Enter confidential passkey")
-                
-                if st.button("🔓 Verify Clearance", key="btn_pop_auth", type="primary", use_container_width=True):
-                    if pop_sid.strip() and pop_pass.strip():
-                        ok_p, msg_p, off_p = backend.authenticate_officer(pop_sid.strip(), pop_pass.strip())
-                        if ok_p and off_p:
-                            st.session_state["authenticated_officer"] = off_p
-                            st.session_state["admin_exports_unlocked"] = True
-                            st.session_state["officer_auth_time"] = time.time()
-                            st.toast(msg_p, icon="🔓")
-                            st.rerun()
-                        else:
-                            st.error(f"❌ {msg_p}")
+        with st.popover("🔐 Officer Login", use_container_width=True):
+            st.caption("Authorized Secretariat, Audit, Finance & HR officers log in with institutional clearance:")
+            pop_sid = st.text_input("Staff ID / Payroll #:", key="pop_sec_sid", placeholder="e.g. 3071, 3428, or CBK-...")
+            pop_pass = st.text_input("Security Passkey:", type="password", key="pop_sec_pass", placeholder="Enter confidential passkey")
+            
+            if st.button("🔓 Verify Clearance", key="btn_pop_auth", type="primary", use_container_width=True):
+                if pop_sid.strip() and pop_pass.strip():
+                    ok_p, msg_p, off_p = backend.authenticate_officer(pop_sid.strip(), pop_pass.strip())
+                    if ok_p and off_p:
+                        st.session_state["authenticated_officer"] = off_p
+                        st.session_state["admin_exports_unlocked"] = True
+                        st.session_state["officer_auth_time"] = time.time()
+                        st.toast(msg_p, icon="🔓")
+                        st.rerun()
                     else:
-                        st.error("Please enter Staff ID and Passkey.")
+                        st.error(f"❌ {msg_p}")
+                else:
+                    st.error("Please enter Staff ID and Passkey.")
 
-                st.markdown("---")
-                st.caption("🛡️ **Institutional Governance:** Officer roles are strictly pre-appointed by the Sports Club Chairman (Mr. Angwenyi) or Secretariat Administration via *Integration & Settings*. Unaccredited staff cannot access administrative or financial portals.")
-        with c_l2:
-            if st.button("🧪 Test Sandbox", key="btn_enter_sandbox_hdr", use_container_width=True, help="Test-drive all 18 disciplines and administrative features with synthetic dummy data"):
-                st.session_state["sandbox_mode"] = True
-                st.toast("Entered Tester Sandbox Mode! All features unlocked.", icon="🧪")
-                st.rerun()
+            st.markdown("---")
+            st.caption("🛡️ **Institutional Governance:** Officer roles are strictly pre-appointed by the Sports Club Chairman (Mr. Angwenyi) or Secretariat Administration via *Integration & Settings*. Unaccredited staff cannot access administrative or financial portals.")
+            st.markdown("🧪 *Looking for the evaluator test-drive sandbox?* [Open Dedicated Demo Portal](/-DEMO)")
 
 with c_hdr_info:
-    if is_sandbox:
-        st.markdown("""
-        <div style="background: rgba(245, 197, 66, 0.12); border: 1.5px solid #F5C542; border-radius: 8px; padding: 6px 14px; margin-bottom: 6px;">
-            <span style="color: #FFE899; font-weight: 800; font-size: 0.84rem;">
-                🧪 <strong>Tester Sandbox Environment Active:</strong> All 18 Disciplines & Administrative Dashboards Unlocked for Demonstration.
-            </span>
-        </div>
-        """, unsafe_allow_html=True)
-    elif cur_officer:
+    if cur_officer:
         st.markdown(f"""
         <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 6px 12px; margin-bottom: 6px;">
             <span style="color: #34D399; font-weight: 700; font-size: 0.84rem;">
@@ -1020,7 +955,7 @@ with c_hdr_info:
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.caption("🔒 **Public Athlete Mode:** Administrative & financial portals are cloaked. Authorized officers log in above, or tap 'Test Sandbox' to demo.")
+        st.caption("🔒 **Public Athlete Mode:** Administrative & financial portals are cloaked. Authorized officers log in above.")
 
 # Executive Flyer Download Hub (Direct Mobile & Desktop Download)
 with st.expander("📥 Download Official CBK STRIDE™ 2-Page Executive Flyer (PDF / PPTX / Images)", expanded=False):
@@ -1068,14 +1003,7 @@ with st.expander("📥 Download Official CBK STRIDE™ 2-Page Executive Flyer (P
 # Determine visible tabs based on authenticated officer clearance (Roll Call 1st for pitch-side priority)
 tab_titles = ["📋 Captain's Roll Call", "📱 Mobile Check-In", "🏷️ Captain QR Station"]
 
-if is_sandbox:
-    tab_titles.extend([
-        "🏛️ Secretariat Operations",
-        "📊 HR Analytics Command",
-        "💰 Finance & Audit Portal",
-        "⚙️ Integration & Settings"
-    ])
-elif cur_officer:
+if cur_officer:
     officer_role = cur_officer.get("role", "")
     if officer_role in ["Super Admin", "Secretariat Admin", "Executive Chairman"]:
         tab_titles.extend([
@@ -1103,9 +1031,6 @@ elif cur_officer:
         ])
     else:
         tab_titles.extend(["🏛️ Secretariat Operations", "📊 HR Analytics Command"])
-
-# Always include Sponsor Pavilion
-tab_titles.append("🤝 Sponsor Pavilion")
 
 tabs = st.tabs(tab_titles)
 tab_dict = {title: tab for title, tab in zip(tab_titles, tabs)}
@@ -3783,303 +3708,12 @@ if "⚙️ Integration & Settings" in tab_dict:
         render_tab_settings()
 
 # ==============================================================================
-# TAB: CORPORATE SPONSOR PAVILION & BRAND ADVERTISING SHOWCASE
-# ==============================================================================
-def render_tab_sponsors():
-    st.markdown("### 🤝 Corporate Brand Pavilion & Sponsorship Showcase")
-    st.caption("Commercial partnership opportunities, high-impact brand visibility, and tournament engagement across the Central Bank of Kenya Sports Club.")
-
-    # 1. Commercial Value Proposition Metrics
-    sp_k1, sp_k2, sp_k3, sp_k4 = st.columns(4)
-    with sp_k1:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #F5C542;">
-            <div class="kpi-title">Active Sporting Disciplines</div>
-            <div class="kpi-value" style="color: #F5C542;">18 Sports</div>
-            <div class="kpi-sub">Golf, Football, Athletics & More</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with sp_k2:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #00F2FE;">
-            <div class="kpi-title">Audience & Athletes</div>
-            <div class="kpi-value" style="color: #00F2FE;">1,500+</div>
-            <div class="kpi-sub">Bank Staff, C-Suite & Competitors</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with sp_k3:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #10B981;">
-            <div class="kpi-title">Tournament Scans</div>
-            <div class="kpi-value" style="color: #10B981;">25,000+</div>
-            <div class="kpi-sub">100% Mobile QR Engagements</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with sp_k4:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #A78BFA;">
-            <div class="kpi-title">Brand Exposure ROI</div>
-            <div class="kpi-value" style="color: #A78BFA;">99.8%</div>
-            <div class="kpi-sub">Real-Time Digital & Field Touchpoints</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    # 2. Featured Official Corporate Partners
-    st.markdown("#### 🏆 Official Corporate Brand Partners")
-    st.caption("Proudly collaborating with market leaders in banking, telecommunications, healthcare, and FMCG:")
-
-    p_col1, p_col2 = st.columns(2)
-    with p_col1:
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(0, 242, 254, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.3);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="margin: 0; color: #00F2FE; font-size: 1.15rem; font-weight: 800;">🦁 KCB Bank Group</h4>
-                <span style="background: rgba(0, 242, 254, 0.2); color: #00F2FE; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">Platinum Partner</span>
-            </div>
-            <p style="margin: 8px 0 4px 0; font-size: 0.88rem; color: #E2E8F0;">
-                <strong>Official Banking & Financial Services Partner</strong> of the CBK Sports Club & Inter-Bank Derby.
-            </p>
-            <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">
-                Supporting financial inclusion through sports excellence, football derby title sponsorship, and executive golf tournaments.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(245, 197, 66, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.3);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="margin: 0; color: #F5C542; font-size: 1.15rem; font-weight: 800;">🛡️ Britam Holdings</h4>
-                <span style="background: rgba(245, 197, 66, 0.2); color: #F5C542; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">Wellness Underwriter</span>
-            </div>
-            <p style="margin: 8px 0 4px 0; font-size: 0.88rem; color: #E2E8F0;">
-                <strong>Official Sports Injury, Health & Wellness Underwriter</strong> for all tournament athletes.
-            </p>
-            <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">
-                Providing dedicated pitchside paramedic teams, athlete wellness recovery lounges, and comprehensive group sports personal accident coverage.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with p_col2:
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.3);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="margin: 0; color: #10B981; font-size: 1.15rem; font-weight: 800;">📱 Safaricom M-Pesa</h4>
-                <span style="background: rgba(16, 185, 129, 0.2); color: #10B981; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">Tech Innovation</span>
-            </div>
-            <p style="margin: 8px 0 4px 0; font-size: 0.88rem; color: #E2E8F0;">
-                <strong>Official Digital Payments & Connectivity Partner</strong> powering cashless tournament zones.
-            </p>
-            <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">
-                Enabling high-speed 5G connectivity across tournament pitches and 100% cashless concession pavilions through M-Pesa Merchant integration.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(167, 139, 250, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.3);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="margin: 0; color: #A78BFA; font-size: 1.15rem; font-weight: 800;">🥛 Brookside Dairy</h4>
-                <span style="background: rgba(167, 139, 250, 0.2); color: #A78BFA; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">Nutrition Partner</span>
-            </div>
-            <p style="margin: 8px 0 4px 0; font-size: 0.88rem; color: #E2E8F0;">
-                <strong>Official Nutrition & Athlete Hydration Partner</strong> across all 18 sporting venues.
-            </p>
-            <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">
-                Supplying dairy nutrition packs, energy hydration stations, and post-match recovery replenishment for over 1,500 registered athletes.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    # 3. Sponsorship Tier Packages Matrix
-    st.markdown("#### 💎 Corporate Sponsorship Packages & Advertising Tiers")
-    st.caption("Structured sponsorship packages designed for maximum corporate return on investment and community engagement:")
-
-    t1, t2, t3, t4 = st.columns(4)
-    with t1:
-        st.markdown("""
-        <div style="background: linear-gradient(145deg, rgba(8, 24, 48, 0.95), rgba(4, 14, 28, 0.98)); border: 2px solid #F5C542; border-radius: 12px; padding: 16px; height: 100%;">
-            <div style="text-align: center; margin-bottom: 10px;">
-                <span style="font-size: 1.6rem;">🥇</span>
-                <h4 style="margin: 4px 0; color: #F5C542; font-size: 1.1rem; font-weight: 800;">PLATINUM TITLE</h4>
-                <div style="font-size: 1.1rem; font-weight: 900; color: #FFFFFF;">KES 2,500,000</div>
-                <div style="font-size: 0.75rem; color: #94A3B8;">Annual Title Rights</div>
-            </div>
-            <ul style="font-size: 0.8rem; color: #CBD5E1; padding-left: 16px; line-height: 1.5;">
-                <li>Header Ribbon branding across entire portal</li>
-                <li>Main Stadium perimeter & center-circle board</li>
-                <li>Championship trophy naming rights</li>
-                <li>VIP Executive hospitality tent</li>
-                <li>Full tournament data intelligence reports</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with t2:
-        st.markdown("""
-        <div style="background: linear-gradient(145deg, rgba(8, 24, 48, 0.95), rgba(4, 14, 28, 0.98)); border: 2px solid #00F2FE; border-radius: 12px; padding: 16px; height: 100%;">
-            <div style="text-align: center; margin-bottom: 10px;">
-                <span style="font-size: 1.6rem;">🥈</span>
-                <h4 style="margin: 4px 0; color: #00F2FE; font-size: 1.1rem; font-weight: 800;">GOLD DISCIPLINE</h4>
-                <div style="font-size: 1.1rem; font-weight: 900; color: #FFFFFF;">KES 1,200,000</div>
-                <div style="font-size: 0.75rem; color: #94A3B8;">Per Key Discipline</div>
-            </div>
-            <ul style="font-size: 0.8rem; color: #CBD5E1; padding-left: 16px; line-height: 1.5;">
-                <li>Exclusive naming sponsor for 1 sport (e.g. Golf / Football)</li>
-                <li>Squad jersey chest branding</li>
-                <li>Captain Roll Call station endorsement</li>
-                <li>Pitchside A-Frame display boards</li>
-                <li>Award ceremony medal presentation</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with t3:
-        st.markdown("""
-        <div style="background: linear-gradient(145deg, rgba(8, 24, 48, 0.95), rgba(4, 14, 28, 0.98)); border: 2px solid #10B981; border-radius: 12px; padding: 16px; height: 100%;">
-            <div style="text-align: center; margin-bottom: 10px;">
-                <span style="font-size: 1.6rem;">🥉</span>
-                <h4 style="margin: 4px 0; color: #10B981; font-size: 1.1rem; font-weight: 800;">SILVER WELLNESS</h4>
-                <div style="font-size: 1.1rem; font-weight: 900; color: #FFFFFF;">KES 600,000</div>
-                <div style="font-size: 0.75rem; color: #94A3B8;">Tournament Season</div>
-            </div>
-            <ul style="font-size: 0.8rem; color: #CBD5E1; padding-left: 16px; line-height: 1.5;">
-                <li>Training bibs & warm-up kit co-branding</li>
-                <li>Hydration & nutrition station flags</li>
-                <li>Athlete recovery lounge banner</li>
-                <li>Digital schedule & match flyer inclusion</li>
-                <li>Corporate recognition on portal</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with t4:
-        st.markdown("""
-        <div style="background: linear-gradient(145deg, rgba(8, 24, 48, 0.95), rgba(4, 14, 28, 0.98)); border: 2px solid #A78BFA; border-radius: 12px; padding: 16px; height: 100%;">
-            <div style="text-align: center; margin-bottom: 10px;">
-                <span style="font-size: 1.6rem;">🎖️</span>
-                <h4 style="margin: 4px 0; color: #A78BFA; font-size: 1.1rem; font-weight: 800;">BRONZE DIGITAL</h4>
-                <div style="font-size: 1.1rem; font-weight: 900; color: #FFFFFF;">KES 250,000</div>
-                <div style="font-size: 0.75rem; color: #94A3B8;">Tournament Season</div>
-            </div>
-            <ul style="font-size: 0.8rem; color: #CBD5E1; padding-left: 16px; line-height: 1.5;">
-                <li>Digital directory showcase listing</li>
-                <li>Tournament handbook 1-page profile</li>
-                <li>Fan zone & spectator banner</li>
-                <li>Official corporate donor recognition</li>
-                <li>Digital certificate of sports patronage</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    # 4. Interactive Brand Sponsorship Intake & Advertising Form
-    c_f1, c_f2 = st.columns([1.4, 1.0])
-
-    with c_f1:
-        st.markdown("#### 📝 Register Corporate Sponsorship / Brand Advertising")
-        st.caption("Interested in partnering with the CBK Sports Club? Fill out the commercial inquiry form below:")
-
-        with st.form(key="form_sponsor_inquiry"):
-            col_sp_a, col_sp_b = st.columns(2)
-            with col_sp_a:
-                sp_org = st.text_input("Corporate / Brand Name:*", placeholder="e.g. Standard Chartered Bank / Toyota Kenya")
-                sp_name = st.text_input("Key Contact Person:*", placeholder="e.g. Jane Mutua (Head of Marketing)")
-                sp_email = st.text_input("Official Email Address:*", placeholder="e.g. jmutua@brand.co.ke")
-            with col_sp_b:
-                sp_phone = st.text_input("Phone / WhatsApp:*", placeholder="e.g. +254 700 123 456")
-                sp_tier = st.selectbox(
-                    "Preferred Sponsorship Tier:*",
-                    [
-                        "🥇 Platinum Title Partner (KES 2.5M)",
-                        "🥈 Gold Discipline Partner (KES 1.2M)",
-                        "🥉 Silver Wellness & Equipment Partner (KES 600K)",
-                        "🎖️ Bronze Digital Partner (KES 250K)",
-                        "🎯 Custom Activation / Bespoke Package"
-                    ]
-                )
-                sp_target_sport = st.selectbox(
-                    "Target Sporting Discipline:*",
-                    ["All 18 Disciplines (Tournament-Wide)"] + sorted(list(CBK_DISCIPLINES.keys()))
-                )
-
-            sp_notes = st.text_area(
-                "Campaign Objectives, Deliverables or Questions:",
-                placeholder="Describe your brand marketing objectives, target audience demographics, or custom pitchside branding requirements..."
-            )
-
-            btn_submit_sp = st.form_submit_button("🚀 Submit Corporate Partnership Inquiry", use_container_width=True)
-            if btn_submit_sp:
-                if not sp_org.strip() or not sp_name.strip() or not sp_email.strip():
-                    st.error("Please fill in Organization Name, Contact Person, and Email Address.")
-                else:
-                    ok = backend.record_sponsor_inquiry(
-                        company_name=sp_org.strip(),
-                        contact_person=sp_name.strip(),
-                        email=sp_email.strip(),
-                        phone=sp_phone.strip(),
-                        preferred_tier=sp_tier.split(" (")[0],
-                        preferred_discipline=sp_target_sport,
-                        notes=sp_notes.strip()
-                    )
-                    if ok:
-                        st.balloons()
-                        st.success(f"🎉 Thank you, {sp_name}! Your commercial sponsorship inquiry for '{sp_org}' has been registered. The CBK Sports Club Secretariat will be in touch shortly.")
-                        st.rerun()
-                    else:
-                        st.error("Failed to submit inquiry. Please retry.")
-
-    with c_f2:
-        st.markdown("#### 📞 Direct Secretariat Contacts")
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.7); border: 1px solid rgba(245, 197, 66, 0.3); border-radius: 12px; padding: 18px; margin-bottom: 12px;">
-            <h5 style="margin: 0 0 6px 0; color: #F5C542;">Central Bank of Kenya Sports Club</h5>
-            <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: #CBD5E1;">
-                Secretariat & Commercial Sponsorship Directorate<br>
-                CBK Sports Complex, Ruaraka, Thika Road<br>
-                P.O. Box 60000 - 00200, Nairobi, Kenya
-            </p>
-            <div style="font-size: 0.84rem; color: #94A3B8; line-height: 1.6;">
-                📧 <strong>Email:</strong> <span style="color: #00F2FE;">sportsclub@centralbank.go.ke</span><br>
-                📞 <strong>Direct Line:</strong> +254 (020) 286 1000 / 3000<br>
-                📱 <strong>WhatsApp Desk:</strong> +254 722 000 000<br>
-                🕒 <strong>Office Hours:</strong> Monday – Friday: 08:00 – 17:00 EAT
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.info("💡 **Interactive Sandbox Note:** Corporate marketing directors and commercial partners can review tournament telemetry, athlete rosters, and real-time advertising real-estate live without logging in by visiting `/?mode=tester`.")
-
-    # 5. Received Commercial Inquiries Pipeline (Secretariat / Sandbox Mode View)
-    is_sec_auth = bool(cur_officer or is_sandbox)
-    if is_sec_auth:
-        st.markdown("---")
-        with st.expander("📋 Received Corporate Sponsorship Inquiries & Leads (Secretariat Telemetry)"):
-            st.caption("Commercial partner inquiries received via the portal. Visible only to authenticated Secretariat officials and sandbox evaluators:")
-            inquiries = backend.get_sponsor_inquiries()
-            if inquiries:
-                df_inq = pd.DataFrame(inquiries)
-                df_inq.columns = ["ID", "Organization", "Contact Person", "Email", "Phone", "Tier", "Target Discipline", "Notes", "Submitted (EAT)"]
-                st.dataframe(df_inq.drop(columns=["ID"]), use_container_width=True, hide_index=True)
-            else:
-                st.caption("No brand inquiries submitted yet. Inquiries entered in the form above will appear here in real-time.")
-
-if "🤝 Sponsor Pavilion" in tab_dict:
-    with tab_dict["🤝 Sponsor Pavilion"]:
-        render_tab_sponsors()
-
-# ==============================================================================
 # FOOTER
 # ==============================================================================
 st.markdown("""
 <div style="text-align: center; margin-top: 2.5rem; padding: 1.4rem; border-top: 1px solid rgba(245, 197, 66, 0.25); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.6); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
     <strong style="color: #F5C542; letter-spacing: 0.5px;">CENTRAL BANK OF KENYA (CBK)</strong> • <span style="color: #00F2FE; font-weight: 800;">CBK STRIDE™</span> (Sports Telemetry & Roster Integrity)<br>
     Built with Mobile-First Streamlit Architecture, Real-Time Google Sheets Backend, & Dynamic QR Dual-Gate Verification.<br>
-    <span style="font-size: 0.75rem; color: #64748B;">&copy; 2026 Central Bank of Kenya Sports Club. All Rights Reserved.</span>
+    <span style="font-size: 0.75rem; color: #64748B;">&copy; 2026 Central Bank of Kenya Sports Club. All Rights Reserved. • <a href="/-DEMO" style="color: #F5C542; text-decoration: none;">🧪 Open Interactive Sandbox & Demo Portal</a></span>
 </div>
 """, unsafe_allow_html=True)
