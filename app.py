@@ -1883,6 +1883,49 @@ def render_tab_captains_roll_call():
     </div>
     """, unsafe_allow_html=True)
 
+    # Captain Roll-Call Guide Download Hub
+    with st.expander("📥 Download Official Team Captain Field Roll-Call Guide (PDF / Image / PPTX)"):
+        c_f1, c_f2, c_f3 = st.columns(3)
+        flyer_pdf_path = os.path.join(DIR, "CBK_STRIDE_Captain_RollCall_Guide.pdf")
+        flyer_pptx_path = os.path.join(DIR, "CBK_STRIDE_Captain_RollCall_Guide.pptx")
+        flyer_jpg_path = os.path.join(DIR, "CBK_STRIDE_Captain_RollCall_Guide.jpg")
+        
+        with c_f1:
+            if os.path.exists(flyer_pdf_path):
+                with open(flyer_pdf_path, "rb") as fp:
+                    st.download_button(
+                        "📄 Download Captain Guide (PDF)",
+                        data=fp.read(),
+                        file_name="CBK_STRIDE_Captain_RollCall_Guide.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                        key="btn_dl_cap_guide_pdf"
+                    )
+        with c_f2:
+            if os.path.exists(flyer_pptx_path):
+                with open(flyer_pptx_path, "rb") as fp:
+                    st.download_button(
+                        "📊 Download Editable PPTX",
+                        data=fp.read(),
+                        file_name="CBK_STRIDE_Captain_RollCall_Guide.pptx",
+                        mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                        use_container_width=True,
+                        key="btn_dl_cap_guide_pptx"
+                    )
+        with c_f3:
+            if os.path.exists(flyer_jpg_path):
+                with open(flyer_jpg_path, "rb") as fp:
+                    st.download_button(
+                        "🖼️ Download Mobile Flyer (JPG)",
+                        data=fp.read(),
+                        file_name="CBK_STRIDE_Captain_RollCall_Guide.jpg",
+                        mime="image/jpeg",
+                        use_container_width=True,
+                        key="btn_dl_cap_guide_jpg"
+                    )
+        if os.path.exists(flyer_jpg_path):
+            st.image(flyer_jpg_path, caption="CBK STRIDE™ Team Captain Field Roll-Call Guide", use_container_width=True)
+
     cur_off = get_current_officer()
     cur_cap = st.session_state.get("authenticated_captain", None)
 
