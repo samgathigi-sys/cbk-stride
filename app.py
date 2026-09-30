@@ -689,8 +689,8 @@ st.markdown(f"""
                 <h1 class="cbk-title">CBK STRIDE</h1>
                 <p class="cbk-subtitle">Sports Telemetry & Roster Integrity</p>
                 <div style="margin-top: 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                    <span style="font-size: 0.76rem; background: rgba(245,197,66,0.15); border: 1px solid rgba(245,197,66,0.3); padding: 3px 12px; border-radius: 12px; color: #FFE58F;">
-                        🌐 Live Portal: <a href="{portal_href}" target="_blank" style="color: #F5C542; font-weight: 800; text-decoration: underline;">{portal_label}</a>
+                    <span style="font-size: 0.76rem; background: rgba(245,197,66,0.15); border: 1px solid rgba(245,197,66,0.3); padding: 3px 12px; border-radius: 12px; color: #FFE58F; font-weight: 700;">
+                        🏅 Official Inter-Bank Platform
                     </span>
                     <span style="font-size: 0.74rem; background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.3); padding: 3px 10px; border-radius: 12px; color: #38BDF8; font-weight: 700;">
                         ⚡ 18 Disciplines • Dynamic QR Telemetry
@@ -952,8 +952,8 @@ with st.expander("📥 Download Official CBK STRIDE™ 2-Page Executive Flyer (P
                     key="dl_flyer_spread"
                 )
 
-# Determine visible tabs based on authenticated officer clearance
-tab_titles = ["📱 Mobile Check-In", "🏷️ Captain QR Station", "📋 Captain's Roll Call"]
+# Determine visible tabs based on authenticated officer clearance (Roll Call 1st for pitch-side priority)
+tab_titles = ["📋 Captain's Roll Call", "📱 Mobile Check-In", "🏷️ Captain QR Station"]
 
 if cur_officer:
     officer_role = cur_officer.get("role", "")
