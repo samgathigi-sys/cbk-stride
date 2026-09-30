@@ -136,7 +136,7 @@ draw.text((327, qr_card_y + 29), "OFFICIAL CLOUD PORTAL", fill=C_CYAN, font=font
 draw.text((315, qr_card_y + 58), "https://cbk-stride.streamlit.app/", fill=C_WHITE, font=get_font("segoeuib.ttf", 23))
 
 draw.text((315, qr_card_y + 96), "1. Scan the QR code with any smartphone camera on the pitch.", fill=C_ICE, font=get_font("segoeui.ttf", 17))
-draw.text((315, qr_card_y + 124), "2. Tap on Tab 3: [ Captain's Roll Call ] at the top of the portal.", fill=C_ICE, font=get_font("segoeui.ttf", 17))
+draw.text((315, qr_card_y + 124), "2. Opens directly on Tab 1: [ Captain's Roll Call ] by default.", fill=C_ICE, font=get_font("segoeui.ttf", 17))
 draw.text((315, qr_card_y + 152), "3. Follow the 3 fast steps below to clock in your squad in seconds.", fill=C_ICE, font=get_font("segoeui.ttf", 17))
 
 draw.rounded_rectangle([(315, qr_card_y + 185), (630, qr_card_y + 212)], radius=5, fill=(16, 185, 129, 35), outline=C_EMERALD, width=1)
