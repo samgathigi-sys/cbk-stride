@@ -617,6 +617,37 @@ class AttendanceBackend:
             )
         """)
 
+        # Create Captain Tactical Calendar, Fixtures & Jotting Diary Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS captain_calendar_notes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                discipline TEXT NOT NULL,
+                event_date TEXT NOT NULL,
+                event_time TEXT DEFAULT '17:00',
+                event_type TEXT NOT NULL,
+                title TEXT NOT NULL,
+                notes TEXT DEFAULT '',
+                venue TEXT DEFAULT '',
+                created_by TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+        """)
+
+        # Create Corporate Sponsor Inquiries Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS sponsor_inquiries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                company_name TEXT NOT NULL,
+                contact_person TEXT NOT NULL,
+                email TEXT NOT NULL,
+                phone TEXT DEFAULT '',
+                preferred_tier TEXT NOT NULL,
+                preferred_discipline TEXT DEFAULT 'All Disciplines',
+                notes TEXT DEFAULT '',
+                submitted_at TEXT NOT NULL
+            )
+        """)
+
         try:
             cur.execute("ALTER TABLE captain_credentials ADD COLUMN passkey_hash TEXT DEFAULT ''")
         except Exception:
@@ -717,6 +748,27 @@ class AttendanceBackend:
                     staff_id, full_name, gmail_or_email, discipline, passkey_hash, created_at, is_active
                 ) VALUES (?, ?, ?, ?, ?, ?, 1)
             """, ("CBK-3428", "Samuel Gathigi Njuguna", "sam.gathigi@gmail.com", "Golf", default_golf_hash, now_init))
+
+        # Seed initial sample fixtures & tactical notes for key sports if table is empty
+        cur.execute("SELECT COUNT(*) FROM captain_calendar_notes")
+        if cur.fetchone()[0] == 0:
+            sample_fixtures = [
+                ("Football (Soccer)", "2026-10-02", "16:45", "Friendly Match", "Inter-Bank Friendly: CBK Lions vs KCB Bank", "Main Pitch Pavilion. Full navy kit required. Arrive 30 mins early for dynamic warm-up drills.", "Main Stadium Pitch", "Captain (CBK-1052)", now_init),
+                ("Football (Soccer)", "2026-10-05", "17:00", "Tactical Briefing", "Set-Piece Drills & Defensive Zonal Marking", "Focus on defending corner kicks and rapid counter-attack transitions.", "Indoor Gym / Pitch 2", "Captain (CBK-1052)", now_init),
+                ("Golf", "2026-10-03", "07:30", "Tournament Fixture", "Inter-Bank Golf Championship Qualifier (18-Hole)", "Muthaiga Golf Club. Official handicap cards required at Pro-Shop marshal desk.", "Muthaiga Golf Club", "Captain (CBK-3428)", now_init),
+                ("Golf", "2026-10-06", "16:30", "Conditioning Drill", "Driving Range Long-Iron & Putting Precision Session", "Focus on 7-iron dispersion and 10-foot putting alignment.", "CBK Sports Club Putting Green", "Captain (CBK-3428)", now_init),
+                ("Athletics & Track", "2026-10-02", "16:30", "Conditioning Drill", "4x100m Relay Handover & 200m Interval Sprints", "Focus on blind baton exchange inside the 30m changeover box.", "Running Track 100m Start Point", "Captain (CBK-1014)", now_init),
+                ("Basketball", "2026-10-04", "17:30", "Friendly Match", "Pre-Tournament Scrimmage vs Standard Chartered", "Warm up at 17:00. Practice 2-3 zone defense and fast-break conversion.", "Indoor Arena Court 1", "Captain (CBK-1033)", now_init),
+                ("Swimming", "2026-10-03", "06:30", "Conditioning Drill", "50m Freestyle & 100m Breaststroke Time Trials", "Individual timing splits for Inter-Bank team relay selection.", "CBK Sports Club Aquatic Complex", "Captain (CBK-1144)", now_init),
+                ("Chess", "2026-10-02", "17:00", "Tactical Briefing", "Rapid Chess Blitz Tournament & Opening Analysis", "Board 1-4 team ranking match. Time control: 15 mins + 10s increment.", "Grand Hall Boardroom", "Captain (CBK-1100)", now_init),
+                ("Netball", "2026-10-05", "16:30", "Conditioning Drill", "Shooting Accuracy & Circle Defense Drills", "GS and GA target 80% conversion rate from edge of circle.", "Courtside Pavilion", "Captain (CBK-1070)", now_init),
+                ("Lawn Tennis", "2026-10-04", "08:00", "Friendly Match", "Doubles Ranking Tournament vs Absa Bank", "Courts 1 and 2. Tie-break format for third set.", "Clubhouse Tennis Courts", "Captain (CBK-1065)", now_init),
+            ]
+            cur.executemany("""
+                INSERT INTO captain_calendar_notes (
+                    discipline, event_date, event_time, event_type, title, notes, venue, created_by, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, sample_fixtures)
 
         conn.commit()
         conn.close()
@@ -2121,6 +2173,112 @@ class AttendanceBackend:
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
             cur.execute("SELECT * FROM export_audit_trail ORDER BY id DESC LIMIT ?", (limit,))
+            rows = cur.fetchall()
+            conn.close()
+            return [dict(r) for r in rows]
+        except Exception:
+            return []
+
+    # ==========================================================================
+    # CAPTAIN'S TACTICAL CALENDAR, FIXTURES & DIARY METHODS
+    # ==========================================================================
+    def add_calendar_note(
+        self, discipline: str, event_date: str, event_time: str, event_type: str,
+        title: str, notes: str, venue: str, created_by: str
+    ) -> bool:
+        """Adds a scheduled match, training drill, or tactical diary note for a discipline."""
+        try:
+            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO captain_calendar_notes (
+                    discipline, event_date, event_time, event_type, title, notes, venue, created_by, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (discipline, event_date, event_time, event_type, title, notes, venue, created_by, now_str))
+            conn.commit()
+            conn.close()
+            self.log_audit_event(
+                staff_id=created_by,
+                officer_name="Team Captain",
+                role=f"{discipline} Captain",
+                action_type="CALENDAR_EVENT_ADDED",
+                resource_name=f"EVENT:{event_date}:{title[:20]}",
+                notes=f"Added {event_type}: '{title}' for {discipline}"
+            )
+            return True
+        except Exception:
+            return False
+
+    def get_calendar_notes(self, discipline: str) -> List[Dict[str, Any]]:
+        """Retrieves all calendar events and tactical notes for a discipline ordered by date."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT * FROM captain_calendar_notes
+                WHERE discipline = ? OR discipline = ? OR discipline LIKE ?
+                ORDER BY event_date ASC, event_time ASC
+            """, (discipline, discipline.replace(" (Soccer)", ""), f"%{discipline.split()[0]}%"))
+            rows = cur.fetchall()
+            conn.close()
+            return [dict(r) for r in rows]
+        except Exception:
+            return []
+
+    def delete_calendar_note(self, note_id: int) -> bool:
+        """Removes a calendar note by ID."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cur = conn.cursor()
+            cur.execute("DELETE FROM captain_calendar_notes WHERE id = ?", (note_id,))
+            rc = cur.rowcount
+            conn.commit()
+            conn.close()
+            return rc > 0
+        except Exception:
+            return False
+
+    # ==========================================================================
+    # CORPORATE SPONSOR INQUIRIES & ADVERTISING REGISTRATION METHODS
+    # ==========================================================================
+    def record_sponsor_inquiry(
+        self, company_name: str, contact_person: str, email: str,
+        phone: str, preferred_tier: str, preferred_discipline: str, notes: str
+    ) -> bool:
+        """Records an official advertising or brand sponsorship inquiry."""
+        try:
+            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO sponsor_inquiries (
+                    company_name, contact_person, email, phone,
+                    preferred_tier, preferred_discipline, notes, submitted_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (company_name, contact_person, email, phone, preferred_tier, preferred_discipline, notes, now_str))
+            conn.commit()
+            conn.close()
+            self.log_audit_event(
+                staff_id="PUBLIC_SPONSOR",
+                officer_name=contact_person,
+                role="Commercial Sponsor",
+                action_type="SPONSOR_INQUIRY_RECEIVED",
+                resource_name=f"SPONSOR:{company_name[:25]}",
+                notes=f"Inquiry for {preferred_tier} sponsorship ({preferred_discipline}) from {company_name}"
+            )
+            return True
+        except Exception:
+            return False
+
+    def get_sponsor_inquiries(self) -> List[Dict[str, Any]]:
+        """Retrieves all received sponsor and corporate advertising inquiries."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM sponsor_inquiries ORDER BY id DESC")
             rows = cur.fetchall()
             conn.close()
             return [dict(r) for r in rows]
