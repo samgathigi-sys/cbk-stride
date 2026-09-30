@@ -592,12 +592,23 @@ class AttendanceBackend:
                 full_name TEXT NOT NULL,
                 gmail_or_email TEXT NOT NULL,
                 discipline TEXT NOT NULL,
-                temp_pin TEXT NOT NULL,
+                passkey_hash TEXT DEFAULT '',
+                temp_pin TEXT DEFAULT '',
                 created_at TEXT NOT NULL,
-                expires_at TEXT NOT NULL,
+                last_login TEXT DEFAULT '',
+                expires_at TEXT DEFAULT '',
                 is_active INTEGER DEFAULT 1
             )
         """)
+
+        try:
+            cur.execute("ALTER TABLE captain_credentials ADD COLUMN passkey_hash TEXT DEFAULT ''")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE captain_credentials ADD COLUMN last_login TEXT DEFAULT ''")
+        except Exception:
+            pass
 
         # Seed default Super Admin (Samuel Gathigi Njuguna, CBK-3428) if not already set
         cur.execute("SELECT COUNT(*) FROM security_access_control WHERE staff_id = 'CBK-3428'")
@@ -614,6 +625,17 @@ class AttendanceBackend:
                 "CBK-3428", "Samuel Gathigi Njuguna", "IT & Digital Services", "Super Admin",
                 1, 1, 1, default_hash, "SYSTEM_ROOT", now_init
             ))
+
+        # Seed default Golf Captain for Samuel Gathigi Njuguna (CBK-3428) with passkey 3428
+        now_init = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cur.execute("SELECT COUNT(*) FROM captain_credentials WHERE staff_id = 'CBK-3428' AND discipline = 'Golf'")
+        if cur.fetchone()[0] == 0:
+            default_golf_hash = hashlib.sha256(b"3428").hexdigest()
+            cur.execute("""
+                INSERT INTO captain_credentials (
+                    staff_id, full_name, gmail_or_email, discipline, passkey_hash, created_at, is_active
+                ) VALUES (?, ?, ?, ?, ?, ?, 1)
+            """, ("CBK-3428", "Samuel Gathigi Njuguna", "sam.gathigi@gmail.com", "Golf", default_golf_hash, now_init))
 
         conn.commit()
         conn.close()
@@ -1435,8 +1457,183 @@ class AttendanceBackend:
             return False, f"Incorrect security passkey. ({max(0, remaining)} attempts remaining before temporary lockout)", None
 
     # ==============================================================================
-    # CAPTAIN REGISTRATION & DISCIPLINE-SPECIFIC AUTHENTICATION
+    # CAPTAIN REGISTRATION & DISCIPLINE-SPECIFIC AUTHENTICATION (OPTION A: SECRET PASSKEY)
     # ==============================================================================
+    def authenticate_captain_passkey(
+        self, raw_staff_id: str, discipline: str, raw_passkey: str, ip_info: str = ""
+    ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+        """
+        Option A: Authenticates a Team Captain using their secret personal passkey.
+        Stops imposters with brute-force rate-limiting and forensic audit alerts.
+        """
+        sid_clean = str(raw_staff_id).strip().upper()
+        if not sid_clean:
+            return False, "Staff ID / Payroll Number is required.", None
+        if not sid_clean.startswith("CBK-") and sid_clean.replace("CBK", "").replace("-", "").isdigit():
+            sid_clean = f"CBK-{sid_clean.replace('CBK', '').replace('-', '')}"
+
+        pkey = str(raw_passkey).strip()
+        if not pkey:
+            return False, "Secret Captain Passkey cannot be empty.", None
+
+        # Impersonation Brute-Force Rate Limiter (3 attempts per 10 minutes)
+        now_time = time.time()
+        lockout_key = f"cap_{sid_clean}_{discipline}"
+        prior_fails = [t for t in self._login_attempts.get(lockout_key, []) if now_time - t < 600]
+        if len(prior_fails) >= 3:
+            lockout_secs = int(600 - (now_time - prior_fails[0]))
+            self.log_audit_event(
+                staff_id=sid_clean,
+                officer_name="Blocked Imposter",
+                role=f"{discipline} Captain",
+                action_type="IMPERSONATION_LOCKOUT",
+                resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
+                ip_or_session=ip_info,
+                status="LOCKED_OUT",
+                notes=f"Security Lockout: 3 failed passkey attempts on {discipline}. Locked for {lockout_secs}s."
+            )
+            return False, f"🚨 Security Lockout: Too many incorrect passkeys. Locked for {lockout_secs} seconds to protect this captain's identity.", None
+
+        # Master Super Admin clearance override
+        if pkey in ["3428", "2026", "cbk2026"] and (sid_clean == "CBK-3428" or sid_clean == "3428"):
+            conn_adm = sqlite3.connect(self.db_path, timeout=10)
+            conn_adm.row_factory = sqlite3.Row
+            cur_adm = conn_adm.cursor()
+            cur_adm.execute("SELECT * FROM security_access_control WHERE staff_id = 'CBK-3428'")
+            admin_row = cur_adm.fetchone()
+            conn_adm.close()
+            if admin_row:
+                self._login_attempts[lockout_key] = []
+                admin_profile = {
+                    "staff_id": "CBK-3428",
+                    "full_name": admin_row["full_name"],
+                    "department": admin_row["department"],
+                    "gmail_or_email": "sam.gathigi@gmail.com",
+                    "discipline": discipline,
+                    "is_super_admin": True
+                }
+                self.log_audit_event(
+                    staff_id="CBK-3428",
+                    officer_name=admin_row["full_name"],
+                    role=f"{discipline} Master Captain",
+                    action_type="CAPTAIN_AUTH_SUCCESS",
+                    resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
+                    status="SUCCESS",
+                    notes=f"Master passkey verified for {discipline} captaincy"
+                )
+                return True, f"Clearance Verified: Welcome, Captain {admin_row['full_name']}!", admin_profile
+
+        # Look up registered captain credentials
+        pkey_hash = self._hash_passkey(pkey)
+        conn = sqlite3.connect(self.db_path, timeout=10)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT * FROM captain_credentials
+            WHERE (staff_id = ? OR staff_id LIKE ?)
+              AND discipline = ?
+              AND is_active = 1
+            ORDER BY id DESC LIMIT 1
+        """, (sid_clean, f"%{sid_clean}%", discipline))
+        row = cur.fetchone()
+
+        if row:
+            stored_hash = row["passkey_hash"] or ""
+            # Verify hashed passkey or temp_pin match
+            is_valid_pass = (stored_hash and stored_hash == pkey_hash) or (row["temp_pin"] and row["temp_pin"] == pkey)
+            if is_valid_pass:
+                self._login_attempts[lockout_key] = []
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                cur.execute("UPDATE captain_credentials SET last_login = ? WHERE id = ?", (now_str, row["id"]))
+                conn.commit()
+                conn.close()
+
+                cap_profile = dict(row)
+                self.log_audit_event(
+                    staff_id=cap_profile["staff_id"],
+                    officer_name=cap_profile["full_name"],
+                    role=f"{discipline} Captain",
+                    action_type="CAPTAIN_AUTH_SUCCESS",
+                    resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
+                    status="SUCCESS",
+                    notes=f"Captain successfully authenticated with secret passkey for {discipline}"
+                )
+                return True, f"Welcome, Captain {cap_profile['full_name']}! You have unlocked {discipline} Roll Call.", cap_profile
+            else:
+                prior_fails.append(now_time)
+                self._login_attempts[lockout_key] = prior_fails
+                conn.close()
+                remaining = 3 - len(prior_fails)
+                self.log_audit_event(
+                    staff_id=sid_clean,
+                    officer_name=row["full_name"],
+                    role=f"{discipline} Captain",
+                    action_type="IMPERSONATION_ATTEMPT_DENIED",
+                    resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
+                    ip_or_session=ip_info,
+                    status="DENIED",
+                    notes=f"Incorrect secret passkey for {discipline} captaincy. ({len(prior_fails)}/3 failed attempts)"
+                )
+                return False, f"🚨 Access Denied: Incorrect secret passkey! ({max(0, remaining)} attempts remaining before security lockout)", None
+        else:
+            conn.close()
+            # Staff exists in registry?
+            staff = self.get_staff_by_id(sid_clean)
+            if not staff:
+                return False, f"❌ Staff ID '{sid_clean}' was not found in the Central Bank athlete registry.", None
+            
+            # First time setup
+            return False, "FIRST_TIME_SETUP", staff
+
+    def setup_first_time_captain_passkey(
+        self, raw_staff_id: str, discipline: str, gmail_or_email: str, new_passkey: str
+    ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+        """Initializes a new secret passkey for a first-time team captain."""
+        sid_clean = str(raw_staff_id).strip().upper()
+        if not sid_clean.startswith("CBK-") and sid_clean.replace("CBK", "").replace("-", "").isdigit():
+            sid_clean = f"CBK-{sid_clean.replace('CBK', '').replace('-', '')}"
+        
+        pkey = str(new_passkey).strip()
+        if len(pkey) < 4:
+            return False, "Secret passkey must be at least 4 characters or digits.", None
+
+        staff = self.get_staff_by_id(sid_clean)
+        full_name = staff["full_name"] if staff else f"Captain ({sid_clean})"
+        dept = staff["department"] if staff else "Central Bank of Kenya"
+        email_clean = str(gmail_or_email).strip().lower()
+
+        pkey_hash = self._hash_passkey(pkey)
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        conn = sqlite3.connect(self.db_path, timeout=10)
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO captain_credentials (
+                staff_id, full_name, gmail_or_email, discipline, passkey_hash, created_at, is_active
+            ) VALUES (?, ?, ?, ?, ?, ?, 1)
+        """, (sid_clean, full_name, email_clean, discipline, pkey_hash, now_str))
+        conn.commit()
+        conn.close()
+
+        cap_profile = {
+            "staff_id": sid_clean,
+            "full_name": full_name,
+            "department": dept,
+            "gmail_or_email": email_clean,
+            "discipline": discipline
+        }
+
+        self.log_audit_event(
+            staff_id=sid_clean,
+            officer_name=full_name,
+            role=f"{discipline} Captain",
+            action_type="CAPTAIN_PASSKEY_INITIALIZED",
+            resource_name=f"CAPTAIN_{discipline.upper().replace(' ', '_')}",
+            status="SUCCESS",
+            notes=f"Initial secret passkey configured by {full_name} for {discipline} captaincy"
+        )
+        return True, f"🎉 Secret passkey configured! Captain {full_name} is now accredited for {discipline}.", cap_profile
+
     def request_captain_temp_pin(
         self, raw_staff_id: str, gmail_or_email: str, discipline: str
     ) -> Tuple[bool, str, Optional[str], Optional[Dict[str, Any]]]:

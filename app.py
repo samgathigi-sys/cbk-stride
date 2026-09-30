@@ -1933,58 +1933,71 @@ def render_tab_captains_roll_call():
         is_authorized = False
         auditor_tag = "Spectator (Read-Only)"
 
-        # Captain Self-Registration & One-Time PIN Login Drawer
-        with st.expander("🔐 Team Captain Accreditation & Temp Passcode Login (Anti-Tampering)", expanded=True):
+        # Captain Secret Passkey & Anti-Impersonation Gateway (Option A)
+        with st.expander("🛡️ Team Captain Authentication & Anti-Impersonation Shield", expanded=True):
             st.markdown("""
             <div style="font-size: 0.86rem; color: #CBD5E1; margin-bottom: 12px;">
-                🛡️ <strong>Anti-Tampering Protection:</strong> To ensure no one can alter attendance for another sport, each Team Captain registers with their <strong>Staff ID</strong> and <strong>Gmail address</strong> to receive an instant 6-digit dynamic passcode.
+                🛡️ <strong>Anti-Impersonation Protection:</strong> To prevent anyone from pretending to be you or altering attendance for another sport, each Team Captain authenticates with their <strong>Staff ID</strong> and <strong>Secret Passkey</strong>.
             </div>
             """, unsafe_allow_html=True)
-            c_cap_reg1, c_cap_reg2 = st.columns([1.2, 1.2])
-            with c_cap_reg1:
-                st.markdown("##### 1. Request Temporary Passcode")
-                sel_reg_sport = st.selectbox("Select Your Sport Discipline:", ALL_18_SPORTS, key="cap_reg_sport")
-                cap_reg_sid = st.text_input("Staff ID / Payroll #:", placeholder="e.g. 3428 or CBK-3428", key="cap_reg_sid")
-                cap_reg_email = st.text_input("Captain Gmail / CBK Email:", placeholder="e.g. eric.mwangi@gmail.com", key="cap_reg_email")
+            
+            c_cap_l1, c_cap_l2, c_cap_l3 = st.columns([1.2, 1.1, 1.2])
+            with c_cap_l1:
+                cap_sel_sport = st.selectbox("Your Sport Discipline:", ALL_18_SPORTS, key="cap_in_sport")
+            with c_cap_l2:
+                cap_in_sid = st.text_input("Staff ID / Payroll #:", placeholder="e.g. 3428 or CBK-3428", key="cap_in_sid")
+            with c_cap_l3:
+                cap_in_pass = st.text_input("Secret Captain Passkey:", type="password", placeholder="Enter secret passkey", key="cap_in_pass")
 
-                if st.button(f"📲 Request Temporary PIN ({sel_reg_sport})", type="primary", use_container_width=True, key="btn_get_temp_pin"):
-                    if not cap_reg_sid.strip() or not cap_reg_email.strip():
-                        st.error("Please provide both your Staff ID and Email address.")
+            c_sub1, c_sub2 = st.columns([2, 1.5])
+            with c_sub1:
+                if st.button(f"🔓 Verify Passkey & Unlock {cap_sel_sport} Roll Call", type="primary", use_container_width=True, key="btn_auth_cap_pass"):
+                    if not cap_in_sid.strip() or not cap_in_pass.strip():
+                        st.error("Please enter both your Staff ID and Secret Passkey.")
                     else:
-                        ok_pin, msg_pin, generated_pin, cap_prof = backend.request_captain_temp_pin(cap_reg_sid, cap_reg_email, sel_reg_sport)
-                        if ok_pin:
-                            st.session_state[f"last_gen_pin_{sel_reg_sport}"] = generated_pin
-                            st.session_state["pending_cap_sid"] = cap_reg_sid
-                            st.session_state["pending_cap_sport"] = sel_reg_sport
-                            st.success(f"🎉 Passcode generated for {cap_prof['full_name']}!")
+                        ok_cap, msg_cap, prof_cap = backend.authenticate_captain_passkey(cap_in_sid, cap_sel_sport, cap_in_pass)
+                        if ok_cap:
+                            st.session_state["authenticated_captain"] = prof_cap
+                            st.session_state["active_discipline"] = cap_sel_sport
+                            st.session_state["show_first_time_setup"] = False
+                            st.success(msg_cap)
+                            st.balloons()
+                            st.rerun()
+                        elif msg_cap == "FIRST_TIME_SETUP":
+                            st.session_state["show_first_time_setup"] = True
+                            st.session_state["first_time_staff"] = prof_cap
+                            st.session_state["first_time_sport"] = cap_sel_sport
                             st.rerun()
                         else:
-                            st.error(msg_pin)
+                            st.error(msg_cap)
 
-            with c_cap_reg2:
-                st.markdown("##### 2. Unlock Squad Command")
-                pending_sp = st.session_state.get("pending_cap_sport", sel_reg_sport)
-                last_pin = st.session_state.get(f"last_gen_pin_{pending_sp}", "")
-                if last_pin:
-                    st.markdown(f"""
-                    <div style="background: rgba(245, 197, 66, 0.15); border: 1.5px solid #F5C542; border-radius: 10px; padding: 12px; margin-bottom: 10px; text-align: center;">
-                        <div style="font-size: 0.75rem; color: #FFE899; text-transform: uppercase; font-weight: 800;">Temporary One-Time Passcode ({pending_sp})</div>
-                        <div style="font-size: 2rem; font-weight: 900; color: #FFFFFF; letter-spacing: 4px; margin: 4px 0; font-family: monospace;">{last_pin}</div>
-                        <div style="font-size: 0.72rem; color: #94A3B8;">Valid for 8 hours • Enter below to unlock {pending_sp} roll call:</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                cap_login_pin = st.text_input("Enter 6-Digit Temporary PIN:", placeholder="e.g. 749201", type="password", key="cap_login_pin", value=last_pin if last_pin else "")
-                if st.button(f"🔓 Unlock {pending_sp} Roll Call", type="primary", use_container_width=True, key="btn_unlock_cap_rollcall"):
-                    cand_sid = st.session_state.get("pending_cap_sid", cap_reg_sid)
-                    ok_v, msg_v, prof_v = backend.verify_captain_temp_pin(cand_sid, pending_sp, cap_login_pin)
-                    if ok_v:
-                        st.session_state["authenticated_captain"] = prof_v
-                        st.session_state["active_discipline"] = pending_sp
-                        st.success(msg_v)
-                        st.balloons()
-                        st.rerun()
-                    else:
-                        st.error(msg_v)
+            if st.session_state.get("show_first_time_setup"):
+                ft_staff = st.session_state.get("first_time_staff", {})
+                ft_sport = st.session_state.get("first_time_sport", cap_sel_sport)
+                st.markdown("---")
+                st.markdown(f"#### 🆕 First-Time Setup for {ft_staff.get('full_name', 'Captain')} ({ft_sport})")
+                st.caption("You are accredited in the Central Bank athlete registry! Create your secret personal passkey below to activate your captaincy shield:")
+                c_ft1, c_ft2, c_ft3 = st.columns([1.4, 1.4, 1])
+                with c_ft1:
+                    ft_email = st.text_input("Your Gmail / CBK Email:", value=ft_staff.get("cbk_email", ""), key="ft_cap_email")
+                with c_ft2:
+                    ft_new_pass = st.text_input("Create Secret Passkey (Min 4 digits):", type="password", key="ft_cap_pass")
+                with c_ft3:
+                    st.markdown("<div style='margin-top: 28px;'></div>", unsafe_allow_html=True)
+                    if st.button("🛡️ Activate Shield", type="primary", use_container_width=True, key="btn_save_ft_pass"):
+                        if not ft_new_pass.strip() or len(ft_new_pass.strip()) < 4:
+                            st.error("Passkey must be at least 4 digits/characters.")
+                        else:
+                            ok_s, msg_s, prof_s = backend.setup_first_time_captain_passkey(ft_staff["staff_id"], ft_sport, ft_email, ft_new_pass)
+                            if ok_s:
+                                st.session_state["authenticated_captain"] = prof_s
+                                st.session_state["active_discipline"] = ft_sport
+                                st.session_state["show_first_time_setup"] = False
+                                st.success(f"🎉 Passkey configured! Welcome, Captain {prof_s['full_name']}!")
+                                st.balloons()
+                                st.rerun()
+                            else:
+                                st.error(msg_s)
 
     # 2. Sport & Gate Selection Controls
     c_rc1, c_rc2, c_rc3 = st.columns([1.3, 1.1, 1.1])
