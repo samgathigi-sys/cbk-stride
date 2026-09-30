@@ -1153,15 +1153,34 @@ class AttendanceBackend:
             pass
 
     def _ensure_sample_data_if_empty(self):
-        """Populates the database with realistic CBK demo records if empty."""
+        """Preserves clean slate when empty; administrators can re-seed on demand."""
+        pass
+
+    def clear_all_attendance(self):
+        """Clears all attendance logs, resetting the entire tournament to zero scans."""
         conn = sqlite3.connect(self.db_path)
         cur = conn.cursor()
-        cur.execute("SELECT COUNT(*) FROM attendance_logs")
-        count = cur.fetchone()[0]
+        cur.execute("DELETE FROM attendance_logs")
+        conn.commit()
         conn.close()
+        self._export_to_csv()
 
-        if count == 0:
-            self.seed_demo_data()
+    def clear_discipline_attendance(self, discipline: str):
+        """Clears attendance logs for a specific sport/discipline."""
+        disc_query = discipline
+        if discipline == "Football":
+            disc_query = "Football (Soccer)"
+        elif discipline == "Pool / Snooker":
+            disc_query = "Snooker / Pool"
+        elif discipline in ["Scrabble", "Darts"]:
+            disc_query = "Scrabble & Darts"
+        
+        conn = sqlite3.connect(self.db_path)
+        cur = conn.cursor()
+        cur.execute("DELETE FROM attendance_logs WHERE discipline = ? OR discipline = ?", (discipline, disc_query))
+        conn.commit()
+        conn.close()
+        self._export_to_csv()
 
     def seed_demo_data(self):
         """Generates realistic CBK sports attendance data using ONLY legitimate staff from staff_registry."""

@@ -2227,6 +2227,30 @@ def render_tab_captains_roll_call():
             key="dl_btn_rc_csv"
         )
 
+    # 7. SQUAD ROLL CALL RESET / CLEAR CONTROLS
+    st.markdown("---")
+    with st.expander("🔄 Reset & Clear Attendance for Fresh Roll Call"):
+        st.caption("Need to clear previous or test scans so captains can confirm who turned up today from scratch? Choose an option below:")
+        c_rst1, c_rst2 = st.columns(2)
+        with c_rst1:
+            st.markdown(f"**Reset {rc_sport} Only (Zero Scans)**")
+            st.caption(f"Clears today's check-ins for {rc_sport} athletes only. Other sports remain intact.")
+            confirm_sp = st.checkbox(f"Confirm clearing {rc_sport}", key=f"chk_rst_{rc_sport}")
+            if st.button(f"🗑️ Reset {rc_sport} to 0", disabled=not confirm_sp, type="secondary", key=f"btn_rst_sp_{rc_sport}", use_container_width=True):
+                backend.clear_discipline_attendance(rc_sport)
+                st.session_state["rc_selected_labels"] = []
+                st.toast(f"✅ {rc_sport} attendance logs cleared! Ready for fresh roll call.", icon="🗑️")
+                st.rerun()
+        with c_rst2:
+            st.markdown("**Reset All 18 Disciplines (Clean Tournament Slate)**")
+            st.caption("Clears all attendance telemetry across the entire tournament for a completely fresh start.")
+            confirm_all = st.checkbox("Confirm clearing ALL attendance", key="chk_rst_all_sports")
+            if st.button("🚨 Purge All Attendance to 0", disabled=not confirm_all, type="primary" if confirm_all else "secondary", key="btn_rst_all_sp", use_container_width=True):
+                backend.clear_all_attendance()
+                st.session_state["rc_selected_labels"] = []
+                st.toast("✅ All tournament attendance logs purged to 0 scans!", icon="🚨")
+                st.rerun()
+
 if "📋 Captain's Roll Call" in tab_dict:
     with tab_dict["📋 Captain's Roll Call"]:
         render_tab_captains_roll_call()
