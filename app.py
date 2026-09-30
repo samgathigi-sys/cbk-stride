@@ -2288,22 +2288,25 @@ def render_tab_captains_roll_call():
                     elif reg_pass1.strip() != reg_pass2.strip():
                         st.error("The two passkeys do not match! Please check and re-enter.")
                     else:
-                        ok_reg, msg_reg, prof_reg = backend.setup_first_time_captain_passkey(
-                            raw_staff_id=reg_sid.strip(),
-                            discipline=reg_sport,
-                            gmail_or_email=reg_email.strip(),
-                            new_passkey=reg_pass1.strip(),
-                            custom_full_name=reg_full_name.strip()
-                        )
-                        if ok_reg:
-                            st.session_state["authenticated_captain"] = prof_reg
-                            st.session_state["active_discipline"] = reg_sport
-                            st.session_state["show_first_time_setup"] = False
-                            st.success(f"🎉 Welcome, Captain {prof_reg['full_name']}! You have successfully registered and unlocked {reg_sport} Roll Call.")
-                            st.balloons()
-                            st.rerun()
-                        else:
-                            st.error(msg_reg)
+                        try:
+                            ok_reg, msg_reg, prof_reg = backend.setup_first_time_captain_passkey(
+                                raw_staff_id=reg_sid.strip(),
+                                discipline=reg_sport,
+                                gmail_or_email=reg_email.strip(),
+                                new_passkey=reg_pass1.strip(),
+                                custom_full_name=reg_full_name.strip()
+                            )
+                            if ok_reg:
+                                st.session_state["authenticated_captain"] = prof_reg
+                                st.session_state["active_discipline"] = reg_sport
+                                st.session_state["show_first_time_setup"] = False
+                                st.success(f"🎉 Welcome, Captain {prof_reg['full_name']}! You have successfully registered and unlocked {reg_sport} Roll Call.")
+                                st.balloons()
+                                st.rerun()
+                            else:
+                                st.error(msg_reg)
+                        except Exception as e:
+                            st.error(f"⚠️ Registration processing error: {e}")
 
         # STRICT DATA PROTECTION: Stop execution here so no player names, IDs, or rosters are displayed!
         return

@@ -246,6 +246,7 @@ tab_titles = [
     "📅 Captain's Tactical Diary",
     "📱 Mobile Check-In",
     "🏷️ Captain QR Station",
+    "🎟️ Self-Registration & Ticketing",
     "🏛️ Secretariat Operations",
     "📊 HR Analytics Command",
     "💰 Finance & Audit Portal",
@@ -474,7 +475,209 @@ with tab_dict["🏷️ Captain QR Station"]:
         """)
 
 # ==============================================================================
-# TAB 5: SECRETARIAT OPERATIONS DASHBOARD
+# TAB: SELF-REGISTRATION & TICKETING SHOWCASE (M-PESA STK INTEGRATION)
+# ==============================================================================
+with tab_dict["🎟️ Self-Registration & Ticketing"]:
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #0A2540 0%, #061527 100%); border: 1.5px solid rgba(0, 242, 254, 0.4); border-left: 5px solid #00F2FE; border-radius: 14px; padding: 18px 22px; margin-bottom: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.45);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <span style="background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 100%); color: #040E1C; font-weight: 900; font-size: 0.72rem; padding: 3px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.8px;">COMMERCIAL SAAS ENGINE</span>
+                <h2 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.5rem; font-weight: 900;">🎟️ Public Self-Registration, M-Pesa STK Ticketing & Functions Gateway</h2>
+                <p style="margin: 0; color: #94A3B8; font-size: 0.88rem;">
+                    How external organizations monetize and manage rosters across <strong>Sports Derbies, Corporate AGMs, Conferences, Dinners, and Marathons</strong>.
+                </p>
+            </div>
+            <div style="text-align: right;">
+                <span style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 800;">
+                    🟢 Safaricom Daraja API Ready
+                </span>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 4 Commercial Value Highlights
+    h_col1, h_col2, h_col3, h_col4 = st.columns(4)
+    with h_col1:
+        st.markdown("""
+        <div class="kpi-card" style="border-left-color: #00F2FE;">
+            <div class="kpi-title">Zero Special Hardware</div>
+            <div class="kpi-value" style="color: #00F2FE; font-size: 1.3rem;">100% Mobile</div>
+            <div class="kpi-sub">Attendees use phone, ushers scan with phone cameras</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with h_col2:
+        st.markdown("""
+        <div class="kpi-card" style="border-left-color: #34D399;">
+            <div class="kpi-title">M-Pesa STK Push</div>
+            <div class="kpi-value" style="color: #34D399; font-size: 1.3rem;">&lt; 10 Seconds</div>
+            <div class="kpi-sub">Instant prompt on customer phone, zero manual reference entry</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with h_col3:
+        st.markdown("""
+        <div class="kpi-card" style="border-left-color: #F5C542;">
+            <div class="kpi-title">Universal Functions</div>
+            <div class="kpi-value" style="color: #F5C542; font-size: 1.3rem;">Any Event</div>
+            <div class="kpi-sub">AGMs, Galas, Derbies, Marathons, Conferences, Weddings</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with h_col4:
+        st.markdown("""
+        <div class="kpi-card" style="border-left-color: #A78BFA;">
+            <div class="kpi-title">Anti-Counterfeit QR</div>
+            <div class="kpi-value" style="color: #A78BFA; font-size: 1.3rem;">Single-Use</div>
+            <div class="kpi-sub">Instant duplicate pass detection prevents scalping & pass-sharing</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("### 🧪 Live Interactive Simulation: Register, Pay via M-Pesa & Scan In")
+    st.caption("Test the complete attendee journey: fill the self-registration form below, trigger an instant M-Pesa STK push simulation, receive your encrypted QR pass, and simulate gate verification:")
+
+    reg_col1, reg_col2 = st.columns([1.2, 1])
+
+    with reg_col1:
+        st.markdown("#### 📝 Step 1: Attendee Self-Registration")
+        event_chosen = st.selectbox(
+            "Select Event / Function:*",
+            [
+                "🏆 2026 Inter-Bank Sports Championship (Nairobi)",
+                "👔 Annual General Meeting (AGM) & Stakeholder Dinner",
+                "🏃 Great Rift Valley 10K Charity Marathon & Family Fun Day",
+                "💡 Africa Fintech & Banking Innovation Summit 2026",
+                "🎉 Corporate End-of-Year Gala & Awards Night"
+            ],
+            key="demo_ticket_event"
+        )
+
+        ticket_tier = st.selectbox(
+            "Select Ticket / Roster Tier:*",
+            [
+                "Standard Participant / Athlete Pass — KES 1,000",
+                "VIP Executive / Delegate Pass (Includes Hospitality) — KES 3,500",
+                "Corporate Team Bundle (Squad of 15) — KES 12,500",
+                "Guest / Spectator Entry Pass — KES 500"
+            ],
+            key="demo_ticket_tier"
+        )
+
+        tier_price_map = {
+            "Standard Participant / Athlete Pass — KES 1,000": 1000,
+            "VIP Executive / Delegate Pass (Includes Hospitality) — KES 3,500": 3500,
+            "Corporate Team Bundle (Squad of 15) — KES 12,500": 12500,
+            "Guest / Spectator Entry Pass — KES 500": 500
+        }
+        ticket_amount = tier_price_map.get(ticket_tier, 1000)
+
+        f_name = st.text_input("Full Name:*", value="Wallace Mbugua", key="demo_tick_name")
+        f_email = st.text_input("Email Address:*", value="wallace.mbugua@enterprise.co.ke", key="demo_tick_email")
+        f_org = st.text_input("Company / Organization / Branch:*", value="Finance & Accounts Division", key="demo_tick_org")
+        f_phone = st.text_input("Safaricom M-Pesa Phone Number:*", value="0712345678", help="Format: 07XX or 2547XX", key="demo_tick_phone")
+
+        btn_pay_mpesa = st.button("📲 Pay with M-Pesa STK Push", type="primary", use_container_width=True)
+
+        if btn_pay_mpesa:
+            clean_phone = f_phone.strip()
+            if not f_name.strip():
+                st.error("Please provide your Full Name.")
+            elif not clean_phone or len(clean_phone) < 9:
+                st.error("Please provide a valid Safaricom phone number for STK Push.")
+            else:
+                st.session_state["ticket_reg_success"] = True
+                st.session_state["ticket_attendee_name"] = f_name.strip()
+                st.session_state["ticket_attendee_org"] = f_org.strip()
+                st.session_state["ticket_event"] = event_chosen
+                st.session_state["ticket_tier_name"] = ticket_tier.split("—")[0].strip()
+                st.session_state["ticket_amount"] = ticket_amount
+                st.session_state["ticket_phone"] = clean_phone
+                st.session_state["ticket_trans_id"] = f"QK{int(time.time())}"[-10:]
+                st.session_state["ticket_gate_scanned"] = False
+                st.rerun()
+
+    with reg_col2:
+        st.markdown("#### 📱 Step 2: Instant Ticket Pass & Verification")
+        if not st.session_state.get("ticket_reg_success", False):
+            st.info("👈 Fill out the registration form on the left and tap **'Pay with M-Pesa STK Push'** to generate an instant QR pass.")
+            st.markdown("""
+            <div style="background: rgba(8, 24, 48, 0.6); border: 2px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 30px; text-align: center; color: #64748B;">
+                <div style="font-size: 3rem; margin-bottom: 10px;">🎟️</div>
+                <div style="font-weight: 700; color: #94A3B8;">Awaiting Attendee Registration...</div>
+                <div style="font-size: 0.8rem; margin-top: 6px;">Upon checkout, the digital pass is dynamically generated and sent to the attendee's phone/WhatsApp.</div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            att_name = st.session_state.get("ticket_attendee_name", "Wallace Mbugua")
+            att_org = st.session_state.get("ticket_attendee_org", "Enterprise Corp")
+            ev_name = st.session_state.get("ticket_event", "Corporate Championship")
+            t_tier = st.session_state.get("ticket_tier_name", "Standard Pass")
+            t_amt = st.session_state.get("ticket_amount", 1000)
+            t_phone = st.session_state.get("ticket_phone", "0712345678")
+            t_tx = st.session_state.get("ticket_trans_id", "QK92837194")
+            
+            # STK Push Success Notification
+            st.success(f"📲 **M-Pesa STK Push Completed!** Confirmed KES {t_amt:,} from {t_phone}. Trans ID: `{t_tx}`.")
+
+            # Dynamic QR Pass Card
+            qr_data = f"STRIDE_TICKET:{t_tx}:{att_name}:{ev_name[:20]}"
+            qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={qr_data}"
+
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #091F3D 0%, #030F21 100%); border: 2px solid #F5C542; border-radius: 14px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-align: center;">
+                <div style="font-size: 0.72rem; color: #F5C542; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">STRIDE™ ENTERPRISE DIGITAL PASS</div>
+                <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.15rem; font-weight: 800;">{ev_name}</h3>
+                <span style="background: rgba(0, 242, 254, 0.2); color: #00F2FE; border: 1px solid rgba(0,242,254,0.4); padding: 2px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">
+                    {t_tier}
+                </span>
+                
+                <div style="background: #FFFFFF; border-radius: 10px; padding: 10px; display: inline-block; margin: 14px 0 8px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                    <img src="{qr_url}" alt="Ticket QR" style="display: block; width: 150px; height: 150px;" />
+                </div>
+                
+                <h4 style="margin: 2px 0; color: #FFFFFF; font-size: 1.1rem;">{att_name}</h4>
+                <div style="font-size: 0.8rem; color: #94A3B8;">{att_org}</div>
+                
+                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; padding: 6px 12px; margin-top: 10px; font-size: 0.78rem; color: #34D399; font-weight: 700;">
+                    ✓ M-PESA CONFIRMED • KES {t_amt:,} • REF: {t_tx}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("---")
+            st.markdown("#### 🚪 Step 3: Gate Usher Scanner Simulator")
+            st.caption("When this attendee arrives at the venue gate, the usher points their smartphone camera at the pass above:")
+
+            scanned = st.session_state.get("ticket_gate_scanned", False)
+            if not scanned:
+                if st.button("📷 Simulate Usher Scanning This Pass at Entrance", type="secondary", use_container_width=True):
+                    st.session_state["ticket_gate_scanned"] = True
+                    st.session_state["ticket_scan_time"] = get_eat_now().strftime("%H:%M:%S")
+                    st.rerun()
+            else:
+                scan_t = st.session_state.get("ticket_scan_time", "Now")
+                st.markdown(f"""
+                <div style="background: rgba(16, 185, 129, 0.2); border: 2px solid #10B981; border-radius: 10px; padding: 14px; text-align: center;">
+                    <div style="font-size: 1.8rem;">✅</div>
+                    <strong style="color: #34D399; font-size: 1rem;">TICKET VERIFIED & ADMITTED!</strong>
+                    <div style="color: #E2E8F0; font-size: 0.85rem; margin-top: 4px;">
+                        Welcome <strong>{att_name}</strong> • Gate 1 Main Entrance<br>
+                        <span style="font-size: 0.75rem; color: #94A3B8;">Check-in Timestamp: {scan_t} EAT • Status: ADMITTED</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.caption("🔒 **Anti-Pass-Sharing Test:** If someone takes a screenshot and tries to scan the same ticket again:")
+                if st.button("⚠️ Attempt Re-scanning Same Ticket (Duplicate Prevention Test)", use_container_width=True):
+                    st.error(f"🛑 REJECTED: TICKET ALREADY USED AT {scan_t} EAT! Duplicate entry prevented.")
+
+            if st.button("🔄 Reset Simulator & Register Another Attendee", use_container_width=True):
+                st.session_state["ticket_reg_success"] = False
+                st.session_state["ticket_gate_scanned"] = False
+                st.rerun()
+
+# ==============================================================================
+# TAB 6: SECRETARIAT OPERATIONS DASHBOARD
 # ==============================================================================
 with tab_dict["🏛️ Secretariat Operations"]:
     st.markdown("### 🏛️ Secretariat Operations & Tournament Control Command")

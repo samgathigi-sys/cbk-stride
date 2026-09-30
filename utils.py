@@ -745,8 +745,8 @@ class AttendanceBackend:
             default_golf_hash = hashlib.sha256(b"3428").hexdigest()
             cur.execute("""
                 INSERT INTO captain_credentials (
-                    staff_id, full_name, gmail_or_email, discipline, passkey_hash, created_at, is_active
-                ) VALUES (?, ?, ?, ?, ?, ?, 1)
+                    staff_id, full_name, gmail_or_email, discipline, passkey_hash, temp_pin, expires_at, created_at, is_active
+                ) VALUES (?, ?, ?, ?, ?, '', '', ?, 1)
             """, ("CBK-3428", "Samuel Gathigi Njuguna", "sam.gathigi@gmail.com", "Golf", default_golf_hash, now_init))
 
         # Seed initial sample fixtures & tactical notes for key sports if table is empty
@@ -1804,21 +1804,30 @@ class AttendanceBackend:
             conn.close()
             return False, f"⚠️ {discipline} already has an accredited Team Captain ({existing['full_name']} - {existing['staff_id']}). To prevent unauthorized squad tampering, only the accredited captain or Secretariat can reassign access.", None
 
-        if existing and existing["staff_id"] == sid_clean:
-            cur.execute("""
-                UPDATE captain_credentials
-                SET passkey_hash = ?, gmail_or_email = ?, full_name = ?
-                WHERE id = ?
-            """, (pkey_hash, email_clean, full_name, existing["id"]))
-        else:
-            cur.execute("""
-                INSERT INTO captain_credentials (
-                    staff_id, full_name, gmail_or_email, discipline, passkey_hash, created_at, is_active
-                ) VALUES (?, ?, ?, ?, ?, ?, 1)
-            """, (sid_clean, full_name, email_clean, discipline, pkey_hash, now_str))
+        try:
+            if existing and existing["staff_id"] == sid_clean:
+                cur.execute("""
+                    UPDATE captain_credentials
+                    SET passkey_hash = ?, gmail_or_email = ?, full_name = ?
+                    WHERE id = ?
+                """, (pkey_hash, email_clean, full_name, existing["id"]))
+            else:
+                cur.execute("""
+                    INSERT INTO captain_credentials (
+                        staff_id, full_name, gmail_or_email, discipline, passkey_hash, temp_pin, expires_at, created_at, is_active
+                    ) VALUES (?, ?, ?, ?, ?, '', '', ?, 1)
+                """, (sid_clean, full_name, email_clean, discipline, pkey_hash, now_str))
 
-        conn.commit()
-        conn.close()
+            conn.commit()
+            conn.close()
+        except sqlite3.IntegrityError as e:
+            conn.rollback()
+            conn.close()
+            return False, f"⚠️ Database integrity constraint error: {e}", None
+        except Exception as e:
+            conn.rollback()
+            conn.close()
+            return False, f"⚠️ Failed to save passkey credentials: {e}", None
 
         cap_profile = {
             "staff_id": sid_clean,
