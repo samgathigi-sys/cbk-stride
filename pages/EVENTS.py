@@ -2,7 +2,7 @@
 ================================================================================
 STRIDE™ — PUBLIC SELF-REGISTRATION, M-PESA STK TICKETING & EVENT CREATOR WIZARD
 Universal Event Accreditation & Digital Pass Platform
-URL Route: /register
+URL Route: /EVENTS
 ================================================================================
 """
 
@@ -289,7 +289,7 @@ with tab_reg:
                 t_amt = cur_ticket["amount_paid"]
 
                 # Generate dynamic scannable QR Code pointing to instant verification URL
-                verify_qr_data = f"https://cbk-stride.streamlit.app/register?verify_tkt={t_id}"
+                verify_qr_data = f"https://cbk-stride.streamlit.app/EVENTS?verify_tkt={t_id}"
                 qr_code_url = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={verify_qr_data}"
 
                 st.markdown(f"""
@@ -427,7 +427,7 @@ with tab_wizard:
         last_eid = st.session_state.get("wz_last_created_id", "EVT-2026-001")
         last_title = st.session_state.get("wz_last_created_title", "2026 Inter-Bank Sports Championship")
 
-        reg_share_url = f"https://cbk-stride.streamlit.app/register?event_id={last_eid}"
+        reg_share_url = f"https://cbk-stride.streamlit.app/EVENTS?event_id={last_eid}"
         gate_qr_img = f"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={reg_share_url}"
 
         st.markdown(f"""
