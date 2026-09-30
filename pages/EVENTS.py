@@ -130,8 +130,7 @@ with c_nav2:
             ● M-PESA DARAJA LIVE GATEWAY
         </span>
         <div style="font-size: 0.72rem; color: #64748B; margin-top: 4px;">
-            <a href="/" style="color: #94A3B8; text-decoration: none; margin-right: 12px;">🏛️ Official CBK Portal</a>
-            <a href="/DEMO" style="color: #F5C542; text-decoration: none;">🧪 Evaluator Sandbox</a>
+            <span style="color: #94A3B8;">STRIDE™ Enterprise</span> • <a href="/DEMO" style="color: #F5C542; text-decoration: none;">🧪 Evaluator Sandbox</a>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -279,7 +278,7 @@ with tab_reg:
 
                     agm_acc_num = st.text_input(
                         "Shareholder / CDSC / Member Account Number:*",
-                        placeholder="e.g. CDSC-8492019 / SACCO-1049 / CBK-3428",
+                        placeholder="e.g. CDSC-8492019 / SACCO-1049 / MEM-3428",
                         key=f"agm_acc_{selected_event['event_id']}"
                     )
 
@@ -567,7 +566,7 @@ with tab_wizard:
                 e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14), key="wz_e_date")
             with ec2:
                 e_time = st.text_input("Assembly Call-to-Order Time:", value="09:00", key="wz_e_time")
-            e_venue = st.text_input("Assembly Hall & Physical Address:*", value="CBK Sports Complex Grand Pavilion, Ruaraka, Nairobi", key="wz_e_venue")
+            e_venue = st.text_input("Assembly Hall & Physical Address:*", value="Kenyatta International Convention Centre (KICC) / Grand Ballroom, Nairobi", key="wz_e_venue")
 
             if "Paid" in e_admit_mode:
                 tc1, tc2 = st.columns(2)
@@ -1087,7 +1086,7 @@ with tab_verify:
 # ------------------------------------------------------------------------------
 st.markdown("""
 <div style="text-align: center; margin-top: 3rem; padding: 1.4rem; border-top: 1px solid rgba(245, 197, 66, 0.25); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.6); border-radius: 12px;">
-    <strong style="color: #F5C542;">STRIDE™</strong> • Enterprise Sports Telemetry, Accreditation & M-Pesa Ticketing Platform<br>
-    <span style="font-size: 0.75rem; color: #64748B;">Multi-Tenant Event Management • <a href="/" style="color: #00F2FE; text-decoration: none;">Return to Official CBK Portal</a> • <a href="/DEMO" style="color: #F5C542; text-decoration: none;">Evaluator Sandbox</a></span>
+    <strong style="color: #F5C542;">STRIDE™</strong> • Enterprise Event Telemetry, Accreditation & M-Pesa Ticketing Platform<br>
+    <span style="font-size: 0.75rem; color: #64748B;">Multi-Tenant Commercial Event Management & Gate Control • <a href="/DEMO" style="color: #F5C542; text-decoration: none;">🧪 Evaluator Sandbox</a></span>
 </div>
 """, unsafe_allow_html=True)
