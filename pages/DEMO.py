@@ -21,7 +21,6 @@ from utils import (
     CBK_DISCIPLINES,
     AttendanceBackend,
     get_eat_now,
-    format_eat_time,
     mask_name_banking
 )
 
