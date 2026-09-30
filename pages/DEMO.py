@@ -1,7 +1,7 @@
 """
 ================================================================================
-CBK STRIDE™ — INTERACTIVE EVALUATOR SANDBOX & BRAND SPONSOR PAVILION
-Central Bank of Kenya Sports Club | Dedicated Demo Environment
+STRIDE™ — INTERACTIVE EVALUATOR SANDBOX & BRAND SPONSOR PAVILION
+Dedicated Demo Environment | Enterprise Tournament Telemetry
 URL Route: /DEMO
 ================================================================================
 """
@@ -28,7 +28,7 @@ from utils import (
 # PAGE CONFIGURATION
 # ------------------------------------------------------------------------------
 st.set_page_config(
-    page_title="CBK STRIDE™ | Sandbox & Sponsor Showcase",
+    page_title="STRIDE™ | Sandbox & Sponsor Showcase",
     page_icon="🧪",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -139,10 +139,10 @@ st.markdown(f"""
                     </span>
                 </div>
                 <h1 style="margin: 4px 0 0 0; font-size: 1.85rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.5px;">
-                    CBK STRIDE™ <span style="font-weight: 400; color: #F5C542; font-size: 1.1rem;">| Evaluator Sandbox & Sponsor Pavilion</span>
+                    STRIDE™ <span style="font-weight: 400; color: #F5C542; font-size: 1.1rem;">| Evaluator Sandbox & Sponsor Pavilion</span>
                 </h1>
                 <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 2px;">
-                    Sports Telemetry & Roster Integrity • Central Bank of Kenya Sports Club
+                    Sports Telemetry & Roster Integrity • Enterprise Tournament Management
                 </div>
             </div>
         </div>
@@ -168,7 +168,7 @@ with c_ban1:
         <div style="display: flex; align-items: center; gap: 10px;">
             <span style="font-size: 1.4rem;">💡</span>
             <div>
-                <strong style="color: #FFE899; font-size: 0.92rem;">Welcome to the CBK STRIDE™ Interactive Evaluation Sandbox</strong>
+                <strong style="color: #FFE899; font-size: 0.92rem;">Welcome to the STRIDE™ Interactive Evaluation Sandbox</strong>
                 <p style="margin: 2px 0 0 0; color: #CBD5E1; font-size: 0.82rem;">
                     Test-drive pitchside roll-calls, captain diaries, dual-gate QR check-ins, HR/Finance analytics, and commercial sponsor packages freely with synthetic data.
                 </p>
@@ -209,7 +209,7 @@ st.markdown("""
 # 4. INTERACTIVE PERSONA & DISCIPLINE SWITCHER
 # ------------------------------------------------------------------------------
 with st.expander("🎛️ Sandbox Persona & Sporting Discipline Switcher (Click to Customize Demo)", expanded=False):
-    st.caption("Switch perspectives on the fly to see how CBK STRIDE™ customizes telemetry for each user type:")
+    st.caption("Switch perspectives on the fly to see how STRIDE™ customizes telemetry for each user type:")
     c_sw1, c_sw2, c_sw3 = st.columns([1.5, 1.5, 1])
     with c_sw1:
         demo_discipline = st.selectbox(
@@ -327,7 +327,7 @@ with tab_dict["📋 Captain's Squad Roll Call"]:
     st.download_button(
         label=f"📥 Download Certified {demo_discipline} Squad CSV",
         data=df_roster.to_csv(index=False).encode('utf-8'),
-        file_name=f"CBK_Demo_RollCall_{demo_discipline.split()[0]}_{now_dt.strftime('%Y%m%d')}.csv",
+        file_name=f"STRIDE_Demo_RollCall_{demo_discipline.split()[0]}_{now_dt.strftime('%Y%m%d')}.csv",
         mime="text/csv",
         use_container_width=True
     )
@@ -399,7 +399,7 @@ with tab_dict["📱 Mobile Check-In"]:
         if p_match:
             st.markdown(f"""
             <div style="background: linear-gradient(135deg, #071F3D 0%, #025BBF 100%); border: 1.5px solid rgba(245, 197, 66, 0.4); border-radius: 12px; padding: 16px; margin-top: 10px;">
-                <span style="background: #F5C542; color: #040E1C; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">VERIFIED CBK ATHLETE</span>
+                <span style="background: #F5C542; color: #040E1C; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">VERIFIED ATHLETE</span>
                 <h3 style="margin: 8px 0 2px 0; color: #FFF;">{p_match['full_name']}</h3>
                 <p style="margin: 0; color: #CBD5E1; font-size: 0.85rem;">{p_match['department']} • {p_match.get('primary_sport', demo_discipline)}</p>
                 <div style="margin-top: 10px; font-size: 0.8rem; color: #34D399; font-weight: 700;">
@@ -428,7 +428,7 @@ with tab_dict["📱 Mobile Check-In"]:
         st.markdown("##### 🎟️ Digital Mobile Pass Preview")
         st.markdown("""
         <div style="background: rgba(8, 24, 48, 0.9); border: 2px dashed rgba(245, 197, 66, 0.5); border-radius: 14px; padding: 20px; text-align: center;">
-            <div style="font-size: 0.76rem; color: #F5C542; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Central Bank of Kenya Sports Club</div>
+            <div style="font-size: 0.76rem; color: #F5C542; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">STRIDE™ Enterprise Sports Network</div>
             <h4 style="margin: 6px 0; color: #FFF;">OFFICIAL TOURNAMENT PARTICIPATION PASS</h4>
             <div style="font-size: 2.5rem; margin: 10px 0;">📱</div>
             <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; padding: 8px; margin-bottom: 10px;">
@@ -597,7 +597,7 @@ with tab_dict["💰 Finance & Audit Portal"]:
     st.download_button(
         label="📥 Download Certified Finance Disbursement Schedule (.CSV)",
         data=df_fin.to_csv(index=False).encode('utf-8'),
-        file_name=f"CBK_Certified_Allowance_Schedule_{now_dt.strftime('%Y%m%d')}.csv",
+        file_name=f"STRIDE_Certified_Allowance_Schedule_{now_dt.strftime('%Y%m%d')}.csv",
         mime="text/csv",
         use_container_width=True
     )
@@ -607,7 +607,7 @@ with tab_dict["💰 Finance & Audit Portal"]:
 # ==============================================================================
 with tab_dict["🤝 Sponsor Pavilion"]:
     st.markdown("### 🤝 Corporate Brand Pavilion & Sponsorship Showcase")
-    st.caption("Commercial partnership opportunities, high-impact brand visibility, and tournament engagement across the Central Bank of Kenya Sports Club.")
+    st.caption("Commercial partnership opportunities, high-impact brand visibility, and tournament engagement across the corporate sports ecosystem.")
 
     # Commercial Reach KPIs
     sp_k1, sp_k2, sp_k3, sp_k4 = st.columns(4)
@@ -657,7 +657,7 @@ with tab_dict["🤝 Sponsor Pavilion"]:
                 <span style="background: rgba(0, 242, 254, 0.2); color: #00F2FE; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">Platinum Partner</span>
             </div>
             <p style="margin: 8px 0 4px 0; font-size: 0.88rem; color: #E2E8F0;">
-                <strong>Official Banking & Financial Services Partner</strong> of the CBK Sports Club & Inter-Bank Derby.
+                <strong>Official Banking & Financial Services Partner</strong> of the STRIDE™ Corporate Championship.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -793,15 +793,14 @@ with tab_dict["🤝 Sponsor Pavilion"]:
         st.markdown("#### 📞 Direct Secretariat Contacts")
         st.markdown("""
         <div style="background: rgba(8, 24, 48, 0.7); border: 1px solid rgba(245, 197, 66, 0.3); border-radius: 12px; padding: 18px;">
-            <h5 style="margin: 0 0 6px 0; color: #F5C542;">Central Bank of Kenya Sports Club</h5>
+            <h5 style="margin: 0 0 6px 0; color: #F5C542;">STRIDE™ Enterprise Operations</h5>
             <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: #CBD5E1;">
                 Secretariat & Commercial Sponsorship Directorate<br>
-                CBK Sports Complex, Ruaraka, Thika Road<br>
-                P.O. Box 60000 - 00200, Nairobi, Kenya
+                Corporate Sports Complex, Nairobi, Kenya
             </p>
             <div style="font-size: 0.84rem; color: #94A3B8; line-height: 1.6;">
-                📧 <strong>Email:</strong> <span style="color: #00F2FE;">sportsclub@centralbank.go.ke</span><br>
-                📞 <strong>Direct Line:</strong> +254 (020) 286 1000 / 3000<br>
+                📧 <strong>Email:</strong> <span style="color: #00F2FE;">partnerships@stride-enterprise.io</span><br>
+                📞 <strong>Direct Line:</strong> +254 (020) 286 1000<br>
                 🕒 <strong>Office Hours:</strong> Monday – Friday: 08:00 – 17:00 EAT
             </div>
         </div>
@@ -831,7 +830,7 @@ with tab_dict["⚙️ Sandbox Data Tools"]:
 # ------------------------------------------------------------------------------
 st.markdown("""
 <div style="text-align: center; margin-top: 2.5rem; padding: 1.4rem; border-top: 1px solid rgba(245, 197, 66, 0.25); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.6); border-radius: 12px;">
-    <strong style="color: #F5C542;">CBK STRIDE™</strong> • Interactive Evaluation Sandbox & Corporate Sponsor Pavilion<br>
-    <span style="font-size: 0.75rem; color: #64748B;">Central Bank of Kenya Sports Club • <a href="/" style="color: #00F2FE; text-decoration: none;">Return to Official Portal</a></span>
+    <strong style="color: #F5C542;">STRIDE™</strong> • Interactive Evaluation Sandbox & Corporate Sponsor Pavilion<br>
+    <span style="font-size: 0.75rem; color: #64748B;">Enterprise Sports Telemetry & Tournament Operations • <a href="/" style="color: #00F2FE; text-decoration: none;">Return to Official CBK Portal</a></span>
 </div>
 """, unsafe_allow_html=True)

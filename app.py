@@ -935,7 +935,7 @@ with c_hdr_login:
 
             st.markdown("---")
             st.caption("🛡️ **Institutional Governance:** Officer roles are strictly pre-appointed by the Sports Club Chairman (Mr. Angwenyi) or Secretariat Administration via *Integration & Settings*. Unaccredited staff cannot access administrative or financial portals.")
-            st.markdown("🧪 *Looking for the evaluator test-drive sandbox?* [Open Dedicated Demo Portal](/DEMO)")
+            st.markdown("🧪 *Looking for the evaluator test-drive sandbox?* [Open STRIDE™ Demo Portal](/DEMO)")
 
 with c_hdr_info:
     if cur_officer:
@@ -3714,6 +3714,6 @@ st.markdown("""
 <div style="text-align: center; margin-top: 2.5rem; padding: 1.4rem; border-top: 1px solid rgba(245, 197, 66, 0.25); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.6); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
     <strong style="color: #F5C542; letter-spacing: 0.5px;">CENTRAL BANK OF KENYA (CBK)</strong> • <span style="color: #00F2FE; font-weight: 800;">CBK STRIDE™</span> (Sports Telemetry & Roster Integrity)<br>
     Built with Mobile-First Streamlit Architecture, Real-Time Google Sheets Backend, & Dynamic QR Dual-Gate Verification.<br>
-    <span style="font-size: 0.75rem; color: #64748B;">&copy; 2026 Central Bank of Kenya Sports Club. All Rights Reserved. • <a href="/DEMO" style="color: #F5C542; text-decoration: none;">🧪 Open Interactive Sandbox & Demo Portal</a></span>
+    <span style="font-size: 0.75rem; color: #64748B;">&copy; 2026 Central Bank of Kenya Sports Club. All Rights Reserved. • <a href="/DEMO" style="color: #F5C542; text-decoration: none;">🧪 Open STRIDE™ Demo Portal</a></span>
 </div>
 """, unsafe_allow_html=True)
