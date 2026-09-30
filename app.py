@@ -153,40 +153,86 @@ st.markdown("""
         margin-right: 5px;
     }
 
-    /* Style Streamlit Tabs as Dark Sleek Pills */
+    /* Style Streamlit Tabs as Large Executive Navigation Pills */
     div[data-baseweb="tab-list"] {
-        gap: 8px !important;
-        background: rgba(4, 14, 28, 0.9) !important;
-        padding: 8px !important;
-        border-radius: 16px !important;
-        border: 1.5px solid rgba(245, 197, 66, 0.3) !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
-        margin-bottom: 1.5rem !important;
+        gap: 12px !important;
+        background: linear-gradient(180deg, rgba(6, 18, 38, 0.98) 0%, rgba(3, 10, 22, 0.98) 100%) !important;
+        padding: 10px 14px !important;
+        border-radius: 18px !important;
+        border: 2px solid rgba(245, 197, 66, 0.45) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 197, 66, 0.15) !important;
+        margin-top: 1rem !important;
+        margin-bottom: 1.8rem !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
     }
 
     button[data-baseweb="tab"] {
-        border-radius: 10px !important;
+        border-radius: 12px !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
-        font-weight: 600 !important;
-        font-size: 0.88rem !important;
-        color: #94A3B8 !important;
-        padding: 0.6rem 1.2rem !important;
-        background: transparent !important;
-        border: none !important;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        font-weight: 700 !important;
+        font-size: 1.15rem !important;
+        color: #E2E8F0 !important;
+        padding: 0.85rem 1.8rem !important;
+        background: rgba(10, 28, 54, 0.85) !important;
+        border: 1.5px solid rgba(245, 197, 66, 0.28) !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        letter-spacing: 0.3px !important;
+        white-space: nowrap !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    button[data-baseweb="tab"] * {
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        line-height: 1.3 !important;
+        color: inherit !important;
+    }
+
+    button[data-baseweb="tab"] p {
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+        color: inherit !important;
     }
 
     button[data-baseweb="tab"]:hover {
         color: #F5C542 !important;
-        background: rgba(245, 197, 66, 0.08) !important;
+        background: rgba(245, 197, 66, 0.18) !important;
+        border-color: #F5C542 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(245, 197, 66, 0.3) !important;
     }
 
     button[data-baseweb="tab"][aria-selected="true"] {
-        background: linear-gradient(135deg, rgba(245, 197, 66, 0.2) 0%, rgba(0, 242, 254, 0.12) 100%) !important;
-        color: #F5C542 !important;
+        background: linear-gradient(135deg, rgba(245, 197, 66, 0.35) 0%, rgba(0, 242, 254, 0.22) 100%) !important;
+        color: #FFE066 !important;
         font-weight: 800 !important;
-        border-bottom: 3px solid #F5C542 !important;
-        box-shadow: 0 0 20px rgba(245, 197, 66, 0.25) !important;
+        border: 2px solid #F5C542 !important;
+        box-shadow: 0 0 25px rgba(245, 197, 66, 0.5), inset 0 0 15px rgba(245, 197, 66, 0.25) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] * {
+        color: #FFE066 !important;
+        font-weight: 800 !important;
+        text-shadow: 0 0 12px rgba(245, 197, 66, 0.6) !important;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] p {
+        color: #FFE066 !important;
+        font-weight: 800 !important;
+        text-shadow: 0 0 12px rgba(245, 197, 66, 0.6) !important;
+    }
+
+    div[data-baseweb="tab-highlight"] {
+        background: linear-gradient(90deg, #F5C542, #00F2FE) !important;
+        height: 4px !important;
+        border-radius: 4px !important;
+    }
+
+    div[data-baseweb="tab-border"] {
+        display: none !important;
     }
 
     /* Luxury Golden Athlete Credential Card */
