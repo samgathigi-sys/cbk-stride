@@ -435,13 +435,8 @@ with c_ban2:
     st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
     st.markdown(f"""
     <div style="display: flex; gap: 8px; flex-direction: column;">
-        <a href="/" target="_self" style="display: block; text-decoration: none;">
-            <div style="background: {th['card_bg']}; border: 1.5px solid {th['border']}; border-radius: 8px; padding: 7px 10px; text-align: center; color: {th['primary']}; font-weight: 800; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
-                🏢 Enterprise Production Portal
-            </div>
-        </a>
         <a href="/EVENTS" target="_self" style="display: block; text-decoration: none;">
-            <div style="background: rgba(0, 245, 212, 0.12); border: 1.5px solid {th['accent']}; border-radius: 8px; padding: 7px 10px; text-align: center; color: {th['accent']}; font-weight: 800; font-size: 0.8rem;">
+            <div style="background: rgba(0, 245, 212, 0.12); border: 1.5px solid {th['accent']}; border-radius: 10px; padding: 14px 12px; text-align: center; color: {th['accent']}; font-weight: 800; font-size: 0.85rem; box-shadow: {th['shadow_glow']};">
                 🎟️ STRIDE™ Events & M-Pesa Gateway
             </div>
         </a>
@@ -1691,5 +1686,6 @@ with tab_dict["⚙️ Sandbox Data Tools"]:
 st.markdown(f"""
 <div style="text-align: center; margin-top: 2.5rem; padding: 1.4rem; border-top: 1px solid {th['border']}; color: #94A3B8; font-size: 0.82rem; background: {th['card_bg']}; border-radius: 12px; box-shadow: {th['shadow_glow']};">
     <strong style="color: {th['primary']};">STRIDE™</strong> • Safaricom Corporate Sports League & Sponsor Pavilion<br>
-    <span style="font-size: 0.75rem; color: #64748B;">Enterprise Sports Telemetry & Tournament Operations • <a href="/" style="color: {th['accent']}; text-decoration: none;">Return to Enterprise Production Portal</a> • <a href="/EVENTS" style="color: {th['primary']}; text-decoration: none;">🎟️ STRIDE™ Events & Ticketing</a></span>
+    <span style="font-size: 0.75rem; color: #64748B;">Enterprise Sports Telemetry & Tournament Operations • <a href="/EVENTS" style="color: {th['primary']}; text-decoration: none;">🎟️ STRIDE™ Events & Ticketing Gateway</a></span>
+</div>
 """, unsafe_allow_html=True)
