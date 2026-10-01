@@ -2585,6 +2585,10 @@ class AttendanceBackend:
         except Exception:
             return []
 
+    def get_event_tickets(self, event_id: str) -> List[Dict[str, Any]]:
+        """Alias for get_tickets_by_event."""
+        return self.get_tickets_by_event(event_id)
+
     def verify_and_admit_ticket(self, ticket_id: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
         """Validates ticket QR code at gate, admits once, and prevents duplicate re-entry."""
         try:

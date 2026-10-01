@@ -12,6 +12,7 @@ import datetime
 import time
 import os
 import sys
+import textwrap
 import importlib
 
 # Ensure root directory is on sys.path for utils import
@@ -490,6 +491,268 @@ with tab_reg:
 # ==============================================================================
 # TAB 2: EVENT CREATOR WIZARD (FOR ORGANIZERS & CORPORATES)
 # ==============================================================================
+CLUSTER_CONFIGS = {
+    "👔 Corporate AGM & Shareholder Assembly": {
+        "title": "58th Annual General Meeting & Shareholder Elections",
+        "host": "Apex Capital Holdings PLC Board & Secretariat",
+        "venue": "Kenyatta International Convention Centre (KICC) / Grand Ballroom, Nairobi",
+        "gate_mode": "SINGLE_GATE",
+        "time": "09:00",
+        "std_price": 0.0,
+        "vip_price": 0.0,
+        "is_paid": False,
+        "desc": "Notice is hereby given that the Annual General Meeting will convene to: 1. Table the audited financial statements for FY2025. 2. Elect executive committee members. 3. Appoint external statutory auditors. 4. Transact any other ordinary business.",
+        "scale_opts": [
+            "🐥 Tier 1: Small Society / Club AGM (Up to 100 Delegates) — KES 15,000",
+            "🏢 Tier 2: Mid-Sized Corporate / SACCO (101 – 500 Delegates) — KES 35,000",
+            "🏛️ Tier 3: Large Listed PLC / Tier-1 SACCO (501 – 2,500 Delegates) — KES 75,000",
+            "🌐 Tier 4: Mega National Assembly (2,500+ Delegates) — KES 150,000"
+        ],
+        "scale_fees": {"Tier 1": 15000.0, "Tier 2": 35000.0, "Tier 3": 75000.0, "Tier 4": 150000.0},
+        "q2_label": "Q2: Voting Resolution & Committee Election Engine (Pull-Down):*",
+        "q2_opts": [
+            "✋ Voice Vote & Statutory Quorum Floor Tracking — Included (KES 0)",
+            "⚖️ Weighted Voting Engine (Shares / Capital Bracket Weighting) — +KES 15,000",
+            "🗳️ Digital Secret Ballot & Committee Elections with Real-Time Tally Screen — +KES 25,000",
+            "📱 SMS OTP Multi-Factor Verification for Proxies & Remote Voting — +KES 20,000"
+        ],
+        "q3_label": "Q3: Gate Usher Hardware & Access Station Mode (Pull-Down):*",
+        "q3_opts": [
+            "📲 Mobile BYOD Usher Mode (Ushers scan using any smartphone/tablet - Included) — KES 0",
+            "📟 STRIDE™ Rugged Barcode Gate Station Terminals (Pair Rental) — +KES 20,000",
+            "🖨️ Rapid Thermal Badge & Lanyard Printing Station — +KES 30,000"
+        ],
+        "q4_label": "Q4: Statutory Compliance & Scrutineer Auditing (Pull-Down):*",
+        "q4_opts": [
+            "📄 Standard CSV Scrutineer & Company Secretary Export — Included (KES 0)",
+            "🔒 Certified Tamper-Evident SHA-256 Audit Pack (CMA / SASRA Regulatory Dossier) — +KES 15,000",
+            "👨‍💼 Dedicated On-Site STRIDE™ Certified Technical Marshal (1 Day Deployment) — +KES 25,000"
+        ]
+    },
+    "🏆 Sports Tournament & Derby": {
+        "title": "Annual Corporate Inter-Bank Sports Championship & Derby",
+        "host": "Kenya Bankers Association Sports Secretariat",
+        "venue": "Sports Complex Main Arena & Training Grounds, Nairobi",
+        "gate_mode": "DUAL_GATE",
+        "time": "08:00",
+        "std_price": 500.0,
+        "vip_price": 2500.0,
+        "is_paid": True,
+        "desc": "Official corporate sporting championship across 18 disciplines. Dual-gate check-in required for training allowance validation. Athlete kit mandatory upon arrival.",
+        "scale_opts": [
+            "🏅 Tier 1: Departmental / Club Derby (Up to 150 Participants) — KES 15,000",
+            "🏆 Tier 2: Corporate Championship (151 – 750 Participants) — KES 45,000",
+            "🏃 Tier 3: Regional Multi-Sport Derby (751 – 2,500 Participants) — KES 95,000",
+            "🌍 Tier 4: National Inter-Industry Games (2,500+ Participants) — KES 180,000"
+        ],
+        "scale_fees": {"Tier 1": 15000.0, "Tier 2": 45000.0, "Tier 3": 95000.0, "Tier 4": 180000.0},
+        "q2_label": "Q2: Player Telemetry & Allowance Rules Engine (Pull-Down):*",
+        "q2_opts": [
+            "⏱️ Standard Check-In Attendance Tracking — Included (KES 0)",
+            "⏱️ Dual-Gate Duration Enforcement (Pre-sport + Post-sport allowance floor) — +KES 15,000",
+            "📊 Live Public Scoreboard & Discipline Leaderboards — +KES 20,000",
+            "🏅 Automated Allowance Payment Batch CSV Export — +KES 15,000"
+        ],
+        "q3_label": "Q3: Gate Marshalling & Hardware Stations (Pull-Down):*",
+        "q3_opts": [
+            "📲 Mobile BYOD Gate Marshalling (Included) — KES 0",
+            "📟 Handheld Referee & Field Marshal QR Scanners — +KES 20,000",
+            "👨‍💼 Dedicated STRIDE™ Pitch-Side Timekeeper & Tech Marshal — +KES 25,000"
+        ],
+        "q4_label": "Q4: Integrity & Disciplinary Auditing (Pull-Down):*",
+        "q4_opts": [
+            "📄 Standard Match Roster & Attendance CSV — Included (KES 0)",
+            "🛡️ Anti-Mercenary Player Verification & HR Employee Audit Dossier — +KES 15,000",
+            "⚖️ Complete Tournament Disciplinary & Allowance Audit Pack — +KES 25,000"
+        ]
+    },
+    "🏃 Marathon, Fun Run & Athletics": {
+        "title": "Nairobi Corporate 21km Half Marathon & 10km Charity Fun Run",
+        "host": "Athletics Kenya & Corporate Health Initiative",
+        "venue": "Nyayo National Stadium & Expressway Circuit, Nairobi",
+        "gate_mode": "DUAL_GATE",
+        "time": "06:30",
+        "std_price": 1500.0,
+        "vip_price": 5000.0,
+        "is_paid": True,
+        "desc": "Official 21km Half Marathon, 10km Corporate Challenge, and 5km Family Fun Run. Start chute scan and finish line timing gate. Refreshments and medical aid along the route.",
+        "scale_opts": [
+            "🏃 Tier 1: Club / Community Fun Run (Up to 300 Runners) — KES 20,000",
+            "👟 Tier 2: Mid Corporate Marathon (301 – 1,500 Runners) — KES 55,000",
+            "🏅 Tier 3: Major City Marathon (1,501 – 5,000 Runners) — KES 110,000",
+            "🌍 Tier 4: International Mega Marathon (5,000+ Runners) — KES 210,000"
+        ],
+        "scale_fees": {"Tier 1": 20000.0, "Tier 2": 55000.0, "Tier 3": 110000.0, "Tier 4": 210000.0},
+        "q2_label": "Q2: Timing Protocol & Route Telemetry (Pull-Down):*",
+        "q2_opts": [
+            "⏱️ Start Chute & Finish Line Gun Time Scan — Included (KES 0)",
+            "📍 Checkpoint Hydration Mats & Intermediate Split Pace Tracking — +KES 25,000",
+            "📊 Live Public Split Pace Leaderboard & Category Podium — +KES 20,000",
+            "🏅 Instant Digital Finisher E-Certificate & SMS Time Dispatch — +KES 20,000"
+        ],
+        "q3_label": "Q3: Athlete Bib & Hardware Terminals (Pull-Down):*",
+        "q3_opts": [
+            "📲 Mobile BYOD Chute Marshalling (Included) — KES 0",
+            "🖨️ Rapid Thermal Athlete Bib & Waterproof QR Badge Station — +KES 30,000",
+            "📟 High-Throughput Ultra-Fast Gun Finish Scanners — +KES 25,000"
+        ],
+        "q4_label": "Q4: Timing Certification & Results Dossier (Pull-Down):*",
+        "q4_opts": [
+            "📄 Standard Runner Time Export CSV — Included (KES 0)",
+            "🏆 Official Athletics Kenya Certified Results Ledger & Category Rank Dossier — +KES 20,000",
+            "👨‍💼 Dedicated Chief Timekeeper & Emergency Marshal Deployment — +KES 30,000"
+        ]
+    },
+    "💡 Industry Conference & Tech Summit": {
+        "title": "East Africa Banking, FinTech & Cyber Security Summit 2026",
+        "host": "FinTech Association & East Africa Financial Forum",
+        "venue": "Radisson Blu Hotel / KICC Tsavo Ballroom, Nairobi",
+        "gate_mode": "SINGLE_GATE",
+        "time": "08:30",
+        "std_price": 7500.0,
+        "vip_price": 25000.0,
+        "is_paid": True,
+        "desc": "Premier financial industry summit featuring 4 plenary sessions, 6 technical tracks, and corporate exhibition. CPD accredited by statutory professional boards.",
+        "scale_opts": [
+            "🐥 Tier 1: Executive Roundtable / Workshop (Up to 150 Delegates) — KES 25,000",
+            "🏢 Tier 2: Mid Industry Summit (151 – 600 Delegates) — KES 60,000",
+            "🏛️ Tier 3: Regional Conference & Expo (601 – 2,000 Delegates) — KES 120,000",
+            "🌐 Tier 4: International Mega Convention (2,000+ Delegates) — KES 220,000"
+        ],
+        "scale_fees": {"Tier 1": 25000.0, "Tier 2": 60000.0, "Tier 3": 120000.0, "Tier 4": 220000.0},
+        "q2_label": "Q2: Breakout Tracking & Professional CPD Engine (Pull-Down):*",
+        "q2_opts": [
+            "🎟️ Plenary Hall Access Clearance — Included (KES 0)",
+            "🎯 Multi-Room Breakout Hall Tracking & Sub-Session Analytics — +KES 20,000",
+            "🎓 Continuous Professional Development (CPD) Clock-Hour Audit Engine — +KES 25,000",
+            "💼 Exhibitor Lead-Retrieval QR Badge Scanner Integration — +KES 30,000"
+        ],
+        "q3_label": "Q3: Badge Printing & Registration Kiosks (Pull-Down):*",
+        "q3_opts": [
+            "📲 Mobile BYOD Delegate Scanner — Included (KES 0)",
+            "🖨️ Rapid Full-Color Lanyard Nametag & RFID Printing Station — +KES 35,000",
+            "📟 Executive Self-Service QR Kiosk Terminals — +KES 40,000"
+        ],
+        "q4_label": "Q4: Delegate Analytics & CPD Certification (Pull-Down):*",
+        "q4_opts": [
+            "📄 Standard Delegate Attendance CSV — Included (KES 0)",
+            "📜 Automated CPD Certificate Generation & Email Dispatch Pack — +KES 20,000",
+            "📊 Executive Post-Event ROI & Session Popularity Dossier — +KES 25,000"
+        ]
+    },
+    "🎉 Corporate Gala Dinner & Awards": {
+        "title": "Annual Corporate Excellence Gala Dinner & CEO Awards Night",
+        "host": "Executive Welfare Board & Awards Committee",
+        "venue": "Villa Rosa Kempinski / Safari Park Grand Ballroom, Nairobi",
+        "gate_mode": "SINGLE_GATE",
+        "time": "18:30",
+        "std_price": 5000.0,
+        "vip_price": 15000.0,
+        "is_paid": True,
+        "desc": "Black-tie annual awards dinner celebrating leadership excellence and top milestones. 5-course banquet, live orchestra, and executive award presentations.",
+        "scale_opts": [
+            "🥂 Tier 1: Intimate Banquet (Up to 100 Guests / 10 Tables) — KES 20,000",
+            "🍾 Tier 2: Mid Corporate Gala (101 – 350 Guests / 35 Tables) — KES 50,000",
+            "👑 Tier 3: Grand Ballroom Gala (351 – 1,000 Guests / 100 Tables) — KES 95,000",
+            "🌟 Tier 4: Mega Presidential Dinner (1,000+ Guests) — KES 180,000"
+        ],
+        "scale_fees": {"Tier 1": 20000.0, "Tier 2": 50000.0, "Tier 3": 95000.0, "Tier 4": 180000.0},
+        "q2_label": "Q2: Seating Concierge & Live Audience Voting (Pull-Down):*",
+        "q2_opts": [
+            "🥂 Standard Guestlist Red Carpet Admission — Included (KES 0)",
+            "🪑 Dynamic Table Seating Allocation & VIP Protocol Concierge — +KES 20,000",
+            "🏆 Live Audience SMS / Smartphone Award Voting & Big-Screen Tally — +KES 25,000",
+            "📸 Digital Red Carpet Guestbook & Photo Memory Wall — +KES 15,000"
+        ],
+        "q3_label": "Q3: Red Carpet Ushering & Hostess Hardware (Pull-Down):*",
+        "q3_opts": [
+            "📲 Hostess BYOD Smartphone Scanner — Included (KES 0)",
+            "📟 Illuminated Red Carpet Welcome Screen & Guest Greeting Terminal — +KES 25,000",
+            "👩‍💼 Dedicated STRIDE™ Protocol Marshal & Red Carpet Tech Host — +KES 25,000"
+        ],
+        "q4_label": "Q4: Seating Audit & Dignitary Reconciliation (Pull-Down):*",
+        "q4_opts": [
+            "📄 Standard Seating & Attendance CSV — Included (KES 0)",
+            "🔒 VIP Dignitary Security Clearance & Catering Headcount Audit — +KES 15,000",
+            "🎁 Complete Award Voting Audit Certificate & Gala Keepsake Report — +KES 20,000"
+        ]
+    },
+    "🎓 School / University Sports Day": {
+        "title": "Inter-Collegiate Track & Field Championship 2026",
+        "host": "Sports Department & Student Affairs Committee",
+        "venue": "Kasarani Stadium Upper Arena, Nairobi",
+        "gate_mode": "DUAL_GATE",
+        "time": "08:00",
+        "std_price": 200.0,
+        "vip_price": 1000.0,
+        "is_paid": False,
+        "desc": "Annual inter-house sports festival featuring sprint heats, field events, and house marching band. Dual gate attendance check-in for house points and student safety.",
+        "scale_opts": [
+            "🏅 Tier 1: Academy Sports Day (Up to 250 Students) — KES 10,000",
+            "🏆 Tier 2: Secondary / College Games (251 – 1,000 Students) — KES 30,000",
+            "🏃 Tier 3: University Sports Festival (1,001 – 3,000 Students) — KES 65,000",
+            "🌍 Tier 4: National Inter-University Games (3,000+ Students) — KES 120,000"
+        ],
+        "scale_fees": {"Tier 1": 10000.0, "Tier 2": 30000.0, "Tier 3": 65000.0, "Tier 4": 120000.0},
+        "q2_label": "Q2: House Roster & Event Scoring Engine (Pull-Down):*",
+        "q2_opts": [
+            "⏱️ Basic Student Attendance Check-In — Included (KES 0)",
+            "🏠 Inter-House Points Tally & Real-Time Big-Screen Trophy Standings — +KES 15,000",
+            "📋 Age-Grade Eligibility & House Squad Roster Enforcement — +KES 15,000",
+            "🏅 Digital Student Participation Certificate Generator — +KES 15,000"
+        ],
+        "q3_label": "Q3: Teacher Marshalling & Field Wristbands (Pull-Down):*",
+        "q3_opts": [
+            "📲 Teacher / Prefect BYOD Scanner — Included (KES 0)",
+            "🏷️ Color-Coded House Wristband & Athlete Number Station — +KES 15,000",
+            "📟 Multi-Pitch Field Master Scanners (Pair Rental) — +KES 20,000"
+        ],
+        "q4_label": "Q4: Student Safety & House Championship Audit (Pull-Down):*",
+        "q4_opts": [
+            "📄 Standard House Roster & Results CSV — Included (KES 0)",
+            "🛡️ Student Safety Roll-Call & Departure Reconciliation Pack — +KES 10,000",
+            "🏆 Official Sports Day Championship Trophy & Record-Holder Ledger — +KES 15,000"
+        ]
+    },
+    "💒 Private Reception / Social Gala": {
+        "title": "Exclusive Evening Reception & Celebration",
+        "host": "Host Secretariat & Family Committee",
+        "venue": "Windsor Golf & Country Club / Zen Garden, Nairobi",
+        "gate_mode": "SINGLE_GATE",
+        "time": "14:00",
+        "std_price": 0.0,
+        "vip_price": 0.0,
+        "is_paid": False,
+        "desc": "Private guest-list celebration. Entry strictly by personalized QR invitation pass. Complimentary valet parking and welcome cocktails upon gate clearance.",
+        "scale_opts": [
+            "🥂 Tier 1: Intimate Reception (Up to 80 Invited Guests) — KES 12,000",
+            "🍾 Tier 2: Classic Celebration (81 – 250 Guests) — KES 28,000",
+            "👑 Tier 3: Grand Reception (251 – 600 Guests) — KES 55,000",
+            "🌟 Tier 4: High-Society Gala (600+ Guests) — KES 95,000"
+        ],
+        "scale_fees": {"Tier 1": 12000.0, "Tier 2": 28000.0, "Tier 3": 55000.0, "Tier 4": 95000.0},
+        "q2_label": "Q2: RSVP Security & Guest Registry Engine (Pull-Down):*",
+        "q2_opts": [
+            "🎟️ Strict 1-Pass-Per-Guest QR Security Clearance — Included (KES 0)",
+            "🪑 Reserved Family / Table Allocation Concierge — +KES 15,000",
+            "🎁 Digital Gift Registry & Automated Thank-You SMS Dispatch — +KES 15,000",
+            "📸 Interactive Guest Memory Wall & Live Photo Upload Screen — +KES 20,000"
+        ],
+        "q3_label": "Q3: Gate Concierge & Host Hardware (Pull-Down):*",
+        "q3_opts": [
+            "📲 Host BYOD Mobile Scanner — Included (KES 0)",
+            "📟 Personalized Guest Greeting Tablet Station — +KES 15,000",
+            "👩‍💼 Dedicated STRIDE™ Concierge Gate Usher (1 Day Deployment) — +KES 20,000"
+        ],
+        "q4_label": "Q4: Guest Attendance & Keepsake Dossier (Pull-Down):*",
+        "q4_opts": [
+            "📄 Complete Guest Attendance List CSV — Included (KES 0)",
+            "📖 Digital Memory Book & Keepsake Guest Signatures PDF — +KES 10,000",
+            "🔒 VIP Gate Security & Parking Headcount Report — +KES 15,000"
+        ]
+    }
+}
+
 with tab_wizard:
     st.markdown("### 🪄 Universal Event & AGM Commercial Scoping Wizard")
     st.caption("Answer 4 quick scoping questions to determine your platform deployment scope, calculate your customized fee, and provision certified gate scanners instantly via M-Pesa:")
@@ -498,26 +761,32 @@ with tab_wizard:
 
     with wz_col1:
         # Category Selector outside form for reactive pricing
+        cluster_list = list(CLUSTER_CONFIGS.keys())
         wz_cat = st.selectbox(
             "Select Event Type / Assembly Category (Pull-Down):*",
-            [
-                "👔 Corporate AGM & Shareholder Assembly",
-                "🏆 Sports Tournament & Derby",
-                "🏃 Marathon, Fun Run & Athletics",
-                "💡 Industry Conference & Tech Summit",
-                "🎉 Corporate Gala Dinner & Awards",
-                "🎓 School / University Sports Day",
-                "💒 Private Reception / Social Gala"
-            ],
+            cluster_list,
             key="wz_event_category_selector"
         )
+        cfg = CLUSTER_CONFIGS.get(wz_cat, CLUSTER_CONFIGS["👔 Corporate AGM & Shareholder Assembly"])
         is_wz_agm = ("AGM" in wz_cat or "Shareholder" in wz_cat)
 
+        # Reactive defaults synchronization when category switches
+        if st.session_state.get("wz_active_cat_tracker") != wz_cat:
+            st.session_state["wz_active_cat_tracker"] = wz_cat
+            st.session_state["wz_e_title"] = cfg["title"]
+            st.session_state["wz_e_host"] = cfg["host"]
+            st.session_state["wz_e_venue"] = cfg["venue"]
+            st.session_state["wz_e_time"] = cfg["time"]
+            st.session_state["wz_e_desc"] = cfg["desc"]
+            st.session_state["wz_paid_chk"] = cfg["is_paid"]
+            st.session_state["wz_std_price"] = cfg["std_price"]
+            st.session_state["wz_vip_price"] = cfg["vip_price"]
+
         st.markdown("#### 1️⃣ Assembly Identity & Schedule")
+        e_title = st.text_input("Official Event / Assembly Name:*", value=st.session_state.get("wz_e_title", cfg["title"]), key="wz_e_title")
+        e_host = st.text_input("Society / Convening Corporate Body:*", value=st.session_state.get("wz_e_host", cfg["host"]), key="wz_e_host")
+
         if is_wz_agm:
-            e_title = st.text_input("Official AGM / Assembly Name:*", value="58th Annual General Meeting & Shareholder Elections", placeholder="e.g. 58th Annual General Meeting of Shareholders & Delegates", key="wz_e_title")
-            e_host = st.text_input("Society / Convening Corporate Body:*", value="Apex Capital Holdings PLC Board & Secretariat", placeholder="e.g. Harambee Sacco Society Limited", key="wz_e_host")
-            
             c_agm_sub1, c_agm_sub2 = st.columns(2)
             with c_agm_sub1:
                 e_agm_subtype = st.selectbox(
@@ -563,19 +832,42 @@ with tab_wizard:
                     key="wz_admit_mode"
                 )
 
-            ec1, ec2 = st.columns(2)
-            with ec1:
-                e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14), key="wz_e_date")
-            with ec2:
-                e_time = st.text_input("Assembly Call-to-Order Time:", value="09:00", key="wz_e_time")
-            e_venue = st.text_input("Assembly Hall & Physical Address:*", value="Kenyatta International Convention Centre (KICC) / Grand Ballroom, Nairobi", key="wz_e_venue")
+        ec1, ec2 = st.columns(2)
+        with ec1:
+            e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14), key="wz_e_date")
+        with ec2:
+            e_time = st.text_input("Start / Call-to-Order Time:", value=st.session_state.get("wz_e_time", cfg["time"]), key="wz_e_time")
 
+        e_venue = st.text_input("Venue & Physical Address:*", value=st.session_state.get("wz_e_venue", cfg["venue"]), key="wz_e_venue")
+
+        if not is_wz_agm:
+            tc1, tc2, tc3 = st.columns(3)
+            with tc1:
+                e_paid = st.checkbox("Paid Event (Collect via M-Pesa)", value=st.session_state.get("wz_paid_chk", cfg["is_paid"]), key="wz_paid_chk")
+            with tc2:
+                e_std_price = st.number_input("Standard Ticket (KES):", min_value=0.0, value=float(st.session_state.get("wz_std_price", cfg["std_price"])), step=100.0, key="wz_std_price")
+            with tc3:
+                e_vip_price = st.number_input("VIP / Delegate (KES):", min_value=0.0, value=float(st.session_state.get("wz_vip_price", cfg["vip_price"])), step=500.0, key="wz_vip_price")
+
+            e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200", key="wz_paybill")
+            default_gate_idx = 0 if cfg["gate_mode"] == "DUAL_GATE" else 1
+            e_gate_mode = st.selectbox(
+                "Gate Scanning Protocol:*",
+                [
+                    "DUAL_GATE (Arrival Scan + Departure Scan for Allowance Floor Verification)",
+                    "SINGLE_GATE (Entry Scan Only for Galas, AGMs & Conferences)"
+                ],
+                index=default_gate_idx,
+                key=f"wz_gate_mode_{wz_cat[:6]}"
+            )
+            clean_gate_mode = "DUAL_GATE" if "DUAL_GATE" in e_gate_mode else "SINGLE_GATE"
+        else:
             if "Paid" in e_admit_mode:
                 tc1, tc2 = st.columns(2)
                 with tc1:
-                    e_std_price = st.number_input("Shareholder Clearance Fee (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_std_price")
+                    e_std_price = st.number_input("Shareholder Clearance Fee (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_std_price_agm")
                 with tc2:
-                    e_vip_price = st.number_input("VIP / Board Delegate (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_vip_price")
+                    e_vip_price = st.number_input("VIP / Board Delegate (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_vip_price_agm")
                 e_paid = True
                 e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200", key="wz_paybill")
             else:
@@ -583,157 +875,63 @@ with tab_wizard:
                 e_vip_price = 0.0
                 e_paid = False
                 e_paybill = "N/A (COMPLIMENTARY)"
-
             clean_gate_mode = "SINGLE_GATE"
-            e_desc = st.text_area(
-                "Statutory Notice & Agenda to Shareholders:*",
-                value="Notice is hereby given that the Annual General Meeting will convene to: 1. Table the audited financial statements for FY2025. 2. Elect executive committee members. 3. Appoint external statutory auditors. 4. Transact any other ordinary business.",
-                key="wz_agm_desc"
-            )
 
-        else:
-            e_title = st.text_input("Official Event Name:*", placeholder="e.g. Kenya Airways Annual Sports Derby & Family Fun Day", key="wz_e_title")
-            e_host = st.text_input("Host Company / Organizing Body:*", placeholder="e.g. KQ Sports Club Secretariat", key="wz_e_host")
-            
-            ec1, ec2 = st.columns(2)
-            with ec1:
-                e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14), key="wz_e_date")
-            with ec2:
-                e_time = st.text_input("Start / Kick-off Time:", value="08:30", key="wz_e_time")
-            e_venue = st.text_input("Venue & Physical Address:*", placeholder="e.g. Ngong Racecourse Grounds, Nairobi", key="wz_e_venue")
-
-            tc1, tc2, tc3 = st.columns(3)
-            with tc1:
-                e_paid = st.checkbox("Paid Event (Collect via M-Pesa)", value=True, key="wz_paid_chk")
-            with tc2:
-                e_std_price = st.number_input("Standard Ticket (KES):", min_value=0.0, value=1000.0, step=100.0, key="wz_std_price")
-            with tc3:
-                e_vip_price = st.number_input("VIP / Delegate (KES):", min_value=0.0, value=3500.0, step=500.0, key="wz_vip_price")
-
-            e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200", key="wz_paybill")
-            e_gate_mode = st.selectbox(
-                "Gate Scanning Protocol:*",
-                [
-                    "DUAL_GATE (Arrival Scan + Departure Scan for Allowance Floor Verification)",
-                    "SINGLE_GATE (Entry Scan Only for Galas, AGMs & Conferences)"
-                ],
-                key="wz_gate_mode"
-            )
-            clean_gate_mode = "DUAL_GATE" if "DUAL_GATE" in e_gate_mode else "SINGLE_GATE"
-            e_desc = st.text_area("Event Description & Attendee Instructions:", placeholder="e.g. Official sports kit required. Breakfast and lunch provided at Pavilion A. Gate closes at 09:30.", key="wz_sports_desc")
+        e_desc = st.text_area("Event Description / Statutory Notice & Instructions:*", value=st.session_state.get("wz_e_desc", cfg["desc"]), key="wz_e_desc")
 
         st.markdown("---")
         st.markdown("#### 2️⃣ Commercial Scope Questionnaire (Pricing Engine)")
-        st.caption("Select your exact operational scale and compliance requirements. STRIDE™ recalculates your customized setup quote in real-time on the right:")
+        st.caption(f"Configuring specialized telemetry and compliance architecture for **{wz_cat}**:")
 
-        if is_wz_agm:
-            sc_scale = st.selectbox(
-                "Q1: Expected Delegate / Shareholder Attendance (Pull-Down):*",
-                [
-                    "🐥 Tier 1: Small Society / Club AGM (Up to 100 Delegates) — KES 5,000",
-                    "🏢 Tier 2: Mid-Sized Corporate / SACCO (101 – 500 Delegates) — KES 35,000",
-                    "🏛️ Tier 3: Large Listed PLC / Tier-1 SACCO (501 – 2,500 Delegates) — KES 75,000",
-                    "🌐 Tier 4: Mega National Assembly (2,500+ Delegates) — KES 150,000"
-                ],
-                key="sc_scale_agm"
-            )
-            sc_voting = st.selectbox(
-                "Q2: Voting Resolution & Committee Election Engine (Pull-Down):*",
-                [
-                    "✋ Voice Vote & Statutory Quorum Floor Tracking — Included (KES 0)",
-                    "⚖️ Weighted Voting Engine (Shares / Capital Bracket Weighting) — +KES 15,000",
-                    "🗳️ Digital Secret Ballot & Committee Elections with Real-Time Tally Screen — +KES 25,000",
-                    "📱 SMS OTP Multi-Factor Verification for Proxies & Remote Voting — +KES 20,000"
-                ],
-                key="sc_voting_agm"
-            )
-            sc_hw = st.selectbox(
-                "Q3: Gate Usher Hardware & Access Station Mode (Pull-Down):*",
-                [
-                    "📲 Mobile BYOD Usher Mode (Ushers scan using any smartphone/tablet - Included) — KES 0",
-                    "📟 STRIDE™ Rugged Barcode Gate Station Terminals (Pair Rental) — +KES 20,000",
-                    "🖨️ Rapid Thermal Badge & Lanyard Printing Station — +KES 30,000"
-                ],
-                key="sc_hw_agm"
-            )
-            sc_audit = st.selectbox(
-                "Q4: Statutory Compliance & Scrutineer Auditing (Pull-Down):*",
-                [
-                    "📄 Standard CSV Scrutineer & Company Secretary Export — Included (KES 0)",
-                    "🔒 Certified Tamper-Evident SHA-256 Audit Pack (CMA / SASRA Regulatory Dossier) — +KES 15,000",
-                    "👨‍💼 Dedicated On-Site STRIDE™ Certified Technical Marshal (1 Day Deployment) — +KES 25,000"
-                ],
-                key="sc_audit_agm"
-            )
+        # Q1: Scale Selection
+        sc_scale = st.selectbox(
+            f"Q1: Expected Attendance Scale ({wz_cat.split(' ')[1]} Tier):*",
+            cfg["scale_opts"],
+            key=f"sc_scale_{wz_cat[:6]}"
+        )
+        base_fee = 15000.0
+        for tier_k, tier_amt in cfg["scale_fees"].items():
+            if tier_k in sc_scale:
+                base_fee = tier_amt
+                break
+        scale_tag = sc_scale.split("—")[0].strip()
 
-            # Calculation
-            base_fee = 5000.0 if "Tier 1" in sc_scale else (35000.0 if "Tier 2" in sc_scale else (75000.0 if "Tier 3" in sc_scale else 150000.0))
-            scale_tag = sc_scale.split("—")[0].strip()
+        # Helper to extract +KES amount
+        def extract_module_fee(opt_str: str) -> float:
+            if "+KES" in opt_str:
+                try:
+                    raw_val = opt_str.split("+KES")[-1].split(")")[0].strip().replace(",", "")
+                    return float(raw_val)
+                except Exception:
+                    return 0.0
+            return 0.0
 
-            voting_fee = 0.0
-            if "Weighted" in sc_voting: voting_fee = 15000.0
-            elif "Digital Secret Ballot" in sc_voting: voting_fee = 25000.0
-            elif "SMS OTP" in sc_voting: voting_fee = 20000.0
-            voting_tag = sc_voting.split("—")[0].strip()
+        # Q2: Specialized Module
+        sc_q2 = st.selectbox(
+            cfg["q2_label"],
+            cfg["q2_opts"],
+            key=f"sc_q2_{wz_cat[:6]}"
+        )
+        voting_fee = extract_module_fee(sc_q2)
+        voting_tag = sc_q2.split("—")[0].strip()
 
-            hw_fee = 0.0
-            if "Rugged" in sc_hw: hw_fee = 20000.0
-            elif "Thermal Badge" in sc_hw: hw_fee = 30000.0
-            hw_tag = sc_hw.split("—")[0].strip()
+        # Q3: Hardware & Marshals
+        sc_q3 = st.selectbox(
+            cfg["q3_label"],
+            cfg["q3_opts"],
+            key=f"sc_q3_{wz_cat[:6]}"
+        )
+        hw_fee = extract_module_fee(sc_q3)
+        hw_tag = sc_q3.split("—")[0].strip()
 
-            audit_fee = 0.0
-            if "SHA-256" in sc_audit: audit_fee = 15000.0
-            elif "Marshal" in sc_audit: audit_fee = 25000.0
-            audit_tag = sc_audit.split("—")[0].strip()
-
-        else:
-            sc_scale = st.selectbox(
-                "Q1: Expected Participant / Athlete Scale (Pull-Down):*",
-                [
-                    "🏅 Tier 1: Club / Department Tournament (Up to 150 Participants) — KES 15,000",
-                    "🏆 Tier 2: Corporate Inter-Bank / Industry Championship (151 – 750 Participants) — KES 45,000",
-                    "🏃 Tier 3: Regional Marathon / Major Summit (751 – 3,000 Attendees) — KES 95,000",
-                    "🌍 Tier 4: National / International Sporting Event (3,000+ Attendees) — KES 180,000"
-                ],
-                key="sc_scale_other"
-            )
-            sc_telemetry = st.selectbox(
-                "Q2: Telemetry, Allowance Rules & Leaderboards (Pull-Down):*",
-                [
-                    "⏱️ Standard Check-In Attendance Tracking — Included (KES 0)",
-                    "⏱️ Dual-Gate Duration Enforcement (Pre-sport + Post-sport allowance floor) — +KES 15,000",
-                    "📊 Live Public Scoreboard & Discipline Leaderboards — +KES 20,000",
-                    "🏅 Automated Digital Finisher Certificate / QR Medal Pass — +KES 15,000"
-                ],
-                key="sc_telemetry_other"
-            )
-            sc_hw = st.selectbox(
-                "Q3: Hardware & Registration Station Kit (Pull-Down):*",
-                [
-                    "📲 Mobile BYOD Gate Marshalling — Included (KES 0)",
-                    "🖨️ Thermal Athlete Bib & RFID/QR Badge Station — +KES 25,000",
-                    "👨‍💼 Dedicated STRIDE™ Timekeeper & Gate Marshal — +KES 25,000"
-                ],
-                key="sc_hw_other"
-            )
-
-            # Calculation
-            base_fee = 15000.0 if "Tier 1" in sc_scale else (45000.0 if "Tier 2" in sc_scale else (95000.0 if "Tier 3" in sc_scale else 180000.0))
-            scale_tag = sc_scale.split("—")[0].strip()
-
-            voting_fee = 0.0
-            if "Dual-Gate" in sc_telemetry: voting_fee = 15000.0
-            elif "Scoreboard" in sc_telemetry: voting_fee = 20000.0
-            elif "Finisher" in sc_telemetry: voting_fee = 15000.0
-            voting_tag = sc_telemetry.split("—")[0].strip()
-
-            hw_fee = 0.0
-            if "Thermal Athlete" in sc_hw: hw_fee = 25000.0
-            elif "Timekeeper" in sc_hw: hw_fee = 25000.0
-            hw_tag = sc_hw.split("—")[0].strip()
-
-            audit_fee = 0.0
-            audit_tag = "Standard Telemetry Export"
+        # Q4: Auditing & Compliance
+        sc_q4 = st.selectbox(
+            cfg["q4_label"],
+            cfg["q4_opts"],
+            key=f"sc_q4_{wz_cat[:6]}"
+        )
+        audit_fee = extract_module_fee(sc_q4)
+        audit_tag = sc_q4.split("—")[0].strip()
 
         subtotal = base_fee + voting_fee + hw_fee + audit_fee
         vat_amt = subtotal * 0.16
@@ -768,7 +966,7 @@ with tab_wizard:
                 inv_ref = f"INV-2026-{int(time.time())}"[-8:]
                 mpesa_ref = f"QK{int(time.time())}"[-10:]
                 
-                scoping_meta = f"{e_desc.strip()} [STRIDE Scope: Tier={scale_tag}, Voting={voting_tag}, HW={hw_tag}, Fee=KES {grand_total:,.0f}, Inv={inv_ref}, M-Pesa={mpesa_ref}]"
+                scoping_meta = f"{e_desc.strip()} [STRIDE Scope: Category={wz_cat}, Tier={scale_tag}, Module={voting_tag}, HW={hw_tag}, Fee=KES {grand_total:,.0f}, Inv={inv_ref}, M-Pesa={mpesa_ref}]"
                 
                 ok_ev, msg_ev, new_eid = backend.create_event(
                     title=e_title.strip(),
@@ -819,70 +1017,75 @@ with tab_wizard:
         # Check if an invoice was recently generated
         cur_inv = st.session_state.get("wz_last_invoice", None)
         
-        # Display Live Scope Quotation Card
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, rgba(8, 28, 58, 0.95) 0%, rgba(4, 14, 30, 0.98) 100%); border: 2px solid #F5C542; border-radius: 14px; padding: 18px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-bottom: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(245, 197, 66, 0.25); padding-bottom: 8px;">
-                <span style="color: #F5C542; font-weight: 900; font-size: 0.82rem; letter-spacing: 1.2px; text-transform: uppercase;">
-                    STRIDE™ SCOPE QUOTATION
-                </span>
-                <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #34D399; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 800;">
-                    LIVE PRO-FORMA
-                </span>
-            </div>
-            
-            <div style="margin: 12px 0 6px 0; font-size: 0.8rem; color: #CBD5E1;">
-                <table style="width: 100%; border-collapse: collapse; line-height: 1.8;">
-                    <tr>
-                        <td style="color: #94A3B8;">Base Scale License:</td>
-                        <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {base_fee:,.0f}</td>
-                    </tr>
-                    <tr>
-                        <td style="color: #94A3B8;">Governance / Telemetry:</td>
-                        <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {voting_fee:,.0f}</td>
-                    </tr>
-                    <tr>
-                        <td style="color: #94A3B8;">Gate Hardware & Access:</td>
-                        <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {hw_fee:,.0f}</td>
-                    </tr>
-                    <tr>
-                        <td style="color: #94A3B8;">Auditing & Compliance:</td>
-                        <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {audit_fee:,.0f}</td>
-                    </tr>
-                    <tr style="border-top: 1px dashed rgba(255,255,255,0.15);">
-                        <td style="color: #CBD5E1; font-weight: 700; padding-top: 4px;">Net Platform Subtotal:</td>
-                        <td style="text-align: right; font-weight: 800; color: #00F2FE; padding-top: 4px;">KES {subtotal:,.0f}</td>
-                    </tr>
-                    <tr>
-                        <td style="color: #94A3B8;">VAT (16% Statutory):</td>
-                        <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {vat_amt:,.0f}</td>
-                    </tr>
-                    <tr style="border-top: 1.5px solid #F5C542; font-size: 0.95rem;">
-                        <td style="color: #F5C542; font-weight: 900; padding-top: 6px;">TOTAL SETUP FEE:</td>
-                        <td style="text-align: right; font-weight: 900; color: #F5C542; padding-top: 6px;">KES {grand_total:,.0f}</td>
-                    </tr>
-                </table>
-            </div>
-            
-            <div style="font-size: 0.72rem; color: #64748B; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
-                Includes unlimited attendee QR passes, dynamic check-in gate dashboard, and real-time reconciliation.
-            </div>
+        # Display Live Scope Quotation Card with zero leading markdown indentation
+        quote_card_html = f"""
+<div style="background: linear-gradient(135deg, rgba(8, 28, 58, 0.95) 0%, rgba(4, 14, 30, 0.98) 100%); border: 2px solid #F5C542; border-radius: 14px; padding: 18px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-bottom: 16px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(245, 197, 66, 0.25); padding-bottom: 8px;">
+        <span style="color: #F5C542; font-weight: 900; font-size: 0.82rem; letter-spacing: 1.2px; text-transform: uppercase;">
+            STRIDE™ SCOPE QUOTATION
+        </span>
+        <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #34D399; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 800;">
+            LIVE PRO-FORMA
+        </span>
+    </div>
+    
+    <div style="margin: 12px 0 6px 0; font-size: 0.8rem; color: #CBD5E1;">
+        <div style="font-size: 0.76rem; color: #00F2FE; font-weight: 700; margin-bottom: 8px;">
+            Cluster: {wz_cat}
         </div>
-        """, unsafe_allow_html=True)
+        <table style="width: 100%; border-collapse: collapse; line-height: 1.8;">
+            <tr>
+                <td style="color: #94A3B8;">Base Scale License:</td>
+                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {base_fee:,.0f}</td>
+            </tr>
+            <tr>
+                <td style="color: #94A3B8;">Specialized Module:</td>
+                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {voting_fee:,.0f}</td>
+            </tr>
+            <tr>
+                <td style="color: #94A3B8;">Gate Hardware & Scanners:</td>
+                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {hw_fee:,.0f}</td>
+            </tr>
+            <tr>
+                <td style="color: #94A3B8;">Auditing & Compliance:</td>
+                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {audit_fee:,.0f}</td>
+            </tr>
+            <tr style="border-top: 1px dashed rgba(255,255,255,0.15);">
+                <td style="color: #CBD5E1; font-weight: 700; padding-top: 4px;">Net Platform Subtotal:</td>
+                <td style="text-align: right; font-weight: 800; color: #00F2FE; padding-top: 4px;">KES {subtotal:,.0f}</td>
+            </tr>
+            <tr>
+                <td style="color: #94A3B8;">VAT (16% Statutory):</td>
+                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {vat_amt:,.0f}</td>
+            </tr>
+            <tr style="border-top: 1.5px solid #F5C542; font-size: 0.95rem;">
+                <td style="color: #F5C542; font-weight: 900; padding-top: 6px;">TOTAL SETUP FEE:</td>
+                <td style="text-align: right; font-weight: 900; color: #F5C542; padding-top: 6px;">KES {grand_total:,.0f}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div style="font-size: 0.72rem; color: #64748B; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+        Includes unlimited attendee QR passes, dynamic check-in gate dashboard, and real-time reconciliation.
+    </div>
+</div>
+"""
+        st.markdown(textwrap.dedent(quote_card_html).strip(), unsafe_allow_html=True)
 
         if cur_inv:
-            st.markdown(f"""
-            <div style="background: rgba(16, 185, 129, 0.12); border: 2px solid #10B981; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #34D399; font-weight: 900; font-size: 0.85rem;">✓ TAX INVOICE: {cur_inv['inv_ref']}</span>
-                    <span style="background: #10B981; color: #020712; padding: 2px 6px; border-radius: 4px; font-weight: 900; font-size: 0.68rem;">PAID</span>
-                </div>
-                <div style="font-size: 0.78rem; color: #CBD5E1; margin: 6px 0;">
-                    Billed to: <strong>{cur_inv['org']}</strong><br>
-                    M-Pesa Receipt: <code>{cur_inv['mpesa_ref']}</code> • KES {cur_inv['grand_total']:,.0f}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            inv_card_html = f"""
+<div style="background: rgba(16, 185, 129, 0.12); border: 2px solid #10B981; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #34D399; font-weight: 900; font-size: 0.85rem;">✓ TAX INVOICE: {cur_inv['inv_ref']}</span>
+        <span style="background: #10B981; color: #020712; padding: 2px 6px; border-radius: 4px; font-weight: 900; font-size: 0.68rem;">PAID</span>
+    </div>
+    <div style="font-size: 0.78rem; color: #CBD5E1; margin: 6px 0;">
+        Billed to: <strong>{cur_inv['org']}</strong><br>
+        M-Pesa Receipt: <code>{cur_inv['mpesa_ref']}</code> • KES {cur_inv['grand_total']:,.0f}
+    </div>
+</div>
+"""
+            st.markdown(textwrap.dedent(inv_card_html).strip(), unsafe_allow_html=True)
 
             inv_txt = f"""=======================================================
 STRIDE™ ENTERPRISE EVENT PLATFORM TAX INVOICE
@@ -898,7 +1101,7 @@ Payment Status: PAID IN FULL VIA M-PESA STK PUSH
 ITEMIZED SCOPE & SERVICES
 -------------------------------------------------------
 1. Platform Scale License ({cur_inv['scale_tag']}): KES {cur_inv['base_fee']:,.2f}
-2. Governance Engine ({cur_inv['voting_tag']}): KES {cur_inv['voting_fee']:,.2f}
+2. Specialized Module ({cur_inv['voting_tag']}): KES {cur_inv['voting_fee']:,.2f}
 3. Hardware Deployment ({cur_inv['hw_tag']}): KES {cur_inv['hw_fee']:,.2f}
 4. Compliance & Auditing ({cur_inv['audit_tag']}): KES {cur_inv['audit_fee']:,.2f}
 -------------------------------------------------------
@@ -926,27 +1129,28 @@ Thank you for powering your event on STRIDE™ Enterprise."""
         reg_share_url = f"https://cbk-stride.streamlit.app/EVENTS?event_id={last_eid}"
         gate_qr_img = f"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={reg_share_url}"
 
-        st.markdown(f"""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 2px solid #00F2FE; border-radius: 14px; padding: 18px; text-align: center;">
-            <div style="font-size: 0.72rem; color: #00F2FE; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
-                OFFICIAL ENTRANCE SCANNER DESK
-            </div>
-            <h4 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.02rem;">{last_title}</h4>
-            <div style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 10px;">Event ID: <code>{last_eid}</code></div>
-            
-            <div style="background: #FFFFFF; border-radius: 10px; padding: 10px; display: inline-block; margin-bottom: 10px;">
-                <img src="{gate_qr_img}" alt="Gate Entrance QR" style="display: block; width: 155px; height: 155px;" />
-            </div>
-            
-            <div style="font-size: 0.76rem; color: #CBD5E1; line-height: 1.4;">
-                📢 <strong>Entrance Instructions:</strong> Display this QR on an iPad/tablet at the gate or print on venue banners. Attendees scan it to register or check in instantly.
-            </div>
-            
-            <div style="background: rgba(0, 242, 254, 0.1); border: 1px dashed rgba(0,242,254,0.4); border-radius: 8px; padding: 8px; margin-top: 10px; font-size: 0.72rem; word-break: break-all; color: #00F2FE;">
-                🔗 {reg_share_url}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        gate_desk_html = f"""
+<div style="background: rgba(8, 24, 48, 0.85); border: 2px solid #00F2FE; border-radius: 14px; padding: 18px; text-align: center;">
+    <div style="font-size: 0.72rem; color: #00F2FE; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+        OFFICIAL ENTRANCE SCANNER DESK
+    </div>
+    <h4 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.02rem;">{last_title}</h4>
+    <div style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 10px;">Event ID: <code>{last_eid}</code></div>
+    
+    <div style="background: #FFFFFF; border-radius: 10px; padding: 10px; display: inline-block; margin-bottom: 10px;">
+        <img src="{gate_qr_img}" alt="Gate Entrance QR" style="display: block; width: 155px; height: 155px;" />
+    </div>
+    
+    <div style="font-size: 0.76rem; color: #CBD5E1; line-height: 1.4;">
+        📢 <strong>Entrance Instructions:</strong> Display this QR on an iPad/tablet at the gate or print on venue banners. Attendees scan it to register or check in instantly.
+    </div>
+    
+    <div style="background: rgba(0, 242, 254, 0.1); border: 1px dashed rgba(0,242,254,0.4); border-radius: 8px; padding: 8px; margin-top: 10px; font-size: 0.72rem; word-break: break-all; color: #00F2FE;">
+        🔗 {reg_share_url}
+    </div>
+</div>
+"""
+        st.markdown(textwrap.dedent(gate_desk_html).strip(), unsafe_allow_html=True)
 
         st.markdown("---")
         st.markdown("##### 📊 Live Published Events Directory")
@@ -1112,7 +1316,7 @@ with tab_ballot:
             st.markdown("#### 👤 Delegate Voting Station")
             st.caption("Authenticate with your accredited Ticket Pass ID to retrieve your voting power and cast your confidential ballot:")
 
-            ev_tickets = backend.get_event_tickets(v_eid)
+            ev_tickets = backend.get_tickets_by_event(v_eid) if hasattr(backend, "get_tickets_by_event") else backend.get_event_tickets(v_eid)
             admitted_tkts = [t for t in ev_tickets if t.get("gate_status") == "ADMITTED"]
             if not admitted_tkts:
                 admitted_tkts = ev_tickets

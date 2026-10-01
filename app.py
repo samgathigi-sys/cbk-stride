@@ -1296,22 +1296,51 @@ DISCIPLINE_VENUES_MAP = {
 }
 
 PRACTICE_VENUES_REGISTRY = [
-    "🏊 Crawford International School (Tatu City) - Olympic Pool",
     "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
-    "⛳ Muthaiga Golf Club - Championship Course",
-    "🏃 Nyayo / Kasarani Stadium (Athletics Track)",
     "⚽ Sports Complex Main Arena (Football Pitch)",
-    "💥 Squash Complex (Glass Courts 1 & 2)",
+    "🏊 Crawford International School (Tatu City) - Olympic Pool",
+    "🏃 Nyayo / Kasarani Stadium (Athletics Track)",
     "🏀 Indoor Sports Hall (Basketball Arena)",
     "🏐 East Pavilion (Volleyball & Netball Courts)",
+    "🎾 Tennis Centre - Courts 1-4",
+    "💥 Squash Complex (Glass Courts 1 & 2)",
+    "⛳ Muthaiga Golf Club - Championship Course",
     "♟️ CBK Club House (Chess & Darts Lounge)",
     "🥋 Aerobics & Martial Arts Studio",
     "📍 Other / Offsite Training Facility"
 ]
 
+VENUE_TO_SPORT_MAP = {
+    "🏋️ CBK Wellness Complex & Studio (Gymnasium)": "General Wellness & Gym",
+    "⚽ Sports Complex Main Arena (Football Pitch)": "Football (Soccer)",
+    "⚽ Lower Grounds Training Pitch": "Football (Soccer)",
+    "🏊 Crawford International School (Tatu City) - Olympic Pool": "Swimming",
+    "🏊 YMCA Nairobi Central - Olympic Pool": "Swimming",
+    "🏃 Nyayo / Kasarani Stadium (Athletics Track)": "Athletics & Track",
+    "🏃 CBK Sports Club Perimeter Circuit Track": "Athletics & Track",
+    "🏀 Indoor Sports Hall (Basketball Arena)": "Basketball",
+    "🏀 Outdoor Hard Courts (Court 1)": "Basketball",
+    "🏐 East Pavilion (Volleyball & Netball Courts)": "Volleyball",
+    "🏐 Outdoor Sand & Hard Courts": "Volleyball",
+    "🎾 Tennis Centre - Courts 1-4": "Lawn Tennis",
+    "💥 Squash Complex (Glass Courts 1 & 2)": "Squash",
+    "⛳ Muthaiga Golf Club - Championship Course": "Golf",
+    "⛳ Karen Country Club": "Golf",
+    "⛳ Kenya Railway Golf Club": "Golf",
+    "♟️ Quiet Strategy Room 3": "Chess",
+    "♟️ CBK Club House (Chess & Darts Lounge)": "Chess & Darts",
+    "🎯 Staff Club Lounge - Darts Arena": "Darts",
+    "🥋 Aerobics & Martial Arts Studio": "Aerobics & Fitness",
+    "🎱 Billiards & Cue Room": "Snooker / Pool",
+    "🏃 Perimeter Track & Outpost Loop": "Cycling",
+    "📍 Other / Offsite Training Facility": "General Wellness",
+}
+
 def get_venues_for_discipline(discipline: str) -> List[str]:
     """Returns valid practice facilities strictly relevant to the active sporting discipline."""
     disc_clean = str(discipline or "").strip()
+    if not disc_clean or disc_clean in ("General", "General Wellness", "Sports", "All"):
+        return PRACTICE_VENUES_REGISTRY
     if disc_clean in DISCIPLINE_VENUES_MAP:
         return DISCIPLINE_VENUES_MAP[disc_clean]
     for k, v in DISCIPLINE_VENUES_MAP.items():
@@ -1328,32 +1357,45 @@ def render_painless_satisfaction_widget(
     discipline: str = "General",
     touchpoint: str = "GATE_PASS",
     key_prefix: str = "pass_sat",
-    default_venue: Optional[str] = None
+    default_venue: Optional[str] = None,
+    is_captain_mode: bool = False
 ):
     """
     Renders an ultra-fast, painless 1-click satisfaction widget with 5 emoji faces:
     😡 (1 - Frustrated), 🙁 (2 - Poor), 😐 (3 - Okay), 🙂 (4 - Good), 🤩 (5 - Loved It!).
-    Equipped with discipline-isolated training facilities, zero wrong assumptions,
-    and instantaneous 1-tap rating.
+    Defaults cleanly to CBK Gym & Wellness for unauthenticated users (zero unwanted Golf lock-in),
+    provides multi-sport 1-tap facility chips, and auto-derives the active sport from facility.
     """
     sub_key = f"fb_state_{key_prefix}"
     venue_key = f"{key_prefix}_venue_val"
     disc_tracker_key = f"{key_prefix}_disc_tracker"
     dropdown_key = f"{key_prefix}_venue_dropdown"
-    
-    # 1. Resolve authentic venues strictly for this sporting discipline
-    available_venues = get_venues_for_discipline(discipline)
-    def_venue = default_venue if (default_venue and default_venue in available_venues) else available_venues[0]
-    
-    # 2. Strict State Synchronization: If discipline changed, venue not initialized,
-    # or previous dropdown value belongs to another sport, immediately synchronize to def_venue.
+    chose_golf_key = f"{key_prefix}_explicit_user_golf"
+
+    # 1. Resolve authentic venues strictly for this sporting discipline or public portal
+    if is_captain_mode and discipline not in ("General", "General Wellness", "Sports", "All"):
+        available_venues = get_venues_for_discipline(discipline)
+        def_venue = default_venue if (default_venue and default_venue in available_venues) else available_venues[0]
+    else:
+        # Public Athlete / General Staff Mode: all facilities open, default to CBK Gym & Wellness
+        available_venues = PRACTICE_VENUES_REGISTRY
+        def_venue = default_venue if (default_venue and default_venue in available_venues) else PRACTICE_VENUES_REGISTRY[0]
+
+    # 2. Strict State Synchronization:
     curr_disc = st.session_state.get(disc_tracker_key)
     curr_ven = st.session_state.get(venue_key)
     curr_drop = st.session_state.get(dropdown_key)
 
+    # If unauthenticated and current venue was stuck on Golf from a past session without explicit user click, reset to CBK Gym!
+    if not is_captain_mode and curr_ven and "Golf" in curr_ven and not st.session_state.get(chose_golf_key):
+        curr_ven = None
+        curr_drop = None
+
     if (
         curr_disc != discipline
+        or not curr_ven
         or curr_ven not in available_venues
+        or not curr_drop
         or curr_drop not in available_venues
     ):
         st.session_state[venue_key] = def_venue
@@ -1361,12 +1403,11 @@ def render_painless_satisfaction_widget(
         st.session_state[disc_tracker_key] = discipline
 
     submitted = st.session_state.get(sub_key)
-    # Clear stale historical feedback card if it belonged to a different discipline or facility
-    if submitted and (submitted.get("discipline") != discipline or submitted.get("venue") not in available_venues):
+    if submitted and (submitted.get("venue") not in available_venues):
         st.session_state[sub_key] = None
         submitted = None
 
-    # 3. Practice Venue Selector & Discipline-Specific Fast Switch Chips
+    # 3. Practice Venue Selector & Fast Switch Chips
     c_ven_sel, c_ven_chips = st.columns([1.3, 1.7])
     with c_ven_sel:
         target_v = st.session_state.get(dropdown_key, def_venue)
@@ -1377,24 +1418,39 @@ def render_painless_satisfaction_widget(
             index=v_idx,
             key=dropdown_key
         )
+        if "Golf" in selected_venue:
+            st.session_state[chose_golf_key] = True
         st.session_state[venue_key] = selected_venue
         active_venue = selected_venue
 
     with c_ven_chips:
         st.markdown("<div style='font-size: 0.74rem; color: #94A3B8; font-weight: 700; margin-bottom: 4px;'>⚡ 1-Tap Quick Venue Switch:</div>", unsafe_allow_html=True)
-        # Offer dynamic chips tailored specifically to this discipline
-        chip_options = available_venues[:4]
-        ch_cols = st.columns(len(chip_options))
-        for idx, (ch_col, opt_venue) in enumerate(zip(ch_cols, chip_options)):
+        # In public mode, offer the 4 premier diverse facilities (Gym, Pitch, Pool, Track)
+        if not is_captain_mode:
+            chip_list = [
+                ("🏋️ CBK Gym", "🏋️ CBK Wellness Complex & Studio (Gymnasium)"),
+                ("⚽ Football Pitch", "⚽ Sports Complex Main Arena (Football Pitch)"),
+                ("🏊 Tatu Pool", "🏊 Crawford International School (Tatu City) - Olympic Pool"),
+                ("🏃 Kasarani Track", "🏃 Nyayo / Kasarani Stadium (Athletics Track)")
+            ]
+        else:
+            chip_list = [(v.split(" - ")[0].split(" (")[0][:17] + ("…" if len(v.split(" - ")[0].split(" (")[0]) > 17 else ""), v) for v in available_venues[:4]]
+
+        ch_cols = st.columns(len(chip_list))
+        for idx, (ch_col, (chip_lbl, opt_venue)) in enumerate(zip(ch_cols, chip_list)):
             with ch_col:
-                # Clean label for chip
-                short_label = opt_venue.split(" - ")[0].split(" (")[0]
-                if len(short_label) > 18:
-                    short_label = short_label[:17] + "…"
-                if st.button(short_label, key=f"{key_prefix}_chip_{idx}", use_container_width=True):
+                if st.button(chip_lbl, key=f"{key_prefix}_chip_{idx}", use_container_width=True):
+                    if "Golf" in opt_venue:
+                        st.session_state[chose_golf_key] = True
                     st.session_state[venue_key] = opt_venue
                     st.session_state[dropdown_key] = opt_venue
                     st.rerun()
+
+    # Determine dynamic active sport from venue for public mode
+    if not is_captain_mode:
+        active_effective_sport = VENUE_TO_SPORT_MAP.get(active_venue, "General Wellness")
+    else:
+        active_effective_sport = discipline
 
     # 4. Radiant glowing card container (Synchronized with active_venue & sport)
     st.markdown(f"""
@@ -1415,7 +1471,7 @@ def render_painless_satisfaction_widget(
         </h3>
         <p style="color: #CBD5E1; font-size: 0.88rem; margin: 0 0 10px 0; line-height: 1.5;">
             Tagged Facility: <strong style="color: #00F2FE; text-shadow: 0 0 10px rgba(0,242,254,0.4);">{active_venue}</strong> &nbsp;|&nbsp; 
-            Sport: <strong style="color: #F5C542;">{discipline}</strong>. 
+            Sport: <strong style="color: #F5C542;">{active_effective_sport}</strong>. 
             Tap any face below — <em>100% painless 1-tap rating, zero typing needed:</em>
         </p>
     </div>
@@ -1442,7 +1498,7 @@ def render_painless_satisfaction_widget(
                     staff_id=clean_sid,
                     full_name=full_name or "CBK Athlete",
                     department=department or "Operations",
-                    discipline=discipline or "Sports",
+                    discipline=active_effective_sport or "General Wellness",
                     rating=rating_val,
                     feedback_text="",
                     venue=active_venue,
@@ -1479,7 +1535,7 @@ def render_painless_satisfaction_widget(
             </div>
             <div style="margin-top: 8px; font-size: 0.86rem; color: #E2E8F0;">
                 📍 <strong>Facility:</strong> <span style="color: #00F2FE; font-weight: 700;">{recorded_venue}</span> &nbsp;|&nbsp;
-                🏅 <strong>Sport:</strong> <span style="color: #F5C542; font-weight: 700;">{submitted.get('discipline', discipline)}</span>
+                🏅 <strong>Sport:</strong> <span style="color: #F5C542; font-weight: 700;">{submitted.get('discipline', active_effective_sport)}</span>
             </div>
             <p style="color: #CBD5E1; font-size: 0.80rem; margin: 4px 0 0 0;">
                 Recognized Operational Aspects: <strong style="color: #F5C542;">{', '.join(aspects) if aspects else 'General Facility Experience'}</strong>
@@ -1569,7 +1625,8 @@ def render_painless_satisfaction_widget(
 cur_top_sid = cur_officer['staff_id'] if cur_officer else (cur_captain_top['staff_id'] if cur_captain_top else st.session_state.get('active_staff_id', 'CBK-STAFF'))
 cur_top_fn = cur_officer['full_name'] if cur_officer else (cur_captain_top['full_name'] if cur_captain_top else 'CBK Athlete')
 cur_top_dp = cur_officer['department'] if cur_officer else 'Operations'
-cur_top_sp = cur_captain_top['discipline'] if cur_captain_top else st.session_state.get('active_discipline', 'General Wellness')
+is_captain_logged_in = bool(cur_captain_top)
+cur_top_sp = cur_captain_top['discipline'] if is_captain_logged_in else "General Wellness"
 
 render_painless_satisfaction_widget(
     staff_id=cur_top_sid,
@@ -1577,7 +1634,8 @@ render_painless_satisfaction_widget(
     department=cur_top_dp,
     discipline=cur_top_sp,
     touchpoint="TOP_PORTAL_BANNER",
-    key_prefix="top_pulse"
+    key_prefix="top_pulse",
+    is_captain_mode=is_captain_logged_in
 )
 
 tabs = st.tabs(tab_titles)
@@ -1623,23 +1681,23 @@ with tab_dict["📱 Mobile Check-In"]:
         lookup_key = query_email or query_staff_id
         matched_user = backend.get_staff_by_id(lookup_key)
         if matched_user:
-            st.session_state["active_discipline"] = matched_user.get("primary_sport", "Golf")
+            st.session_state["active_discipline"] = matched_user.get("primary_sport", "Football (Soccer)")
             st.session_state["active_staff_id"] = matched_user["staff_id"].replace("CBK-", "")
             st.markdown(f"""
             <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 16px 20px; border-radius: 12px; margin-bottom: 1.2rem; box-shadow: 0 4px 15px rgba(5,150,105,0.25); border: 2px solid #34D399;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
                         <span style="background: #F8B82D; color: #082142; font-weight: 800; font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">
-                            ⛳ IDENTITY CONFIRMED VIA CBK EMAIL
+                            🏅 IDENTITY CONFIRMED VIA CBK EMAIL
                         </span>
                         <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.35rem;">
-                            Welcome back, Golfer {matched_user['full_name'] if cur_officer else mask_name_banking(matched_user['full_name'])} ({matched_user['staff_id']})!
+                            Welcome back, {matched_user['full_name'] if cur_officer else mask_name_banking(matched_user['full_name'])} ({matched_user['staff_id']})!
                         </h3>
                         <p style="margin: 0; font-size: 0.85rem; color: #DCFCE7;">
-                            ✉️ Authenticated via <strong>{matched_user['cbk_email'] if cur_officer else mask_email(matched_user['cbk_email'])}</strong> • 🏛️ {matched_user['department']} • 📍 Clubhouse 1st Tee Station
+                            ✉️ Authenticated via <strong>{matched_user['cbk_email'] if cur_officer else mask_email(matched_user['cbk_email'])}</strong> • 🏛️ {matched_user['department']} • 🏅 {matched_user.get('primary_sport', 'Sports & Wellness')}
                         </p>
                     </div>
-                    <div style="font-size: 2.2rem;">🏌️‍♂️</div>
+                    <div style="font-size: 2.2rem;">🏅</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1649,7 +1707,7 @@ with tab_dict["📱 Mobile Check-In"]:
     if query_disc and query_disc in all_18_sports:
         st.session_state["active_discipline"] = query_disc
     elif "active_discipline" not in st.session_state:
-        st.session_state["active_discipline"] = "Golf"
+        st.session_state["active_discipline"] = "Football (Soccer)"
 
     if query_staff_id:
         st.session_state["active_staff_id"] = query_staff_id.replace("CBK-", "")
@@ -1687,7 +1745,7 @@ with tab_dict["📱 Mobile Check-In"]:
         st.markdown("#### 🏅 1. Select Sporting Discipline (Alphabetical A – Z)")
 
         if "active_discipline" not in st.session_state or st.session_state["active_discipline"] not in all_18_sports:
-            st.session_state["active_discipline"] = "Golf"
+            st.session_state["active_discipline"] = "Football (Soccer)"
 
         # Keep global_sport_picker state synchronized with active_discipline
         if "global_sport_picker" not in st.session_state or st.session_state["global_sport_picker"] != st.session_state["active_discipline"]:
