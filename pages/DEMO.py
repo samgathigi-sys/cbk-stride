@@ -38,86 +38,338 @@ st.set_page_config(
 backend = AttendanceBackend()
 
 # ------------------------------------------------------------------------------
-# HIGH-PRECISION LUXURY THEME CSS (CBK GOLD, ROYAL NAVY & GLASSMORPHISM)
+# DYNAMIC MULTI-THEME ENGINE (DEFAULT: CYBER ULTRAVIOLET & AMETHYST)
 # ------------------------------------------------------------------------------
-st.markdown("""
+DEMO_THEMES = {
+    "cyber_violet": {
+        "name": "🔮 Cyber Ultraviolet & Amethyst",
+        "tagline": "Futuristic Web3 & Quantum R&D Sandbox",
+        "bg_gradient": "radial-gradient(circle at 50% 0%, #280b54 0%, #120326 45%, #06010c 100%)",
+        "bg_color": "#06010c",
+        "topbar_bg": "linear-gradient(135deg, #1b0636 0%, #370d66 50%, #140226 100%)",
+        "primary": "#C084FC",          # Radiant Amethyst Orchid
+        "primary_dark": "#9333EA",     # Deep Neon Violet
+        "primary_light": "#F0ABFC",    # Lilac Shimmer
+        "accent": "#00F5D4",           # Electric Turquoise
+        "accent_glow": "#38BDF8",      # Cyber Cyan
+        "border": "rgba(192, 132, 252, 0.45)",
+        "card_bg": "rgba(24, 9, 48, 0.88)",
+        "card_border": "rgba(192, 132, 252, 0.35)",
+        "btn_primary": "linear-gradient(135deg, #F472B6 0%, #C084FC 40%, #9333EA 100%)",
+        "btn_text": "#FFFFFF",
+        "badge_bg": "linear-gradient(135deg, #F0ABFC 0%, #C084FC 50%, #9333EA 100%)",
+        "badge_text": "#0F0221",
+        "tab_active": "linear-gradient(135deg, rgba(192, 132, 252, 0.35) 0%, rgba(236, 72, 153, 0.25) 100%)",
+        "tab_color": "#F0ABFC",
+        "shadow_glow": "0 0 25px rgba(192, 132, 252, 0.35)",
+    },
+    "matrix_emerald": {
+        "name": "🌲 Matrix Cyber Emerald",
+        "tagline": "High-Tech Biotech & Alpine Mint Matrix",
+        "bg_gradient": "radial-gradient(circle at 50% 0%, #062b1a 0%, #03140d 45%, #010805 100%)",
+        "bg_color": "#020a06",
+        "topbar_bg": "linear-gradient(135deg, #052617 0%, #0b452b 50%, #041c11 100%)",
+        "primary": "#34D399",
+        "primary_dark": "#059669",
+        "primary_light": "#A7F3D0",
+        "accent": "#F59E0B",
+        "accent_glow": "#FBBF24",
+        "border": "rgba(52, 211, 153, 0.45)",
+        "card_bg": "rgba(6, 32, 20, 0.88)",
+        "card_border": "rgba(52, 211, 153, 0.35)",
+        "btn_primary": "linear-gradient(135deg, #6EE7B7 0%, #10B981 40%, #047857 100%)",
+        "btn_text": "#021A0F",
+        "badge_bg": "linear-gradient(135deg, #A7F3D0 0%, #34D399 50%, #059669 100%)",
+        "badge_text": "#021A0F",
+        "tab_active": "linear-gradient(135deg, rgba(52, 211, 153, 0.35) 0%, rgba(16, 185, 129, 0.25) 100%)",
+        "tab_color": "#A7F3D0",
+        "shadow_glow": "0 0 25px rgba(52, 211, 153, 0.35)",
+    },
+    "solar_crimson": {
+        "name": "🔥 Solar Flare Crimson",
+        "tagline": "Volcanic Cyberpunk & Radiant Amber",
+        "bg_gradient": "radial-gradient(circle at 50% 0%, #360a12 0%, #170408 45%, #080103 100%)",
+        "bg_color": "#080103",
+        "topbar_bg": "linear-gradient(135deg, #2b080e 0%, #520f1b 50%, #1f050a 100%)",
+        "primary": "#FB7185",
+        "primary_dark": "#E11D48",
+        "primary_light": "#FECDD3",
+        "accent": "#F59E0B",
+        "accent_glow": "#FBBF24",
+        "border": "rgba(251, 113, 133, 0.45)",
+        "card_bg": "rgba(35, 8, 14, 0.88)",
+        "card_border": "rgba(251, 113, 133, 0.35)",
+        "btn_primary": "linear-gradient(135deg, #FDA4AF 0%, #F43F5E 40%, #BE123C 100%)",
+        "btn_text": "#FFFFFF",
+        "badge_bg": "linear-gradient(135deg, #FECDD3 0%, #FB7185 50%, #E11D48 100%)",
+        "badge_text": "#1F0409",
+        "tab_active": "linear-gradient(135deg, rgba(244, 63, 94, 0.35) 0%, rgba(249, 115, 22, 0.25) 100%)",
+        "tab_color": "#FDA4AF",
+        "shadow_glow": "0 0 25px rgba(244, 63, 94, 0.35)",
+    },
+    "arctic_ice": {
+        "name": "🧊 Arctic Glacier Cyan",
+        "tagline": "Polar Titanium & Deep Frost Azure",
+        "bg_gradient": "radial-gradient(circle at 50% 0%, #0c213b 0%, #061120 45%, #02060d 100%)",
+        "bg_color": "#02060d",
+        "topbar_bg": "linear-gradient(135deg, #0a1f38 0%, #11355e 50%, #07172b 100%)",
+        "primary": "#38BDF8",
+        "primary_dark": "#0284C7",
+        "primary_light": "#BAE6FD",
+        "accent": "#A78BFA",
+        "accent_glow": "#C084FC",
+        "border": "rgba(56, 189, 248, 0.45)",
+        "card_bg": "rgba(8, 26, 48, 0.88)",
+        "card_border": "rgba(56, 189, 248, 0.35)",
+        "btn_primary": "linear-gradient(135deg, #7DD3FC 0%, #0EA5E9 40%, #0369A1 100%)",
+        "btn_text": "#031525",
+        "badge_bg": "linear-gradient(135deg, #BAE6FD 0%, #38BDF8 50%, #0284C7 100%)",
+        "badge_text": "#031525",
+        "tab_active": "linear-gradient(135deg, rgba(56, 189, 248, 0.35) 0%, rgba(14, 165, 233, 0.25) 100%)",
+        "tab_color": "#BAE6FD",
+        "shadow_glow": "0 0 25px rgba(56, 189, 248, 0.35)",
+    }
+}
+
+# Determine Active Theme: Query param override or session state (Default: cyber_violet)
+qp = st.query_params
+qp_theme = qp.get("theme", "").lower()
+if qp_theme in DEMO_THEMES:
+    st.session_state["demo_theme_key"] = qp_theme
+
+current_theme_key = st.session_state.get("demo_theme_key", "cyber_violet")
+th = DEMO_THEMES.get(current_theme_key, DEMO_THEMES["cyber_violet"])
+
+# ------------------------------------------------------------------------------
+# HIGH-PRECISION LUXURY THEME CSS (DYNAMIC CYBER ULTRAVIOLET / AMETHYST)
+# ------------------------------------------------------------------------------
+st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
-    html, body, [class*="css"] {
+    html, body, [class*="css"], .stApp {{
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
-        background-color: #020710 !important;
+        background: {th['bg_gradient']} !important;
+        background-color: {th['bg_color']} !important;
         color: #FFFFFF !important;
-    }
+    }}
 
-    [data-testid="stSidebarNav"] { display: none !important; }
+    [data-testid="stAppViewContainer"] {{
+        background: {th['bg_gradient']} !important;
+    }}
 
-    .block-container {
-        padding-top: 1.5rem !important;
+    [data-testid="stSidebarNav"] {{ display: none !important; }}
+
+    .block-container {{
+        padding-top: 1.2rem !important;
         padding-bottom: 3.5rem !important;
         max-width: 98% !important;
-    }
+    }}
 
     /* Topbar styling */
-    .demo-topbar {
-        background: linear-gradient(135deg, #051429 0%, #0a254a 50%, #040e1c 100%) !important;
-        padding: 1.25rem 1.6rem !important;
-        border-radius: 16px !important;
+    .demo-topbar {{
+        background: {th['topbar_bg']} !important;
+        padding: 1.35rem 1.7rem !important;
+        border-radius: 18px !important;
         color: #FFFFFF !important;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(245, 197, 66, 0.2) !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), {th['shadow_glow']} !important;
         margin-bottom: 1.2rem !important;
-        border: 1.5px solid rgba(245, 197, 66, 0.45) !important;
-        border-bottom: 4px solid #F5C542 !important;
-    }
+        border: 1.5px solid {th['border']} !important;
+        border-bottom: 4px solid {th['primary']} !important;
+    }}
 
-    .kpi-card {
-        background: rgba(8, 24, 48, 0.82) !important;
-        border: 1px solid rgba(245, 197, 66, 0.25) !important;
-        border-left: 5px solid #F5C542 !important;
+    /* Streamlit Tabs Navigation Bar */
+    div[data-baseweb="tab-list"] {{
+        gap: 10px !important;
+        background: {th['card_bg']} !important;
+        padding: 10px 14px !important;
+        border-radius: 16px !important;
+        border: 1.5px solid {th['border']} !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), {th['shadow_glow']} !important;
+        margin-top: 0.8rem !important;
+        margin-bottom: 1.5rem !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }}
+
+    button[data-baseweb="tab"] {{
+        border-radius: 10px !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+        color: #E2E8F0 !important;
+        padding: 0.75rem 1.4rem !important;
+        background: rgba(12, 5, 25, 0.7) !important;
+        border: 1px solid {th['border']} !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }}
+
+    button[data-baseweb="tab"]:hover {{
+        color: {th['primary_light']} !important;
+        border-color: {th['primary']} !important;
+        transform: translateY(-2px) !important;
+    }}
+
+    button[data-baseweb="tab"][aria-selected="true"] {{
+        background: {th['tab_active']} !important;
+        color: {th['tab_color']} !important;
+        font-weight: 800 !important;
+        border: 2px solid {th['primary']} !important;
+        box-shadow: {th['shadow_glow']} !important;
+        transform: translateY(-2px) !important;
+    }}
+
+    button[data-baseweb="tab"][aria-selected="true"] * {{
+        color: {th['tab_color']} !important;
+        font-weight: 800 !important;
+    }}
+
+    div[data-baseweb="tab-highlight"] {{
+        background: {th['primary']} !important;
+        height: 3px !important;
+        border-radius: 3px !important;
+    }}
+
+    div[data-baseweb="tab-border"] {{ display: none !important; }}
+
+    /* KPI Cards */
+    .kpi-card {{
+        background: {th['card_bg']} !important;
+        border: 1px solid {th['border']} !important;
+        border-left: 5px solid {th['primary']} !important;
         border-radius: 12px !important;
         padding: 1rem 1.2rem !important;
         margin-bottom: 0.8rem !important;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
-    }
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5), {th['shadow_glow']} !important;
+        transition: all 0.2s ease !important;
+    }}
 
-    .kpi-title {
-        color: #94A3B8 !important;
+    .kpi-card:hover {{
+        transform: translateY(-2px) !important;
+        border-color: {th['primary']} !important;
+    }}
+
+    .kpi-title {{
+        color: #CBD5E1 !important;
         font-size: 0.78rem !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.6px !important;
-    }
+    }}
 
-    .kpi-value {
+    .kpi-value {{
         font-size: 1.85rem !important;
         font-weight: 900 !important;
         margin: 4px 0 !important;
-        color: #FFFFFF !important;
-    }
+        color: {th['primary_light']} !important;
+        text-shadow: 0 0 15px {th['border']} !important;
+    }}
 
-    .kpi-sub {
-        color: #CBD5E1 !important;
+    .kpi-sub {{
+        color: #94A3B8 !important;
         font-size: 0.75rem !important;
-    }
+    }}
 
-    .stButton>button[kind="primary"] {
-        background: linear-gradient(135deg, #FFE899 0%, #F5C542 50%, #D4AF37 100%) !important;
-        color: #040E1C !important;
-        font-weight: 800 !important;
+    /* Buttons */
+    .stButton>button[kind="primary"] {{
+        background: {th['btn_primary']} !important;
+        color: {th['btn_text']} !important;
+        font-weight: 900 !important;
         border: none !important;
-        border-radius: 8px !important;
-    }
+        border-radius: 10px !important;
+        box-shadow: 0 4px 18px {th['border']} !important;
+        transition: all 0.2s ease !important;
+    }}
 
-    .stButton>button[kind="secondary"] {
-        background: rgba(8, 24, 48, 0.75) !important;
+    .stButton>button[kind="primary"]:hover {{
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 25px {th['primary']} !important;
+    }}
+
+    .stButton>button[kind="secondary"] {{
+        background: {th['card_bg']} !important;
+        color: {th['primary_light']} !important;
+        border: 1.5px solid {th['border']} !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        transition: all 0.2s ease !important;
+    }}
+
+    .stButton>button[kind="secondary"]:hover {{
+        background: rgba(45, 18, 80, 0.4) !important;
+        border-color: {th['primary']} !important;
         color: #FFFFFF !important;
-        border: 1px solid rgba(245, 197, 66, 0.35) !important;
-        border-radius: 8px !important;
-    }
+        transform: translateY(-1px) !important;
+    }}
+
+    /* Inputs & Selectboxes */
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="input"] > div,
+    .stTextInput input,
+    .stSelectbox select {{
+        background: rgba(14, 5, 30, 0.95) !important;
+        border: 1.5px solid {th['border']} !important;
+        color: #FFFFFF !important;
+        border-radius: 10px !important;
+    }}
+
+    div[data-baseweb="select"] svg {{
+        fill: {th['primary']} !important;
+    }}
+
+    /* Popovers / Dropdowns */
+    div[data-baseweb="popover"],
+    div[data-baseweb="popover"] > div,
+    div[data-baseweb="popover"] ul[role="listbox"] {{
+        background-color: {th['bg_color']} !important;
+        background: {th['bg_color']} !important;
+        border: 1.5px solid {th['primary']} !important;
+        border-radius: 12px !important;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.9), {th['shadow_glow']} !important;
+    }}
+
+    div[data-baseweb="popover"] li {{
+        background: {th['bg_color']} !important;
+        color: #FFFFFF !important;
+    }}
+
+    div[data-baseweb="popover"] li:hover {{
+        background: {th['primary_dark']} !important;
+        color: #FFFFFF !important;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
 now_dt = get_eat_now()
+
+# ------------------------------------------------------------------------------
+# 0. 1-CLICK THEME PALETTE SWITCHER BAR
+# ------------------------------------------------------------------------------
+st.markdown("""
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 8px;">
+    <div style="font-size: 0.74rem; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px;">
+        🎨 Live Sandbox Theme Palette (Click any to transform instantly):
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+th_col1, th_col2, th_col3, th_col4 = st.columns(4)
+with th_col1:
+    if st.button("🔮 Cyber Ultraviolet (Default)", key="btn_th_violet", use_container_width=True, type="primary" if current_theme_key == "cyber_violet" else "secondary"):
+        st.session_state["demo_theme_key"] = "cyber_violet"
+        st.rerun()
+with th_col2:
+    if st.button("🌲 Matrix Cyber Emerald", key="btn_th_emerald", use_container_width=True, type="primary" if current_theme_key == "matrix_emerald" else "secondary"):
+        st.session_state["demo_theme_key"] = "matrix_emerald"
+        st.rerun()
+with th_col3:
+    if st.button("🔥 Solar Flare Crimson", key="btn_th_crimson", use_container_width=True, type="primary" if current_theme_key == "solar_crimson" else "secondary"):
+        st.session_state["demo_theme_key"] = "solar_crimson"
+        st.rerun()
+with th_col4:
+    if st.button("🧊 Arctic Glacier Cyan", key="btn_th_ice", use_container_width=True, type="primary" if current_theme_key == "arctic_ice" else "secondary"):
+        st.session_state["demo_theme_key"] = "arctic_ice"
+        st.rerun()
 
 # ------------------------------------------------------------------------------
 # 1. HEADER & TOP BAR
@@ -126,31 +378,34 @@ st.markdown(f"""
 <div class="demo-topbar">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
         <div style="display: flex; align-items: center; gap: 18px;">
-            <div style="background: rgba(245, 197, 66, 0.15); border: 2px solid #F5C542; border-radius: 12px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-size: 1.9rem; box-shadow: 0 0 18px rgba(245, 197, 66, 0.35);">
+            <div style="background: rgba(192, 132, 252, 0.15); border: 2px solid {th['primary']}; border-radius: 12px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-size: 1.9rem; box-shadow: {th['shadow_glow']};">
                 🧪
             </div>
             <div>
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <span style="background: linear-gradient(135deg, #FFE899 0%, #F5C542 100%); color: #040D1A; font-weight: 900; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">
+                    <span style="background: {th['badge_bg']}; color: {th['badge_text']}; font-weight: 900; font-size: 0.72rem; padding: 2px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
                         Interactive Sandbox Mode
                     </span>
-                    <span style="color: #00F2FE; font-size: 0.8rem; font-weight: 700;">
+                    <span style="color: {th['accent']}; font-size: 0.8rem; font-weight: 700;">
                         ● Full Capabilities Unlocked
+                    </span>
+                    <span style="background: rgba(255,255,255,0.1); color: #E2E8F0; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px;">
+                        {th['name']}
                     </span>
                 </div>
                 <h1 style="margin: 4px 0 0 0; font-size: 1.85rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.5px;">
-                    STRIDE™ <span style="font-weight: 400; color: #F5C542; font-size: 1.1rem;">| Evaluator Sandbox & Sponsor Pavilion</span>
+                    STRIDE™ <span style="font-weight: 400; color: {th['primary']}; font-size: 1.1rem;">| Evaluator Sandbox & Sponsor Pavilion</span>
                 </h1>
-                <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 2px;">
-                    Sports Telemetry & Roster Integrity • Enterprise Tournament Management
+                <div style="font-size: 0.8rem; color: #CBD5E1; margin-top: 2px;">
+                    Sports Telemetry & Roster Integrity • Enterprise Tournament Management • {th['tagline']}
                 </div>
             </div>
         </div>
         <div style="text-align: right;">
-            <div style="background: rgba(4, 16, 33, 0.7); border: 1px solid rgba(245, 197, 66, 0.3); border-radius: 8px; padding: 6px 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #F5C542;">
+            <div style="background: rgba(12, 4, 25, 0.7); border: 1px solid {th['border']}; border-radius: 8px; padding: 6px 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: {th['primary_light']};">
                 🕒 {now_dt.strftime('%A, %d %B %Y | %H:%M:%S')} (EAT)
             </div>
-            <div style="margin-top: 6px; font-size: 0.76rem; color: #64748B;">
+            <div style="margin-top: 6px; font-size: 0.76rem; color: #94A3B8;">
                 Zero-Risk Sandbox • Production Database Protected
             </div>
         </div>
@@ -163,12 +418,12 @@ st.markdown(f"""
 # ------------------------------------------------------------------------------
 c_ban1, c_ban2 = st.columns([3.2, 1.2])
 with c_ban1:
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, rgba(245, 197, 66, 0.14) 0%, rgba(0, 242, 254, 0.12) 100%); border: 1.5px solid #F5C542; border-radius: 12px; padding: 12px 18px; margin-bottom: 1rem;">
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, rgba(192, 132, 252, 0.14) 0%, rgba(0, 245, 212, 0.10) 100%); border: 1.5px solid {th['primary']}; border-radius: 12px; padding: 12px 18px; margin-bottom: 1rem; box-shadow: {th['shadow_glow']};">
         <div style="display: flex; align-items: center; gap: 10px;">
             <span style="font-size: 1.4rem;">💡</span>
             <div>
-                <strong style="color: #FFE899; font-size: 0.92rem;">Welcome to the STRIDE™ Interactive Evaluation Sandbox</strong>
+                <strong style="color: {th['primary_light']}; font-size: 0.92rem;">Welcome to the STRIDE™ Interactive Evaluation Sandbox</strong>
                 <p style="margin: 2px 0 0 0; color: #CBD5E1; font-size: 0.82rem;">
                     Test-drive pitchside roll-calls, captain diaries, dual-gate QR check-ins, HR/Finance analytics, and commercial sponsor packages freely with synthetic data.
                 </p>
@@ -178,15 +433,15 @@ with c_ban1:
     """, unsafe_allow_html=True)
 with c_ban2:
     st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <div style="display: flex; gap: 8px; flex-direction: column;">
         <a href="/" target="_self" style="display: block; text-decoration: none;">
-            <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(245, 197, 66, 0.5); border-radius: 8px; padding: 7px 10px; text-align: center; color: #F5C542; font-weight: 800; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <div style="background: {th['card_bg']}; border: 1.5px solid {th['border']}; border-radius: 8px; padding: 7px 10px; text-align: center; color: {th['primary']}; font-weight: 800; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
                 🏛️ Official CBK Portal
             </div>
         </a>
         <a href="/EVENTS" target="_self" style="display: block; text-decoration: none;">
-            <div style="background: rgba(0, 242, 254, 0.15); border: 1.5px solid #00F2FE; border-radius: 8px; padding: 7px 10px; text-align: center; color: #00F2FE; font-weight: 800; font-size: 0.8rem;">
+            <div style="background: rgba(0, 245, 212, 0.12); border: 1.5px solid {th['accent']}; border-radius: 8px; padding: 7px 10px; text-align: center; color: {th['accent']}; font-weight: 800; font-size: 0.8rem;">
                 🎟️ STRIDE™ Events & M-Pesa Gateway
             </div>
         </a>
@@ -196,18 +451,18 @@ with c_ban2:
 # ------------------------------------------------------------------------------
 # 3. CORPORATE BRAND PARTNER MARQUEE RIBBON
 # ------------------------------------------------------------------------------
-st.markdown("""
-<div style="background: linear-gradient(135deg, rgba(8, 24, 48, 0.95) 0%, rgba(4, 14, 28, 0.98) 100%); border: 1.5px solid rgba(245, 197, 66, 0.35); border-radius: 12px; padding: 9px 18px; margin-bottom: 1.2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+st.markdown(f"""
+<div style="background: {th['card_bg']}; border: 1.5px solid {th['border']}; border-radius: 12px; padding: 9px 18px; margin-bottom: 1.2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <span style="background: linear-gradient(135deg, #FFE899 0%, #F5C542 100%); color: #040D1A; font-weight: 900; font-size: 0.72rem; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.8px; text-transform: uppercase;">
+        <span style="background: {th['badge_bg']}; color: {th['badge_text']}; font-weight: 900; font-size: 0.72rem; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.8px; text-transform: uppercase;">
             🏆 Official Brand Partners
         </span>
         <span style="color: #FFFFFF; font-size: 0.83rem; font-weight: 600;">
-            <strong style="color: #F5C542;">KCB Bank Group</strong> (Title) &bull; <strong style="color: #34D399;">Safaricom M-Pesa</strong> (Fintech) &bull; <strong style="color: #00F2FE;">Britam</strong> (Wellness & Health) &bull; <strong style="color: #F7941D;">Brookside Dairy</strong> (Hydration)
+            <strong style="color: {th['primary']};">KCB Bank Group</strong> (Title) &bull; <strong style="color: #34D399;">Safaricom M-Pesa</strong> (Fintech) &bull; <strong style="color: {th['accent']};">Britam</strong> (Wellness & Health) &bull; <strong style="color: #F7941D;">Brookside Dairy</strong> (Hydration)
         </span>
     </div>
     <div>
-        <span style="font-size: 0.76rem; color: #94A3B8;">Audience Reach: <strong>18 Disciplines • 1,500+ Corporate Athletes</strong></span>
+        <span style="font-size: 0.76rem; color: #CBD5E1;">Audience Reach: <strong>18 Disciplines • 1,500+ Corporate Athletes</strong></span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -357,9 +612,9 @@ with tab_dict["📅 Captain's Tactical Diary"]:
         else:
             for ev in cal_events:
                 ev_type = ev.get("event_type", "Drill")
-                b_color = "#F5C542" if "Tournament" in ev_type else ("#00F2FE" if "Friendly" in ev_type else "#34D399")
+                b_color = th["primary"] if "Tournament" in ev_type else (th["accent"] if "Friendly" in ev_type else "#34D399")
                 st.markdown(f"""
-                <div style="background: rgba(8, 24, 48, 0.75); border-left: 4.5px solid {b_color}; border-radius: 10px; padding: 12px 16px; margin-bottom: 10px;">
+                <div style="background: {th['card_bg']}; border-left: 4.5px solid {b_color}; border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; border: 1px solid {th['border']};">
                     <span style="color: {b_color}; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">
                         {ev_type}
                     </span>
@@ -406,11 +661,11 @@ with tab_dict["📱 Mobile Check-In"]:
 
         if p_match:
             st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #071F3D 0%, #025BBF 100%); border: 1.5px solid rgba(245, 197, 66, 0.4); border-radius: 12px; padding: 16px; margin-top: 10px;">
-                <span style="background: #F5C542; color: #040E1C; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">VERIFIED ATHLETE</span>
+            <div style="background: linear-gradient(135deg, {th['bg_color']} 0%, {th['primary_dark']} 100%); border: 1.5px solid {th['border']}; border-radius: 12px; padding: 16px; margin-top: 10px; box-shadow: {th['shadow_glow']};">
+                <span style="background: {th['badge_bg']}; color: {th['badge_text']}; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">VERIFIED ATHLETE</span>
                 <h3 style="margin: 8px 0 2px 0; color: #FFF;">{p_match['full_name']}</h3>
                 <p style="margin: 0; color: #CBD5E1; font-size: 0.85rem;">{p_match['department']} • {p_match.get('primary_sport', demo_discipline)}</p>
-                <div style="margin-top: 10px; font-size: 0.8rem; color: #34D399; font-weight: 700;">
+                <div style="margin-top: 10px; font-size: 0.8rem; color: {th['accent']}; font-weight: 700;">
                     ● ALLOWANCE ELIGIBLE (KES 2,500 FLOOR)
                 </div>
             </div>
@@ -434,13 +689,13 @@ with tab_dict["📱 Mobile Check-In"]:
 
     with m_col2:
         st.markdown("##### 🎟️ Digital Mobile Pass Preview")
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.9); border: 2px dashed rgba(245, 197, 66, 0.5); border-radius: 14px; padding: 20px; text-align: center;">
-            <div style="font-size: 0.76rem; color: #F5C542; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">STRIDE™ Enterprise Sports Network</div>
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 2px dashed {th['border']}; border-radius: 14px; padding: 20px; text-align: center; box-shadow: {th['shadow_glow']};">
+            <div style="font-size: 0.76rem; color: {th['primary']}; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">STRIDE™ Enterprise Sports Network</div>
             <h4 style="margin: 6px 0; color: #FFF;">OFFICIAL TOURNAMENT PARTICIPATION PASS</h4>
             <div style="font-size: 2.5rem; margin: 10px 0;">📱</div>
-            <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; padding: 8px; margin-bottom: 10px;">
-                <span style="color: #34D399; font-weight: 800; font-size: 0.9rem;">VERIFIED SESSION RATE: KES 2,500</span><br>
+            <div style="background: rgba(0, 245, 212, 0.12); border: 1px solid {th['accent']}; border-radius: 8px; padding: 8px; margin-bottom: 10px;">
+                <span style="color: {th['accent']}; font-weight: 800; font-size: 0.9rem;">VERIFIED SESSION RATE: KES 2,500</span><br>
                 <span style="color: #94A3B8; font-size: 0.75rem;">Requires Dual-Gate Scan & 45-Minute Activity Floor</span>
             </div>
             <div style="font-size: 0.78rem; color: #64748B;">Cryptographically timestamped • Kenya Data Protection Act 2019 Compliant</div>
@@ -458,16 +713,16 @@ with tab_dict["🏷️ Captain QR Station"]:
     with q_col1:
         qr_mode = st.radio("Select Active Verification Gate:", ["GATE 1: ARRIVAL (IN)", "GATE 2: DEPARTURE (OUT)"], horizontal=True)
         st.markdown(f"""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 2px solid #F5C542; border-radius: 14px; padding: 22px; text-align: center; margin-top: 12px;">
-            <span style="background: #F5C542; color: #040E1C; font-weight: 900; font-size: 0.78rem; padding: 3px 12px; border-radius: 6px;">
+        <div style="background: {th['card_bg']}; border: 2px solid {th['primary']}; border-radius: 14px; padding: 22px; text-align: center; margin-top: 12px; box-shadow: {th['shadow_glow']};">
+            <span style="background: {th['badge_bg']}; color: {th['badge_text']}; font-weight: 900; font-size: 0.78rem; padding: 3px 12px; border-radius: 6px;">
                 {qr_mode}
             </span>
             <h3 style="margin: 10px 0 4px 0; color: #FFF;">{demo_discipline} Check-In Point</h3>
             <p style="margin: 0 0 16px 0; color: #94A3B8; font-size: 0.85rem;">Display on Captain's official tablet at pitch entrance</p>
-            <div style="background: #FFFFFF; display: inline-block; padding: 18px; border-radius: 14px; box-shadow: 0 0 25px rgba(245, 197, 66, 0.35);">
+            <div style="background: #FFFFFF; display: inline-block; padding: 18px; border-radius: 14px; box-shadow: {th['shadow_glow']};">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://cbk-stride.streamlit.app/" alt="Station QR Code" style="display: block; width: 220px; height: 220px;" />
             </div>
-            <div style="margin-top: 14px; font-size: 0.8rem; color: #34D399; font-weight: 700;">
+            <div style="margin-top: 14px; font-size: 0.8rem; color: {th['accent']}; font-weight: 700;">
                 ● Live Station Ready for Scans
             </div>
         </div>
@@ -631,10 +886,10 @@ with tab_dict["🎟️ Self-Registration & Ticketing"]:
             qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={qr_data}"
 
             st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #091F3D 0%, #030F21 100%); border: 2px solid #F5C542; border-radius: 14px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-align: center;">
-                <div style="font-size: 0.72rem; color: #F5C542; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">STRIDE™ ENTERPRISE DIGITAL PASS</div>
+            <div style="background: linear-gradient(135deg, {th['bg_color']} 0%, {th['primary_dark']} 100%); border: 2px solid {th['primary']}; border-radius: 14px; padding: 18px; box-shadow: {th['shadow_glow']}; text-align: center;">
+                <div style="font-size: 0.72rem; color: {th['primary_light']}; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">STRIDE™ ENTERPRISE DIGITAL PASS</div>
                 <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.15rem; font-weight: 800;">{ev_name}</h3>
-                <span style="background: rgba(0, 242, 254, 0.2); color: #00F2FE; border: 1px solid rgba(0,242,254,0.4); padding: 2px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">
+                <span style="background: rgba(0, 245, 212, 0.2); color: {th['accent']}; border: 1px solid rgba(0,245,212,0.4); padding: 2px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">
                     {t_tier}
                 </span>
                 
@@ -693,18 +948,18 @@ with tab_dict["🏛️ Secretariat Operations"]:
     # 4 KPI Cards
     sk1, sk2, sk3, sk4 = st.columns(4)
     with sk1:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #F5C542;">
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {th['primary']};">
             <div class="kpi-title">Today's Scans</div>
-            <div class="kpi-value" style="color: #F5C542;">342</div>
+            <div class="kpi-value" style="color: {th['primary_light']};">342</div>
             <div class="kpi-sub">Across All 18 Sports</div>
         </div>
         """, unsafe_allow_html=True)
     with sk2:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #00F2FE;">
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {th['accent']};">
             <div class="kpi-title">Active on Field</div>
-            <div class="kpi-value" style="color: #00F2FE;">58</div>
+            <div class="kpi-value" style="color: {th['accent']};">58</div>
             <div class="kpi-sub">Awaiting Gate 2 Departure</div>
         </div>
         """, unsafe_allow_html=True)
@@ -717,10 +972,10 @@ with tab_dict["🏛️ Secretariat Operations"]:
         </div>
         """, unsafe_allow_html=True)
     with sk4:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #A78BFA;">
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {th['primary_dark']};">
             <div class="kpi-title">Policy Compliance</div>
-            <div class="kpi-value" style="color: #A78BFA;">98.4%</div>
+            <div class="kpi-value" style="color: {th['primary_light']};">98.4%</div>
             <div class="kpi-sub">0 Short Sessions Flagged</div>
         </div>
         """, unsafe_allow_html=True)
@@ -754,7 +1009,7 @@ with tab_dict["📊 HR Analytics Command"]:
             "Department": ["Banking & Currency Operations", "Financial Markets", "Bank Supervision", "IT & Digital Services", "Human Resources", "Legal & Secretariat"],
             "Athletes": [48, 42, 39, 35, 28, 24]
         })
-        st.bar_chart(dept_data.set_index("Department"), color="#F5C542")
+        st.bar_chart(dept_data.set_index("Department"), color=th["primary"])
 
     with hr_c2:
         st.markdown("##### 🏆 Inter-Departmental Sports Engagement Rankings")
@@ -777,18 +1032,18 @@ with tab_dict["💰 Finance & Audit Portal"]:
         </div>
         """, unsafe_allow_html=True)
     with f_k2:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #00F2FE;">
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {th['accent']};">
             <div class="kpi-title">Prevented Phantom Payouts</div>
-            <div class="kpi-value" style="color: #00F2FE;">KES 145,000</div>
+            <div class="kpi-value" style="color: {th['accent']};">KES 145,000</div>
             <div class="kpi-sub">58 Incomplete Single-Gate Scans Disallowed</div>
         </div>
         """, unsafe_allow_html=True)
     with f_k3:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #F5C542;">
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {th['primary']};">
             <div class="kpi-title">Audit Trail Integrity</div>
-            <div class="kpi-value" style="color: #F5C542;">100.0%</div>
+            <div class="kpi-value" style="color: {th['primary_light']};">100.0%</div>
             <div class="kpi-sub">Zero Forged Paper Sign-Offs</div>
         </div>
         """, unsafe_allow_html=True)
@@ -822,18 +1077,18 @@ with tab_dict["🤝 Sponsor Pavilion"]:
     # Commercial Reach KPIs
     sp_k1, sp_k2, sp_k3, sp_k4 = st.columns(4)
     with sp_k1:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #F5C542;">
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {th['primary']};">
             <div class="kpi-title">Active Sporting Disciplines</div>
-            <div class="kpi-value" style="color: #F5C542;">18 Sports</div>
+            <div class="kpi-value" style="color: {th['primary_light']};">18 Sports</div>
             <div class="kpi-sub">Golf, Football, Athletics & More</div>
         </div>
         """, unsafe_allow_html=True)
     with sp_k2:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #00F2FE;">
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {th['accent']};">
             <div class="kpi-title">Audience & Athletes</div>
-            <div class="kpi-value" style="color: #00F2FE;">1,500+</div>
+            <div class="kpi-value" style="color: {th['accent']};">1,500+</div>
             <div class="kpi-sub">Bank Staff, C-Suite & Competitors</div>
         </div>
         """, unsafe_allow_html=True)
@@ -846,10 +1101,10 @@ with tab_dict["🤝 Sponsor Pavilion"]:
         </div>
         """, unsafe_allow_html=True)
     with sp_k4:
-        st.markdown("""
-        <div class="kpi-card" style="border-left-color: #A78BFA;">
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {th['primary_dark']};">
             <div class="kpi-title">Brand Exposure ROI</div>
-            <div class="kpi-value" style="color: #A78BFA;">99.8%</div>
+            <div class="kpi-value" style="color: {th['primary_light']};">99.8%</div>
             <div class="kpi-sub">Real-Time Digital & Field Touchpoints</div>
         </div>
         """, unsafe_allow_html=True)
@@ -860,11 +1115,11 @@ with tab_dict["🤝 Sponsor Pavilion"]:
     st.markdown("#### 🏆 Official Corporate Brand Partners")
     p_col1, p_col2 = st.columns(2)
     with p_col1:
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(0, 242, 254, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px;">
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 1.5px solid {th['border']}; border-radius: 12px; padding: 18px; margin-bottom: 14px; box-shadow: {th['shadow_glow']};">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="margin: 0; color: #00F2FE; font-size: 1.15rem; font-weight: 800;">🦁 KCB Bank Group</h4>
-                <span style="background: rgba(0, 242, 254, 0.2); color: #00F2FE; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">Platinum Partner</span>
+                <h4 style="margin: 0; color: {th['accent']}; font-size: 1.15rem; font-weight: 800;">🦁 KCB Bank Group</h4>
+                <span style="background: rgba(0, 245, 212, 0.2); color: {th['accent']}; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">Platinum Partner</span>
             </div>
             <p style="margin: 8px 0 4px 0; font-size: 0.88rem; color: #E2E8F0;">
                 <strong>Official Banking & Financial Services Partner</strong> of the STRIDE™ Corporate Championship.
@@ -872,11 +1127,11 @@ with tab_dict["🤝 Sponsor Pavilion"]:
         </div>
         """, unsafe_allow_html=True)
 
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(245, 197, 66, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px;">
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 1.5px solid {th['border']}; border-radius: 12px; padding: 18px; margin-bottom: 14px; box-shadow: {th['shadow_glow']};">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="margin: 0; color: #F5C542; font-size: 1.15rem; font-weight: 800;">🛡️ Britam Holdings</h4>
-                <span style="background: rgba(245, 197, 66, 0.2); color: #F5C542; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">Wellness Underwriter</span>
+                <h4 style="margin: 0; color: {th['primary']}; font-size: 1.15rem; font-weight: 800;">🛡️ Britam Holdings</h4>
+                <span style="background: rgba(192, 132, 252, 0.2); color: {th['primary']}; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">Wellness Underwriter</span>
             </div>
             <p style="margin: 8px 0 4px 0; font-size: 0.88rem; color: #E2E8F0;">
                 <strong>Official Sports Injury, Health & Wellness Underwriter</strong> for all tournament athletes.
@@ -885,8 +1140,8 @@ with tab_dict["🤝 Sponsor Pavilion"]:
         """, unsafe_allow_html=True)
 
     with p_col2:
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px;">
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 1.5px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h4 style="margin: 0; color: #10B981; font-size: 1.15rem; font-weight: 800;">📱 Safaricom M-Pesa</h4>
                 <span style="background: rgba(16, 185, 129, 0.2); color: #10B981; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">Tech Innovation</span>
@@ -897,11 +1152,11 @@ with tab_dict["🤝 Sponsor Pavilion"]:
         </div>
         """, unsafe_allow_html=True)
 
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.85); border: 1.5px solid rgba(167, 139, 250, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px;">
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 1.5px solid {th['border']}; border-radius: 12px; padding: 18px; margin-bottom: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="margin: 0; color: #A78BFA; font-size: 1.15rem; font-weight: 800;">🥛 Brookside Dairy</h4>
-                <span style="background: rgba(167, 139, 250, 0.2); color: #A78BFA; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">Nutrition Partner</span>
+                <h4 style="margin: 0; color: {th['primary_light']}; font-size: 1.15rem; font-weight: 800;">🥛 Brookside Dairy</h4>
+                <span style="background: rgba(192, 132, 252, 0.2); color: {th['primary_light']}; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">Nutrition Partner</span>
             </div>
             <p style="margin: 8px 0 4px 0; font-size: 0.88rem; color: #E2E8F0;">
                 <strong>Official Nutrition & Athlete Hydration Partner</strong> across all 18 sporting venues.
@@ -915,11 +1170,11 @@ with tab_dict["🤝 Sponsor Pavilion"]:
     st.markdown("#### 💎 Corporate Sponsorship Packages & Advertising Tiers")
     t1, t2, t3, t4 = st.columns(4)
     with t1:
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.95); border: 2px solid #F5C542; border-radius: 12px; padding: 16px; height: 100%;">
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 2px solid {th['primary']}; border-radius: 12px; padding: 16px; height: 100%; box-shadow: {th['shadow_glow']};">
             <div style="text-align: center; margin-bottom: 8px;">
                 <span style="font-size: 1.5rem;">🥇</span>
-                <h4 style="margin: 2px 0; color: #F5C542;">PLATINUM TITLE</h4>
+                <h4 style="margin: 2px 0; color: {th['primary']};">PLATINUM TITLE</h4>
                 <div style="font-size: 1.05rem; font-weight: 900; color: #FFF;">KES 2,500,000</div>
             </div>
             <ul style="font-size: 0.78rem; color: #CBD5E1; padding-left: 16px; line-height: 1.5;">
@@ -931,11 +1186,11 @@ with tab_dict["🤝 Sponsor Pavilion"]:
         </div>
         """, unsafe_allow_html=True)
     with t2:
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.95); border: 2px solid #00F2FE; border-radius: 12px; padding: 16px; height: 100%;">
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 2px solid {th['accent']}; border-radius: 12px; padding: 16px; height: 100%;">
             <div style="text-align: center; margin-bottom: 8px;">
                 <span style="font-size: 1.5rem;">🥈</span>
-                <h4 style="margin: 2px 0; color: #00F2FE;">GOLD DISCIPLINE</h4>
+                <h4 style="margin: 2px 0; color: {th['accent']};">GOLD DISCIPLINE</h4>
                 <div style="font-size: 1.05rem; font-weight: 900; color: #FFF;">KES 1,200,000</div>
             </div>
             <ul style="font-size: 0.78rem; color: #CBD5E1; padding-left: 16px; line-height: 1.5;">
@@ -947,8 +1202,8 @@ with tab_dict["🤝 Sponsor Pavilion"]:
         </div>
         """, unsafe_allow_html=True)
     with t3:
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.95); border: 2px solid #10B981; border-radius: 12px; padding: 16px; height: 100%;">
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 2px solid #10B981; border-radius: 12px; padding: 16px; height: 100%;">
             <div style="text-align: center; margin-bottom: 8px;">
                 <span style="font-size: 1.5rem;">🥉</span>
                 <h4 style="margin: 2px 0; color: #10B981;">SILVER WELLNESS</h4>
@@ -963,11 +1218,11 @@ with tab_dict["🤝 Sponsor Pavilion"]:
         </div>
         """, unsafe_allow_html=True)
     with t4:
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.95); border: 2px solid #A78BFA; border-radius: 12px; padding: 16px; height: 100%;">
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 2px solid {th['primary_dark']}; border-radius: 12px; padding: 16px; height: 100%;">
             <div style="text-align: center; margin-bottom: 8px;">
                 <span style="font-size: 1.5rem;">🎖️</span>
-                <h4 style="margin: 2px 0; color: #A78BFA;">BRONZE DIGITAL</h4>
+                <h4 style="margin: 2px 0; color: {th['primary_light']};">BRONZE DIGITAL</h4>
                 <div style="font-size: 1.05rem; font-weight: 900; color: #FFF;">KES 250,000</div>
             </div>
             <ul style="font-size: 0.78rem; color: #CBD5E1; padding-left: 16px; line-height: 1.5;">
@@ -1001,15 +1256,15 @@ with tab_dict["🤝 Sponsor Pavilion"]:
 
     with c_df2:
         st.markdown("#### 📞 Direct Secretariat Contacts")
-        st.markdown("""
-        <div style="background: rgba(8, 24, 48, 0.7); border: 1px solid rgba(245, 197, 66, 0.3); border-radius: 12px; padding: 18px;">
-            <h5 style="margin: 0 0 6px 0; color: #F5C542;">STRIDE™ Enterprise Operations</h5>
+        st.markdown(f"""
+        <div style="background: {th['card_bg']}; border: 1px solid {th['border']}; border-radius: 12px; padding: 18px; box-shadow: {th['shadow_glow']};">
+            <h5 style="margin: 0 0 6px 0; color: {th['primary']};">STRIDE™ Enterprise Operations</h5>
             <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: #CBD5E1;">
                 Secretariat & Commercial Sponsorship Directorate<br>
                 Corporate Sports Complex, Nairobi, Kenya
             </p>
             <div style="font-size: 0.84rem; color: #94A3B8; line-height: 1.6;">
-                📧 <strong>Email:</strong> <span style="color: #00F2FE;">partnerships@stride-enterprise.io</span><br>
+                📧 <strong>Email:</strong> <span style="color: {th['accent']};">partnerships@stride-enterprise.io</span><br>
                 📞 <strong>Direct Line:</strong> +254 (020) 286 1000<br>
                 🕒 <strong>Office Hours:</strong> Monday – Friday: 08:00 – 17:00 EAT
             </div>
@@ -1038,9 +1293,9 @@ with tab_dict["⚙️ Sandbox Data Tools"]:
 # ------------------------------------------------------------------------------
 # FOOTER
 # ------------------------------------------------------------------------------
-st.markdown("""
-<div style="text-align: center; margin-top: 2.5rem; padding: 1.4rem; border-top: 1px solid rgba(245, 197, 66, 0.25); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.6); border-radius: 12px;">
-    <strong style="color: #F5C542;">STRIDE™</strong> • Interactive Evaluation Sandbox & Corporate Sponsor Pavilion<br>
-    <span style="font-size: 0.75rem; color: #64748B;">Enterprise Sports Telemetry & Tournament Operations • <a href="/" style="color: #00F2FE; text-decoration: none;">Return to Official CBK Portal</a> • <a href="/EVENTS" style="color: #F5C542; text-decoration: none;">🎟️ STRIDE™ Events & Ticketing</a></span>
+st.markdown(f"""
+<div style="text-align: center; margin-top: 2.5rem; padding: 1.4rem; border-top: 1px solid {th['border']}; color: #94A3B8; font-size: 0.82rem; background: {th['card_bg']}; border-radius: 12px; box-shadow: {th['shadow_glow']};">
+    <strong style="color: {th['primary']};">STRIDE™</strong> • Interactive Evaluation Sandbox & Corporate Sponsor Pavilion<br>
+    <span style="font-size: 0.75rem; color: #64748B;">Enterprise Sports Telemetry & Tournament Operations • <a href="/" style="color: {th['accent']}; text-decoration: none;">Return to Official CBK Portal</a> • <a href="/EVENTS" style="color: {th['primary']}; text-decoration: none;">🎟️ STRIDE™ Events & Ticketing</a></span>
 </div>
 """, unsafe_allow_html=True)
