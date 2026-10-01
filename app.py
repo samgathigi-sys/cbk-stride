@@ -3328,6 +3328,223 @@ if "📋 Captain's Roll Call" in tab_dict:
         render_tab_captains_roll_call()
 
 # ==============================================================================
+# EXECUTIVE REAL-TIME NLP SENTIMENT & MEMBER SATISFACTION DASHBOARD
+# ==============================================================================
+def render_hr_satisfaction_nlp_dashboard():
+    """
+    Renders the executive-grade real-time NLP sentiment intelligence board.
+    Displays Net Promoter Score (NPS), Average CSAT Star Rating,
+    aspect sentiment breakdown, discipline rankings, and live member voice feed.
+    """
+    st.markdown("---")
+    st.markdown("""
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+        <div>
+            <h3 style="margin: 0; color: #FFFFFF; font-size: 1.35rem; font-weight: 900;">
+                🤖 Member Voice & AI Sentiment Intelligence (Facility Pulse)
+            </h3>
+            <p style="margin: 3px 0 0 0; color: #94A3B8; font-size: 0.84rem;">
+                Continuous NLP sentiment monitoring across all 18 CBK sports facilities, gate checkpoints, equipment hygiene, and coaching.
+            </p>
+        </div>
+        <div>
+            <span style="background: rgba(245, 197, 66, 0.15); border: 1px solid #F5C542; color: #F5C542; padding: 4px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 800;">
+                LIVE NLP PIPELINE ACTIVE
+            </span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Filter by discipline if desired
+    c_f1, c_f2 = st.columns([1.5, 1])
+    with c_f1:
+        disc_filter = st.selectbox(
+            "Filter Satisfaction by Sporting Discipline:",
+            ["All Sports"] + ALL_18_SPORTS,
+            index=0,
+            key="sat_dash_disc_filter"
+        )
+    with c_f2:
+        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+        st.caption("Real-time telemetry updated with every 1-click face reaction.")
+
+    metrics = backend.get_facility_feedback_metrics(discipline=disc_filter)
+
+    # 4 Executive KPI Cards
+    k1, k2, k3, k4 = st.columns(4)
+    with k1:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #F5C542;">
+            <div class="kpi-title">Average Satisfaction</div>
+            <div class="kpi-value" style="color: #F5C542;">⭐ {metrics['avg_rating']:.2f} / 5.0</div>
+            <div class="kpi-sub">5-Point Emoji CSAT Scale</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k2:
+        nps_color = "#10B981" if metrics['nps'] >= 50 else ("#F5C542" if metrics['nps'] >= 0 else "#EF4444")
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: {nps_color};">
+            <div class="kpi-title">Net Promoter Score (NPS)</div>
+            <div class="kpi-value" style="color: {nps_color};">+{metrics['nps']} NPS</div>
+            <div class="kpi-sub">% Promoters (4-5★) minus % Detractors</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k3:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #00F2FE;">
+            <div class="kpi-title">Verified Member Pulse</div>
+            <div class="kpi-value" style="color: #00F2FE;">{metrics['total']} Athletes</div>
+            <div class="kpi-sub">1-Click Reactions Recorded</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k4:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #10B981;">
+            <div class="kpi-title">Sentiment Polarity</div>
+            <div class="kpi-value" style="color: #10B981;">{metrics['positive_pct']}% Positive</div>
+            <div class="kpi-sub">{metrics['neutral_pct']}% Neutral • {metrics['negative_pct']}% Detractors</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    c_asp, c_rank = st.columns([1.1, 0.9])
+    with c_asp:
+        with st.container(border=True):
+            st.markdown("#### 🎯 Operational Aspect Mentions")
+            st.caption("Distribution of feedback across sports facility operational pillars:")
+            asp_counts = metrics.get("aspects_count", {})
+            if asp_counts:
+                asp_df = pd.DataFrame(list(asp_counts.items()), columns=["Aspect", "Mentions"]).sort_values(by="Mentions", ascending=True)
+                fig_asp = px.bar(
+                    asp_df,
+                    x="Mentions",
+                    y="Aspect",
+                    orientation="h",
+                    color="Mentions",
+                    color_continuous_scale=[[0, "#082142"], [0.5, "#00F2FE"], [1, "#F5C542"]]
+                )
+                fig_asp.update_layout(
+                    template="plotly_dark",
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    margin=dict(l=10, r=10, t=10, b=10),
+                    height=260,
+                    coloraxis_showscale=False,
+                    font=dict(color="#F1F5F9")
+                )
+                st.plotly_chart(fig_asp, use_container_width=True)
+            else:
+                st.info("Awaiting aspect feedback to plot operational metrics.")
+
+    with c_rank:
+        with st.container(border=True):
+            r_tab1, r_tab2 = st.tabs(["📍 Practice Venues Ranking", "🏆 Sports Disciplines Ranking"])
+            with r_tab1:
+                st.caption("Training facilities ranked by verified athlete rating:")
+                v_rankings = metrics.get("venue_rankings", [])
+                if v_rankings:
+                    for idx, vr in enumerate(v_rankings[:6], start=1):
+                        med = "🥇" if idx == 1 else ("🥈" if idx == 2 else ("🥉" if idx == 3 else f"#{idx}"))
+                        st.markdown(f"""
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                            <div>
+                                <span style="font-size: 0.95rem; margin-right: 6px;">{med}</span>
+                                <strong style="color: #FFFFFF; font-size: 0.85rem;">{vr['venue']}</strong>
+                                <div style="font-size: 0.72rem; color: #94A3B8; margin-left: 1.8rem;">{vr['count']} verified athlete reviews</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: rgba(0, 242, 254, 0.15); border: 1px solid #00F2FE; color: #00F2FE; font-weight: 800; padding: 2px 8px; border-radius: 8px; font-size: 0.82rem;">
+                                    ⭐ {vr['avg_rating']:.2f}
+                                </span>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.info("Venue rankings will populate as athletes submit reviews.")
+
+            with r_tab2:
+                st.caption("Ranked by average member star rating:")
+                rankings = metrics.get("discipline_rankings", [])
+                if rankings:
+                    for idx, rk in enumerate(rankings[:6], start=1):
+                        med = "🥇" if idx == 1 else ("🥈" if idx == 2 else ("🥉" if idx == 3 else f"#{idx}"))
+                        st.markdown(f"""
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                            <div>
+                                <span style="font-size: 0.95rem; margin-right: 6px;">{med}</span>
+                                <strong style="color: #FFFFFF; font-size: 0.88rem;">{rk['discipline']}</strong>
+                                <div style="font-size: 0.72rem; color: #94A3B8; margin-left: 1.8rem;">{rk['count']} verified ratings</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: rgba(245, 197, 66, 0.15); border: 1px solid #F5C542; color: #F5C542; font-weight: 800; padding: 2px 8px; border-radius: 8px; font-size: 0.82rem;">
+                                    ⭐ {rk['avg_rating']:.2f}
+                                </span>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.info("Leaderboard will populate as athletes submit feedback.")
+
+    # Live Member Voice Feed
+    st.markdown("#### 💬 Live Member Voice & NLP Telemetry Feed")
+    st.caption("Real-time sentiment polarity scores, aspect classification, and attendee comments:")
+
+    recent_fb = metrics.get("recent_rows", [])
+    if recent_fb:
+        for fb in recent_fb[:8]:
+            s_label = fb.get("sentiment_label", "POSITIVE")
+            s_score = fb.get("sentiment_score", 0.0)
+            badge_color = "#059669" if s_label == "POSITIVE" else ("#DC2626" if s_label == "NEGATIVE" else "#D97706")
+            emoji_char = fb.get("emoji", "😐")
+            rating_num = fb.get("rating", 3)
+            staff_disp = fb.get("full_name", "Athlete") if is_export_authorized() else mask_name_banking(fb.get("full_name", "Athlete"))
+            venue_disp = fb.get("venue") or "General Facility"
+
+            try:
+                aspects_list = json.loads(fb.get("aspects_json", "[]"))
+            except Exception:
+                aspects_list = []
+
+            aspect_pills = " ".join([f"<span style='background: rgba(0, 242, 254, 0.15); color: #00F2FE; font-size: 0.70rem; padding: 1px 7px; border-radius: 10px; margin-right: 4px;'>{a}</span>" for a in aspects_list])
+
+            st.markdown(f"""
+            <div style="background: rgba(8, 24, 46, 0.75); border: 1px solid rgba(245, 197, 66, 0.25); border-radius: 12px; padding: 12px 16px; margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                    <div>
+                        <span style="font-size: 1.15rem; margin-right: 6px;">{emoji_char}</span>
+                        <strong style="color: #FFFFFF; font-size: 0.90rem;">{staff_disp}</strong>
+                        <span style="font-size: 0.75rem; color: #94A3B8;">({fb.get('staff_id')}) • <span style="color: #F5C542;">{fb.get('discipline')}</span></span>
+                        <span style="background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.35); color: #00F2FE; font-size: 0.70rem; font-weight: 700; padding: 1px 7px; border-radius: 8px; margin-left: 6px;">
+                            📍 {venue_disp}
+                        </span>
+                    </div>
+                    <div>
+                        <span style="background: {badge_color}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.70rem; font-weight: 800;">
+                            {s_label} ({s_score:+.2f})
+                        </span>
+                        <span style="color: #64748B; font-size: 0.72rem; margin-left: 8px;">{fb.get('submitted_at')}</span>
+                    </div>
+                </div>
+                {f'<p style="color: #CBD5E1; font-size: 0.84rem; margin: 6px 0 6px 0; font-style: italic;">"{fb.get("feedback_text")}"</p>' if fb.get("feedback_text") else '<p style="color: #64748B; font-size: 0.78rem; margin: 4px 0 4px 0;"><em>1-Click Emoji Face Rating (No written note added)</em></p>'}
+                <div style="margin-top: 4px;">{aspect_pills}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Forensic CSV Export
+        if is_export_authorized("roster"):
+            fb_df = pd.DataFrame(recent_fb)
+            csv_data = fb_df.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                label="📥 Download Certified Facility Sentiment Audit (.CSV)",
+                data=csv_data,
+                file_name=f"CBK_Facility_Satisfaction_Sentiment_Ledger_{get_eat_today_str()}.csv",
+                mime="text/csv",
+                use_container_width=True,
+                key="btn_dl_facility_feedback_csv"
+            )
+    else:
+        st.info("No feedback records match the current filter.")
+
+# ==============================================================================
 # TAB 3: SECRETARIAT OPERATIONAL VIEW
 # ==============================================================================
 def render_tab_secretariat():
@@ -3857,223 +4074,6 @@ def render_tab_hr():
 
     # Executive AI Sentiment & Member Satisfaction Intelligence Hub
     render_hr_satisfaction_nlp_dashboard()
-
-# ==============================================================================
-# EXECUTIVE REAL-TIME NLP SENTIMENT & MEMBER SATISFACTION DASHBOARD
-# ==============================================================================
-def render_hr_satisfaction_nlp_dashboard():
-    """
-    Renders the executive-grade real-time NLP sentiment intelligence board.
-    Displays Net Promoter Score (NPS), Average CSAT Star Rating,
-    aspect sentiment breakdown, discipline rankings, and live member voice feed.
-    """
-    st.markdown("---")
-    st.markdown("""
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
-        <div>
-            <h3 style="margin: 0; color: #FFFFFF; font-size: 1.35rem; font-weight: 900;">
-                🤖 Member Voice & AI Sentiment Intelligence (Facility Pulse)
-            </h3>
-            <p style="margin: 3px 0 0 0; color: #94A3B8; font-size: 0.84rem;">
-                Continuous NLP sentiment monitoring across all 18 CBK sports facilities, gate checkpoints, equipment hygiene, and coaching.
-            </p>
-        </div>
-        <div>
-            <span style="background: rgba(245, 197, 66, 0.15); border: 1px solid #F5C542; color: #F5C542; padding: 4px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 800;">
-                LIVE NLP PIPELINE ACTIVE
-            </span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Filter by discipline if desired
-    c_f1, c_f2 = st.columns([1.5, 1])
-    with c_f1:
-        disc_filter = st.selectbox(
-            "Filter Satisfaction by Sporting Discipline:",
-            ["All Sports"] + ALL_18_SPORTS,
-            index=0,
-            key="sat_dash_disc_filter"
-        )
-    with c_f2:
-        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
-        st.caption("Real-time telemetry updated with every 1-click face reaction.")
-
-    metrics = backend.get_facility_feedback_metrics(discipline=disc_filter)
-
-    # 4 Executive KPI Cards
-    k1, k2, k3, k4 = st.columns(4)
-    with k1:
-        st.markdown(f"""
-        <div class="kpi-card" style="border-left-color: #F5C542;">
-            <div class="kpi-title">Average Satisfaction</div>
-            <div class="kpi-value" style="color: #F5C542;">⭐ {metrics['avg_rating']:.2f} / 5.0</div>
-            <div class="kpi-sub">5-Point Emoji CSAT Scale</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with k2:
-        nps_color = "#10B981" if metrics['nps'] >= 50 else ("#F5C542" if metrics['nps'] >= 0 else "#EF4444")
-        st.markdown(f"""
-        <div class="kpi-card" style="border-left-color: {nps_color};">
-            <div class="kpi-title">Net Promoter Score (NPS)</div>
-            <div class="kpi-value" style="color: {nps_color};">+{metrics['nps']} NPS</div>
-            <div class="kpi-sub">% Promoters (4-5★) minus % Detractors</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with k3:
-        st.markdown(f"""
-        <div class="kpi-card" style="border-left-color: #00F2FE;">
-            <div class="kpi-title">Verified Member Pulse</div>
-            <div class="kpi-value" style="color: #00F2FE;">{metrics['total']} Athletes</div>
-            <div class="kpi-sub">1-Click Reactions Recorded</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with k4:
-        st.markdown(f"""
-        <div class="kpi-card" style="border-left-color: #10B981;">
-            <div class="kpi-title">Sentiment Polarity</div>
-            <div class="kpi-value" style="color: #10B981;">{metrics['positive_pct']}% Positive</div>
-            <div class="kpi-sub">{metrics['neutral_pct']}% Neutral • {metrics['negative_pct']}% Detractors</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    c_asp, c_rank = st.columns([1.1, 0.9])
-    with c_asp:
-        with st.container(border=True):
-            st.markdown("#### 🎯 Operational Aspect Mentions")
-            st.caption("Distribution of feedback across sports facility operational pillars:")
-            asp_counts = metrics.get("aspects_count", {})
-            if asp_counts:
-                asp_df = pd.DataFrame(list(asp_counts.items()), columns=["Aspect", "Mentions"]).sort_values(by="Mentions", ascending=True)
-                fig_asp = px.bar(
-                    asp_df,
-                    x="Mentions",
-                    y="Aspect",
-                    orientation="h",
-                    color="Mentions",
-                    color_continuous_scale=[[0, "#082142"], [0.5, "#00F2FE"], [1, "#F5C542"]]
-                )
-                fig_asp.update_layout(
-                    template="plotly_dark",
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    margin=dict(l=10, r=10, t=10, b=10),
-                    height=260,
-                    coloraxis_showscale=False,
-                    font=dict(color="#F1F5F9")
-                )
-                st.plotly_chart(fig_asp, use_container_width=True)
-            else:
-                st.info("Awaiting aspect feedback to plot operational metrics.")
-
-    with c_rank:
-        with st.container(border=True):
-            r_tab1, r_tab2 = st.tabs(["📍 Practice Venues Ranking", "🏆 Sports Disciplines Ranking"])
-            with r_tab1:
-                st.caption("Training facilities ranked by verified athlete rating:")
-                v_rankings = metrics.get("venue_rankings", [])
-                if v_rankings:
-                    for idx, vr in enumerate(v_rankings[:6], start=1):
-                        med = "🥇" if idx == 1 else ("🥈" if idx == 2 else ("🥉" if idx == 3 else f"#{idx}"))
-                        st.markdown(f"""
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                            <div>
-                                <span style="font-size: 0.95rem; margin-right: 6px;">{med}</span>
-                                <strong style="color: #FFFFFF; font-size: 0.85rem;">{vr['venue']}</strong>
-                                <div style="font-size: 0.72rem; color: #94A3B8; margin-left: 1.8rem;">{vr['count']} verified athlete reviews</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <span style="background: rgba(0, 242, 254, 0.15); border: 1px solid #00F2FE; color: #00F2FE; font-weight: 800; padding: 2px 8px; border-radius: 8px; font-size: 0.82rem;">
-                                    ⭐ {vr['avg_rating']:.2f}
-                                </span>
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
-                else:
-                    st.info("Venue rankings will populate as athletes submit reviews.")
-
-            with r_tab2:
-                st.caption("Ranked by average member star rating:")
-                rankings = metrics.get("discipline_rankings", [])
-                if rankings:
-                    for idx, rk in enumerate(rankings[:6], start=1):
-                        med = "🥇" if idx == 1 else ("🥈" if idx == 2 else ("🥉" if idx == 3 else f"#{idx}"))
-                        st.markdown(f"""
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                            <div>
-                                <span style="font-size: 0.95rem; margin-right: 6px;">{med}</span>
-                                <strong style="color: #FFFFFF; font-size: 0.88rem;">{rk['discipline']}</strong>
-                                <div style="font-size: 0.72rem; color: #94A3B8; margin-left: 1.8rem;">{rk['count']} verified ratings</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <span style="background: rgba(245, 197, 66, 0.15); border: 1px solid #F5C542; color: #F5C542; font-weight: 800; padding: 2px 8px; border-radius: 8px; font-size: 0.82rem;">
-                                    ⭐ {rk['avg_rating']:.2f}
-                                </span>
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
-                else:
-                    st.info("Leaderboard will populate as athletes submit feedback.")
-
-    # Live Member Voice Feed
-    st.markdown("#### 💬 Live Member Voice & NLP Telemetry Feed")
-    st.caption("Real-time sentiment polarity scores, aspect classification, and attendee comments:")
-
-    recent_fb = metrics.get("recent_rows", [])
-    if recent_fb:
-        for fb in recent_fb[:8]:
-            s_label = fb.get("sentiment_label", "POSITIVE")
-            s_score = fb.get("sentiment_score", 0.0)
-            badge_color = "#059669" if s_label == "POSITIVE" else ("#DC2626" if s_label == "NEGATIVE" else "#D97706")
-            emoji_char = fb.get("emoji", "😐")
-            rating_num = fb.get("rating", 3)
-            staff_disp = fb.get("full_name", "Athlete") if is_export_authorized() else mask_name_banking(fb.get("full_name", "Athlete"))
-            venue_disp = fb.get("venue") or "General Facility"
-
-            try:
-                aspects_list = json.loads(fb.get("aspects_json", "[]"))
-            except Exception:
-                aspects_list = []
-
-            aspect_pills = " ".join([f"<span style='background: rgba(0, 242, 254, 0.15); color: #00F2FE; font-size: 0.70rem; padding: 1px 7px; border-radius: 10px; margin-right: 4px;'>{a}</span>" for a in aspects_list])
-
-            st.markdown(f"""
-            <div style="background: rgba(8, 24, 46, 0.75); border: 1px solid rgba(245, 197, 66, 0.25); border-radius: 12px; padding: 12px 16px; margin-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
-                    <div>
-                        <span style="font-size: 1.15rem; margin-right: 6px;">{emoji_char}</span>
-                        <strong style="color: #FFFFFF; font-size: 0.90rem;">{staff_disp}</strong>
-                        <span style="font-size: 0.75rem; color: #94A3B8;">({fb.get('staff_id')}) • <span style="color: #F5C542;">{fb.get('discipline')}</span></span>
-                        <span style="background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.35); color: #00F2FE; font-size: 0.70rem; font-weight: 700; padding: 1px 7px; border-radius: 8px; margin-left: 6px;">
-                            📍 {venue_disp}
-                        </span>
-                    </div>
-                    <div>
-                        <span style="background: {badge_color}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.70rem; font-weight: 800;">
-                            {s_label} ({s_score:+.2f})
-                        </span>
-                        <span style="color: #64748B; font-size: 0.72rem; margin-left: 8px;">{fb.get('submitted_at')}</span>
-                    </div>
-                </div>
-                {f'<p style="color: #CBD5E1; font-size: 0.84rem; margin: 6px 0 6px 0; font-style: italic;">"{fb.get("feedback_text")}"</p>' if fb.get("feedback_text") else '<p style="color: #64748B; font-size: 0.78rem; margin: 4px 0 4px 0;"><em>1-Click Emoji Face Rating (No written note added)</em></p>'}
-                <div style="margin-top: 4px;">{aspect_pills}</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Forensic CSV Export
-        if is_export_authorized("roster"):
-            fb_df = pd.DataFrame(recent_fb)
-            csv_data = fb_df.to_csv(index=False).encode("utf-8")
-            st.download_button(
-                label="📥 Download Certified Facility Sentiment Audit (.CSV)",
-                data=csv_data,
-                file_name=f"CBK_Facility_Satisfaction_Sentiment_Ledger_{get_eat_today_str()}.csv",
-                mime="text/csv",
-                use_container_width=True,
-                key="btn_dl_facility_feedback_csv"
-            )
-    else:
-        st.info("No feedback records match the current filter.")
 
 if "📊 HR Analytics Command" in tab_dict:
     with tab_dict["📊 HR Analytics Command"]:
