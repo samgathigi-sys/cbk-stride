@@ -606,7 +606,8 @@ required_backend_methods = [
     "log_checkin", "upsert_staff", "get_pending_sync_count", "sync_pending_to_gsheets",
     "authenticate_officer", "grant_rights", "revoke_rights",
     "get_all_authorized_officers", "log_audit_event", "get_audit_trail",
-    "submit_facility_feedback", "get_facility_feedback_metrics"
+    "submit_facility_feedback", "get_facility_feedback_metrics",
+    "log_interaction", "get_search_telemetry_summary"
 ]
 needs_backend_reinit = (
     "backend" not in st.session_state 
@@ -1054,125 +1055,151 @@ if cur_officer:
 # CAPTAIN'S TACTICAL FIXTURES, DRILLS & CALENDAR DIARY
 # ==============================================================================
 def render_captain_calendar_section(discipline: str, is_authorized: bool, key_prefix: str = "cal"):
-    st.markdown("---")
-    st.markdown(f"#### 📅 Captain's Tactical Calendar & Squad Diary ({discipline})")
-    st.caption("Plan upcoming tournament fixtures, friendly matches, conditioning drills, and jot down tactical notes:")
-
     events = backend.get_calendar_notes(discipline)
+    expander_title = f"📅 View Upcoming Fixtures & Squad Diary ({discipline}) — {len(events)} Scheduled"
+    # Auto-expand for authorized captains who have events; keep collapsed for public visitors to save mobile screen space
+    should_expand = bool(is_authorized and len(events) > 0)
+    
+    with st.expander(expander_title, expanded=should_expand):
+        st.markdown(f"#### 📅 Captain's Tactical Calendar & Squad Diary ({discipline})")
+        st.caption("Upcoming tournament fixtures, friendly matches, and conditioning drills:")
 
-    col_c1, col_c2 = st.columns([1.6, 1.1])
+        col_c1, col_c2 = st.columns([1.6, 1.1])
 
-    with col_c1:
-        st.markdown(f"##### 📋 Scheduled Fixtures & Squad Diary ({len(events)} Events)")
-        if not events:
-            st.info(f"No scheduled fixtures or tactical notes recorded for {discipline} yet. Add one on the right!")
-        else:
-            for ev in events:
-                ev_type = ev.get("event_type", "Conditioning Drill")
-                if "Tournament" in ev_type:
-                    badge_color = "#F5C542"
-                    badge_bg = "rgba(245, 197, 66, 0.2)"
-                    badge_icon = "🏆"
-                elif "Friendly" in ev_type:
-                    badge_color = "#00F2FE"
-                    badge_bg = "rgba(0, 242, 254, 0.2)"
-                    badge_icon = "⚽"
-                elif "Briefing" in ev_type or "Tactical" in ev_type:
-                    badge_color = "#A78BFA"
-                    badge_bg = "rgba(167, 139, 250, 0.2)"
-                    badge_icon = "📋"
-                elif "Medical" in ev_type or "Rest" in ev_type:
-                    badge_color = "#F87171"
-                    badge_bg = "rgba(248, 113, 113, 0.2)"
-                    badge_icon = "🩹"
+        with col_c1:
+            st.markdown(f"##### 📋 Scheduled Fixtures & Squad Diary ({len(events)} Events)")
+            if not events:
+                if is_authorized:
+                    st.info(f"No scheduled fixtures or tactical notes recorded for {discipline} yet. Add one on the right!")
                 else:
-                    badge_color = "#34D399"
-                    badge_bg = "rgba(52, 211, 153, 0.2)"
-                    badge_icon = "🏋️"
+                    st.info(f"No upcoming fixtures or events scheduled for {discipline} at this time. Check back soon!")
+            else:
+                for ev in events:
+                    ev_type = ev.get("event_type", "Conditioning Drill")
+                    if "Tournament" in ev_type:
+                        badge_color = "#F5C542"
+                        badge_bg = "rgba(245, 197, 66, 0.2)"
+                        badge_icon = "🏆"
+                    elif "Friendly" in ev_type:
+                        badge_color = "#00F2FE"
+                        badge_bg = "rgba(0, 242, 254, 0.2)"
+                        badge_icon = "⚽"
+                    elif "Briefing" in ev_type or "Tactical" in ev_type:
+                        badge_color = "#A78BFA"
+                        badge_bg = "rgba(167, 139, 250, 0.2)"
+                        badge_icon = "📋"
+                    elif "Medical" in ev_type or "Rest" in ev_type:
+                        badge_color = "#F87171"
+                        badge_bg = "rgba(248, 113, 113, 0.2)"
+                        badge_icon = "🩹"
+                    else:
+                        badge_color = "#34D399"
+                        badge_bg = "rgba(52, 211, 153, 0.2)"
+                        badge_icon = "🏋️"
 
-                venue_txt = f"📍 {ev.get('venue')}" if ev.get('venue') else ""
+                    venue_txt = f"📍 {ev.get('venue')}" if ev.get('venue') else ""
 
-                st.markdown(f"""
-                <div style="background: rgba(8, 24, 48, 0.75); border: 1px solid rgba(245, 197, 66, 0.25); border-left: 4.5px solid {badge_color}; border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
-                        <div>
-                            <span style="background: {badge_bg}; color: {badge_color}; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">
-                                {badge_icon} {ev_type}
-                            </span>
-                            <h4 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.05rem; font-weight: 800;">{ev.get('title')}</h4>
-                            <p style="margin: 0; font-size: 0.8rem; color: #CBD5E1;">
-                                🗓️ <strong>{ev.get('event_date')}</strong> at <strong>{ev.get('event_time')}</strong> • {venue_txt}
-                            </p>
+                    if is_authorized:
+                        notes_html = f"📝 <em>{ev.get('notes') or 'No additional tactical notes.'}</em>"
+                    else:
+                        notes_html = "🔒 <em style='color: #64748B;'>Tactical notes reserved for squad members & team captains.</em>"
+
+                    st.markdown(f"""
+                    <div style="background: rgba(8, 24, 48, 0.75); border: 1px solid rgba(245, 197, 66, 0.25); border-left: 4.5px solid {badge_color}; border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                            <div>
+                                <span style="background: {badge_bg}; color: {badge_color}; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">
+                                    {badge_icon} {ev_type}
+                                </span>
+                                <h4 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.05rem; font-weight: 800;">{ev.get('title')}</h4>
+                                <p style="margin: 0; font-size: 0.8rem; color: #CBD5E1;">
+                                    🗓️ <strong>{ev.get('event_date')}</strong> at <strong>{ev.get('event_time')}</strong> • {venue_txt}
+                                </p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.86rem; color: #94A3B8;">
+                            {notes_html}
                         </div>
                     </div>
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.86rem; color: #94A3B8;">
-                        📝 <em>{ev.get('notes') or 'No additional tactical notes.'}</em>
+                    """, unsafe_allow_html=True)
+
+                    if is_authorized:
+                        if st.button("🗑️ Remove Fixture", key=f"del_ev_{key_prefix}_{ev['id']}", help="Delete this scheduled event"):
+                            backend.delete_calendar_note(ev['id'])
+                            st.toast("✅ Event removed from squad calendar.", icon="🗑️")
+                            st.rerun()
+
+        with col_c2:
+            if not is_authorized:
+                st.markdown(f"""
+                <div style="background: rgba(14, 165, 233, 0.08); border: 1px dashed rgba(14, 165, 233, 0.35); border-radius: 12px; padding: 16px; margin-top: 6px;">
+                    <h5 style="color: #38BDF8; margin: 0 0 8px 0; font-size: 0.95rem; font-weight: 800;">
+                        📢 {discipline} Squad Noticeboard
+                    </h5>
+                    <p style="font-size: 0.83rem; color: #CBD5E1; margin: 0 0 10px 0; line-height: 1.45;">
+                        Welcome to the official <strong>{discipline}</strong> fixtures & diary portal. Check-in during practice hours to record your certified attendance.
+                    </p>
+                    <div style="background: rgba(245, 197, 66, 0.1); border-left: 3px solid #F5C542; padding: 8px 12px; border-radius: 6px; font-size: 0.78rem; color: #FDE68A; margin-bottom: 10px;">
+                        💡 <strong>Captain Access:</strong> Authenticate in the Captain's portal with your Staff ID & PIN to add new fixtures, schedule friendlies, or update tactical instructions.
                     </div>
+                    <p style="font-size: 0.76rem; color: #94A3B8; margin: 0;">
+                        📍 Official Practice Venue: <strong>{CBK_DISCIPLINES.get(discipline, {}).get('default_venue', 'Main Complex')}</strong>
+                    </p>
                 </div>
                 """, unsafe_allow_html=True)
+            else:
+                st.markdown("##### ➕ Schedule Fixture or Jot Note")
+                with st.form(key=f"form_add_cal_{key_prefix}_{discipline}"):
+                    f_date = st.date_input("Event Date:", key=f"cal_d_{key_prefix}")
+                    f_time = st.text_input("Kick-off / Start Time:", value="17:00", key=f"cal_t_{key_prefix}")
+                    f_type = st.selectbox(
+                        "Event Category:",
+                        [
+                            "🏆 Tournament Fixture",
+                            "⚽ Friendly Match",
+                            "🏋️ Conditioning / Fitness Drill",
+                            "📋 Tactical Briefing",
+                            "🩹 Medical / Squad Rest Day"
+                        ],
+                        key=f"cal_type_{key_prefix}"
+                    )
+                    f_title = st.text_input("Event Title / Opponent:*", placeholder="e.g. Friendly Match vs KCB Lions", key=f"cal_title_{key_prefix}")
+                    f_venue = st.text_input("Venue / Station:", value=CBK_DISCIPLINES.get(discipline, {}).get("default_venue", "Main Stadium"), key=f"cal_ven_{key_prefix}")
+                    f_notes = st.text_area("Tactical Notes & Instructions:", placeholder="e.g. Full navy kit required, arrive 30 mins early for warm-ups. Sub in Peter for injured John.", key=f"cal_notes_{key_prefix}")
 
-                if is_authorized:
-                    if st.button("🗑️ Remove Fixture", key=f"del_ev_{key_prefix}_{ev['id']}", help="Delete this scheduled event"):
-                        backend.delete_calendar_note(ev['id'])
-                        st.toast("✅ Event removed from squad calendar.", icon="🗑️")
-                        st.rerun()
-
-    with col_c2:
-        st.markdown("##### ➕ Schedule Fixture or Jot Note")
-        if not is_authorized:
-            st.caption("🔒 Please authenticate as Captain or Secretariat to schedule fixtures and save tactical notes.")
-        else:
-            with st.form(key=f"form_add_cal_{key_prefix}_{discipline}"):
-                f_date = st.date_input("Event Date:", key=f"cal_d_{key_prefix}")
-                f_time = st.text_input("Kick-off / Start Time:", value="17:00", key=f"cal_t_{key_prefix}")
-                f_type = st.selectbox(
-                    "Event Category:",
-                    [
-                        "🏆 Tournament Fixture",
-                        "⚽ Friendly Match",
-                        "🏋️ Conditioning / Fitness Drill",
-                        "📋 Tactical Briefing",
-                        "🩹 Medical / Squad Rest Day"
-                    ],
-                    key=f"cal_type_{key_prefix}"
-                )
-                f_title = st.text_input("Event Title / Opponent:*", placeholder="e.g. Friendly Match vs KCB Lions", key=f"cal_title_{key_prefix}")
-                f_venue = st.text_input("Venue / Station:", value=CBK_DISCIPLINES.get(discipline, {}).get("default_venue", "Main Stadium"), key=f"cal_ven_{key_prefix}")
-                f_notes = st.text_area("Tactical Notes & Instructions:", placeholder="e.g. Full navy kit required, arrive 30 mins early for warm-ups. Sub in Peter for injured John.", key=f"cal_notes_{key_prefix}")
-
-                btn_save_cal = st.form_submit_button("💾 Save to Squad Calendar & Diary", use_container_width=True)
-                if btn_save_cal:
-                    if not f_title.strip():
-                        st.error("Please provide an Event Title or Opponent.")
-                    else:
-                        d_str = f_date.strftime("%Y-%m-%d")
-                        cur_cap = st.session_state.get("authenticated_captain", None)
-                        cur_off = get_current_officer()
-                        if cur_cap and cur_cap.get("staff_id"):
-                            created_by_tag = f"Captain ({cur_cap['staff_id']})"
-                        elif cur_off and cur_off.get("staff_id"):
-                            created_by_tag = f"Secretariat ({cur_off['staff_id']})"
+                    btn_save_cal = st.form_submit_button("💾 Save to Squad Calendar & Diary", use_container_width=True)
+                    if btn_save_cal:
+                        if not f_title.strip():
+                            st.error("Please provide an Event Title or Opponent.")
                         else:
-                            cap_rec = backend.get_captain_for_discipline(discipline)
-                            if cap_rec and cap_rec.get("staff_id"):
-                                created_by_tag = f"Captain ({cap_rec['staff_id']})"
+                            d_str = f_date.strftime("%Y-%m-%d")
+                            cur_cap = st.session_state.get("authenticated_captain", None)
+                            cur_off = get_current_officer()
+                            if cur_cap and cur_cap.get("staff_id"):
+                                created_by_tag = f"Captain ({cur_cap['staff_id']})"
+                            elif cur_off and cur_off.get("staff_id"):
+                                created_by_tag = f"Secretariat ({cur_off['staff_id']})"
                             else:
-                                created_by_tag = f"Captain ({discipline})"
-                        ok = backend.add_calendar_note(
-                            discipline=discipline,
-                            event_date=d_str,
-                            event_time=f_time.strip(),
-                            event_type=f_type,
-                            title=f_title.strip(),
-                            notes=f_notes.strip(),
-                            venue=f_venue.strip(),
-                            created_by=created_by_tag
-                        )
-                        if ok:
-                            st.toast(f"✅ Added '{f_title}' to {discipline} tactical calendar!", icon="📅")
-                            st.rerun()
-                        else:
-                            st.error("Failed to save calendar event. Please retry.")
+                                cap_rec = backend.get_captain_for_discipline(discipline)
+                                if cap_rec and cap_rec.get("staff_id"):
+                                    created_by_tag = f"Captain ({cap_rec['staff_id']})"
+                                else:
+                                    created_by_tag = f"Captain ({discipline})"
+                            ok = backend.add_calendar_note(
+                                discipline=discipline,
+                                event_date=d_str,
+                                event_time=f_time.strip(),
+                                event_type=f_type,
+                                title=f_title.strip(),
+                                notes=f_notes.strip(),
+                                venue=f_venue.strip(),
+                                created_by=created_by_tag
+                            )
+                            if ok:
+                                st.toast(f"✅ Added '{f_title}' to {discipline} tactical calendar!", icon="📅")
+                                st.rerun()
+                            else:
+                                st.error("Failed to save calendar event. Please retry.")
 
 # ==============================================================================
 # PAINLESS 1-CLICK SATISFACTION REACTION WIDGET (AI POWERED NLP & VENUES)
@@ -1441,6 +1468,16 @@ def render_painless_satisfaction_widget(
             st.session_state[venue_key] = chosen_v
             if "Golf" in chosen_v:
                 st.session_state[chose_golf_key] = True
+            try:
+                backend.log_interaction(
+                    interaction_type="VENUE_SWITCH",
+                    query_term=chosen_v,
+                    discipline=discipline,
+                    results_count=1,
+                    user_role="PUBLIC_ATHLETE" if not is_captain_mode else "CAPTAIN"
+                )
+            except Exception:
+                pass
 
         ch_cols = st.columns(len(chip_list))
         for idx, (ch_col, (chip_lbl, opt_venue)) in enumerate(zip(ch_cols, chip_list)):
@@ -1912,6 +1949,22 @@ with tab_dict["📱 Mobile Check-In"]:
             raw_q = search_input_val.strip()
             # Perform multi-attribute search across staff registry
             search_results = search_staff_registry(raw_q, limit=6)
+            
+            # Telemetry: Log search query safely (deduplicate consecutive identical queries)
+            last_logged_telemetry_q = st.session_state.get("_last_logged_telemetry_q", "")
+            if raw_q != last_logged_telemetry_q:
+                st.session_state["_last_logged_telemetry_q"] = raw_q
+                u_role = "OFFICER" if cur_officer else ("CAPTAIN" if st.session_state.get("authenticated_captain") else "PUBLIC_ATHLETE")
+                try:
+                    backend.log_interaction(
+                        interaction_type="SEARCH",
+                        query_term=raw_q,
+                        discipline=active_sport,
+                        results_count=len(search_results),
+                        user_role=u_role
+                    )
+                except Exception:
+                    pass
             
             if search_results:
                 # If exact single match or exact staff_id match
@@ -3567,6 +3620,87 @@ def render_tab_secretariat():
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     use_container_width=True
                 )
+
+    st.markdown("---")
+    st.markdown("#### 🔍 Live Portal Interaction & Search Telemetry Radar")
+    st.caption("Real-time behavioral telemetry: monitor trending search queries, facility selections, and audience engagement across the portal.")
+
+    telemetry_summary = backend.get_search_telemetry_summary()
+    recent_interactions = backend.get_interaction_telemetry(limit=25)
+
+    tot_interactions = telemetry_summary.get("total_interactions", 0)
+    top_queries = telemetry_summary.get("top_queries", [])
+    top_sports = telemetry_summary.get("top_sports", [])
+    top_query_text = top_queries[0]["query"] if top_queries else "—"
+    top_sport_text = top_sports[0]["discipline"] if top_sports else "—"
+
+    tm1, tm2, tm3, tm4 = st.columns(4)
+    with tm1:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #00F2FE;">
+            <div class="kpi-title">Total Interactions Logged</div>
+            <div class="kpi-value" style="color: #00F2FE;">{tot_interactions}</div>
+            <div class="kpi-sub">Searches & Facility Switches</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with tm2:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #F5C542;">
+            <div class="kpi-title">#1 Trending Search</div>
+            <div class="kpi-value" style="color: #F5C542; font-size: 1.15rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{top_query_text}</div>
+            <div class="kpi-sub">{top_queries[0]['count'] if top_queries else 0} Queries Logged</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with tm3:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #10B981;">
+            <div class="kpi-title">Most Explored Sport</div>
+            <div class="kpi-value" style="color: #10B981; font-size: 1.15rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{top_sport_text}</div>
+            <div class="kpi-sub">{top_sports[0]['count'] if top_sports else 0} Interactions</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with tm4:
+        st.markdown(f"""
+        <div class="kpi-card" style="border-left-color: #A78BFA;">
+            <div class="kpi-title">Distinct Search Terms</div>
+            <div class="kpi-value" style="color: #A78BFA;">{len(top_queries)}</div>
+            <div class="kpi-sub">Unique Keywords Tested</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    c_tel1, c_tel2 = st.columns([1.1, 1.4])
+    with c_tel1:
+        st.markdown("##### 📈 Top Search Keywords & Athlete Inquiries")
+        if top_queries:
+            df_top_q = pd.DataFrame(top_queries)
+            df_top_q.columns = ["Search Query / Keyword", "Times Searched"]
+            st.dataframe(df_top_q, use_container_width=True, hide_index=True)
+        else:
+            st.info("No search queries logged yet. Live queries will appear automatically as visitors search in Tab 1.")
+
+        if top_sports:
+            st.markdown("##### 🏆 Interaction Volume by Sport")
+            df_top_s = pd.DataFrame(top_sports)
+            df_top_s.columns = ["Sport / Discipline", "Interactions"]
+            st.dataframe(df_top_s, use_container_width=True, hide_index=True)
+
+    with c_tel2:
+        st.markdown("##### 📡 Live Interaction & Search Audit Stream")
+        if recent_interactions:
+            df_recent_tel = pd.DataFrame(recent_interactions)
+            cols_map = {
+                "timestamp": "Timestamp",
+                "interaction_type": "Event Type",
+                "query_term": "Query / Target",
+                "discipline": "Sport",
+                "user_role": "Audience",
+                "results_count": "Matches"
+            }
+            avail_cols = [c for c in cols_map.keys() if c in df_recent_tel.columns]
+            df_display = df_recent_tel[avail_cols].rename(columns=cols_map)
+            st.dataframe(df_display, use_container_width=True, hide_index=True)
+        else:
+            st.info("Interaction stream is ready. Live user searches and venue toggles will appear here in real-time.")
 
     with st.expander("🤖 Member Voice & Facility Sentiment Live Telemetry", expanded=False):
         render_hr_satisfaction_nlp_dashboard()

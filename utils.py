@@ -744,6 +744,20 @@ class AttendanceBackend:
             )
         """)
 
+        # Create Interaction & Search Telemetry Radar Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS interaction_telemetry_registry (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id TEXT DEFAULT '',
+                interaction_type TEXT NOT NULL,
+                query_term TEXT NOT NULL,
+                discipline TEXT DEFAULT '',
+                results_count INTEGER DEFAULT 0,
+                user_role TEXT DEFAULT 'PUBLIC_ATHLETE',
+                timestamp TEXT NOT NULL
+            )
+        """)
+
         try:
             cur.execute("ALTER TABLE facility_feedback_registry ADD COLUMN venue TEXT DEFAULT ''")
         except Exception:
@@ -3277,6 +3291,74 @@ class AttendanceBackend:
             "venue_rankings": venue_rankings,
             "recent_rows": rows[:50]
         }
+
+    def log_interaction(
+        self,
+        interaction_type: str,
+        query_term: str,
+        discipline: str = "",
+        results_count: int = 0,
+        user_role: str = "PUBLIC_ATHLETE",
+        session_id: str = ""
+    ) -> bool:
+        """Logs user interactions such as search queries, venue switches, or pass views into telemetry radar."""
+        term_clean = str(query_term or "").strip()
+        if not term_clean:
+            return False
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            now_eat = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+            cur.execute("""
+                INSERT INTO interaction_telemetry_registry (
+                    session_id, interaction_type, query_term, discipline, results_count, user_role, timestamp
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (session_id, interaction_type, term_clean, discipline, results_count, user_role, now_eat))
+            conn.commit()
+            conn.close()
+            return True
+        except Exception:
+            return False
+
+    def get_interaction_telemetry(self, limit: int = 250) -> List[Dict[str, Any]]:
+        """Retrieves raw interaction and search telemetry logs."""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM interaction_telemetry_registry ORDER BY id DESC LIMIT ?", (limit,))
+            rows = [dict(r) for r in cur.fetchall()]
+            conn.close()
+            return rows
+        except Exception:
+            return []
+
+    def get_search_telemetry_summary(self) -> Dict[str, Any]:
+        """Aggregates telemetry insights: total queries, top search keywords, search volume by discipline and role."""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            cur.execute("SELECT COUNT(*) FROM interaction_telemetry_registry")
+            total = cur.fetchone()[0]
+
+            cur.execute("SELECT query_term, COUNT(*) as c FROM interaction_telemetry_registry WHERE interaction_type = 'SEARCH' GROUP BY LOWER(query_term) ORDER BY c DESC LIMIT 10")
+            top_queries = [{"query": r[0], "count": r[1]} for r in cur.fetchall()]
+
+            cur.execute("SELECT discipline, COUNT(*) as c FROM interaction_telemetry_registry WHERE discipline != '' GROUP BY discipline ORDER BY c DESC LIMIT 8")
+            top_sports = [{"discipline": r[0], "count": r[1]} for r in cur.fetchall()]
+
+            cur.execute("SELECT user_role, COUNT(*) as c FROM interaction_telemetry_registry GROUP BY user_role")
+            role_breakdown = [{"role": r[0], "count": r[1]} for r in cur.fetchall()]
+
+            conn.close()
+            return {
+                "total_interactions": total,
+                "top_queries": top_queries,
+                "top_sports": top_sports,
+                "role_breakdown": role_breakdown
+            }
+        except Exception:
+            return {"total_interactions": 0, "top_queries": [], "top_sports": [], "role_breakdown": []}
 
 
 
