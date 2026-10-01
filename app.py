@@ -1744,13 +1744,13 @@ with tab_dict["📱 Mobile Check-In"]:
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
                         <span style="background: #F8B82D; color: #082142; font-weight: 800; font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">
-                            🏅 IDENTITY CONFIRMED VIA CBK EMAIL
+                            🏅 IDENTITY CONFIRMED VIA INSTITUTIONAL EMAIL
                         </span>
                         <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.35rem;">
                             Welcome back, {matched_user['full_name'] if cur_officer else mask_name_banking(matched_user['full_name'])} ({matched_user['staff_id']})!
                         </h3>
                         <p style="margin: 0; font-size: 0.85rem; color: #DCFCE7;">
-                            ✉️ Authenticated via <strong>{matched_user['cbk_email'] if cur_officer else mask_email(matched_user['cbk_email'])}</strong> • 🏛️ {matched_user['department']} • 🏅 {matched_user.get('primary_sport', 'Sports & Wellness')}
+                            ✉️ Authenticated via <strong>{mask_email(matched_user['cbk_email'])}</strong> • 🏛️ {matched_user['department']} • 🏅 {matched_user.get('primary_sport', 'Sports & Wellness')}
                         </p>
                     </div>
                     <div style="font-size: 2.2rem;">🏅</div>
@@ -2075,7 +2075,7 @@ with tab_dict["📱 Mobile Check-In"]:
                 f'<div class="athlete-card">'
                 f'<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">'
                 f'<div style="display: flex; align-items: center; gap: 8px;">'
-                f'<span style="background: linear-gradient(135deg, #FFE899 0%, #F5C542 50%, #D4AF37 100%); color: #040D1A; font-weight: 900; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.8px;">CBK ATHLETE</span>'
+                f'<span style="background: linear-gradient(135deg, #FFE899 0%, #F5C542 50%, #D4AF37 100%); color: #040D1A; font-weight: 900; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.8px;">VERIFIED ATHLETE</span>'
                 f'<span style="color: #00F2FE; font-size: 0.84rem; font-weight: 800; font-family: monospace;">{profile["staff_id"]}</span>'
                 f'</div>'
                 f'<div style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #34D399; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; display: inline-flex; align-items: center; gap: 5px;">'
@@ -2083,7 +2083,7 @@ with tab_dict["📱 Mobile Check-In"]:
                 f'</div>'
                 f'</div>'
                 f'<div style="font-size: 1.65rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.3px; margin-bottom: 3px; text-shadow: 0 0 12px rgba(0,242,254,0.25);">{disp_card_name}</div>'
-                f'<div style="color: #94A3B8; font-size: 0.85rem; margin-bottom: 14px; font-weight: 500;">🏛️ {profile["department"]} • ✉️ <span style="color: #CBD5E1;">{profile["cbk_email"] if cur_officer else mask_email(profile.get("cbk_email"))}</span>'
+                f'<div style="color: #94A3B8; font-size: 0.85rem; margin-bottom: 14px; font-weight: 500;">🏛️ {profile["department"]} • ✉️ <span style="color: #CBD5E1;">{mask_email(profile.get("cbk_email"))}</span>'
                 f'{" • 📞 <span style=\"color: #CBD5E1;\">" + (profile.get("phone_number") if cur_officer else mask_phone(profile.get("phone_number"))) + "</span>" if profile.get("phone_number") else ""}</div>'
                 f'<div style="background: rgba(4, 14, 28, 0.85); border: 1.5px solid rgba(245, 197, 66, 0.35); border-radius: 12px; padding: 12px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem; color: #FFFFFF;">'
                 f'<div>🏃 <strong>Discipline:</strong> <span style="color: #F5C542; font-weight: 800;">{athlete_sport}</span></div>'
@@ -2122,7 +2122,7 @@ with tab_dict["📱 Mobile Check-In"]:
             with c_fn:
                 active_full_name = st.text_input("Full Name*", value=lookup_term if not lookup_term.isdigit() else "", placeholder="e.g. John Kamau")
             with c_em:
-                active_email = st.text_input("CBK Email (@centralbank.go.ke)*", value="", placeholder="e.g. jkamau@centralbank.go.ke")
+                active_email = st.text_input("Institutional Email*", value="", placeholder="e.g. jkamau@corporate.co.ke")
 
             c_dp, c_sp = st.columns(2)
             with c_dp:
@@ -2229,7 +2229,7 @@ with tab_dict["📱 Mobile Check-In"]:
 
             if is_dual:
                 st.balloons()
-                st.success("✉️ Dual-Verification receipt sent to institutional email (@centralbank.go.ke)!")
+                st.success("✉️ Dual-Verification receipt sent to institutional email!")
 
             # 1-Click Painless Satisfaction Reaction Widget (Post-Gate Checkout)
             render_painless_satisfaction_widget(
@@ -2639,7 +2639,7 @@ with tab_dict["🏷️ Captain QR Station"]:
                     w_sid = st.text_input("Staff ID / Payroll No.*", placeholder="e.g. 2045 or CBK-2045", key=f"w_sid_{cap_discipline}")
                     w_fn = st.text_input("Full Name*", placeholder="e.g. David Ochieng", key=f"w_fn_{cap_discipline}")
                 with c_w2:
-                    w_em = st.text_input("Email*", placeholder="e.g. dochieng@centralbank.go.ke", key=f"w_em_{cap_discipline}")
+                    w_em = st.text_input("Email*", placeholder="e.g. dochieng@corporate.co.ke", key=f"w_em_{cap_discipline}")
                     w_dp = st.selectbox("Directorate*", CBK_DEPARTMENTS, key=f"w_dp_{cap_discipline}")
 
                 if st.button(f"🚀 Register & Clock In ({cap_discipline})", type="primary", use_container_width=True, key=f"btn_w_clockin_{cap_discipline}"):
@@ -2649,7 +2649,7 @@ with tab_dict["🏷️ Captain QR Station"]:
                         clean_sid = w_sid.strip().upper()
                         if not clean_sid.startswith("CBK-") and clean_sid.isdigit():
                             clean_sid = f"CBK-{clean_sid}"
-                        clean_email = w_em.strip().lower() if w_em else f"{clean_sid.lower()}@centralbank.go.ke"
+                        clean_email = w_em.strip().lower() if w_em else f"{clean_sid.lower()}@corporate.co.ke"
 
                         # Upsert into staff registry
                         backend.upsert_staff(clean_sid, w_fn.strip(), clean_email, w_dp, cap_discipline)
@@ -3215,7 +3215,7 @@ def render_tab_captains_roll_call():
                 rc_w_sid = st.text_input("Staff ID / Payroll #*", placeholder="e.g. 4022 or CBK-4022", key="rc_w_sid")
                 rc_w_fn = st.text_input("Full Name*", placeholder="e.g. Kelvin Mutua", key="rc_w_fn")
             with c_w2:
-                rc_w_em = st.text_input("Institutional Email*", placeholder="e.g. kmutua@centralbank.go.ke", key="rc_w_em")
+                rc_w_em = st.text_input("Institutional Email*", placeholder="e.g. kmutua@corporate.co.ke", key="rc_w_em")
                 rc_w_dp = st.selectbox("Directorate / Department*", CBK_DEPARTMENTS, key="rc_w_dp")
 
             if st.button(f"🚀 Register & Clock In ({gate_label})", type="primary", use_container_width=True, key="btn_rc_add_walkin"):
@@ -3225,7 +3225,7 @@ def render_tab_captains_roll_call():
                     clean_w_sid = rc_w_sid.strip().upper()
                     if not clean_w_sid.startswith("CBK-") and clean_w_sid.isdigit():
                         clean_w_sid = f"CBK-{clean_w_sid}"
-                    clean_w_em = rc_w_em.strip().lower() if rc_w_em else f"{clean_w_sid.lower()}@centralbank.go.ke"
+                    clean_w_em = rc_w_em.strip().lower() if rc_w_em else f"{clean_w_sid.lower()}@corporate.co.ke"
                     backend.upsert_staff(clean_w_sid, rc_w_fn.strip(), clean_w_em, rc_w_dp, rc_sport)
                     backend.log_checkin(
                         staff_id=clean_w_sid,
@@ -4399,7 +4399,7 @@ def render_tab_settings():
             new_custom = st.text_input(
                 "Custom Domain / URL:",
                 value=cur_custom,
-                placeholder="e.g. cbk-sports.streamlit.app or dswaap.centralbank.go.ke",
+                placeholder="e.g. sports-portal.streamlit.app or dswaap.internal",
                 key="input_custom_host"
             )
             if st.button("💾 Apply Custom Domain", key="btn_apply_host"):
@@ -4420,14 +4420,14 @@ def render_tab_settings():
                 st.markdown(f"**Latest Notification Sent to:** `{latest['recipient']}`")
                 st.markdown(f"**Subject:** {latest['subject']}")
                 
-                with st.expander("👁️ Preview Rendered CBK HTML Receipt"):
+                with st.expander("👁️ Preview Rendered HTML Receipt"):
                     st.components.v1.html(latest["html"], height=420, scrolling=True)
             else:
                 st.info("No verification emails dispatched yet. Complete a dual-gate check-in to trigger automated email dispatching.")
 
             st.markdown("---")
             st.markdown("##### Send Test Verification Receipt")
-            test_email = st.text_input("Recipient CBK Email:", value="employee@centralbank.go.ke")
+            test_email = st.text_input("Recipient Institutional Email:", value="employee@corporate.co.ke")
             if st.button("📨 Dispatch Test Dual-Verification Email", use_container_width=True):
                 test_record = {
                     "id": 999,
@@ -4548,7 +4548,7 @@ def render_tab_settings():
                     fn = str(r.get("full_name", "")).strip() or f"Athlete {clean_sid}"
                     em = str(r.get("cbk_email", "")).strip().lower()
                     if not em or "@" not in em:
-                        em = f"{clean_sid.lower()}@centralbank.go.ke"
+                        em = f"{clean_sid.lower()}@corporate.co.ke"
                     
                     dept = str(r.get("department", "Finance & Accounts")).strip()
                     if dept not in CBK_DEPARTMENTS:
@@ -4584,7 +4584,7 @@ def render_tab_settings():
         with c_r1:
             new_sid = st.text_input("CBK Staff ID (e.g. 1024 or CBK-1024):", key="reg_sid")
             new_fn = st.text_input("Full Name:", key="reg_fn")
-            new_em = st.text_input("Institutional Email:", key="reg_em", placeholder="@centralbank.go.ke")
+            new_em = st.text_input("Institutional Email:", key="reg_em", placeholder="athlete@corporate.co.ke")
         with c_r2:
             new_dept = st.selectbox("Directorate / Department:", CBK_DEPARTMENTS, key="reg_dept")
             new_sport = st.selectbox("Primary Enrolled Sport (A – Z):", ALL_18_SPORTS, key="reg_sport")

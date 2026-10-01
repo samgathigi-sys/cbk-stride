@@ -88,16 +88,33 @@ def mask_phone(phone: Optional[str]) -> str:
     return f"{p[:3]} **** {p[-2:]}"
 
 def mask_email(email: Optional[str]) -> str:
-    """Masks institutional email for privacy: sgathigi@centralbank.go.ke -> s***i@centralbank.go.ke"""
+    """
+    Masks institutional email for privacy and scrubs centralbank.go.ke domain:
+    'pgatere@centralbank.go.ke' -> 'p***e@********.co.ke'
+    """
     if not email or "@" not in email:
-        return "****@centralbank.go.ke"
+        return "****@********.co.ke"
     parts = str(email).strip().split("@")
-    user, domain = parts[0], parts[1]
+    user, domain = parts[0], parts[1].lower()
     if len(user) <= 2:
         masked_user = user[0] + "***"
     else:
-        masked_user = user[0] + "*" * min(len(user) - 2, 5) + user[-1]
-    return f"{masked_user}@{domain}"
+        masked_user = user[0] + "*" * min(len(user) - 2, 4) + user[-1]
+    
+    # Always scrub centralbank.go.ke domain completely
+    if "centralbank" in domain:
+        scrubbed_domain = "********.co.ke"
+    else:
+        d_parts = domain.split(".")
+        if len(d_parts) >= 2:
+            scrubbed_domain = d_parts[0][0] + "***." + ".".join(d_parts[1:])
+        else:
+            scrubbed_domain = "********.co.ke"
+    return f"{masked_user}@{scrubbed_domain}"
+
+def scrub_email(email: Optional[str]) -> str:
+    """Masks and scrubs email address removing centralbank.go.ke domain."""
+    return mask_email(email)
 
 def mask_national_id(nid: Optional[str]) -> str:
     """Masks national ID: 12345678 -> *****678"""
