@@ -558,6 +558,32 @@ st.markdown("""
         color: #E2E8F0 !important;
     }
 
+    /* Radiant Glowing Feedback Pulse Halo */
+    @keyframes pulseGlowGoldCyan {
+        0% {
+            box-shadow: 0 0 16px rgba(245, 197, 66, 0.4), 0 0 35px rgba(0, 242, 254, 0.25), inset 0 0 15px rgba(245, 197, 66, 0.1);
+            border-color: rgba(245, 197, 66, 0.65);
+        }
+        50% {
+            box-shadow: 0 0 34px rgba(245, 197, 66, 0.8), 0 0 60px rgba(0, 242, 254, 0.55), inset 0 0 25px rgba(0, 242, 254, 0.22);
+            border-color: rgba(0, 242, 254, 0.95);
+        }
+        100% {
+            box-shadow: 0 0 16px rgba(245, 197, 66, 0.4), 0 0 35px rgba(0, 242, 254, 0.25), inset 0 0 15px rgba(245, 197, 66, 0.1);
+            border-color: rgba(245, 197, 66, 0.65);
+        }
+    }
+
+    .practice-pulse-glow {
+        background: linear-gradient(135deg, rgba(8, 26, 54, 0.96) 0%, rgba(4, 15, 34, 0.98) 100%) !important;
+        border: 2px solid #F5C542 !important;
+        border-radius: 20px !important;
+        padding: 22px 24px !important;
+        margin: 1.2rem 0 1.5rem 0 !important;
+        animation: pulseGlowGoldCyan 3.5s infinite ease-in-out !important;
+        position: relative !important;
+    }
+
     /* Mobile media queries */
     @media (max-width: 768px) {
         .cbk-title { font-size: 1.4rem !important; }
@@ -656,7 +682,7 @@ if mode_param in ["tester", "demo", "sandbox"] or sandbox_param in ["1", "true",
 is_sandbox = False
 
 def get_active_portal_url() -> str:
-    """Detects latest active public Cloudflare tunnel or defaults to local Wi-Fi host."""
+    """Returns official permanent Streamlit Cloud URL (backed by Git), or custom host."""
     if "custom_portal_host" in st.session_state and st.session_state["custom_portal_host"]:
         return st.session_state["custom_portal_host"]
     # 1. First check CURRENT_LIVE_URL.txt in project directory
@@ -669,23 +695,7 @@ def get_active_portal_url() -> str:
                     return val
         except Exception:
             pass
-    try:
-        task_dir = r"C:\Users\gathigisn.CBK.008\.gemini\antigravity\brain\00940864-5fa3-44bf-b1d9-02e121e7a052\.system_generated\tasks"
-        if os.path.exists(task_dir):
-            log_files = [os.path.join(task_dir, f) for f in os.listdir(task_dir) if f.endswith(".log")]
-            # Sort by newest modified first
-            log_files.sort(key=os.path.getmtime, reverse=True)
-            for fpath in log_files:
-                with open(fpath, "r", encoding="utf-8", errors="ignore") as f:
-                    content = f.read()
-                    if "trycloudflare.com" in content:
-                        import re
-                        m = re.search(r"https://[a-zA-Z0-9\-]+\.trycloudflare\.com", content)
-                        if m:
-                            return m.group(0)
-    except Exception:
-        pass
-    return "192.168.1.35:8501"
+    return "https://cbk-stride.streamlit.app"
 
 active_portal_host = get_active_portal_url()
 
@@ -1165,53 +1175,134 @@ def render_captain_calendar_section(discipline: str, is_authorized: bool, key_pr
                             st.error("Failed to save calendar event. Please retry.")
 
 # ==============================================================================
-# PAINLESS 1-CLICK SATISFACTION REACTION WIDGET (AI POWERED NLP)
+# PAINLESS 1-CLICK SATISFACTION REACTION WIDGET (AI POWERED NLP & VENUES)
 # ==============================================================================
+PRACTICE_VENUES_REGISTRY = [
+    "🏊 Crawford International School (Tatu City) - Olympic Pool",
+    "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+    "⛳ Muthaiga Golf Club - Championship Course",
+    "🏃 Nyayo / Kasarani Stadium (Athletics Track)",
+    "⚽ Sports Complex Main Arena (Football Pitch)",
+    "💥 Squash Complex (Glass Courts 1 & 2)",
+    "🏀 Indoor Sports Hall (Basketball Arena)",
+    "🏐 East Pavilion (Volleyball & Netball Courts)",
+    "♟️ CBK Club House (Chess & Darts Lounge)",
+    "🥋 Aerobics & Martial Arts Studio",
+    "📍 Other / Offsite Training Facility"
+]
+
+DISCIPLINE_DEFAULT_VENUES = {
+    "Swimming": "🏊 Crawford International School (Tatu City) - Olympic Pool",
+    "Golf": "⛳ Muthaiga Golf Club - Championship Course",
+    "Athletics": "🏃 Nyayo / Kasarani Stadium (Athletics Track)",
+    "Football": "⚽ Sports Complex Main Arena (Football Pitch)",
+    "Squash": "💥 Squash Complex (Glass Courts 1 & 2)",
+    "Basketball": "🏀 Indoor Sports Hall (Basketball Arena)",
+    "Volleyball": "🏐 East Pavilion (Volleyball & Netball Courts)",
+    "Netball": "🏐 East Pavilion (Volleyball & Netball Courts)",
+    "Gym": "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+    "Fitness": "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+    "Darts": "♟️ CBK Club House (Chess & Darts Lounge)",
+    "Chess": "♟️ CBK Club House (Chess & Darts Lounge)",
+    "Table Tennis": "🏓 Racket Sports Pavilion",
+    "Badminton": "🏸 Indoor Sports Hall (Basketball Arena)",
+    "Tug of War": "⚽ Sports Complex Main Arena (Football Pitch)",
+    "Pool": "♟️ CBK Club House (Chess & Darts Lounge)",
+    "Snooker": "♟️ CBK Club House (Chess & Darts Lounge)",
+    "General Wellness": "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+}
+
 def render_painless_satisfaction_widget(
     staff_id: str = "CBK-ATHLETE",
     full_name: str = "CBK Athlete",
     department: str = "Operations",
     discipline: str = "General",
     touchpoint: str = "GATE_PASS",
-    key_prefix: str = "pass_sat"
+    key_prefix: str = "pass_sat",
+    default_venue: Optional[str] = None
 ):
     """
     Renders an ultra-fast, painless 1-click satisfaction widget with 5 emoji faces:
     😡 (1 - Frustrated), 🙁 (2 - Poor), 😐 (3 - Okay), 🙂 (4 - Good), 🤩 (5 - Loved It!).
-    Clicking any face logs the feedback instantly to SQLite without requiring typing.
-    Optionally reveals 1-tap aspect chips and an optional 1-sentence note for NLP processing.
+    Equipped with a radiant gold/cyan glowing halo and 1-tap practice venue tagging
+    so staff & athletes can evaluate the specific training facility where they practice.
     """
     sub_key = f"fb_state_{key_prefix}"
-    submitted = st.session_state.get(sub_key)
+    venue_key = f"{key_prefix}_venue_val"
+    
+    # Resolve default venue based on discipline or explicit venue passed
+    def_venue = default_venue or DISCIPLINE_DEFAULT_VENUES.get(discipline, "🏋️ CBK Wellness Complex & Studio (Gymnasium)")
+    if venue_key not in st.session_state:
+        st.session_state[venue_key] = def_venue
 
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, rgba(8, 24, 46, 0.95) 0%, rgba(4, 14, 28, 0.98) 100%);
-                border: 1.5px solid rgba(245, 197, 66, 0.45);
-                border-radius: 16px; padding: 16px 18px; margin-top: 16px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(0,242,254,0.12);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <span style="font-size: 0.74rem; font-weight: 800; color: #F5C542; text-transform: uppercase; letter-spacing: 0.8px;">
-                ⚡ 1-Tap Pulse • Facility & Session Satisfaction
-            </span>
-            <span style="background: rgba(0, 242, 254, 0.15); color: #00F2FE; font-size: 0.70rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(0, 242, 254, 0.3);">
-                AI Powered NLP
+    submitted = st.session_state.get(sub_key)
+    active_venue = st.session_state.get(venue_key, def_venue)
+
+    # Radiant glowing card container
+    st.markdown(f"""
+    <div class="practice-pulse-glow">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="live-pulse"></span>
+                <span style="font-size: 0.78rem; font-weight: 900; color: #F5C542; text-transform: uppercase; letter-spacing: 1px;">
+                    ⚡ LIVE PRACTICE VENUE PULSE • AI SATISFACTION RADAR
+                </span>
+            </div>
+            <span style="background: rgba(0, 242, 254, 0.15); color: #00F2FE; font-size: 0.70rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(0, 242, 254, 0.4);">
+                AI-Powered NLP Sentiment
             </span>
         </div>
-        <h4 style="color: #FFFFFF; font-size: 1.05rem; font-weight: 800; margin: 0 0 4px 0;">
-            How was your facility & training experience today?
-        </h4>
-        <p style="color: #94A3B8; font-size: 0.82rem; margin: 0 0 8px 0; line-height: 1.4;">
-            Painless 1-click rating. Tap any face below to record your response immediately:
+        <h3 style="color: #FFFFFF; font-size: 1.25rem; font-weight: 900; margin: 4px 0 6px 0; letter-spacing: -0.3px;">
+            How is your training experience at your practice facility today?
+        </h3>
+        <p style="color: #CBD5E1; font-size: 0.88rem; margin: 0 0 10px 0; line-height: 1.5;">
+            Tagged Facility: <strong style="color: #00F2FE; text-shadow: 0 0 10px rgba(0,242,254,0.4);">{active_venue}</strong> &nbsp;|&nbsp; 
+            Sport: <strong style="color: #F5C542;">{discipline}</strong>. 
+            Tap any face below — <em>100% painless 1-tap rating, zero typing needed:</em>
         </p>
     </div>
     """, unsafe_allow_html=True)
+
+    # Practice Venue Selector & Fast Switch Chips
+    c_ven_sel, c_ven_chips = st.columns([1.2, 1.8])
+    with c_ven_sel:
+        v_idx = PRACTICE_VENUES_REGISTRY.index(active_venue) if active_venue in PRACTICE_VENUES_REGISTRY else 0
+        new_venue = st.selectbox(
+            "📍 Change Practice Venue / Facility:",
+            PRACTICE_VENUES_REGISTRY,
+            index=v_idx,
+            key=f"{key_prefix}_venue_dropdown"
+        )
+        if new_venue != active_venue:
+            st.session_state[venue_key] = new_venue
+            active_venue = new_venue
+
+    with c_ven_chips:
+        st.markdown("<div style='font-size: 0.74rem; color: #94A3B8; font-weight: 700; margin-bottom: 4px;'>⚡ 1-Tap Quick Venue Switch:</div>", unsafe_allow_html=True)
+        ch_c1, ch_c2, ch_c3, ch_c4 = st.columns(4)
+        with ch_c1:
+            if st.button("🏊 Tatu City", key=f"{key_prefix}_chip_v_tatu", use_container_width=True):
+                st.session_state[venue_key] = "🏊 Crawford International School (Tatu City) - Olympic Pool"
+                st.rerun()
+        with ch_c2:
+            if st.button("🏋️ CBK Gym", key=f"{key_prefix}_chip_v_gym", use_container_width=True):
+                st.session_state[venue_key] = "🏋️ CBK Wellness Complex & Studio (Gymnasium)"
+                st.rerun()
+        with ch_c3:
+            if st.button("⛳ Muthaiga", key=f"{key_prefix}_chip_v_golf", use_container_width=True):
+                st.session_state[venue_key] = "⛳ Muthaiga Golf Club - Championship Course"
+                st.rerun()
+        with ch_c4:
+            if st.button("🏃 Stadium", key=f"{key_prefix}_chip_v_track", use_container_width=True):
+                st.session_state[venue_key] = "🏃 Nyayo / Kasarani Stadium (Athletics Track)"
+                st.rerun()
 
     f1, f2, f3, f4, f5 = st.columns(5)
     faces = [
         ("😡", 1, "Frustrated", f1),
         ("🙁", 2, "Poor", f2),
         ("😐", 3, "Okay", f3),
-        ("🙂", 4, "Good", f4),
+        ("🙂", 4, "Good Session", f4),
         ("🤩", 5, "Loved It!", f5),
     ]
 
@@ -1230,11 +1321,12 @@ def render_painless_satisfaction_widget(
                     discipline=discipline or "Sports",
                     rating=rating_val,
                     feedback_text="",
+                    venue=active_venue,
                     touchpoint=touchpoint
                 )
                 if ok and rec:
                     st.session_state[sub_key] = rec
-                    st.toast(f"{emoji_char} Thank you! Your {rating_val}-star rating was logged instantly.", icon="⭐")
+                    st.toast(f"{emoji_char} Logged! {rating_val}/5 Stars for {active_venue}.", icon="⭐")
                     st.rerun()
 
     if submitted:
@@ -1245,62 +1337,80 @@ def render_painless_satisfaction_widget(
         aspects = submitted.get("aspects", [])
         rec_id = submitted.get("id")
         cur_text = submitted.get("feedback_text", "")
+        recorded_venue = submitted.get("venue", active_venue)
 
         badge_bg = "#059669" if sentiment_label == "POSITIVE" else ("#DC2626" if sentiment_label == "NEGATIVE" else "#D97706")
 
         st.markdown(f"""
-        <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 12px; padding: 12px 16px; margin-top: 10px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: #FFFFFF; font-weight: 800; font-size: 0.92rem;">
+        <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.25) 100%);
+                    border: 2px solid #10B981; border-radius: 14px; padding: 14px 18px; margin-top: 12px;
+                    box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <span style="color: #FFFFFF; font-weight: 900; font-size: 1.05rem;">
                     {emoji_val} <strong>Logged: {rating_val}/5 Stars</strong>
                 </span>
-                <span style="background: {badge_bg}; color: white; padding: 2px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">
-                    NLP Sentiment: {sentiment_label} ({sentiment_score:+.2f})
+                <span style="background: {badge_bg}; color: white; padding: 3px 12px; border-radius: 12px; font-size: 0.76rem; font-weight: 800;">
+                    AI Sentiment: {sentiment_label} ({sentiment_score:+.2f})
                 </span>
             </div>
-            <p style="color: #CBD5E1; font-size: 0.78rem; margin: 4px 0 0 0;">
-                Recognized Aspects: <strong style="color: #F5C542;">{', '.join(aspects) if aspects else 'General Facility Experience'}</strong>
+            <div style="margin-top: 8px; font-size: 0.86rem; color: #E2E8F0;">
+                📍 <strong>Facility:</strong> <span style="color: #00F2FE; font-weight: 700;">{recorded_venue}</span> &nbsp;|&nbsp;
+                🏅 <strong>Sport:</strong> <span style="color: #F5C542; font-weight: 700;">{submitted.get('discipline', discipline)}</span>
+            </div>
+            <p style="color: #CBD5E1; font-size: 0.80rem; margin: 4px 0 0 0;">
+                Recognized Operational Aspects: <strong style="color: #F5C542;">{', '.join(aspects) if aspects else 'General Facility Experience'}</strong>
             </p>
-            {f'<p style="color: #94A3B8; font-size: 0.78rem; font-style: italic; margin: 4px 0 0 0;">"{cur_text}"</p>' if cur_text else ''}
+            {f'<p style="color: #94A3B8; font-size: 0.82rem; font-style: italic; margin: 4px 0 0 0;">"{cur_text}"</p>' if cur_text else ''}
         </div>
         """, unsafe_allow_html=True)
 
         with st.expander("💬 Optional: Tell us why in one quick sentence or tap a chip", expanded=False):
             st.caption("Tap any quick chip below or type in English/Swahili (e.g. pool cleanliness, gym AC, gate scan speed, allowance promptness):")
 
-            c_ch1, c_ch2, c_ch3 = st.columns(3)
+            c_ch1, c_ch2, c_ch3, c_ch4 = st.columns(4)
             with c_ch1:
                 if st.button("🏊 Clean Pool Water", key=f"{key_prefix}_chip_pool", use_container_width=True):
-                    backend.update_facility_feedback_text(rec_id, "Clean pool water and lane markers were great.")
+                    backend.update_facility_feedback_text(rec_id, "Clean pool water and lane markers were great.", venue=recorded_venue)
                     st.session_state[sub_key]["feedback_text"] = "Clean pool water and lane markers were great."
                     st.toast("✅ Note updated!", icon="🏊")
                     st.rerun()
                 if st.button("🚿 Clean Showers", key=f"{key_prefix}_chip_shower", use_container_width=True):
-                    backend.update_facility_feedback_text(rec_id, "Showers and changing rooms were spotless.")
+                    backend.update_facility_feedback_text(rec_id, "Showers and changing rooms were spotless.", venue=recorded_venue)
                     st.session_state[sub_key]["feedback_text"] = "Showers and changing rooms were spotless."
                     st.toast("✅ Note updated!", icon="🚿")
                     st.rerun()
             with c_ch2:
                 if st.button("🏋️ Great Gym & AC", key=f"{key_prefix}_chip_gym", use_container_width=True):
-                    backend.update_facility_feedback_text(rec_id, "Gym weights and air conditioning were excellent.")
+                    backend.update_facility_feedback_text(rec_id, "Gym weights and air conditioning were excellent.", venue=recorded_venue)
                     st.session_state[sub_key]["feedback_text"] = "Gym weights and air conditioning were excellent."
                     st.toast("✅ Note updated!", icon="🏋️")
                     st.rerun()
                 if st.button("⏱️ Prompt Allowance", key=f"{key_prefix}_chip_allowance", use_container_width=True):
-                    backend.update_facility_feedback_text(rec_id, "Session attendance and allowance processed promptly.")
+                    backend.update_facility_feedback_text(rec_id, "Session attendance and allowance processed promptly.", venue=recorded_venue)
                     st.session_state[sub_key]["feedback_text"] = "Session attendance and allowance processed promptly."
                     st.toast("✅ Note updated!", icon="⏱️")
                     st.rerun()
             with c_ch3:
                 if st.button("⚡ Fast Gate Scan", key=f"{key_prefix}_chip_gate", use_container_width=True):
-                    backend.update_facility_feedback_text(rec_id, "Gate checkin QR scanning was instantaneous.")
+                    backend.update_facility_feedback_text(rec_id, "Gate checkin QR scanning was instantaneous.", venue=recorded_venue)
                     st.session_state[sub_key]["feedback_text"] = "Gate checkin QR scanning was instantaneous."
                     st.toast("✅ Note updated!", icon="⚡")
                     st.rerun()
-                if st.button("⚠️ Needs Maintenance", key=f"{key_prefix}_chip_maint", use_container_width=True):
-                    backend.update_facility_feedback_text(rec_id, "Equipment needs maintenance and repairs.")
+                if st.button("⚠️ Equipment Repair", key=f"{key_prefix}_chip_maint", use_container_width=True):
+                    backend.update_facility_feedback_text(rec_id, "Equipment needs maintenance and repairs.", venue=recorded_venue)
                     st.session_state[sub_key]["feedback_text"] = "Equipment needs maintenance and repairs."
                     st.toast("✅ Note updated!", icon="⚠️")
+                    st.rerun()
+            with c_ch4:
+                if st.button("🥤 Refreshments Ready", key=f"{key_prefix}_chip_chai", use_container_width=True):
+                    backend.update_facility_feedback_text(rec_id, "Refreshments, tea, and water were readily available.", venue=recorded_venue)
+                    st.session_state[sub_key]["feedback_text"] = "Refreshments, tea, and water were readily available."
+                    st.toast("✅ Note updated!", icon="🥤")
+                    st.rerun()
+                if st.button("🅿️ Secure Parking", key=f"{key_prefix}_chip_park", use_container_width=True):
+                    backend.update_facility_feedback_text(rec_id, "Parking was spacious, secure, and hassle-free.", venue=recorded_venue)
+                    st.session_state[sub_key]["feedback_text"] = "Parking was spacious, secure, and hassle-free."
+                    st.toast("✅ Note updated!", icon="🅿️")
                     st.rerun()
 
             note_val = st.text_input(
@@ -1314,7 +1424,7 @@ def render_painless_satisfaction_widget(
             with c_save_n:
                 if st.button("💾 Save Note with NLP", key=f"{key_prefix}_btn_save_note", use_container_width=True, type="primary"):
                     if note_val.strip() and rec_id:
-                        ok_up, msg_up, nlp_up = backend.update_facility_feedback_text(rec_id, note_val.strip())
+                        ok_up, msg_up, nlp_up = backend.update_facility_feedback_text(rec_id, note_val.strip(), venue=recorded_venue)
                         if ok_up:
                             st.session_state[sub_key]["feedback_text"] = note_val.strip()
                             if nlp_up:
@@ -1324,25 +1434,27 @@ def render_painless_satisfaction_widget(
                             st.toast("✅ Note saved and re-analyzed with AI sentiment!", icon="🤖")
                             st.rerun()
             with c_rst:
-                if st.button("🔄 Rate Again", key=f"{key_prefix}_btn_reset", use_container_width=True):
+                if st.button("🔄 Rate Another Venue", key=f"{key_prefix}_btn_reset", use_container_width=True):
                     if sub_key in st.session_state:
                         del st.session_state[sub_key]
                     st.rerun()
 
-# Global 1-Tap Facility Satisfaction Pulse for All Staff & Visitors
-with st.expander("⭐ Rate Today's Sports Facility & Session Experience (Painless 1-Click Emoji Pulse)", expanded=False):
-    cur_top_sid = cur_officer['staff_id'] if cur_officer else (cur_captain_top['staff_id'] if cur_captain_top else st.session_state.get('active_staff_id', 'CBK-STAFF'))
-    cur_top_fn = cur_officer['full_name'] if cur_officer else (cur_captain_top['full_name'] if cur_captain_top else 'CBK Athlete')
-    cur_top_dp = cur_officer['department'] if cur_officer else 'Operations'
-    cur_top_sp = cur_captain_top['discipline'] if cur_captain_top else st.session_state.get('active_discipline', 'General Wellness')
-    render_painless_satisfaction_widget(
-        staff_id=cur_top_sid,
-        full_name=cur_top_fn,
-        department=cur_top_dp,
-        discipline=cur_top_sp,
-        touchpoint="TOP_PORTAL_BANNER",
-        key_prefix="top_pulse"
-    )
+# ==============================================================================
+# PROMINENT GLOWING PRACTICE VENUE & FACILITY SATISFACTION PULSE
+# ==============================================================================
+cur_top_sid = cur_officer['staff_id'] if cur_officer else (cur_captain_top['staff_id'] if cur_captain_top else st.session_state.get('active_staff_id', 'CBK-STAFF'))
+cur_top_fn = cur_officer['full_name'] if cur_officer else (cur_captain_top['full_name'] if cur_captain_top else 'CBK Athlete')
+cur_top_dp = cur_officer['department'] if cur_officer else 'Operations'
+cur_top_sp = cur_captain_top['discipline'] if cur_captain_top else st.session_state.get('active_discipline', 'General Wellness')
+
+render_painless_satisfaction_widget(
+    staff_id=cur_top_sid,
+    full_name=cur_top_fn,
+    department=cur_top_dp,
+    discipline=cur_top_sp,
+    touchpoint="TOP_PORTAL_BANNER",
+    key_prefix="top_pulse"
+)
 
 tabs = st.tabs(tab_titles)
 tab_dict = {title: tab for title, tab in zip(tab_titles, tabs)}
@@ -3523,28 +3635,52 @@ def render_hr_satisfaction_nlp_dashboard():
 
     with c_rank:
         with st.container(border=True):
-            st.markdown("#### 🏆 Discipline Satisfaction Leaderboard")
-            st.caption("Ranked by average member star rating:")
-            rankings = metrics.get("discipline_rankings", [])
-            if rankings:
-                for idx, rk in enumerate(rankings[:6], start=1):
-                    med = "🥇" if idx == 1 else ("🥈" if idx == 2 else ("🥉" if idx == 3 else f"#{idx}"))
-                    st.markdown(f"""
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                        <div>
-                            <span style="font-size: 0.95rem; margin-right: 6px;">{med}</span>
-                            <strong style="color: #FFFFFF; font-size: 0.88rem;">{rk['discipline']}</strong>
-                            <div style="font-size: 0.72rem; color: #94A3B8; margin-left: 1.8rem;">{rk['count']} verified ratings</div>
+            r_tab1, r_tab2 = st.tabs(["📍 Practice Venues Ranking", "🏆 Sports Disciplines Ranking"])
+            with r_tab1:
+                st.caption("Training facilities ranked by verified athlete rating:")
+                v_rankings = metrics.get("venue_rankings", [])
+                if v_rankings:
+                    for idx, vr in enumerate(v_rankings[:6], start=1):
+                        med = "🥇" if idx == 1 else ("🥈" if idx == 2 else ("🥉" if idx == 3 else f"#{idx}"))
+                        st.markdown(f"""
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                            <div>
+                                <span style="font-size: 0.95rem; margin-right: 6px;">{med}</span>
+                                <strong style="color: #FFFFFF; font-size: 0.85rem;">{vr['venue']}</strong>
+                                <div style="font-size: 0.72rem; color: #94A3B8; margin-left: 1.8rem;">{vr['count']} verified athlete reviews</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: rgba(0, 242, 254, 0.15); border: 1px solid #00F2FE; color: #00F2FE; font-weight: 800; padding: 2px 8px; border-radius: 8px; font-size: 0.82rem;">
+                                    ⭐ {vr['avg_rating']:.2f}
+                                </span>
+                            </div>
                         </div>
-                        <div style="text-align: right;">
-                            <span style="background: rgba(245, 197, 66, 0.15); border: 1px solid #F5C542; color: #F5C542; font-weight: 800; padding: 2px 8px; border-radius: 8px; font-size: 0.82rem;">
-                                ⭐ {rk['avg_rating']:.2f}
-                            </span>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.info("Venue rankings will populate as athletes submit reviews.")
+
+            with r_tab2:
+                st.caption("Ranked by average member star rating:")
+                rankings = metrics.get("discipline_rankings", [])
+                if rankings:
+                    for idx, rk in enumerate(rankings[:6], start=1):
+                        med = "🥇" if idx == 1 else ("🥈" if idx == 2 else ("🥉" if idx == 3 else f"#{idx}"))
+                        st.markdown(f"""
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                            <div>
+                                <span style="font-size: 0.95rem; margin-right: 6px;">{med}</span>
+                                <strong style="color: #FFFFFF; font-size: 0.88rem;">{rk['discipline']}</strong>
+                                <div style="font-size: 0.72rem; color: #94A3B8; margin-left: 1.8rem;">{rk['count']} verified ratings</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: rgba(245, 197, 66, 0.15); border: 1px solid #F5C542; color: #F5C542; font-weight: 800; padding: 2px 8px; border-radius: 8px; font-size: 0.82rem;">
+                                    ⭐ {rk['avg_rating']:.2f}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.info("Leaderboard will populate as athletes submit feedback.")
+                        """, unsafe_allow_html=True)
+                else:
+                    st.info("Leaderboard will populate as athletes submit feedback.")
 
     # Live Member Voice Feed
     st.markdown("#### 💬 Live Member Voice & NLP Telemetry Feed")
@@ -3559,6 +3695,7 @@ def render_hr_satisfaction_nlp_dashboard():
             emoji_char = fb.get("emoji", "😐")
             rating_num = fb.get("rating", 3)
             staff_disp = fb.get("full_name", "Athlete") if is_export_authorized() else mask_name_banking(fb.get("full_name", "Athlete"))
+            venue_disp = fb.get("venue") or "General Facility"
 
             try:
                 aspects_list = json.loads(fb.get("aspects_json", "[]"))
@@ -3569,11 +3706,14 @@ def render_hr_satisfaction_nlp_dashboard():
 
             st.markdown(f"""
             <div style="background: rgba(8, 24, 46, 0.75); border: 1px solid rgba(245, 197, 66, 0.25); border-radius: 12px; padding: 12px 16px; margin-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
                     <div>
                         <span style="font-size: 1.15rem; margin-right: 6px;">{emoji_char}</span>
                         <strong style="color: #FFFFFF; font-size: 0.90rem;">{staff_disp}</strong>
                         <span style="font-size: 0.75rem; color: #94A3B8;">({fb.get('staff_id')}) • <span style="color: #F5C542;">{fb.get('discipline')}</span></span>
+                        <span style="background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.35); color: #00F2FE; font-size: 0.70rem; font-weight: 700; padding: 1px 7px; border-radius: 8px; margin-left: 6px;">
+                            📍 {venue_disp}
+                        </span>
                     </div>
                     <div>
                         <span style="background: {badge_color}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.70rem; font-weight: 800;">

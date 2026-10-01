@@ -739,9 +739,15 @@ class AttendanceBackend:
                 sentiment_label TEXT NOT NULL,
                 aspects_json TEXT DEFAULT '[]',
                 touchpoint TEXT DEFAULT 'PORTAL_FEEDBACK',
+                venue TEXT DEFAULT '',
                 submitted_at TEXT NOT NULL
             )
         """)
+
+        try:
+            cur.execute("ALTER TABLE facility_feedback_registry ADD COLUMN venue TEXT DEFAULT ''")
+        except Exception:
+            pass
 
         try:
             cur.execute("ALTER TABLE captain_credentials ADD COLUMN passkey_hash TEXT DEFAULT ''")
@@ -906,21 +912,21 @@ class AttendanceBackend:
         cur.execute("SELECT COUNT(*) FROM facility_feedback_registry")
         if cur.fetchone()[0] == 0:
             sample_feedback = [
-                ("CBK-1008", "Sam Gathigi", "Governor's Office & Secretariat", "Swimming", 5, "🤩", "Water temperature was ideal at Crawford Tatu City and 50m lane markers were well prepared. Gate scan was instantaneous.", 0.95, "POSITIVE", json.dumps(["Pool & Aquatics", "Gate & Access Speed"]), "GATE2_CHECKOUT", f"{now_init} 08:30:15"),
-                ("CBK-2406", "Eric Mwangi", "Bank Supervision", "Golf", 5, "🤩", "Fairways and putting greens in immaculate condition. Seamless QR accreditation at pro shop.", 0.92, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Gate & Access Speed"]), "GATE2_CHECKOUT", f"{now_init} 09:15:20"),
-                ("CBK-2418", "Brian Odhiambo", "Currency Operations", "Physical Fitness & Aerobics", 4, "🙂", "Good morning circuit. Dumbbells and kettlebells clean, AC was refreshing and gym coach was supportive.", 0.82, "POSITIVE", json.dumps(["Gym & Fitness", "Hygiene & Changing Rooms"]), "PORTAL_FEEDBACK", f"{now_init} 07:45:00"),
-                ("CBK-2401", "James Omondi", "Financial Markets", "Football (Soccer)", 4, "🙂", "Great pitch turf, bibs and match balls ready. Allowances and transport processed promptly.", 0.78, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Allowances & Welfare"]), "GATE2_CHECKOUT", f"{now_init} 18:20:10"),
-                ("CBK-2404", "David Mutua", "Internal Audit", "Athletics & Track", 3, "😐", "Running track was well marked but changing room water pressure was low during morning peak.", 0.05, "NEUTRAL", json.dumps(["Pitches, Courts & Tracks", "Hygiene & Changing Rooms"]), "PORTAL_FEEDBACK", f"{now_init} 07:10:45"),
-                ("CBK-2411", "Collins Koech", "Payments & Settlement Systems", "Squash", 5, "🤩", "Glass court spotless and clean. Seamless check-in at viewing desk, fast QR scan.", 0.90, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Gate & Access Speed"]), "GATE2_CHECKOUT", f"{now_init} 12:40:00"),
-                ("CBK-2402", "Grace Wanjiku", "Human Resources", "Netball", 5, "🤩", "Safi sana, mazoezi yalienda vizuri na chai na maji yalipatikana kwa wakati.", 0.88, "POSITIVE", json.dumps(["Coaching & Team Morale", "Allowances & Welfare"]), "PORTAL_FEEDBACK", f"{now_init} 17:35:12"),
-                ("CBK-1033", "Kevin Kiprono", "IT & Digital Services", "Basketball", 4, "🙂", "Court surface clean and hoop nets in good shape. Very fast dual-gate checkout.", 0.80, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Gate & Access Speed"]), "GATE2_CHECKOUT", f"{now_init} 18:50:22")
+                ("CBK-1008", "Sam Gathigi", "Governor's Office & Secretariat", "Swimming", 5, "🤩", "Water temperature was ideal at Crawford Tatu City and 50m lane markers were well prepared. Gate scan was instantaneous.", 0.95, "POSITIVE", json.dumps(["Pool & Aquatics", "Gate & Access Speed"]), "GATE2_CHECKOUT", "Crawford International School, Tatu City", f"{now_init} 08:30:15"),
+                ("CBK-2406", "Eric Mwangi", "Bank Supervision", "Golf", 5, "🤩", "Fairways and putting greens in immaculate condition. Seamless QR accreditation at pro shop.", 0.92, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Gate & Access Speed"]), "GATE2_CHECKOUT", "Muthaiga Golf Club", f"{now_init} 09:15:20"),
+                ("CBK-2418", "Brian Odhiambo", "Currency Operations", "Physical Fitness & Aerobics", 4, "🙂", "Good morning circuit. Dumbbells and kettlebells clean, AC was refreshing and gym coach was supportive.", 0.82, "POSITIVE", json.dumps(["Gym & Fitness", "Hygiene & Changing Rooms"]), "PORTAL_FEEDBACK", "Wellness Gymnasium & Aerobics Studio", f"{now_init} 07:45:00"),
+                ("CBK-2401", "James Omondi", "Financial Markets", "Football (Soccer)", 4, "🙂", "Great pitch turf, bibs and match balls ready. Allowances and transport processed promptly.", 0.78, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Allowances & Welfare"]), "GATE2_CHECKOUT", "Main Stadium Pitch", f"{now_init} 18:20:10"),
+                ("CBK-2404", "David Mutua", "Internal Audit", "Athletics & Track", 3, "😐", "Running track was well marked but changing room water pressure was low during morning peak.", 0.05, "NEUTRAL", json.dumps(["Pitches, Courts & Tracks", "Hygiene & Changing Rooms"]), "PORTAL_FEEDBACK", "Stadium Running Track", f"{now_init} 07:10:45"),
+                ("CBK-2411", "Collins Koech", "Payments & Settlement Systems", "Squash", 5, "🤩", "Glass court spotless and clean. Seamless check-in at viewing desk, fast QR scan.", 0.90, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Gate & Access Speed"]), "GATE2_CHECKOUT", "Squash Complex - Glass Court 1", f"{now_init} 12:40:00"),
+                ("CBK-2402", "Grace Wanjiku", "Human Resources", "Netball", 5, "🤩", "Safi sana, mazoezi yalienda vizuri na chai na maji yalipatikana kwa wakati.", 0.88, "POSITIVE", json.dumps(["Coaching & Team Morale", "Allowances & Welfare"]), "PORTAL_FEEDBACK", "East Court Pavilion", f"{now_init} 17:35:12"),
+                ("CBK-1033", "Kevin Kiprono", "IT & Digital Services", "Basketball", 4, "🙂", "Court surface clean and hoop nets in good shape. Very fast dual-gate checkout.", 0.80, "POSITIVE", json.dumps(["Pitches, Courts & Tracks", "Gate & Access Speed"]), "GATE2_CHECKOUT", "Indoor Arena Court 1", f"{now_init} 18:50:22")
             ]
             cur.executemany("""
                 INSERT INTO facility_feedback_registry (
                     staff_id, full_name, department, discipline, rating, emoji,
                     feedback_text, sentiment_score, sentiment_label, aspects_json,
-                    touchpoint, submitted_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    touchpoint, venue, submitted_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, sample_feedback)
 
         conn.commit()
@@ -3055,10 +3061,11 @@ class AttendanceBackend:
         discipline: str,
         rating: int,
         feedback_text: str = "",
+        venue: str = "",
         touchpoint: str = "PORTAL_CHECKOUT"
     ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
         """
-        Painless 1-tap feedback logger with NLP sentiment analysis.
+        Painless 1-tap feedback logger with NLP sentiment analysis and practice venue tracking.
         Works with or without text. If text is omitted, calculates baseline sentiment from rating.
         """
         emoji_map = {1: "😡", 2: "🙁", 3: "😐", 4: "🙂", 5: "🤩"}
@@ -3075,12 +3082,12 @@ class AttendanceBackend:
                 INSERT INTO facility_feedback_registry (
                     staff_id, full_name, department, discipline, rating, emoji,
                     feedback_text, sentiment_score, sentiment_label, aspects_json,
-                    touchpoint, submitted_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    touchpoint, venue, submitted_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 staff_id, full_name, department, discipline, rating, emoji,
                 feedback_text, nlp_res["polarity"], nlp_res["label"], aspects_json_str,
-                touchpoint, now_str
+                touchpoint, venue, now_str
             ))
             new_id = cur.lastrowid
             conn.commit()
@@ -3099,6 +3106,7 @@ class AttendanceBackend:
                 "sentiment_label": nlp_res["label"],
                 "aspects": nlp_res["aspects"],
                 "touchpoint": touchpoint,
+                "venue": venue,
                 "submitted_at": now_str
             }
             return True, f"Feedback recorded! Sentiment: {nlp_res['label']} ({nlp_res['polarity']:+.2f})", record
@@ -3108,18 +3116,21 @@ class AttendanceBackend:
     def update_facility_feedback_text(
         self,
         feedback_id: int,
-        feedback_text: str
+        feedback_text: str,
+        venue: Optional[str] = None
     ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
-        """Updates an existing feedback record with text or aspect tags and re-runs NLP."""
+        """Updates an existing feedback record with text, practice venue, or aspect tags and re-runs NLP."""
         try:
             conn = sqlite3.connect(self.db_path)
             cur = conn.cursor()
-            cur.execute("SELECT rating, staff_id, full_name, discipline FROM facility_feedback_registry WHERE id = ?", (feedback_id,))
+            cur.execute("SELECT rating, staff_id, full_name, discipline, venue FROM facility_feedback_registry WHERE id = ?", (feedback_id,))
             row = cur.fetchone()
             if not row:
                 conn.close()
                 return False, "Record not found", None
             rating = row[0]
+            existing_venue = row[4] or ""
+            target_venue = venue if venue is not None else existing_venue
             nlp_res = self.analyze_facility_feedback_nlp(feedback_text, rating=rating)
             aspects_json_str = json.dumps(nlp_res["aspects"])
             
@@ -3128,9 +3139,10 @@ class AttendanceBackend:
                 SET feedback_text = ?,
                     sentiment_score = ?,
                     sentiment_label = ?,
-                    aspects_json = ?
+                    aspects_json = ?,
+                    venue = ?
                 WHERE id = ?
-            """, (feedback_text, nlp_res["polarity"], nlp_res["label"], aspects_json_str, feedback_id))
+            """, (feedback_text, nlp_res["polarity"], nlp_res["label"], aspects_json_str, target_venue, feedback_id))
             conn.commit()
             conn.close()
             return True, "Feedback note updated with AI sentiment!", nlp_res
@@ -3158,7 +3170,7 @@ class AttendanceBackend:
         return rows
 
     def get_facility_feedback_metrics(self, discipline: Optional[str] = None) -> Dict[str, Any]:
-        """Calculates Net Promoter Score, CSAT, aspect breakdowns, and discipline rankings."""
+        """Calculates Net Promoter Score, CSAT, aspect breakdowns, practice venue rankings, and discipline rankings."""
         conn = sqlite3.connect(self.db_path)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -3182,6 +3194,7 @@ class AttendanceBackend:
                 "negative_pct": 0,
                 "aspects_count": {},
                 "discipline_rankings": [],
+                "venue_rankings": [],
                 "recent_rows": []
             }
             
@@ -3226,6 +3239,27 @@ class AttendanceBackend:
                 "avg_rating": avg_d
             })
         discipline_rankings.sort(key=lambda x: (x["avg_rating"], x["count"]), reverse=True)
+
+        # Venue / Practice Places ranking
+        venue_stats = {}
+        for r in rows:
+            v = r.get("venue")
+            if v and str(v).strip():
+                v_clean = str(v).strip()
+                if v_clean not in venue_stats:
+                    venue_stats[v_clean] = {"ratings": [], "count": 0}
+                venue_stats[v_clean]["ratings"].append(r["rating"])
+                venue_stats[v_clean]["count"] += 1
+                
+        venue_rankings = []
+        for v, s in venue_stats.items():
+            avg_v = round(sum(s["ratings"]) / s["count"], 2)
+            venue_rankings.append({
+                "venue": v,
+                "count": s["count"],
+                "avg_rating": avg_v
+            })
+        venue_rankings.sort(key=lambda x: (x["avg_rating"], x["count"]), reverse=True)
         
         return {
             "total": total,
@@ -3236,6 +3270,7 @@ class AttendanceBackend:
             "negative_pct": neg_pct,
             "aspects_count": aspect_counts,
             "discipline_rankings": discipline_rankings,
+            "venue_rankings": venue_rankings,
             "recent_rows": rows[:50]
         }
 
@@ -3410,7 +3445,7 @@ class CBKEmailDispatcher:
         full_name: str,
         cbk_email: str,
         discipline: str = "Golf",
-        portal_url: str = "https://pro-retrieve-jackson-counter.trycloudflare.com"
+        portal_url: str = "https://cbk-stride.streamlit.app"
     ) -> Dict[str, Any]:
         """
         Simulates and generates a one-click cryptographic magic link email

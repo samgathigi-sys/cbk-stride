@@ -35,8 +35,8 @@ echo.
 echo ===========================================================================
 echo   YOUR LIVE PRESENTATION LINKS FOR THE BOARD:
 echo   -------------------------------------------------------------------------
-echo   * PUBLIC LIVE URL (FOR BOARD PHONES / TABLETS):
-echo     https://variations-ribbon-cached-expires.trycloudflare.com
+echo   * PERMANENT CLOUD PORTAL (GITHUB & STREAMLIT ENTERPRISE CLOUD):
+echo     https://cbk-stride.streamlit.app
 echo.
 echo   * LOCAL DIRECT PORTAL (LAPTOP PROJECTOR / SCREEN):
 echo     http://localhost:8501
@@ -45,7 +45,7 @@ echo   * LOCAL WI-FI IP (DEVICES ON SAME CBK / HOME WI-FI):
 echo     http://192.168.1.35:8501
 echo.
 echo   * GOLFER CONFIRMATION DEMO (S. N. GATHIGI - CBK-1008):
-echo     https://variations-ribbon-cached-expires.trycloudflare.com?verify_token=a410c713c72358d5^&staff_id=CBK-1008^&email=sam.gathigi@gmail.com^&discipline=Golf^&confirmed=1
+echo     https://cbk-stride.streamlit.app?verify_token=a410c713c72358d5^&staff_id=CBK-1008^&email=sam.gathigi@gmail.com^&discipline=Golf^&confirmed=1
 echo ===========================================================================
 echo.
 

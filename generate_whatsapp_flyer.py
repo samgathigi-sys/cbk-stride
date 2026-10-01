@@ -14,7 +14,7 @@ import qrcode
 
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 LOGO_PATH = os.path.join(OUTPUT_DIR, "cbk_logo.png")
-PORTAL_URL = "https://variations-ribbon-cached-expires.trycloudflare.com"
+PORTAL_URL = "https://cbk-stride.streamlit.app"
 
 # CBK Corporate Palette
 COLOR_NAVY_BG = (8, 20, 40)            # #081428 Deep Midnight Navy
