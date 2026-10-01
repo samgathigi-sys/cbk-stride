@@ -1291,6 +1291,24 @@ class AttendanceBackend:
                     conn.close()
                     return [dict(r) for r in rows]
 
+        # Check token-based multi-word match (e.g. "Peter Gatere" matching "Peter Kariuki Gatere")
+        words = [w for w in re.split(r'[\s,]+', q.strip()) if len(w) >= 2]
+        if len(words) > 1:
+            clauses = " AND ".join(["(LOWER(full_name) LIKE ? OR LOWER(cbk_email) LIKE ? OR LOWER(department) LIKE ?)" for _ in words])
+            params = []
+            for w in words:
+                params.extend([f"%{w.lower()}%", f"%{w.lower()}%", f"%{w.lower()}%"])
+            cur.execute(f"""
+                SELECT * FROM staff_registry
+                WHERE {clauses}
+                ORDER BY staff_id ASC
+                LIMIT ?
+            """, (*params, limit))
+            m_rows = cur.fetchall()
+            if m_rows:
+                conn.close()
+                return [dict(r) for r in m_rows]
+
         # Multi-attribute wildcard query
         pattern_id = f"%{q_num}%" if q_num and len(q_num) >= 2 else f"%{q}%"
         pattern_text = f"%{q.lower()}%"
