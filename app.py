@@ -1229,16 +1229,53 @@ def render_painless_satisfaction_widget(
     """
     sub_key = f"fb_state_{key_prefix}"
     venue_key = f"{key_prefix}_venue_val"
+    disc_tracker_key = f"{key_prefix}_disc_tracker"
     
     # Resolve default venue based on discipline or explicit venue passed
     def_venue = default_venue or DISCIPLINE_DEFAULT_VENUES.get(discipline, "🏋️ CBK Wellness Complex & Studio (Gymnasium)")
-    if venue_key not in st.session_state:
+    
+    # If discipline changed or venue not yet initialized, synchronize with the sport's venue
+    if venue_key not in st.session_state or st.session_state.get(disc_tracker_key) != discipline:
         st.session_state[venue_key] = def_venue
+        st.session_state[disc_tracker_key] = discipline
 
     submitted = st.session_state.get(sub_key)
-    active_venue = st.session_state.get(venue_key, def_venue)
 
-    # Radiant glowing card container
+    # 1. Practice Venue Selector & Fast Switch Chips (Evaluated FIRST so card is always in lockstep)
+    c_ven_sel, c_ven_chips = st.columns([1.3, 1.7])
+    with c_ven_sel:
+        cur_stored_v = st.session_state.get(venue_key, def_venue)
+        v_idx = PRACTICE_VENUES_REGISTRY.index(cur_stored_v) if cur_stored_v in PRACTICE_VENUES_REGISTRY else 0
+        selected_venue = st.selectbox(
+            "📍 Practice Venue / Facility Where You're Training Right Now:",
+            PRACTICE_VENUES_REGISTRY,
+            index=v_idx,
+            key=f"{key_prefix}_venue_dropdown"
+        )
+        st.session_state[venue_key] = selected_venue
+        active_venue = selected_venue
+
+    with c_ven_chips:
+        st.markdown("<div style='font-size: 0.74rem; color: #94A3B8; font-weight: 700; margin-bottom: 4px;'>⚡ 1-Tap Quick Venue Switch:</div>", unsafe_allow_html=True)
+        ch_c1, ch_c2, ch_c3, ch_c4 = st.columns(4)
+        with ch_c1:
+            if st.button("🏊 Tatu City", key=f"{key_prefix}_chip_v_tatu", use_container_width=True):
+                st.session_state[venue_key] = "🏊 Crawford International School (Tatu City) - Olympic Pool"
+                st.rerun()
+        with ch_c2:
+            if st.button("🏋️ CBK Gym", key=f"{key_prefix}_chip_v_gym", use_container_width=True):
+                st.session_state[venue_key] = "🏋️ CBK Wellness Complex & Studio (Gymnasium)"
+                st.rerun()
+        with ch_c3:
+            if st.button("⛳ Muthaiga", key=f"{key_prefix}_chip_v_golf", use_container_width=True):
+                st.session_state[venue_key] = "⛳ Muthaiga Golf Club - Championship Course"
+                st.rerun()
+        with ch_c4:
+            if st.button("🏃 Stadium", key=f"{key_prefix}_chip_v_track", use_container_width=True):
+                st.session_state[venue_key] = "🏃 Nyayo / Kasarani Stadium (Athletics Track)"
+                st.rerun()
+
+    # 2. Radiant glowing card container (Synchronized with active_venue)
     st.markdown(f"""
     <div class="practice-pulse-glow">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
@@ -1262,40 +1299,6 @@ def render_painless_satisfaction_widget(
         </p>
     </div>
     """, unsafe_allow_html=True)
-
-    # Practice Venue Selector & Fast Switch Chips
-    c_ven_sel, c_ven_chips = st.columns([1.2, 1.8])
-    with c_ven_sel:
-        v_idx = PRACTICE_VENUES_REGISTRY.index(active_venue) if active_venue in PRACTICE_VENUES_REGISTRY else 0
-        new_venue = st.selectbox(
-            "📍 Change Practice Venue / Facility:",
-            PRACTICE_VENUES_REGISTRY,
-            index=v_idx,
-            key=f"{key_prefix}_venue_dropdown"
-        )
-        if new_venue != active_venue:
-            st.session_state[venue_key] = new_venue
-            active_venue = new_venue
-
-    with c_ven_chips:
-        st.markdown("<div style='font-size: 0.74rem; color: #94A3B8; font-weight: 700; margin-bottom: 4px;'>⚡ 1-Tap Quick Venue Switch:</div>", unsafe_allow_html=True)
-        ch_c1, ch_c2, ch_c3, ch_c4 = st.columns(4)
-        with ch_c1:
-            if st.button("🏊 Tatu City", key=f"{key_prefix}_chip_v_tatu", use_container_width=True):
-                st.session_state[venue_key] = "🏊 Crawford International School (Tatu City) - Olympic Pool"
-                st.rerun()
-        with ch_c2:
-            if st.button("🏋️ CBK Gym", key=f"{key_prefix}_chip_v_gym", use_container_width=True):
-                st.session_state[venue_key] = "🏋️ CBK Wellness Complex & Studio (Gymnasium)"
-                st.rerun()
-        with ch_c3:
-            if st.button("⛳ Muthaiga", key=f"{key_prefix}_chip_v_golf", use_container_width=True):
-                st.session_state[venue_key] = "⛳ Muthaiga Golf Club - Championship Course"
-                st.rerun()
-        with ch_c4:
-            if st.button("🏃 Stadium", key=f"{key_prefix}_chip_v_track", use_container_width=True):
-                st.session_state[venue_key] = "🏃 Nyayo / Kasarani Stadium (Athletics Track)"
-                st.rerun()
 
     f1, f2, f3, f4, f5 = st.columns(5)
     faces = [
