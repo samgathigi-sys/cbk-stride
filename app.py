@@ -1436,15 +1436,22 @@ def render_painless_satisfaction_widget(
         else:
             chip_list = [(v.split(" - ")[0].split(" (")[0][:17] + ("…" if len(v.split(" - ")[0].split(" (")[0]) > 17 else ""), v) for v in available_venues[:4]]
 
+        def _on_chip_switch(chosen_v):
+            st.session_state[dropdown_key] = chosen_v
+            st.session_state[venue_key] = chosen_v
+            if "Golf" in chosen_v:
+                st.session_state[chose_golf_key] = True
+
         ch_cols = st.columns(len(chip_list))
         for idx, (ch_col, (chip_lbl, opt_venue)) in enumerate(zip(ch_cols, chip_list)):
             with ch_col:
-                if st.button(chip_lbl, key=f"{key_prefix}_chip_{idx}", use_container_width=True):
-                    if "Golf" in opt_venue:
-                        st.session_state[chose_golf_key] = True
-                    st.session_state[venue_key] = opt_venue
-                    st.session_state[dropdown_key] = opt_venue
-                    st.rerun()
+                st.button(
+                    chip_lbl,
+                    key=f"{key_prefix}_chip_{idx}",
+                    use_container_width=True,
+                    on_click=_on_chip_switch,
+                    args=(opt_venue,)
+                )
 
     # Determine dynamic active sport from venue for public mode
     if not is_captain_mode:
@@ -1930,7 +1937,6 @@ with tab_dict["📱 Mobile Check-In"]:
                                 st.session_state["active_staff_id"] = m["staff_id"].replace("CBK-", "")
                                 if m.get("primary_sport") and m["primary_sport"] != active_sport and m["primary_sport"] in all_18_sports:
                                     st.session_state["active_discipline"] = m["primary_sport"]
-                                    st.session_state["global_sport_picker"] = m["primary_sport"]
                                 st.session_state[f"search_txt_{active_sport}"] = ""
                                 st.rerun()
                     matched_profile = search_results[0]
@@ -1940,7 +1946,6 @@ with tab_dict["📱 Mobile Check-In"]:
                     if m_sport and m_sport != active_sport and m_sport in all_18_sports:
                         p_disp_match = matched_profile['full_name'] if cur_officer else mask_name_banking(matched_profile['full_name'])
                         st.session_state["active_discipline"] = m_sport
-                        st.session_state["global_sport_picker"] = m_sport
                         st.session_state["active_staff_id"] = matched_profile["staff_id"].replace("CBK-", "")
                         st.toast(f"🎯 Switched to {m_sport} for {p_disp_match} ({matched_profile['staff_id']})!", icon="🔄")
                         st.rerun()
