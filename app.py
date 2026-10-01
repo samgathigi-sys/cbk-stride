@@ -2084,7 +2084,7 @@ with tab_dict["📱 Mobile Check-In"]:
                 f'</div>'
                 f'<div style="font-size: 1.65rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.3px; margin-bottom: 3px; text-shadow: 0 0 12px rgba(0,242,254,0.25);">{disp_card_name}</div>'
                 f'<div style="color: #94A3B8; font-size: 0.85rem; margin-bottom: 14px; font-weight: 500;">🏛️ {profile["department"]} • ✉️ <span style="color: #CBD5E1;">{mask_email(profile.get("cbk_email"))}</span>'
-                f'{" • 📞 <span style=\"color: #CBD5E1;\">" + (profile.get("phone_number") if cur_officer else mask_phone(profile.get("phone_number"))) + "</span>" if profile.get("phone_number") else ""}</div>'
+                f'{" • 📞 <span style=\"color: #CBD5E1;\">" + mask_phone(profile.get("phone_number")) + "</span>" if profile.get("phone_number") else ""}</div>'
                 f'<div style="background: rgba(4, 14, 28, 0.85); border: 1.5px solid rgba(245, 197, 66, 0.35); border-radius: 12px; padding: 12px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem; color: #FFFFFF;">'
                 f'<div>🏃 <strong>Discipline:</strong> <span style="color: #F5C542; font-weight: 800;">{athlete_sport}</span></div>'
                 f'<div>⏱️ <strong>Required Duration:</strong> <span style="color: #00F2FE; font-weight: 800;">Min 45 Mins Threshold</span></div>'

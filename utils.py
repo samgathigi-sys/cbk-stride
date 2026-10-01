@@ -74,18 +74,27 @@ CBK_COLORS = {
 # DATA PRIVACY & PII MASKING UTILITIES (KENYA DATA PROTECTION ACT 2019)
 # ==============================================================================
 def mask_phone(phone: Optional[str]) -> str:
-    """Masks personal phone number for public terminals: +254 725 321 365 -> +254 725 *** 365"""
+    """
+    Masks personal phone number with elevated privacy (scrubbing 2 additional digits):
+    '+254 721 341 237' -> '+254 72* *** *37'
+    '0722 123 456'     -> '072* *** *56'
+    """
     if not phone:
         return "Not Provided"
     p = str(phone).strip()
-    if len(p) <= 4:
+    digits = re.sub(r'[^0-9]', '', p)
+    if len(digits) < 7:
         return "****"
-    clean_digits = re.sub(r'[^0-9+]', '', p)
-    if len(clean_digits) >= 9:
-        prefix = p[:8]
-        suffix = p[-3:]
-        return f"{prefix} *** {suffix}"
-    return f"{p[:3]} **** {p[-2:]}"
+    
+    if digits.startswith("254") and len(digits) >= 12:
+        sub = digits[3:]
+        return f"+254 {sub[:2]}* *** *{sub[-2:]}"
+    elif digits.startswith("0") and len(digits) >= 10:
+        return f"{digits[:3]}* *** *{digits[-2:]}"
+    elif len(digits) >= 9:
+        return f"{digits[:3]}* *** *{digits[-2:]}"
+    else:
+        return f"{p[:3]} **** {p[-2:]}"
 
 def mask_email(email: Optional[str]) -> str:
     """
