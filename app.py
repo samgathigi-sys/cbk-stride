@@ -1177,6 +1177,124 @@ def render_captain_calendar_section(discipline: str, is_authorized: bool, key_pr
 # ==============================================================================
 # PAINLESS 1-CLICK SATISFACTION REACTION WIDGET (AI POWERED NLP & VENUES)
 # ==============================================================================
+# Discipline-specific venue registry mapping
+DISCIPLINE_VENUES_MAP = {
+    "Golf": [
+        "⛳ Muthaiga Golf Club - Championship Course",
+        "⛳ Karen Country Club",
+        "⛳ Kenya Railway Golf Club",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium Conditioning)",
+        "📍 Other / Offsite Golf Facility"
+    ],
+    "Swimming": [
+        "🏊 Crawford International School (Tatu City) - Olympic Pool",
+        "🏊 YMCA Nairobi Central - Olympic Pool",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium Dryland)",
+        "📍 Other / Offsite Swimming Facility"
+    ],
+    "Football": [
+        "⚽ Sports Complex Main Arena (Football Pitch)",
+        "⚽ Lower Grounds Training Pitch",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Football Pitch"
+    ],
+    "Football (Soccer)": [
+        "⚽ Sports Complex Main Arena (Football Pitch)",
+        "⚽ Lower Grounds Training Pitch",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Football Pitch"
+    ],
+    "Athletics": [
+        "🏃 Nyayo / Kasarani Stadium (Athletics Track)",
+        "🏃 CBK Sports Club Perimeter Circuit Track",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Athletics Trail"
+    ],
+    "Athletics & Track": [
+        "🏃 Nyayo / Kasarani Stadium (Athletics Track)",
+        "🏃 CBK Sports Club Perimeter Circuit Track",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Athletics Trail"
+    ],
+    "Basketball": [
+        "🏀 Indoor Sports Hall (Basketball Arena)",
+        "🏀 Outdoor Hard Courts (Court 1)",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Basketball Court"
+    ],
+    "Volleyball": [
+        "🏐 East Pavilion (Volleyball & Netball Courts)",
+        "🏐 Outdoor Sand & Hard Courts",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Volleyball Court"
+    ],
+    "Netball": [
+        "🏐 East Pavilion (Volleyball & Netball Courts)",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Netball Court"
+    ],
+    "Squash": [
+        "💥 Squash Complex (Glass Courts 1 & 2)",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Squash Court"
+    ],
+    "Lawn Tennis": [
+        "🎾 Tennis Centre - Courts 1-4",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Tennis Court"
+    ],
+    "Table Tennis": [
+        "🏓 Recreation Hall - Zone A",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Table Tennis Hall"
+    ],
+    "Badminton": [
+        "🏸 Multi-Purpose Indoor Hall - Bay 2",
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "📍 Other / Offsite Badminton Court"
+    ],
+    "Chess": [
+        "♟️ Quiet Strategy Room 3",
+        "♟️ CBK Club House (Chess & Darts Lounge)",
+        "📍 Other / Offsite Chess Venue"
+    ],
+    "Darts": [
+        "🎯 Staff Club Lounge - Darts Arena",
+        "♟️ CBK Club House (Chess & Darts Lounge)",
+        "📍 Other / Offsite Darts Venue"
+    ],
+    "General Wellness": [
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "🥋 Aerobics & Martial Arts Studio",
+        "📍 Other / Offsite Wellness Facility"
+    ],
+    "Physical Fitness & Aerobics": [
+        "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
+        "🥋 Aerobics & Martial Arts Studio",
+        "📍 Other / Offsite Studio"
+    ],
+    "Snooker / Pool": [
+        "🎱 Billiards & Cue Room",
+        "♟️ CBK Club House",
+        "📍 Other / Offsite Billiards Room"
+    ],
+    "Pool / Snooker": [
+        "🎱 Billiards & Cue Room",
+        "♟️ CBK Club House",
+        "📍 Other / Offsite Billiards Room"
+    ],
+    "Tug of War": [
+        "⚽ Sports Complex Main Arena",
+        "Lower Grounds Grass Arena",
+        "📍 Other / Offsite Ground"
+    ],
+    "Cycling": [
+        "🏃 Perimeter Track & Outpost Loop",
+        "🏋️ CBK Wellness Complex (Spin Studio)",
+        "📍 Other / Offsite Cycling Circuit"
+    ],
+}
+
 PRACTICE_VENUES_REGISTRY = [
     "🏊 Crawford International School (Tatu City) - Olympic Pool",
     "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
@@ -1191,26 +1309,17 @@ PRACTICE_VENUES_REGISTRY = [
     "📍 Other / Offsite Training Facility"
 ]
 
-DISCIPLINE_DEFAULT_VENUES = {
-    "Swimming": "🏊 Crawford International School (Tatu City) - Olympic Pool",
-    "Golf": "⛳ Muthaiga Golf Club - Championship Course",
-    "Athletics": "🏃 Nyayo / Kasarani Stadium (Athletics Track)",
-    "Football": "⚽ Sports Complex Main Arena (Football Pitch)",
-    "Squash": "💥 Squash Complex (Glass Courts 1 & 2)",
-    "Basketball": "🏀 Indoor Sports Hall (Basketball Arena)",
-    "Volleyball": "🏐 East Pavilion (Volleyball & Netball Courts)",
-    "Netball": "🏐 East Pavilion (Volleyball & Netball Courts)",
-    "Gym": "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
-    "Fitness": "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
-    "Darts": "♟️ CBK Club House (Chess & Darts Lounge)",
-    "Chess": "♟️ CBK Club House (Chess & Darts Lounge)",
-    "Table Tennis": "🏓 Racket Sports Pavilion",
-    "Badminton": "🏸 Indoor Sports Hall (Basketball Arena)",
-    "Tug of War": "⚽ Sports Complex Main Arena (Football Pitch)",
-    "Pool": "♟️ CBK Club House (Chess & Darts Lounge)",
-    "Snooker": "♟️ CBK Club House (Chess & Darts Lounge)",
-    "General Wellness": "🏋️ CBK Wellness Complex & Studio (Gymnasium)",
-}
+def get_venues_for_discipline(discipline: str) -> List[str]:
+    """Returns valid practice facilities strictly relevant to the active sporting discipline."""
+    disc_clean = str(discipline or "").strip()
+    if disc_clean in DISCIPLINE_VENUES_MAP:
+        return DISCIPLINE_VENUES_MAP[disc_clean]
+    for k, v in DISCIPLINE_VENUES_MAP.items():
+        if k.lower() in disc_clean.lower() or disc_clean.lower() in k.lower():
+            return v
+    return PRACTICE_VENUES_REGISTRY
+
+DISCIPLINE_DEFAULT_VENUES = {k: v[0] for k, v in DISCIPLINE_VENUES_MAP.items()}
 
 def render_painless_satisfaction_widget(
     staff_id: str = "CBK-ATHLETE",
@@ -1224,58 +1333,70 @@ def render_painless_satisfaction_widget(
     """
     Renders an ultra-fast, painless 1-click satisfaction widget with 5 emoji faces:
     😡 (1 - Frustrated), 🙁 (2 - Poor), 😐 (3 - Okay), 🙂 (4 - Good), 🤩 (5 - Loved It!).
-    Equipped with a radiant gold/cyan glowing halo and 1-tap practice venue tagging
-    so staff & athletes can evaluate the specific training facility where they practice.
+    Equipped with discipline-isolated training facilities, zero wrong assumptions,
+    and instantaneous 1-tap rating.
     """
     sub_key = f"fb_state_{key_prefix}"
     venue_key = f"{key_prefix}_venue_val"
     disc_tracker_key = f"{key_prefix}_disc_tracker"
+    dropdown_key = f"{key_prefix}_venue_dropdown"
     
-    # Resolve default venue based on discipline or explicit venue passed
-    def_venue = default_venue or DISCIPLINE_DEFAULT_VENUES.get(discipline, "🏋️ CBK Wellness Complex & Studio (Gymnasium)")
+    # 1. Resolve authentic venues strictly for this sporting discipline
+    available_venues = get_venues_for_discipline(discipline)
+    def_venue = default_venue if (default_venue and default_venue in available_venues) else available_venues[0]
     
-    # If discipline changed or venue not yet initialized, synchronize with the sport's venue
-    if venue_key not in st.session_state or st.session_state.get(disc_tracker_key) != discipline:
+    # 2. Strict State Synchronization: If discipline changed, venue not initialized,
+    # or previous dropdown value belongs to another sport, immediately synchronize to def_venue.
+    curr_disc = st.session_state.get(disc_tracker_key)
+    curr_ven = st.session_state.get(venue_key)
+    curr_drop = st.session_state.get(dropdown_key)
+
+    if (
+        curr_disc != discipline
+        or curr_ven not in available_venues
+        or curr_drop not in available_venues
+    ):
         st.session_state[venue_key] = def_venue
+        st.session_state[dropdown_key] = def_venue
         st.session_state[disc_tracker_key] = discipline
 
     submitted = st.session_state.get(sub_key)
+    # Clear stale historical feedback card if it belonged to a different discipline or facility
+    if submitted and (submitted.get("discipline") != discipline or submitted.get("venue") not in available_venues):
+        st.session_state[sub_key] = None
+        submitted = None
 
-    # 1. Practice Venue Selector & Fast Switch Chips (Evaluated FIRST so card is always in lockstep)
+    # 3. Practice Venue Selector & Discipline-Specific Fast Switch Chips
     c_ven_sel, c_ven_chips = st.columns([1.3, 1.7])
     with c_ven_sel:
-        cur_stored_v = st.session_state.get(venue_key, def_venue)
-        v_idx = PRACTICE_VENUES_REGISTRY.index(cur_stored_v) if cur_stored_v in PRACTICE_VENUES_REGISTRY else 0
+        target_v = st.session_state.get(dropdown_key, def_venue)
+        v_idx = available_venues.index(target_v) if target_v in available_venues else 0
         selected_venue = st.selectbox(
             "📍 Practice Venue / Facility Where You're Training Right Now:",
-            PRACTICE_VENUES_REGISTRY,
+            available_venues,
             index=v_idx,
-            key=f"{key_prefix}_venue_dropdown"
+            key=dropdown_key
         )
         st.session_state[venue_key] = selected_venue
         active_venue = selected_venue
 
     with c_ven_chips:
         st.markdown("<div style='font-size: 0.74rem; color: #94A3B8; font-weight: 700; margin-bottom: 4px;'>⚡ 1-Tap Quick Venue Switch:</div>", unsafe_allow_html=True)
-        ch_c1, ch_c2, ch_c3, ch_c4 = st.columns(4)
-        with ch_c1:
-            if st.button("🏊 Tatu City", key=f"{key_prefix}_chip_v_tatu", use_container_width=True):
-                st.session_state[venue_key] = "🏊 Crawford International School (Tatu City) - Olympic Pool"
-                st.rerun()
-        with ch_c2:
-            if st.button("🏋️ CBK Gym", key=f"{key_prefix}_chip_v_gym", use_container_width=True):
-                st.session_state[venue_key] = "🏋️ CBK Wellness Complex & Studio (Gymnasium)"
-                st.rerun()
-        with ch_c3:
-            if st.button("⛳ Muthaiga", key=f"{key_prefix}_chip_v_golf", use_container_width=True):
-                st.session_state[venue_key] = "⛳ Muthaiga Golf Club - Championship Course"
-                st.rerun()
-        with ch_c4:
-            if st.button("🏃 Stadium", key=f"{key_prefix}_chip_v_track", use_container_width=True):
-                st.session_state[venue_key] = "🏃 Nyayo / Kasarani Stadium (Athletics Track)"
-                st.rerun()
+        # Offer dynamic chips tailored specifically to this discipline
+        chip_options = available_venues[:4]
+        ch_cols = st.columns(len(chip_options))
+        for idx, (ch_col, opt_venue) in enumerate(zip(ch_cols, chip_options)):
+            with ch_col:
+                # Clean label for chip
+                short_label = opt_venue.split(" - ")[0].split(" (")[0]
+                if len(short_label) > 18:
+                    short_label = short_label[:17] + "…"
+                if st.button(short_label, key=f"{key_prefix}_chip_{idx}", use_container_width=True):
+                    st.session_state[venue_key] = opt_venue
+                    st.session_state[dropdown_key] = opt_venue
+                    st.rerun()
 
-    # 2. Radiant glowing card container (Synchronized with active_venue)
+    # 4. Radiant glowing card container (Synchronized with active_venue & sport)
     st.markdown(f"""
     <div class="practice-pulse-glow">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
