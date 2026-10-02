@@ -3330,7 +3330,7 @@ if "📋 Captain's Roll Call" in tab_dict:
 # ==============================================================================
 # EXECUTIVE REAL-TIME NLP SENTIMENT & MEMBER SATISFACTION DASHBOARD
 # ==============================================================================
-def render_hr_satisfaction_nlp_dashboard():
+def render_hr_satisfaction_nlp_dashboard(key_prefix: str = "nlp_sat"):
     """
     Renders the executive-grade real-time NLP sentiment intelligence board.
     Displays Net Promoter Score (NPS), Average CSAT Star Rating,
@@ -3362,7 +3362,7 @@ def render_hr_satisfaction_nlp_dashboard():
             "Filter Satisfaction by Sporting Discipline:",
             ["All Sports"] + ALL_18_SPORTS,
             index=0,
-            key="sat_dash_disc_filter"
+            key=f"{key_prefix}_disc_filter"
         )
     with c_f2:
         st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
@@ -3431,7 +3431,7 @@ def render_hr_satisfaction_nlp_dashboard():
                     coloraxis_showscale=False,
                     font=dict(color="#F1F5F9")
                 )
-                st.plotly_chart(fig_asp, use_container_width=True)
+                st.plotly_chart(fig_asp, use_container_width=True, key=f"{key_prefix}_fig_asp")
             else:
                 st.info("Awaiting aspect feedback to plot operational metrics.")
 
@@ -3539,7 +3539,7 @@ def render_hr_satisfaction_nlp_dashboard():
                 file_name=f"CBK_Facility_Satisfaction_Sentiment_Ledger_{get_eat_today_str()}.csv",
                 mime="text/csv",
                 use_container_width=True,
-                key="btn_dl_facility_feedback_csv"
+                key=f"{key_prefix}_btn_dl_facility_feedback_csv"
             )
     else:
         st.info("No feedback records match the current filter.")
@@ -3932,7 +3932,7 @@ def render_tab_secretariat():
             st.info("Interaction stream is ready. Live user searches and venue toggles will appear here in real-time.")
 
     with st.expander("🤖 Member Voice & Facility Sentiment Live Telemetry", expanded=False):
-        render_hr_satisfaction_nlp_dashboard()
+        render_hr_satisfaction_nlp_dashboard(key_prefix="sec_nlp")
 
 if "🏛️ Secretariat Operations" in tab_dict:
     with tab_dict["🏛️ Secretariat Operations"]:
@@ -4005,7 +4005,7 @@ def render_tab_hr():
                     legend=dict(orientation="h", yanchor="bottom", y=-0.3, font=dict(size=10, color="#CBD5E1")),
                     font=dict(color="#F1F5F9")
                 )
-                st.plotly_chart(fig_cat, use_container_width=True)
+                st.plotly_chart(fig_cat, use_container_width=True, key="hr_fig_cat_pie")
             else:
                 st.info("🥧 Awaiting arrival scans to plot sport categories.")
 
@@ -4037,7 +4037,7 @@ def render_tab_hr():
                     yaxis=dict(autorange="reversed"),
                     font=dict(color="#F1F5F9")
                 )
-                st.plotly_chart(fig_bar, use_container_width=True)
+                st.plotly_chart(fig_bar, use_container_width=True, key="hr_fig_top_bar")
             else:
                 st.info("📈 Discipline popularity will calculate dynamically upon first check-ins.")
 
@@ -4073,7 +4073,7 @@ def render_tab_hr():
                 st.info("🌟 Leaderboard will populate as athletes complete verified sessions.")
 
     # Executive AI Sentiment & Member Satisfaction Intelligence Hub
-    render_hr_satisfaction_nlp_dashboard()
+    render_hr_satisfaction_nlp_dashboard(key_prefix="hr_nlp")
 
 if "📊 HR Analytics Command" in tab_dict:
     with tab_dict["📊 HR Analytics Command"]:
