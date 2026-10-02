@@ -753,6 +753,11 @@ CLUSTER_CONFIGS = {
     }
 }
 
+def clean_html_card(raw_html: str) -> str:
+    """Strips leading/trailing indentation from each line and removes blank lines to prevent CommonMark from treating HTML as code blocks."""
+    lines = [line.strip() for line in raw_html.strip().splitlines() if line.strip()]
+    return "".join(lines)
+
 with tab_wizard:
     st.markdown("### 🪄 Universal Event & AGM Commercial Scoping Wizard")
     st.caption("Answer 4 quick scoping questions to determine your platform deployment scope, calculate your customized fee, and provision certified gate scanners instantly via M-Pesa:")
@@ -771,7 +776,7 @@ with tab_wizard:
         is_wz_agm = ("AGM" in wz_cat or "Shareholder" in wz_cat)
 
         # Reactive defaults synchronization when category switches
-        if st.session_state.get("wz_active_cat_tracker") != wz_cat:
+        if "wz_active_cat_tracker" not in st.session_state or st.session_state.get("wz_active_cat_tracker") != wz_cat:
             st.session_state["wz_active_cat_tracker"] = wz_cat
             st.session_state["wz_e_title"] = cfg["title"]
             st.session_state["wz_e_host"] = cfg["host"]
@@ -779,12 +784,12 @@ with tab_wizard:
             st.session_state["wz_e_time"] = cfg["time"]
             st.session_state["wz_e_desc"] = cfg["desc"]
             st.session_state["wz_paid_chk"] = cfg["is_paid"]
-            st.session_state["wz_std_price"] = cfg["std_price"]
-            st.session_state["wz_vip_price"] = cfg["vip_price"]
+            st.session_state["wz_std_price"] = float(cfg["std_price"])
+            st.session_state["wz_vip_price"] = float(cfg["vip_price"])
 
         st.markdown("#### 1️⃣ Assembly Identity & Schedule")
-        e_title = st.text_input("Official Event / Assembly Name:*", value=st.session_state.get("wz_e_title", cfg["title"]), key="wz_e_title")
-        e_host = st.text_input("Society / Convening Corporate Body:*", value=st.session_state.get("wz_e_host", cfg["host"]), key="wz_e_host")
+        e_title = st.text_input("Official Event / Assembly Name:*", key="wz_e_title")
+        e_host = st.text_input("Society / Convening Corporate Body:*", key="wz_e_host")
 
         if is_wz_agm:
             c_agm_sub1, c_agm_sub2 = st.columns(2)
@@ -836,18 +841,18 @@ with tab_wizard:
         with ec1:
             e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14), key="wz_e_date")
         with ec2:
-            e_time = st.text_input("Start / Call-to-Order Time:", value=st.session_state.get("wz_e_time", cfg["time"]), key="wz_e_time")
+            e_time = st.text_input("Start / Call-to-Order Time:", key="wz_e_time")
 
-        e_venue = st.text_input("Venue & Physical Address:*", value=st.session_state.get("wz_e_venue", cfg["venue"]), key="wz_e_venue")
+        e_venue = st.text_input("Venue & Physical Address:*", key="wz_e_venue")
 
         if not is_wz_agm:
             tc1, tc2, tc3 = st.columns(3)
             with tc1:
-                e_paid = st.checkbox("Paid Event (Collect via M-Pesa)", value=st.session_state.get("wz_paid_chk", cfg["is_paid"]), key="wz_paid_chk")
+                e_paid = st.checkbox("Paid Event (Collect via M-Pesa)", key="wz_paid_chk")
             with tc2:
-                e_std_price = st.number_input("Standard Ticket (KES):", min_value=0.0, value=float(st.session_state.get("wz_std_price", cfg["std_price"])), step=100.0, key="wz_std_price")
+                e_std_price = st.number_input("Standard Ticket (KES):", min_value=0.0, step=100.0, key="wz_std_price")
             with tc3:
-                e_vip_price = st.number_input("VIP / Delegate (KES):", min_value=0.0, value=float(st.session_state.get("wz_vip_price", cfg["vip_price"])), step=500.0, key="wz_vip_price")
+                e_vip_price = st.number_input("VIP / Delegate (KES):", min_value=0.0, step=500.0, key="wz_vip_price")
 
             e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200", key="wz_paybill")
             default_gate_idx = 0 if cfg["gate_mode"] == "DUAL_GATE" else 1
@@ -877,7 +882,7 @@ with tab_wizard:
                 e_paybill = "N/A (COMPLIMENTARY)"
             clean_gate_mode = "SINGLE_GATE"
 
-        e_desc = st.text_area("Event Description / Statutory Notice & Instructions:*", value=st.session_state.get("wz_e_desc", cfg["desc"]), key="wz_e_desc")
+        e_desc = st.text_area("Event Description / Statutory Notice & Instructions:*", key="wz_e_desc")
 
         st.markdown("---")
         st.markdown("#### 2️⃣ Commercial Scope Questionnaire (Pricing Engine)")
@@ -1070,7 +1075,7 @@ with tab_wizard:
     </div>
 </div>
 """
-        st.markdown(textwrap.dedent(quote_card_html).strip(), unsafe_allow_html=True)
+        st.markdown(clean_html_card(quote_card_html), unsafe_allow_html=True)
 
         if cur_inv:
             inv_card_html = f"""
@@ -1085,7 +1090,7 @@ with tab_wizard:
     </div>
 </div>
 """
-            st.markdown(textwrap.dedent(inv_card_html).strip(), unsafe_allow_html=True)
+            st.markdown(clean_html_card(inv_card_html), unsafe_allow_html=True)
 
             inv_txt = f"""=======================================================
 STRIDE™ ENTERPRISE EVENT PLATFORM TAX INVOICE
@@ -1150,7 +1155,7 @@ Thank you for powering your event on STRIDE™ Enterprise."""
     </div>
 </div>
 """
-        st.markdown(textwrap.dedent(gate_desk_html).strip(), unsafe_allow_html=True)
+        st.markdown(clean_html_card(gate_desk_html), unsafe_allow_html=True)
 
         st.markdown("---")
         st.markdown("##### 📊 Live Published Events Directory")
