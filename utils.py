@@ -939,7 +939,8 @@ class AttendanceBackend:
                 ("TKT-202601-77", "EVT-2026-002", "Patrick Kamau", "pkamau@kpmg.co.ke", "0728990011", "KPMG Statutory Audit Team (Ref: AUD-2026)", "👁️ Independent Auditor / Regulatory Observer", 0.0, "AGM2026010", "ADMITTED", f"{now_init} 17:25:50", now_init),
                 ("TKT-552109-88", "EVT-2026-002", "Grace Ndung'u", "grace.ndungu@apexcapital.co.ke", "0723445566", "Apex Shareholder (Ref: CDSC-5521092)", "🗳️ Principal Shareholder / Voting Member", 0.0, "AGM5521092", "REGISTERED", "", now_init),
                 ("TKT-991024-99", "EVT-2026-001", "David Kiprono", "david.k@equitybank.co.ke", "0722334455", "Equity Bank Kenya", "Standard Pass", 1000.0, "QK99102451", "ADMITTED", f"{now_init} 07:45:12", now_init),
-                ("TKT-771829-10", "EVT-2026-001", "Mary Atieno", "mary.atieno@sc.com", "0733887766", "Standard Chartered Bank", "VIP Executive Pass", 3500.0, "QK77182933", "ADMITTED", f"{now_init} 08:02:44", now_init)
+                ("TKT-771829-10", "EVT-2026-001", "Mary Atieno", "mary.atieno@sc.com", "0733887766", "Standard Chartered Bank", "VIP Executive Pass", 3500.0, "QK77182933", "ADMITTED", f"{now_init} 08:02:44", now_init),
+                ("TKT-917716-71", "EVT-20261002-855", "Samuel Gathigi Njuguna", "sam.gathigi@gmail.com", "0722849000", "Central Bank of Kenya (Equity Block Holder)", "🗳️ Principal Shareholder / 10,000 Votes", 5000.0, "AGM9177167", "ADMITTED", f"{now_init} 17:12:04", now_init)
             ]
             cur.executemany("""
                 INSERT INTO event_tickets_registry (

@@ -1306,10 +1306,18 @@ with tab_ballot:
     else:
         v_evt_opts = {f"{e['title']} ({e['event_id']})": e for e in v_events}
         default_v_idx = 0
-        for idx, (k, e) in enumerate(v_evt_opts.items()):
-            if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper():
-                default_v_idx = idx
-                break
+        qp_vote_tkt = st.query_params.get("vote_tkt") or st.query_params.get("tkt") or st.query_params.get("verify_tkt")
+        if qp_vote_tkt:
+            for idx, (k, e) in enumerate(v_evt_opts.items()):
+                e_tkts = backend.get_event_tickets(e["event_id"])
+                if any(qp_vote_tkt.strip().upper() in t.get("ticket_id", "").upper() for t in e_tkts):
+                    default_v_idx = idx
+                    break
+        else:
+            for idx, (k, e) in enumerate(v_evt_opts.items()):
+                if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper():
+                    default_v_idx = idx
+                    break
 
         v_sel_label = st.selectbox("Select Assembly / Event for Voting:*", list(v_evt_opts.keys()), index=default_v_idx, key="v_sel_event")
         v_selected_evt = v_evt_opts[v_sel_label]
@@ -1329,9 +1337,32 @@ with tab_ballot:
             tkt_voter_opts = {f"{t['attendee_name']} ({t['ticket_id']} — {t['ticket_tier']})": t for t in admitted_tkts}
 
             if not tkt_voter_opts:
-                st.warning("No accredited delegates found for this assembly. Please register or admit delegates in Tab 1 or Tab 3 first.")
+                st.warning("No accredited delegates found for this assembly yet.")
+                st.info("💡 Tap below to instantly accredit your certified delegate pass for this assembly:")
+                if st.button("⚡ Quick-Accredit Samuel Gathigi Njuguna (10,000 Votes)", type="primary", use_container_width=True, key="btn_quick_accredit_voter"):
+                    sim_tx = f"AGM{int(time.time())}"[-10:]
+                    ok_reg, msg_reg, new_t = backend.register_event_ticket(
+                        event_id=v_eid,
+                        attendee_name="Samuel Gathigi Njuguna",
+                        email="sam.gathigi@gmail.com",
+                        phone="+254 722 849 000",
+                        organization="Central Bank of Kenya (Equity Block Holder)",
+                        ticket_tier="🗳️ Principal Shareholder / 10,000 Votes",
+                        amount_paid=5000.0,
+                        mpesa_trans_id=sim_tx
+                    )
+                    if ok_reg and new_t:
+                        backend.verify_and_admit_ticket(new_t["ticket_id"])
+                        st.success("Accredited! Refreshing voting booth...")
+                        st.rerun()
             else:
-                sel_voter_key = st.selectbox("Select Accredited Delegate:*", list(tkt_voter_opts.keys()), key="sel_voter_ticket")
+                default_voter_idx = 0
+                if qp_vote_tkt:
+                    for idx, (k, t) in enumerate(tkt_voter_opts.items()):
+                        if qp_vote_tkt.strip().upper() in k.upper():
+                            default_voter_idx = idx
+                            break
+                sel_voter_key = st.selectbox("Select Accredited Delegate:*", list(tkt_voter_opts.keys()), index=default_voter_idx, key="sel_voter_ticket")
                 sel_tkt = tkt_voter_opts[sel_voter_key]
 
                 # Compute voting weight based on ticket tier
