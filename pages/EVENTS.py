@@ -142,6 +142,8 @@ st.markdown("---")
 # READ QUERY PARAMS (IF ACCESSED VIA DIRECT EVENT QR OR LINK)
 # ------------------------------------------------------------------------------
 param_event_id = st.query_params.get("event_id", "")
+if not param_event_id and ("bks" in st.query_params or "bksacco" in st.query_params or "bankikuu" in st.query_params or st.query_params.get("bks", "") == "1"):
+    param_event_id = "EVT-BANKI-KUU-SACCO"
 
 # ------------------------------------------------------------------------------
 # MAIN PORTAL TABS
