@@ -602,6 +602,61 @@ with tab_reg:
                         st.session_state["pub_active_ticket"] = None
                         st.rerun()
 
+        # Accredited Member Roster Feed (Un-categorized for SACCO)
+        sacco_tickets = backend.get_tickets_by_event(selected_event['event_id'])
+        if sacco_tickets:
+            st.markdown("---")
+            st.markdown(f"### 📜 Live Accredited Member Roster & SASRA Quorum Feed ({len(sacco_tickets)} Members Recorded)")
+            st.caption("Live statutory shareholder accreditation feed. Shows all confirmed Banki Kuu SACCO members, proxy holders, board directors, and independent auditors:")
+
+            df_display = pd.DataFrame(sacco_tickets)
+            
+            show_cols = ["ticket_id", "attendee_name", "organization", "ticket_tier", "email", "phone", "gate_status", "mpesa_trans_id"]
+            avail_cols = [c for c in show_cols if c in df_display.columns]
+            df_show = df_display[avail_cols].copy()
+            
+            rename_map = {
+                "ticket_id": "Ticket Serial ID",
+                "attendee_name": "Delegate Full Name",
+                "organization": "Department / SACCO Branch Ref",
+                "ticket_tier": "Accreditation Role",
+                "email": "Email Address",
+                "phone": "Phone Number",
+                "gate_status": "Check-in Status",
+                "mpesa_trans_id": "M-Pesa Receipt Ref"
+            }
+            df_show.rename(columns=rename_map, inplace=True)
+
+            search_query = st.text_input("🔍 Search Live Roster (by Name, Account Ref, or Role):", placeholder="e.g. Samuel Gathigi / SACCO-3428 / Board Director", key=f"srch_roster_{selected_event['event_id']}")
+            if search_query.strip():
+                q = search_query.strip().lower()
+                df_show = df_show[
+                    df_show.apply(lambda r: any(q in str(v).lower() for v in r.values), axis=1)
+                ]
+
+            st.dataframe(df_show, use_container_width=True, height=380)
+
+            total_members = len(sacco_tickets)
+            quorum_needed = 50  # SASRA Statutory Quorum Floor
+            quorum_pct = min(100.0, (total_members / quorum_needed) * 100)
+            status_badge = "✅ STATUTORY AGM QUORUM ACHIEVED" if total_members >= quorum_needed else "⚠️ PENDING QUORUM ACCREDITATION"
+            
+            st.markdown(f"""
+            <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 10px; padding: 14px 18px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <span style="color: #34D399; font-weight: 800; font-size: 0.9rem;">{status_badge}</span>
+                    <div style="font-size: 0.8rem; color: #CBD5E1; margin-top: 2px;">
+                        Total Accredited Delegates: <strong>{total_members}</strong> • SASRA Statutory Quorum Floor: <strong>{quorum_needed} Members</strong> ({quorum_pct:.1f}% Reached)
+                    </div>
+                </div>
+                <div>
+                    <span style="background: #10B981; color: #020712; font-weight: 900; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem;">
+                        {total_members} / {quorum_needed} DELEGATES RECORDED
+                    </span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
 # ==============================================================================
 # TAB 2: EVENT CREATOR WIZARD (FOR ORGANIZERS & CORPORATES)
 # ==============================================================================
