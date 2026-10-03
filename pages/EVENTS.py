@@ -1475,16 +1475,15 @@ with tab_ballot:
     else:
         v_evt_opts = {f"{e['title']} ({e['event_id']})": e for e in v_events}
         default_v_idx = 0
+        for idx, (k, e) in enumerate(v_evt_opts.items()):
+            if "BANKI-KUU-SACCO" in e["event_id"].upper() or "BANKI KUU" in e["title"].upper():
+                default_v_idx = idx
+                break
         qp_vote_tkt = st.query_params.get("vote_tkt") or st.query_params.get("tkt") or st.query_params.get("verify_tkt")
         if qp_vote_tkt:
             for idx, (k, e) in enumerate(v_evt_opts.items()):
                 e_tkts = backend.get_event_tickets(e["event_id"])
                 if any(qp_vote_tkt.strip().upper() in t.get("ticket_id", "").upper() for t in e_tkts):
-                    default_v_idx = idx
-                    break
-        else:
-            for idx, (k, e) in enumerate(v_evt_opts.items()):
-                if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper():
                     default_v_idx = idx
                     break
 
