@@ -142,19 +142,29 @@ st.markdown("---")
 # READ QUERY PARAMS (IF ACCESSED VIA DIRECT EVENT QR OR LINK)
 # ------------------------------------------------------------------------------
 param_event_id = st.query_params.get("event_id", "")
-if not param_event_id and ("bks" in st.query_params or "bksacco" in st.query_params or "bankikuu" in st.query_params or st.query_params.get("bks", "") == "1"):
+is_bks_mode = (param_event_id == "EVT-BANKI-KUU-SACCO" or "bks" in st.query_params or "bksacco" in st.query_params or "bankikuu" in st.query_params or st.query_params.get("bks", "") == "1")
+if is_bks_mode:
     param_event_id = "EVT-BANKI-KUU-SACCO"
 
 # ------------------------------------------------------------------------------
 # MAIN PORTAL TABS
 # ------------------------------------------------------------------------------
-tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp = st.tabs([
-    "🎟️ Attendee Registration & Digital Pass",
-    "🪄 Event Creator Wizard (Organizers)",
-    "📷 Gate Usher Scanner & Accreditation Roster",
-    "🗳️ Digital Voting & Elections Booth",
-    "🤖 NLP Attendee Sentiment & Pulse Survey"
-])
+if is_bks_mode:
+    tab_reg, tab_verify, tab_ballot, tab_nlp = st.tabs([
+        "🎟️ Shareholder Accreditation & Bulk Roster",
+        "📷 Gate Usher Scanner & Quorum Meter",
+        "🗳️ Digital Voting & Elections Booth",
+        "🤖 Member Feedback & Sentiment Analysis"
+    ])
+    tab_wizard = None
+else:
+    tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp = st.tabs([
+        "🎟️ Attendee Registration & Digital Pass",
+        "🪄 Event Creator Wizard (Organizers)",
+        "📷 Gate Usher Scanner & Accreditation Roster",
+        "🗳️ Digital Voting & Elections Booth",
+        "🤖 NLP Attendee Sentiment & Pulse Survey"
+    ])
 
 # ==============================================================================
 # TAB 1: ATTENDEE REGISTRATION & M-PESA TICKETING
@@ -927,413 +937,414 @@ def clean_html_card(raw_html: str) -> str:
     lines = [line.strip() for line in raw_html.strip().splitlines() if line.strip()]
     return "".join(lines)
 
-with tab_wizard:
-    st.markdown("### 🪄 Universal Event & AGM Commercial Scoping Wizard")
-    st.caption("Answer 4 quick scoping questions to determine your platform deployment scope, calculate your customized fee, and provision certified gate scanners instantly via M-Pesa:")
+if tab_wizard is not None:
+    with tab_wizard:
+        st.markdown("### 🪄 Universal Event & AGM Commercial Scoping Wizard")
+        st.caption("Answer 4 quick scoping questions to determine your platform deployment scope, calculate your customized fee, and provision certified gate scanners instantly via M-Pesa:")
 
-    wz_col1, wz_col2 = st.columns([1.35, 1])
+        wz_col1, wz_col2 = st.columns([1.35, 1])
 
-    with wz_col1:
-        # Category Selector outside form for reactive pricing
-        cluster_list = list(CLUSTER_CONFIGS.keys())
-        wz_cat = st.selectbox(
-            "Select Event Type / Assembly Category (Pull-Down):*",
-            cluster_list,
-            key="wz_event_category_selector"
-        )
-        cfg = CLUSTER_CONFIGS.get(wz_cat, CLUSTER_CONFIGS["👔 Corporate AGM & Shareholder Assembly"])
-        is_wz_agm = ("AGM" in wz_cat or "Shareholder" in wz_cat)
-
-        # Reactive defaults synchronization when category switches
-        if "wz_active_cat_tracker" not in st.session_state or st.session_state.get("wz_active_cat_tracker") != wz_cat:
-            st.session_state["wz_active_cat_tracker"] = wz_cat
-            st.session_state["wz_e_title"] = cfg["title"]
-            st.session_state["wz_e_host"] = cfg["host"]
-            st.session_state["wz_e_venue"] = cfg["venue"]
-            st.session_state["wz_e_time"] = cfg["time"]
-            st.session_state["wz_e_desc"] = cfg["desc"]
-            st.session_state["wz_paid_chk"] = cfg["is_paid"]
-            st.session_state["wz_std_price"] = float(cfg["std_price"])
-            st.session_state["wz_vip_price"] = float(cfg["vip_price"])
-
-        st.markdown("#### 1️⃣ Assembly Identity & Schedule")
-        e_title = st.text_input("Official Event / Assembly Name:*", key="wz_e_title")
-        e_host = st.text_input("Society / Convening Corporate Body:*", key="wz_e_host")
-
-        if is_wz_agm:
-            c_agm_sub1, c_agm_sub2 = st.columns(2)
-            with c_agm_sub1:
-                e_agm_subtype = st.selectbox(
-                    "Meeting Statutory Sub-Type (Pull-down):*",
-                    [
-                        "Annual General Meeting (Ordinary Business - Financial Statements & Elections)",
-                        "Extraordinary General Meeting (EGM - Special Resolutions & Bylaw Amendments)",
-                        "SACCO Annual Delegates Conference (ADC)",
-                        "Corporate Sports Club Annual General Meeting"
-                    ],
-                    key="wz_agm_subtype"
-                )
-            with c_agm_sub2:
-                e_quorum_threshold = st.selectbox(
-                    "Statutory Quorum Floor Rule (Pull-down):*",
-                    [
-                        "25 Members in Good Standing (Bylaws Standard Floor)",
-                        "50 Members or 15% Voting Capital",
-                        "100 Accredited Shareholders or Delegated Proxies",
-                        "150 Delegates (Tier-1 Sacco / Cooperative Quorum Floor)"
-                    ],
-                    key="wz_quorum_rule"
-                )
-
-            c_agm_prx1, c_agm_prx2 = st.columns(2)
-            with c_agm_prx1:
-                e_proxy_cutoff = st.selectbox(
-                    "Proxy Form Deposit Cut-Off (Pull-down):*",
-                    [
-                        "48 Hours prior to meeting commencement (Statutory Standard)",
-                        "24 Hours prior to meeting commencement",
-                        "Deposited at Secretariat registration desk on arrival"
-                    ],
-                    key="wz_proxy_cutoff"
-                )
-            with c_agm_prx2:
-                e_admit_mode = st.selectbox(
-                    "Delegate Admission Model (Pull-down):*",
-                    [
-                        "Complimentary Free Admission (Accredited Shareholders & Proxies)",
-                        "Paid Annual Subscription / Clearance Fee (KES via M-Pesa STK)"
-                    ],
-                    key="wz_admit_mode"
-                )
-
-        ec1, ec2 = st.columns(2)
-        with ec1:
-            e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14), key="wz_e_date")
-        with ec2:
-            e_time = st.text_input("Start / Call-to-Order Time:", key="wz_e_time")
-
-        e_venue = st.text_input("Venue & Physical Address:*", key="wz_e_venue")
-
-        if not is_wz_agm:
-            tc1, tc2, tc3 = st.columns(3)
-            with tc1:
-                e_paid = st.checkbox("Paid Event (Collect via M-Pesa)", key="wz_paid_chk")
-            with tc2:
-                e_std_price = st.number_input("Standard Ticket (KES):", min_value=0.0, step=100.0, key="wz_std_price")
-            with tc3:
-                e_vip_price = st.number_input("VIP / Delegate (KES):", min_value=0.0, step=500.0, key="wz_vip_price")
-
-            e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200", key="wz_paybill")
-            default_gate_idx = 0 if cfg["gate_mode"] == "DUAL_GATE" else 1
-            e_gate_mode = st.selectbox(
-                "Gate Scanning Protocol:*",
-                [
-                    "DUAL_GATE (Arrival Scan + Departure Scan for Allowance Floor Verification)",
-                    "SINGLE_GATE (Entry Scan Only for Galas, AGMs & Conferences)"
-                ],
-                index=default_gate_idx,
-                key=f"wz_gate_mode_{wz_cat[:6]}"
+        with wz_col1:
+            # Category Selector outside form for reactive pricing
+            cluster_list = list(CLUSTER_CONFIGS.keys())
+            wz_cat = st.selectbox(
+                "Select Event Type / Assembly Category (Pull-Down):*",
+                cluster_list,
+                key="wz_event_category_selector"
             )
-            clean_gate_mode = "DUAL_GATE" if "DUAL_GATE" in e_gate_mode else "SINGLE_GATE"
-        else:
-            if "Paid" in e_admit_mode:
-                tc1, tc2 = st.columns(2)
+            cfg = CLUSTER_CONFIGS.get(wz_cat, CLUSTER_CONFIGS["👔 Corporate AGM & Shareholder Assembly"])
+            is_wz_agm = ("AGM" in wz_cat or "Shareholder" in wz_cat)
+
+            # Reactive defaults synchronization when category switches
+            if "wz_active_cat_tracker" not in st.session_state or st.session_state.get("wz_active_cat_tracker") != wz_cat:
+                st.session_state["wz_active_cat_tracker"] = wz_cat
+                st.session_state["wz_e_title"] = cfg["title"]
+                st.session_state["wz_e_host"] = cfg["host"]
+                st.session_state["wz_e_venue"] = cfg["venue"]
+                st.session_state["wz_e_time"] = cfg["time"]
+                st.session_state["wz_e_desc"] = cfg["desc"]
+                st.session_state["wz_paid_chk"] = cfg["is_paid"]
+                st.session_state["wz_std_price"] = float(cfg["std_price"])
+                st.session_state["wz_vip_price"] = float(cfg["vip_price"])
+
+            st.markdown("#### 1️⃣ Assembly Identity & Schedule")
+            e_title = st.text_input("Official Event / Assembly Name:*", key="wz_e_title")
+            e_host = st.text_input("Society / Convening Corporate Body:*", key="wz_e_host")
+
+            if is_wz_agm:
+                c_agm_sub1, c_agm_sub2 = st.columns(2)
+                with c_agm_sub1:
+                    e_agm_subtype = st.selectbox(
+                        "Meeting Statutory Sub-Type (Pull-down):*",
+                        [
+                            "Annual General Meeting (Ordinary Business - Financial Statements & Elections)",
+                            "Extraordinary General Meeting (EGM - Special Resolutions & Bylaw Amendments)",
+                            "SACCO Annual Delegates Conference (ADC)",
+                            "Corporate Sports Club Annual General Meeting"
+                        ],
+                        key="wz_agm_subtype"
+                    )
+                with c_agm_sub2:
+                    e_quorum_threshold = st.selectbox(
+                        "Statutory Quorum Floor Rule (Pull-down):*",
+                        [
+                            "25 Members in Good Standing (Bylaws Standard Floor)",
+                            "50 Members or 15% Voting Capital",
+                            "100 Accredited Shareholders or Delegated Proxies",
+                            "150 Delegates (Tier-1 Sacco / Cooperative Quorum Floor)"
+                        ],
+                        key="wz_quorum_rule"
+                    )
+
+                c_agm_prx1, c_agm_prx2 = st.columns(2)
+                with c_agm_prx1:
+                    e_proxy_cutoff = st.selectbox(
+                        "Proxy Form Deposit Cut-Off (Pull-down):*",
+                        [
+                            "48 Hours prior to meeting commencement (Statutory Standard)",
+                            "24 Hours prior to meeting commencement",
+                            "Deposited at Secretariat registration desk on arrival"
+                        ],
+                        key="wz_proxy_cutoff"
+                    )
+                with c_agm_prx2:
+                    e_admit_mode = st.selectbox(
+                        "Delegate Admission Model (Pull-down):*",
+                        [
+                            "Complimentary Free Admission (Accredited Shareholders & Proxies)",
+                            "Paid Annual Subscription / Clearance Fee (KES via M-Pesa STK)"
+                        ],
+                        key="wz_admit_mode"
+                    )
+
+            ec1, ec2 = st.columns(2)
+            with ec1:
+                e_date = st.date_input("Event Date:", value=now_dt.date() + datetime.timedelta(days=14), key="wz_e_date")
+            with ec2:
+                e_time = st.text_input("Start / Call-to-Order Time:", key="wz_e_time")
+
+            e_venue = st.text_input("Venue & Physical Address:*", key="wz_e_venue")
+
+            if not is_wz_agm:
+                tc1, tc2, tc3 = st.columns(3)
                 with tc1:
-                    e_std_price = st.number_input("Shareholder Clearance Fee (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_std_price_agm")
+                    e_paid = st.checkbox("Paid Event (Collect via M-Pesa)", key="wz_paid_chk")
                 with tc2:
-                    e_vip_price = st.number_input("VIP / Board Delegate (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_vip_price_agm")
-                e_paid = True
+                    e_std_price = st.number_input("Standard Ticket (KES):", min_value=0.0, step=100.0, key="wz_std_price")
+                with tc3:
+                    e_vip_price = st.number_input("VIP / Delegate (KES):", min_value=0.0, step=500.0, key="wz_vip_price")
+
                 e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200", key="wz_paybill")
-            else:
-                e_std_price = 0.0
-                e_vip_price = 0.0
-                e_paid = False
-                e_paybill = "N/A (COMPLIMENTARY)"
-            clean_gate_mode = "SINGLE_GATE"
-
-        e_desc = st.text_area("Event Description / Statutory Notice & Instructions:*", key="wz_e_desc")
-
-        st.markdown("---")
-        st.markdown("#### 2️⃣ Commercial Scope Questionnaire (Pricing Engine)")
-        st.caption(f"Configuring specialized telemetry and compliance architecture for **{wz_cat}**:")
-
-        # Q1: Scale Selection
-        sc_scale = st.selectbox(
-            f"Q1: Expected Attendance Scale ({wz_cat.split(' ')[1]} Tier):*",
-            cfg["scale_opts"],
-            key=f"sc_scale_{wz_cat[:6]}"
-        )
-        base_fee = 15000.0
-        for tier_k, tier_amt in cfg["scale_fees"].items():
-            if tier_k in sc_scale:
-                base_fee = tier_amt
-                break
-        scale_tag = sc_scale.split("—")[0].strip()
-
-        # Helper to extract +KES amount
-        def extract_module_fee(opt_str: str) -> float:
-            if "+KES" in opt_str:
-                try:
-                    raw_val = opt_str.split("+KES")[-1].split(")")[0].strip().replace(",", "")
-                    return float(raw_val)
-                except Exception:
-                    return 0.0
-            return 0.0
-
-        # Q2: Specialized Module
-        sc_q2 = st.selectbox(
-            cfg["q2_label"],
-            cfg["q2_opts"],
-            key=f"sc_q2_{wz_cat[:6]}"
-        )
-        voting_fee = extract_module_fee(sc_q2)
-        voting_tag = sc_q2.split("—")[0].strip()
-
-        # Q3: Hardware & Marshals
-        sc_q3 = st.selectbox(
-            cfg["q3_label"],
-            cfg["q3_opts"],
-            key=f"sc_q3_{wz_cat[:6]}"
-        )
-        hw_fee = extract_module_fee(sc_q3)
-        hw_tag = sc_q3.split("—")[0].strip()
-
-        # Q4: Auditing & Compliance
-        sc_q4 = st.selectbox(
-            cfg["q4_label"],
-            cfg["q4_opts"],
-            key=f"sc_q4_{wz_cat[:6]}"
-        )
-        audit_fee = extract_module_fee(sc_q4)
-        audit_tag = sc_q4.split("—")[0].strip()
-
-        subtotal = base_fee + voting_fee + hw_fee + audit_fee
-        vat_amt = subtotal * 0.16
-        grand_total = subtotal + vat_amt
-
-        st.markdown("---")
-        st.markdown("#### 3️⃣ Organizer Billing & Instant M-Pesa Settlement")
-        b_org = st.text_input("Billing Entity / Organization Name:*", value=e_host if e_host else "Corporate Client", key="wz_b_org")
-        b_email = st.text_input("Billing Email Address (for Official Tax Invoice):*", placeholder="finance@organization.co.ke", key="wz_b_email")
-        b_phone = st.text_input("Safaricom M-Pesa Mobile Number for STK Push:*", value="0722123456", help="STK Push prompt will be dispatched to this handset", key="wz_b_phone")
-
-        btn_pay_provision = st.button(
-            f"💳 Settle KES {grand_total:,.0f} via M-Pesa STK & Launch Gateways",
-            type="primary",
-            use_container_width=True,
-            key="btn_wz_pay_provision"
-        )
-
-        if btn_pay_provision:
-            if not e_title.strip():
-                st.error("Please provide an Event / Assembly Name.")
-            elif not e_host.strip():
-                st.error("Please provide the Convening Entity Name.")
-            elif not e_venue.strip():
-                st.error("Please specify the Venue / Assembly Hall.")
-            elif not b_email.strip() or "@" not in b_email:
-                st.error("Please provide a valid Billing Email Address.")
-            elif not b_phone.strip() or len(b_phone.strip()) < 9:
-                st.error("Please provide a valid Safaricom phone number.")
-            else:
-                d_str = e_date.strftime("%Y-%m-%d")
-                inv_ref = f"INV-2026-{int(time.time())}"[-8:]
-                mpesa_ref = f"QK{int(time.time())}"[-10:]
-                
-                scoping_meta = f"{e_desc.strip()} [STRIDE Scope: Category={wz_cat}, Tier={scale_tag}, Module={voting_tag}, HW={hw_tag}, Fee=KES {grand_total:,.0f}, Inv={inv_ref}, M-Pesa={mpesa_ref}]"
-                
-                ok_ev, msg_ev, new_eid = backend.create_event(
-                    title=e_title.strip(),
-                    organizer_name=e_host.strip(),
-                    category=wz_cat,
-                    event_date=d_str,
-                    event_time=e_time.strip(),
-                    venue=e_venue.strip(),
-                    description=scoping_meta,
-                    gate_mode=clean_gate_mode,
-                    is_paid=e_paid,
-                    standard_price=e_std_price,
-                    vip_price=e_vip_price,
-                    mpesa_paybill=e_paybill.strip()
+                default_gate_idx = 0 if cfg["gate_mode"] == "DUAL_GATE" else 1
+                e_gate_mode = st.selectbox(
+                    "Gate Scanning Protocol:*",
+                    [
+                        "DUAL_GATE (Arrival Scan + Departure Scan for Allowance Floor Verification)",
+                        "SINGLE_GATE (Entry Scan Only for Galas, AGMs & Conferences)"
+                    ],
+                    index=default_gate_idx,
+                    key=f"wz_gate_mode_{wz_cat[:6]}"
                 )
-                if ok_ev:
-                    invoice_record = {
-                        "inv_ref": inv_ref,
-                        "event_id": new_eid,
-                        "title": e_title.strip(),
-                        "org": b_org.strip() or e_host.strip(),
-                        "email": b_email.strip(),
-                        "phone": b_phone.strip(),
-                        "mpesa_ref": mpesa_ref,
-                        "timestamp": now_dt.strftime("%Y-%m-%d %H:%M:%S"),
-                        "base_fee": base_fee,
-                        "scale_tag": scale_tag,
-                        "voting_fee": voting_fee,
-                        "voting_tag": voting_tag,
-                        "hw_fee": hw_fee,
-                        "hw_tag": hw_tag,
-                        "audit_fee": audit_fee,
-                        "audit_tag": audit_tag,
-                        "subtotal": subtotal,
-                        "vat_amt": vat_amt,
-                        "grand_total": grand_total
-                    }
-                    st.session_state["wz_last_invoice"] = invoice_record
-                    st.session_state["wz_last_created_id"] = new_eid
-                    st.session_state["wz_last_created_title"] = e_title.strip()
-                    st.success(f"🎉 M-Pesa Payment Confirmed! Invoice `{inv_ref}` generated. Event `{new_eid}` provisioned.")
-                    st.balloons()
-                    st.rerun()
+                clean_gate_mode = "DUAL_GATE" if "DUAL_GATE" in e_gate_mode else "SINGLE_GATE"
+            else:
+                if "Paid" in e_admit_mode:
+                    tc1, tc2 = st.columns(2)
+                    with tc1:
+                        e_std_price = st.number_input("Shareholder Clearance Fee (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_std_price_agm")
+                    with tc2:
+                        e_vip_price = st.number_input("VIP / Board Delegate (KES):", min_value=0.0, value=5000.0, step=500.0, key="wz_vip_price_agm")
+                    e_paid = True
+                    e_paybill = st.text_input("M-Pesa Paybill / Till Number for Settlements:", value="849200", key="wz_paybill")
                 else:
-                    st.error(msg_ev)
+                    e_std_price = 0.0
+                    e_vip_price = 0.0
+                    e_paid = False
+                    e_paybill = "N/A (COMPLIMENTARY)"
+                clean_gate_mode = "SINGLE_GATE"
 
-    with wz_col2:
-        # Check if an invoice was recently generated
-        cur_inv = st.session_state.get("wz_last_invoice", None)
-        
-        # Display Live Scope Quotation Card with zero leading markdown indentation
-        quote_card_html = f"""
-<div style="background: linear-gradient(135deg, rgba(8, 28, 58, 0.95) 0%, rgba(4, 14, 30, 0.98) 100%); border: 2px solid #F5C542; border-radius: 14px; padding: 18px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-bottom: 16px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(245, 197, 66, 0.25); padding-bottom: 8px;">
-        <span style="color: #F5C542; font-weight: 900; font-size: 0.82rem; letter-spacing: 1.2px; text-transform: uppercase;">
-            STRIDE™ SCOPE QUOTATION
-        </span>
-        <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #34D399; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 800;">
-            LIVE PRO-FORMA
-        </span>
-    </div>
-    
-    <div style="margin: 12px 0 6px 0; font-size: 0.8rem; color: #CBD5E1;">
-        <div style="font-size: 0.76rem; color: #00F2FE; font-weight: 700; margin-bottom: 8px;">
-            Cluster: {wz_cat}
-        </div>
-        <table style="width: 100%; border-collapse: collapse; line-height: 1.8;">
-            <tr>
-                <td style="color: #94A3B8;">Base Scale License:</td>
-                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {base_fee:,.0f}</td>
-            </tr>
-            <tr>
-                <td style="color: #94A3B8;">Specialized Module:</td>
-                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {voting_fee:,.0f}</td>
-            </tr>
-            <tr>
-                <td style="color: #94A3B8;">Gate Hardware & Scanners:</td>
-                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {hw_fee:,.0f}</td>
-            </tr>
-            <tr>
-                <td style="color: #94A3B8;">Auditing & Compliance:</td>
-                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {audit_fee:,.0f}</td>
-            </tr>
-            <tr style="border-top: 1px dashed rgba(255,255,255,0.15);">
-                <td style="color: #CBD5E1; font-weight: 700; padding-top: 4px;">Net Platform Subtotal:</td>
-                <td style="text-align: right; font-weight: 800; color: #00F2FE; padding-top: 4px;">KES {subtotal:,.0f}</td>
-            </tr>
-            <tr>
-                <td style="color: #94A3B8;">VAT (16% Statutory):</td>
-                <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {vat_amt:,.0f}</td>
-            </tr>
-            <tr style="border-top: 1.5px solid #F5C542; font-size: 0.95rem;">
-                <td style="color: #F5C542; font-weight: 900; padding-top: 6px;">TOTAL SETUP FEE:</td>
-                <td style="text-align: right; font-weight: 900; color: #F5C542; padding-top: 6px;">KES {grand_total:,.0f}</td>
-            </tr>
-        </table>
-    </div>
-    
-    <div style="font-size: 0.72rem; color: #64748B; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
-        Includes unlimited attendee QR passes, dynamic check-in gate dashboard, and real-time reconciliation.
-    </div>
-</div>
-"""
-        st.markdown(clean_html_card(quote_card_html), unsafe_allow_html=True)
+            e_desc = st.text_area("Event Description / Statutory Notice & Instructions:*", key="wz_e_desc")
 
-        if cur_inv:
-            inv_card_html = f"""
-<div style="background: rgba(16, 185, 129, 0.12); border: 2px solid #10B981; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="color: #34D399; font-weight: 900; font-size: 0.85rem;">✓ TAX INVOICE: {cur_inv['inv_ref']}</span>
-        <span style="background: #10B981; color: #020712; padding: 2px 6px; border-radius: 4px; font-weight: 900; font-size: 0.68rem;">PAID</span>
-    </div>
-    <div style="font-size: 0.78rem; color: #CBD5E1; margin: 6px 0;">
-        Billed to: <strong>{cur_inv['org']}</strong><br>
-        M-Pesa Receipt: <code>{cur_inv['mpesa_ref']}</code> • KES {cur_inv['grand_total']:,.0f}
-    </div>
-</div>
-"""
-            st.markdown(clean_html_card(inv_card_html), unsafe_allow_html=True)
+            st.markdown("---")
+            st.markdown("#### 2️⃣ Commercial Scope Questionnaire (Pricing Engine)")
+            st.caption(f"Configuring specialized telemetry and compliance architecture for **{wz_cat}**:")
 
-            inv_txt = f"""=======================================================
-STRIDE™ ENTERPRISE EVENT PLATFORM TAX INVOICE
-=======================================================
-Invoice No:    {cur_inv['inv_ref']}
-Date:          {cur_inv['timestamp']}
-Billed Entity: {cur_inv['org']}
-Contact Email: {cur_inv['email']}
-M-Pesa Phone:  {cur_inv['phone']}
-Payment Ref:   {cur_inv['mpesa_ref']}
-Payment Status: PAID IN FULL VIA M-PESA STK PUSH
--------------------------------------------------------
-ITEMIZED SCOPE & SERVICES
--------------------------------------------------------
-1. Platform Scale License ({cur_inv['scale_tag']}): KES {cur_inv['base_fee']:,.2f}
-2. Specialized Module ({cur_inv['voting_tag']}): KES {cur_inv['voting_fee']:,.2f}
-3. Hardware Deployment ({cur_inv['hw_tag']}): KES {cur_inv['hw_fee']:,.2f}
-4. Compliance & Auditing ({cur_inv['audit_tag']}): KES {cur_inv['audit_fee']:,.2f}
--------------------------------------------------------
-Subtotal (Excl. VAT):  KES {cur_inv['subtotal']:,.2f}
-VAT (16%):             KES {cur_inv['vat_amt']:,.2f}
-TOTAL PAID IN FULL:    KES {cur_inv['grand_total']:,.2f}
-=======================================================
-Provisioned Event ID:  {cur_inv['event_id']}
-Gate Scanner URL:      https://cbk-stride.streamlit.app/EVENTS?event_id={cur_inv['event_id']}
-=======================================================
-Thank you for powering your event on STRIDE™ Enterprise."""
+            # Q1: Scale Selection
+            sc_scale = st.selectbox(
+                f"Q1: Expected Attendance Scale ({wz_cat.split(' ')[1]} Tier):*",
+                cfg["scale_opts"],
+                key=f"sc_scale_{wz_cat[:6]}"
+            )
+            base_fee = 15000.0
+            for tier_k, tier_amt in cfg["scale_fees"].items():
+                if tier_k in sc_scale:
+                    base_fee = tier_amt
+                    break
+            scale_tag = sc_scale.split("—")[0].strip()
 
-            st.download_button(
-                label=f"📥 Download Tax Invoice ({cur_inv['inv_ref']}.txt)",
-                data=inv_txt.encode('utf-8'),
-                file_name=f"STRIDE_Invoice_{cur_inv['inv_ref']}.txt",
-                mime="text/plain",
-                use_container_width=True
+            # Helper to extract +KES amount
+            def extract_module_fee(opt_str: str) -> float:
+                if "+KES" in opt_str:
+                    try:
+                        raw_val = opt_str.split("+KES")[-1].split(")")[0].strip().replace(",", "")
+                        return float(raw_val)
+                    except Exception:
+                        return 0.0
+                return 0.0
+
+            # Q2: Specialized Module
+            sc_q2 = st.selectbox(
+                cfg["q2_label"],
+                cfg["q2_opts"],
+                key=f"sc_q2_{wz_cat[:6]}"
+            )
+            voting_fee = extract_module_fee(sc_q2)
+            voting_tag = sc_q2.split("—")[0].strip()
+
+            # Q3: Hardware & Marshals
+            sc_q3 = st.selectbox(
+                cfg["q3_label"],
+                cfg["q3_opts"],
+                key=f"sc_q3_{wz_cat[:6]}"
+            )
+            hw_fee = extract_module_fee(sc_q3)
+            hw_tag = sc_q3.split("—")[0].strip()
+
+            # Q4: Auditing & Compliance
+            sc_q4 = st.selectbox(
+                cfg["q4_label"],
+                cfg["q4_opts"],
+                key=f"sc_q4_{wz_cat[:6]}"
+            )
+            audit_fee = extract_module_fee(sc_q4)
+            audit_tag = sc_q4.split("—")[0].strip()
+
+            subtotal = base_fee + voting_fee + hw_fee + audit_fee
+            vat_amt = subtotal * 0.16
+            grand_total = subtotal + vat_amt
+
+            st.markdown("---")
+            st.markdown("#### 3️⃣ Organizer Billing & Instant M-Pesa Settlement")
+            b_org = st.text_input("Billing Entity / Organization Name:*", value=e_host if e_host else "Corporate Client", key="wz_b_org")
+            b_email = st.text_input("Billing Email Address (for Official Tax Invoice):*", placeholder="finance@organization.co.ke", key="wz_b_email")
+            b_phone = st.text_input("Safaricom M-Pesa Mobile Number for STK Push:*", value="0722123456", help="STK Push prompt will be dispatched to this handset", key="wz_b_phone")
+
+            btn_pay_provision = st.button(
+                f"💳 Settle KES {grand_total:,.0f} via M-Pesa STK & Launch Gateways",
+                type="primary",
+                use_container_width=True,
+                key="btn_wz_pay_provision"
             )
 
-        # Gate QR Card
-        last_eid = st.session_state.get("wz_last_created_id", "EVT-2026-002")
-        last_title = st.session_state.get("wz_last_created_title", "👔 Annual General Meeting & Corporate Gala")
+            if btn_pay_provision:
+                if not e_title.strip():
+                    st.error("Please provide an Event / Assembly Name.")
+                elif not e_host.strip():
+                    st.error("Please provide the Convening Entity Name.")
+                elif not e_venue.strip():
+                    st.error("Please specify the Venue / Assembly Hall.")
+                elif not b_email.strip() or "@" not in b_email:
+                    st.error("Please provide a valid Billing Email Address.")
+                elif not b_phone.strip() or len(b_phone.strip()) < 9:
+                    st.error("Please provide a valid Safaricom phone number.")
+                else:
+                    d_str = e_date.strftime("%Y-%m-%d")
+                    inv_ref = f"INV-2026-{int(time.time())}"[-8:]
+                    mpesa_ref = f"QK{int(time.time())}"[-10:]
+                
+                    scoping_meta = f"{e_desc.strip()} [STRIDE Scope: Category={wz_cat}, Tier={scale_tag}, Module={voting_tag}, HW={hw_tag}, Fee=KES {grand_total:,.0f}, Inv={inv_ref}, M-Pesa={mpesa_ref}]"
+                
+                    ok_ev, msg_ev, new_eid = backend.create_event(
+                        title=e_title.strip(),
+                        organizer_name=e_host.strip(),
+                        category=wz_cat,
+                        event_date=d_str,
+                        event_time=e_time.strip(),
+                        venue=e_venue.strip(),
+                        description=scoping_meta,
+                        gate_mode=clean_gate_mode,
+                        is_paid=e_paid,
+                        standard_price=e_std_price,
+                        vip_price=e_vip_price,
+                        mpesa_paybill=e_paybill.strip()
+                    )
+                    if ok_ev:
+                        invoice_record = {
+                            "inv_ref": inv_ref,
+                            "event_id": new_eid,
+                            "title": e_title.strip(),
+                            "org": b_org.strip() or e_host.strip(),
+                            "email": b_email.strip(),
+                            "phone": b_phone.strip(),
+                            "mpesa_ref": mpesa_ref,
+                            "timestamp": now_dt.strftime("%Y-%m-%d %H:%M:%S"),
+                            "base_fee": base_fee,
+                            "scale_tag": scale_tag,
+                            "voting_fee": voting_fee,
+                            "voting_tag": voting_tag,
+                            "hw_fee": hw_fee,
+                            "hw_tag": hw_tag,
+                            "audit_fee": audit_fee,
+                            "audit_tag": audit_tag,
+                            "subtotal": subtotal,
+                            "vat_amt": vat_amt,
+                            "grand_total": grand_total
+                        }
+                        st.session_state["wz_last_invoice"] = invoice_record
+                        st.session_state["wz_last_created_id"] = new_eid
+                        st.session_state["wz_last_created_title"] = e_title.strip()
+                        st.success(f"🎉 M-Pesa Payment Confirmed! Invoice `{inv_ref}` generated. Event `{new_eid}` provisioned.")
+                        st.balloons()
+                        st.rerun()
+                    else:
+                        st.error(msg_ev)
 
-        reg_share_url = f"https://cbk-stride.streamlit.app/EVENTS?event_id={last_eid}"
-        gate_qr_img = f"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={reg_share_url}"
-
-        gate_desk_html = f"""
-<div style="background: rgba(8, 24, 48, 0.85); border: 2px solid #00F2FE; border-radius: 14px; padding: 18px; text-align: center;">
-    <div style="font-size: 0.72rem; color: #00F2FE; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
-        OFFICIAL ENTRANCE SCANNER DESK
-    </div>
-    <h4 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.02rem;">{last_title}</h4>
-    <div style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 10px;">Event ID: <code>{last_eid}</code></div>
+        with wz_col2:
+            # Check if an invoice was recently generated
+            cur_inv = st.session_state.get("wz_last_invoice", None)
+        
+            # Display Live Scope Quotation Card with zero leading markdown indentation
+            quote_card_html = f"""
+    <div style="background: linear-gradient(135deg, rgba(8, 28, 58, 0.95) 0%, rgba(4, 14, 30, 0.98) 100%); border: 2px solid #F5C542; border-radius: 14px; padding: 18px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(245, 197, 66, 0.25); padding-bottom: 8px;">
+            <span style="color: #F5C542; font-weight: 900; font-size: 0.82rem; letter-spacing: 1.2px; text-transform: uppercase;">
+                STRIDE™ SCOPE QUOTATION
+            </span>
+            <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #34D399; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 800;">
+                LIVE PRO-FORMA
+            </span>
+        </div>
     
-    <div style="background: #FFFFFF; border-radius: 10px; padding: 10px; display: inline-block; margin-bottom: 10px;">
-        <img src="{gate_qr_img}" alt="Gate Entrance QR" style="display: block; width: 155px; height: 155px;" />
-    </div>
+        <div style="margin: 12px 0 6px 0; font-size: 0.8rem; color: #CBD5E1;">
+            <div style="font-size: 0.76rem; color: #00F2FE; font-weight: 700; margin-bottom: 8px;">
+                Cluster: {wz_cat}
+            </div>
+            <table style="width: 100%; border-collapse: collapse; line-height: 1.8;">
+                <tr>
+                    <td style="color: #94A3B8;">Base Scale License:</td>
+                    <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {base_fee:,.0f}</td>
+                </tr>
+                <tr>
+                    <td style="color: #94A3B8;">Specialized Module:</td>
+                    <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {voting_fee:,.0f}</td>
+                </tr>
+                <tr>
+                    <td style="color: #94A3B8;">Gate Hardware & Scanners:</td>
+                    <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {hw_fee:,.0f}</td>
+                </tr>
+                <tr>
+                    <td style="color: #94A3B8;">Auditing & Compliance:</td>
+                    <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {audit_fee:,.0f}</td>
+                </tr>
+                <tr style="border-top: 1px dashed rgba(255,255,255,0.15);">
+                    <td style="color: #CBD5E1; font-weight: 700; padding-top: 4px;">Net Platform Subtotal:</td>
+                    <td style="text-align: right; font-weight: 800; color: #00F2FE; padding-top: 4px;">KES {subtotal:,.0f}</td>
+                </tr>
+                <tr>
+                    <td style="color: #94A3B8;">VAT (16% Statutory):</td>
+                    <td style="text-align: right; font-weight: 700; color: #FFFFFF;">KES {vat_amt:,.0f}</td>
+                </tr>
+                <tr style="border-top: 1.5px solid #F5C542; font-size: 0.95rem;">
+                    <td style="color: #F5C542; font-weight: 900; padding-top: 6px;">TOTAL SETUP FEE:</td>
+                    <td style="text-align: right; font-weight: 900; color: #F5C542; padding-top: 6px;">KES {grand_total:,.0f}</td>
+                </tr>
+            </table>
+        </div>
     
-    <div style="font-size: 0.76rem; color: #CBD5E1; line-height: 1.4;">
-        📢 <strong>Entrance Instructions:</strong> Display this QR on an iPad/tablet at the gate or print on venue banners. Attendees scan it to register or check in instantly.
+        <div style="font-size: 0.72rem; color: #64748B; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+            Includes unlimited attendee QR passes, dynamic check-in gate dashboard, and real-time reconciliation.
+        </div>
     </div>
+    """
+            st.markdown(clean_html_card(quote_card_html), unsafe_allow_html=True)
+
+            if cur_inv:
+                inv_card_html = f"""
+    <div style="background: rgba(16, 185, 129, 0.12); border: 2px solid #10B981; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: #34D399; font-weight: 900; font-size: 0.85rem;">✓ TAX INVOICE: {cur_inv['inv_ref']}</span>
+            <span style="background: #10B981; color: #020712; padding: 2px 6px; border-radius: 4px; font-weight: 900; font-size: 0.68rem;">PAID</span>
+        </div>
+        <div style="font-size: 0.78rem; color: #CBD5E1; margin: 6px 0;">
+            Billed to: <strong>{cur_inv['org']}</strong><br>
+            M-Pesa Receipt: <code>{cur_inv['mpesa_ref']}</code> • KES {cur_inv['grand_total']:,.0f}
+        </div>
+    </div>
+    """
+                st.markdown(clean_html_card(inv_card_html), unsafe_allow_html=True)
+
+                inv_txt = f"""=======================================================
+    STRIDE™ ENTERPRISE EVENT PLATFORM TAX INVOICE
+    =======================================================
+    Invoice No:    {cur_inv['inv_ref']}
+    Date:          {cur_inv['timestamp']}
+    Billed Entity: {cur_inv['org']}
+    Contact Email: {cur_inv['email']}
+    M-Pesa Phone:  {cur_inv['phone']}
+    Payment Ref:   {cur_inv['mpesa_ref']}
+    Payment Status: PAID IN FULL VIA M-PESA STK PUSH
+    -------------------------------------------------------
+    ITEMIZED SCOPE & SERVICES
+    -------------------------------------------------------
+    1. Platform Scale License ({cur_inv['scale_tag']}): KES {cur_inv['base_fee']:,.2f}
+    2. Specialized Module ({cur_inv['voting_tag']}): KES {cur_inv['voting_fee']:,.2f}
+    3. Hardware Deployment ({cur_inv['hw_tag']}): KES {cur_inv['hw_fee']:,.2f}
+    4. Compliance & Auditing ({cur_inv['audit_tag']}): KES {cur_inv['audit_fee']:,.2f}
+    -------------------------------------------------------
+    Subtotal (Excl. VAT):  KES {cur_inv['subtotal']:,.2f}
+    VAT (16%):             KES {cur_inv['vat_amt']:,.2f}
+    TOTAL PAID IN FULL:    KES {cur_inv['grand_total']:,.2f}
+    =======================================================
+    Provisioned Event ID:  {cur_inv['event_id']}
+    Gate Scanner URL:      https://cbk-stride.streamlit.app/EVENTS?event_id={cur_inv['event_id']}
+    =======================================================
+    Thank you for powering your event on STRIDE™ Enterprise."""
+
+                st.download_button(
+                    label=f"📥 Download Tax Invoice ({cur_inv['inv_ref']}.txt)",
+                    data=inv_txt.encode('utf-8'),
+                    file_name=f"STRIDE_Invoice_{cur_inv['inv_ref']}.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+
+            # Gate QR Card
+            last_eid = st.session_state.get("wz_last_created_id", "EVT-2026-002")
+            last_title = st.session_state.get("wz_last_created_title", "👔 Annual General Meeting & Corporate Gala")
+
+            reg_share_url = f"https://cbk-stride.streamlit.app/EVENTS?event_id={last_eid}"
+            gate_qr_img = f"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={reg_share_url}"
+
+            gate_desk_html = f"""
+    <div style="background: rgba(8, 24, 48, 0.85); border: 2px solid #00F2FE; border-radius: 14px; padding: 18px; text-align: center;">
+        <div style="font-size: 0.72rem; color: #00F2FE; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+            OFFICIAL ENTRANCE SCANNER DESK
+        </div>
+        <h4 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.02rem;">{last_title}</h4>
+        <div style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 10px;">Event ID: <code>{last_eid}</code></div>
     
-    <div style="background: rgba(0, 242, 254, 0.1); border: 1px dashed rgba(0,242,254,0.4); border-radius: 8px; padding: 8px; margin-top: 10px; font-size: 0.72rem; word-break: break-all; color: #00F2FE;">
-        🔗 {reg_share_url}
+        <div style="background: #FFFFFF; border-radius: 10px; padding: 10px; display: inline-block; margin-bottom: 10px;">
+            <img src="{gate_qr_img}" alt="Gate Entrance QR" style="display: block; width: 155px; height: 155px;" />
+        </div>
+    
+        <div style="font-size: 0.76rem; color: #CBD5E1; line-height: 1.4;">
+            📢 <strong>Entrance Instructions:</strong> Display this QR on an iPad/tablet at the gate or print on venue banners. Attendees scan it to register or check in instantly.
+        </div>
+    
+        <div style="background: rgba(0, 242, 254, 0.1); border: 1px dashed rgba(0,242,254,0.4); border-radius: 8px; padding: 8px; margin-top: 10px; font-size: 0.72rem; word-break: break-all; color: #00F2FE;">
+            🔗 {reg_share_url}
+        </div>
     </div>
-</div>
-"""
-        st.markdown(clean_html_card(gate_desk_html), unsafe_allow_html=True)
+    """
+            st.markdown(clean_html_card(gate_desk_html), unsafe_allow_html=True)
 
-        st.markdown("---")
-        st.markdown("##### 📊 Live Published Events Directory")
-        ev_list = backend.get_events(status="ALL")
-        if ev_list:
-            df_ev_display = pd.DataFrame(ev_list)[["event_id", "title", "category", "event_date", "venue", "standard_price", "status"]]
-            st.dataframe(df_ev_display, use_container_width=True, hide_index=True)
+            st.markdown("---")
+            st.markdown("##### 📊 Live Published Events Directory")
+            ev_list = backend.get_events(status="ALL")
+            if ev_list:
+                df_ev_display = pd.DataFrame(ev_list)[["event_id", "title", "category", "event_date", "venue", "standard_price", "status"]]
+                st.dataframe(df_ev_display, use_container_width=True, hide_index=True)
 
-# ==============================================================================
+    # ==============================================================================
 # TAB 3: GATE USHER SCANNER & ACCREDITATION ROSTER
 # ==============================================================================
 with tab_verify:
