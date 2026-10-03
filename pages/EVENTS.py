@@ -448,7 +448,7 @@ with tab_reg:
                 verify_qr_data = f"https://cbk-stride.streamlit.app/EVENTS?verify_tkt={t_id}"
                 qr_code_url = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={verify_qr_data}"
 
-                st.markdown(f"""
+                st.markdown(textwrap.dedent(f"""
                 <div style="background: linear-gradient(135deg, #091F3D 0%, #030F21 100%); border: 2.5px solid #F5C542; border-radius: 16px; padding: 20px; box-shadow: 0 12px 36px rgba(0,0,0,0.65); text-align: center;">
                     <div style="font-size: 0.72rem; color: #F5C542; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;">STRIDE™ ENTERPRISE DIGITAL PASS</div>
                     <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.15rem; font-weight: 800;">{cur_evt['title']}</h3>
@@ -457,14 +457,11 @@ with tab_reg:
                             {t_tier}
                         </span>
                     </div>
-                    
                     <div style="background: #FFFFFF; border-radius: 12px; padding: 10px; display: inline-block; margin: 10px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
                         <img src="{qr_code_url}" alt="Ticket QR" style="display: block; width: 160px; height: 160px;" />
                     </div>
-                    
                     <h3 style="margin: 4px 0 1px 0; color: #FFFFFF; font-size: 1.2rem; font-weight: 800;">{t_name}</h3>
                     <div style="font-size: 0.82rem; color: #94A3B8;">{t_org}</div>
-                    
                     <div style="margin-top: 12px; padding: 8px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; font-size: 0.78rem; color: #34D399; font-weight: 800;">
                         ✓ M-PESA CONFIRMED • KES {t_amt:,.0f} • REF: {t_tx}
                     </div>
@@ -472,7 +469,7 @@ with tab_reg:
                         Ticket Serial: <code>{t_id}</code> • Status: <strong>{cur_ticket.get('gate_status', 'REGISTERED')}</strong>
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
+                """), unsafe_allow_html=True)
 
                 c_p1, c_p2 = st.columns(2)
                 with c_p1:
