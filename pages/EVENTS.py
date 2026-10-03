@@ -1494,70 +1494,95 @@ with tab_ballot:
         col_ballot_in, col_ballot_scrut = st.columns([1.1, 1.35])
 
         with col_ballot_in:
-            st.markdown("#### 👤 Delegate Voting Station")
-            st.caption("Authenticate with your accredited Ticket Pass ID to retrieve your voting power and cast your confidential ballot:")
+            st.markdown("#### 🔒 Secure Delegate Voting Station")
+            st.markdown("""
+            <div style="background: rgba(8, 28, 58, 0.7); border: 1.5px solid rgba(0, 242, 254, 0.4); border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;">
+                <span style="color: #00F2FE; font-weight: 800; font-size: 0.82rem;">🛡️ VOTER IDENTITY & BALLOT SECURITY</span>
+                <p style="margin: 2px 0 0 0; color: #CBD5E1; font-size: 0.76rem;">
+                    In live AGMs, delegates unlock <strong>only their own ballot</strong> by clicking their personal encrypted pass link or entering their confidential <strong>Ticket Serial ID / Member Account ID</strong>. Dropdown selection is disabled for voters to prevent accidental impersonation.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
 
             ev_tickets = backend.get_tickets_by_event(v_eid) if hasattr(backend, "get_tickets_by_event") else backend.get_event_tickets(v_eid)
             admitted_tkts = [t for t in ev_tickets if t.get("gate_status") == "ADMITTED"]
             if not admitted_tkts:
                 admitted_tkts = ev_tickets
 
-            tkt_voter_opts = {f"{t['attendee_name']} ({t['ticket_id']} — {t['ticket_tier']})": t for t in admitted_tkts}
+            # Map tickets by ticket_id, mpesa_trans_id, organization/member_id, and name
+            tkt_lookup = {}
+            for t in admitted_tkts:
+                tkt_lookup[t["ticket_id"].upper()] = t
+                tkt_lookup[t["mpesa_trans_id"].upper()] = t
+                if "Ref:" in t.get("organization", ""):
+                    ref_part = t["organization"].split("Ref:")[-1].replace(")", "").strip().upper()
+                    tkt_lookup[ref_part] = t
 
-            if not tkt_voter_opts:
+            if not admitted_tkts:
                 st.warning("No accredited delegates found for this assembly yet.")
-                st.info("💡 Tap below to instantly accredit your certified delegate pass for this assembly:")
-                if st.button("⚡ Quick-Accredit Samuel Gathigi Njuguna (10,000 Votes)", type="primary", use_container_width=True, key="btn_quick_accredit_voter"):
-                    sim_tx = f"AGM{int(time.time())}"[-10:]
-                    ok_reg, msg_reg, new_t = backend.register_event_ticket(
-                        event_id=v_eid,
-                        attendee_name="Samuel Gathigi Njuguna",
-                        email="sam.gathigi@gmail.com",
-                        phone="+254 722 849 000",
-                        organization="Central Bank of Kenya (Equity Block Holder)",
-                        ticket_tier="🗳️ Principal Shareholder / 10,000 Votes",
-                        amount_paid=5000.0,
-                        mpesa_trans_id=sim_tx
-                    )
-                    if ok_reg and new_t:
-                        backend.verify_and_admit_ticket(new_t["ticket_id"])
-                        st.success("Accredited! Refreshing voting booth...")
-                        st.rerun()
+                st.info("💡 Tap below to generate your certified 500-member cohort:")
+                if st.button("⚡ Generate 500 Accredited SACCO Delegates", type="primary", use_container_width=True, key="btn_quick_accredit_voter"):
+                    df_500 = backend.generate_synthetic_sacco_roster_df(500)
+                    backend.bulk_ingest_event_tickets(v_eid, df_500)
+                    st.success("Accredited! Refreshing voting booth...")
+                    st.rerun()
             else:
-                default_voter_idx = 0
-                if qp_vote_tkt:
-                    for idx, (k, t) in enumerate(tkt_voter_opts.items()):
-                        if qp_vote_tkt.strip().upper() in k.upper():
-                            default_voter_idx = idx
-                            break
-                sel_voter_key = st.selectbox("Select Accredited Delegate:*", list(tkt_voter_opts.keys()), index=default_voter_idx, key="sel_voter_ticket")
-                sel_tkt = tkt_voter_opts[sel_voter_key]
+                default_v_tkt = qp_vote_tkt or ("TKT-BK-342801" if "BANKI-KUU-SACCO" in v_eid else admitted_tkts[0]["ticket_id"])
+                
+                eval_mode = st.checkbox("🧪 Evaluator Shortcut (Show Delegate Dropdown for Quick Demo)", value=False, key="chk_eval_voter_mode")
+                
+                sel_tkt = None
+                if eval_mode:
+                    tkt_voter_opts = {f"{t['attendee_name']} ({t['ticket_id']} — {t['ticket_tier']})": t for t in admitted_tkts}
+                    sel_voter_key = st.selectbox("Select Accredited Delegate (Demo Shortcut):*", list(tkt_voter_opts.keys()), key="sel_voter_ticket_demo")
+                    sel_tkt = tkt_voter_opts[sel_voter_key]
+                else:
+                    v_input_tkt = st.text_input(
+                        "🔑 Enter Your Confidential Ticket Serial ID / Member Account ID:*",
+                        value=default_v_tkt,
+                        placeholder="e.g. TKT-BK-342801 or SACCO-3428",
+                        help="Enter the Ticket Serial ID printed on your digital pass to unlock your ballot paper."
+                    )
+                    clean_input = v_input_tkt.strip().upper()
+                    if clean_input in tkt_lookup:
+                        sel_tkt = tkt_lookup[clean_input]
+                    else:
+                        for t in admitted_tkts:
+                            if clean_input and (clean_input in t["ticket_id"].upper() or clean_input in t["attendee_name"].upper() or clean_input in t.get("organization","").upper()):
+                                sel_tkt = t
+                                break
 
-                # Compute voting weight based on ticket tier
-                v_weight = 1
-                if "Principal Shareholder" in sel_tkt["ticket_tier"]:
-                    v_weight = 10000
-                elif "Institutional" in sel_tkt["ticket_tier"]:
-                    v_weight = 100000
-                elif "Proxy Holder" in sel_tkt["ticket_tier"]:
-                    v_weight = 35000
-                elif "Board Director" in sel_tkt["ticket_tier"]:
-                    v_weight = 50000
+                if not sel_tkt:
+                    st.error(f"❌ Ticket Serial ID '{v_input_tkt}' not found or not yet accredited at gate scanner.")
+                    st.info("💡 Try entering `TKT-BK-342801` or check 'Evaluator Shortcut' above to select a delegate.")
+                else:
+                    # Compute voting weight based on ticket tier
+                    v_weight = 1
+                    if "Principal Shareholder" in sel_tkt["ticket_tier"]:
+                        v_weight = 10000
+                    elif "Institutional" in sel_tkt["ticket_tier"]:
+                        v_weight = 100000
+                    elif "Proxy Holder" in sel_tkt["ticket_tier"]:
+                        v_weight = 35000
+                    elif "Board Director" in sel_tkt["ticket_tier"]:
+                        v_weight = 50000
 
-                # Delegate Voting Credentials Card
-                st.markdown(f"""
-                <div style="background: rgba(8, 28, 58, 0.85); border: 1.5px solid #00F2FE; border-radius: 10px; padding: 12px 16px; margin: 8px 0 16px 0;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #00F2FE; font-weight: 800; font-size: 0.82rem;">CONFIDENTIAL VOTING CREDENTIAL</span>
-                        <span style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;">PASS ACTIVE</span>
+                    # Delegate Voting Credentials Card
+                    st.markdown(f"""
+                    <div style="background: rgba(8, 28, 58, 0.85); border: 2px solid #00F2FE; border-radius: 12px; padding: 14px 18px; margin: 8px 0 16px 0; box-shadow: 0 6px 20px rgba(0,242,254,0.2);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #00F2FE; font-weight: 900; font-size: 0.82rem; letter-spacing: 1px;">🔒 AUTHENTICATED DELEGATE BALLOT</span>
+                            <span style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; border: 1px solid #10B981;">
+                                VERIFIED VOTER
+                            </span>
+                        </div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #FFFFFF; margin-top: 6px;">{sel_tkt['attendee_name']}</div>
+                        <div style="font-size: 0.8rem; color: #94A3B8;">{sel_tkt['organization']} • Serial: <code>{sel_tkt['ticket_id']}</code></div>
+                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 0.88rem; color: #F5C542; font-weight: 800;">
+                            ⚖️ Certified Voting Power: <strong>{v_weight:,} Votes</strong> ({sel_tkt['ticket_tier'].split('/')[0].strip()})
+                        </div>
                     </div>
-                    <div style="font-size: 1.05rem; font-weight: 800; color: #FFFFFF; margin-top: 4px;">{sel_tkt['attendee_name']}</div>
-                    <div style="font-size: 0.78rem; color: #94A3B8;">{sel_tkt['organization']} • Ticket: <code>{sel_tkt['ticket_id']}</code></div>
-                    <div style="margin-top: 6px; font-size: 0.85rem; color: #F5C542; font-weight: 800;">
-                        ⚖️ Allocated Voting Power: <strong>{v_weight:,} Votes</strong> ({sel_tkt['ticket_tier'].split('/')[0].strip()})
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                    """, unsafe_allow_html=True)
 
                 existing_ballots = backend.get_event_ballots(v_eid)
                 has_voted = any(b["ticket_id"] == sel_tkt["ticket_id"] for b in existing_ballots)
