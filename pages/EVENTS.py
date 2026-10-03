@@ -32,12 +32,15 @@ from utils import (
 # ------------------------------------------------------------------------------
 # PAGE CONFIGURATION
 # ------------------------------------------------------------------------------
-st.set_page_config(
-    page_title="STRIDE™ | Event Registration & Ticketing",
-    page_icon="🎟️",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+try:
+    st.set_page_config(
+        page_title="STRIDE™ | Event Registration & Ticketing",
+        page_icon="🎟️",
+        layout="wide",
+        initial_sidebar_state="collapsed"
+    )
+except Exception:
+    pass
 
 # ------------------------------------------------------------------------------
 # LUXURY CSS THEME (ROYAL NAVY, GOLD & CYAN GLASSMORPHISM)
