@@ -390,6 +390,91 @@ with tab_reg:
                         st.session_state["pub_active_ticket"] = None
                         st.rerun()
 
+            # ==================================================================
+            # BULK ROSTER UPLOAD & BATCH DELEGATE PIPELINE
+            # ==================================================================
+            st.markdown("---")
+            with st.expander("⚡ Bulk Member Roster Pipeline & 500-Delegate Batch Pass Engine", expanded=(selected_event["event_id"] == "EVT-BANKI-KUU-SACCO")):
+                st.markdown("""
+                <div style="background: rgba(8, 24, 48, 0.7); border: 1.5px solid rgba(245, 197, 66, 0.4); border-radius: 10px; padding: 12px 16px; margin-bottom: 12px;">
+                    <strong style="color: #F5C542; font-size: 0.9rem;">🚀 Enterprise Bulk Accreditation Pipeline</strong>
+                    <p style="margin: 4px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
+                        Eliminate manual registration for 500+ delegates. Upload a confirmed attendance CSV/Excel file or generate a synthetic 500-member Banki Kuu SACCO cohort with 1 click to achieve instant SASRA quorum accreditation.
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+
+                col_blk1, col_blk2 = st.columns(2)
+                with col_blk1:
+                    sample_template_df = pd.DataFrame([{
+                        "Member_ID": "SACCO-1001",
+                        "Full_Name": "Samuel Gathigi Njuguna",
+                        "Email": "sam.gathigi@gmail.com",
+                        "Phone": "0722849000",
+                        "Organization_Branch": "Banki Kuu Staff SACCO — Governor's Secretariat",
+                        "Accreditation_Role": "🗳️ Principal Shareholder / Voting Member",
+                        "Amount_Paid": 5000.0,
+                        "Attendance_Confirmed": "YES"
+                    }, {
+                        "Member_ID": "SACCO-1002",
+                        "Full_Name": "Dr. Beatrice Kiptoo",
+                        "Email": "b.kiptoo@centralbank.go.ke",
+                        "Phone": "0733456789",
+                        "Organization_Branch": "Banki Kuu Staff SACCO — Bank Supervision",
+                        "Accreditation_Role": "👔 Executive Board Director / Committee Member",
+                        "Amount_Paid": 5000.0,
+                        "Attendance_Confirmed": "YES"
+                    }])
+                    
+                    st.download_button(
+                        label="📥 Download Roster Template (.csv)",
+                        data=sample_template_df.to_csv(index=False).encode('utf-8'),
+                        file_name="Banki_Kuu_SACCO_Master_Delegate_Template.csv",
+                        mime="text/csv",
+                        use_container_width=True
+                    )
+                with col_blk2:
+                    if st.button("⚡ Generate & Ingest 500-Delegate Cohort", type="primary", use_container_width=True, key="btn_gen_500_sacco"):
+                        with st.spinner("Generating 500 Banki Kuu SACCO accredited delegates..."):
+                            df_500 = backend.generate_synthetic_sacco_roster_df(500)
+                            ok_bulk, msg_bulk, stats_bulk = backend.bulk_ingest_event_tickets(selected_event["event_id"], df_500)
+                            if ok_bulk:
+                                st.success(f"🎉 SUCCESS! {stats_bulk['total_ingested']} Banki Kuu SACCO delegates accredited and loaded into SQLite DB!")
+                                st.balloons()
+                                time.sleep(1)
+                                st.rerun()
+                            else:
+                                st.error(msg_bulk)
+
+                st.markdown("##### 📂 Or Drag & Drop Custom CSV / Excel Attendance File:")
+                uploaded_roster = st.file_uploader(
+                    "Upload Delegate Attendance Roster (CSV / XLSX):",
+                    type=["csv", "xlsx", "xls"],
+                    key=f"uploader_roster_{selected_event['event_id']}"
+                )
+
+                if uploaded_roster is not None:
+                    try:
+                        if uploaded_roster.name.endswith(".csv"):
+                            df_up = pd.read_csv(uploaded_roster)
+                        else:
+                            df_up = pd.read_excel(uploaded_roster)
+                        
+                        st.dataframe(df_up.head(5), use_container_width=True)
+                        st.info(f"Loaded file '{uploaded_roster.name}' containing {len(df_up)} delegates.")
+
+                        if st.button(f"🚀 Execute Bulk Accreditation for {len(df_up)} Delegates", type="primary", use_container_width=True, key="btn_exec_bulk_up"):
+                            ok_b, msg_b, stats_b = backend.bulk_ingest_event_tickets(selected_event["event_id"], df_up)
+                            if ok_b:
+                                st.success(msg_b)
+                                st.balloons()
+                                time.sleep(1)
+                                st.rerun()
+                            else:
+                                st.error(msg_b)
+                    except Exception as ex_up:
+                        st.error(f"Error reading file: {ex_up}")
+
         with col_reg_pass:
             stk_p = st.session_state.get("stk_pending_payload", None)
             cur_ticket = st.session_state.get("pub_active_ticket", None)

@@ -2638,6 +2638,116 @@ class AttendanceBackend:
         except Exception:
             return self.get_event_by_id(event_id) or {}
 
+    def generate_synthetic_sacco_roster_df(self, count: int = 500) -> pd.DataFrame:
+        """Generates a synthetic 500-member Banki Kuu SACCO delegate roster DataFrame."""
+        first_names = ["Samuel", "Beatrice", "Eric", "Kenneth", "Catherine", "Patrick", "Grace", "David", "Mary", "James", "Francis", "Mercy", "John", "Sarah", "Peter", "Lucy", "Joseph", "Jane", "Charles", "Eunice"]
+        last_names = ["Gathigi", "Kiptoo", "Mwangi", "Mutai", "Ochieng", "Kamau", "Ndung'u", "Kiprono", "Atieno", "Omondi", "Kariuki", "Wanjiru", "Oduor", "Njoroge", "Chebet", "Wambui", "Kibet", "Muthoni", "Otieno", "Nyambura"]
+        depts = ["Bank Supervision", "Currency Operations", "Financial Markets", "Internal Audit", "Governor's Office & Secretariat", "IT & Cybersecurity", "Risk & Compliance", "Human Resources", "Payments & Settlement Systems", "Deposit Protection"]
+        roles = [
+            "🗳️ Principal Shareholder / Voting Member",
+            "🗳️ Principal Shareholder / Voting Member",
+            "🗳️ Principal Shareholder / Voting Member",
+            "📜 Duly Appointed Proxy Holder",
+            "👔 Executive Board Director / Committee Member",
+            "👁️ Independent Auditor / Regulatory Observer"
+        ]
+
+        data = []
+        for i in range(1, count + 1):
+            fn = random.choice(first_names)
+            ln = random.choice(last_names)
+            name = f"{fn} {ln}"
+            mem_id = f"SACCO-{1000 + i}"
+            ln_clean = ln.lower().replace("'", "")
+            email = f"{fn.lower()}.{ln_clean}@centralbank.go.ke"
+            phone = f"072{random.randint(1000000, 9999999)}"
+            dept = random.choice(depts)
+            role = random.choice(roles)
+            data.append({
+                "Member_ID": mem_id,
+                "Full_Name": name,
+                "Email": email,
+                "Phone": phone,
+                "Organization_Branch": f"Banki Kuu Staff SACCO — {dept}",
+                "Accreditation_Role": role,
+                "Amount_Paid": 5000.0,
+                "Attendance_Confirmed": "YES"
+            })
+        return pd.DataFrame(data)
+
+    def bulk_ingest_event_tickets(
+        self, event_id: str, df_roster: pd.DataFrame
+    ) -> Tuple[bool, str, Dict[str, Any]]:
+        """Bulk ingests delegates into event_tickets_registry from a DataFrame."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cur = conn.cursor()
+            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+
+            records = []
+            cols = {c.lower().strip().replace(" ", "_"): c for c in df_roster.columns}
+
+            def get_col(possible_names: list):
+                for p in possible_names:
+                    if p in cols:
+                        return cols[p]
+                return None
+
+            c_mem = get_col(["member_id", "account_number", "cdsc_no", "sacco_id", "id", "member_no"])
+            c_name = get_col(["full_name", "name", "attendee_name", "member_name"])
+            c_email = get_col(["email", "email_address"])
+            c_phone = get_col(["phone", "mobile", "mpesa_phone", "phone_number"])
+            c_org = get_col(["organization_branch", "organization", "company", "branch", "department"])
+            c_role = get_col(["accreditation_role", "role", "ticket_tier", "tier", "member_status"])
+            c_amt = get_col(["amount_paid", "amount", "fee"])
+
+            for idx, row in df_roster.iterrows():
+                name_val = str(row[c_name]).strip() if c_name and pd.notna(row[c_name]) else f"Delegate #{idx+1}"
+                email_val = str(row[c_email]).strip() if c_email and pd.notna(row[c_email]) else f"delegate{idx+1}@centralbank.go.ke"
+                phone_val = str(row[c_phone]).strip() if c_phone and pd.notna(row[c_phone]) else "0722000000"
+                mem_val = str(row[c_mem]).strip() if c_mem and pd.notna(row[c_mem]) else f"SACCO-{2000+idx}"
+                org_base = str(row[c_org]).strip() if c_org and pd.notna(row[c_org]) else "Banki Kuu Staff SACCO"
+                org_val = f"{org_base} (Ref: {mem_val})" if mem_val not in org_base else org_base
+                role_val = str(row[c_role]).strip() if c_role and pd.notna(row[c_role]) else "🗳️ Principal Shareholder / Voting Member"
+                try:
+                    amt_val = float(row[c_amt]) if c_amt and pd.notna(row[c_amt]) else 5000.0
+                except Exception:
+                    amt_val = 5000.0
+
+                tkt_id = f"TKT-BK-{random.randint(100000, 999999)}"
+                tx_id = f"BK{int(time.time())}{idx:03d}"[-10:]
+
+                records.append((
+                    tkt_id, event_id, name_val, email_val, phone_val, org_val,
+                    role_val, amt_val, tx_id, "ADMITTED", now_str, now_str
+                ))
+
+            cur.executemany("""
+                INSERT OR REPLACE INTO event_tickets_registry (
+                    ticket_id, event_id, attendee_name, email, phone, organization,
+                    ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, records)
+
+            conn.commit()
+            conn.close()
+
+            self.log_audit_event(
+                staff_id="SECRETARIAT",
+                officer_name="Banki Kuu SACCO Bulk Ingestion",
+                role="System Admin",
+                action_type="BULK_ROSTER_INGESTED",
+                resource_name=event_id,
+                notes=f"Successfully bulk ingested {len(records)} accredited delegates into {event_id}"
+            )
+
+            return True, f"🎉 Bulk Roster Ingestion Complete! Ingested {len(records)} accredited delegates into Banki Kuu SACCO AGM.", {
+                "total_ingested": len(records),
+                "event_id": event_id
+            }
+        except Exception as e:
+            return False, f"Failed to bulk ingest roster: {e}", {}
+
     def register_event_ticket(
         self, event_id: str, attendee_name: str, email: str, phone: str,
         organization: str, ticket_tier: str, amount_paid: float, mpesa_trans_id: str
