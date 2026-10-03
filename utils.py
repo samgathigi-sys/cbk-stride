@@ -2590,6 +2590,54 @@ class AttendanceBackend:
         except Exception:
             return None
 
+    def ensure_banki_kuu_sacco_event(self) -> Dict[str, Any]:
+        """Ensures the Banki Kuu SACCO 58th AGM & Board Elections event exists in database."""
+        event_id = "EVT-BANKI-KUU-SACCO"
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cur = conn.cursor()
+            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+            cur.execute("""
+                INSERT OR IGNORE INTO events_registry (
+                    event_id, title, organizer_name, category, event_date, event_time, venue,
+                    description, gate_mode, is_paid, standard_price, vip_price, mpesa_paybill,
+                    created_at, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVE')
+            """, (
+                event_id,
+                "🏦 Banki Kuu SACCO 58th Annual General Meeting & Board Elections",
+                "Banki Kuu Staff SACCO Society Limited",
+                "Annual General Meetings (AGM) & Shareholder Assemblies",
+                "2026-10-28",
+                "08:30",
+                "Central Bank of Kenya Main Auditorium & Virtual Portal, Nairobi",
+                "Official Statutory 58th AGM and Shareholder Elections for Board Directors and Supervisory Committee. Real-Time Quorum Accreditation, Encrypted E-Voting, and Instant M-Pesa Dividend Pass.",
+                "SINGLE_GATE",
+                1, 5000.0, 5000.0, "849200", now_str
+            ))
+            
+            cur.execute("SELECT COUNT(*) FROM event_tickets_registry WHERE event_id = ?", (event_id,))
+            if cur.fetchone()[0] == 0:
+                sample_sacco_tickets = [
+                    ("TKT-BK-342801", event_id, "Samuel Gathigi Njuguna", "sam.gathigi@gmail.com", "0722849000", "Banki Kuu Staff SACCO (Ref: SACCO-3428)", "🗳️ Principal Shareholder / Voting Member", 5000.0, "MPESA-BK3428", "ADMITTED", f"{now_str}", now_str),
+                    ("TKT-BK-102948", event_id, "Dr. Beatrice Kiptoo", "b.kiptoo@centralbank.go.ke", "0733456789", "Banki Kuu Staff SACCO (Ref: SACCO-1029)", "🗳️ Principal Shareholder / Voting Member", 5000.0, "MPESA-BK1029", "ADMITTED", f"{now_str}", now_str),
+                    ("TKT-BK-992018", event_id, "Eric Mwangi", "e.mwangi@centralbank.go.ke", "0720987654", "Banki Kuu Staff SACCO (Ref: SACCO-9920)", "📜 Duly Appointed Proxy Holder", 5000.0, "MPESA-BK9920", "ADMITTED", f"{now_str}", now_str),
+                    ("TKT-BK-881920", event_id, "Kenneth Mutai", "kmutai@centralbank.go.ke", "0721112233", "Banki Kuu Staff SACCO (Ref: SACCO-8819)", "👔 Executive Board Director / Committee Member", 5000.0, "MPESA-BK8819", "ADMITTED", f"{now_str}", now_str),
+                    ("TKT-BK-449102", event_id, "Catherine Ochieng", "c.ochieng@centralbank.go.ke", "0725556677", "Banki Kuu Staff SACCO (Ref: SACCO-4491)", "🗳️ Principal Shareholder / Voting Member", 5000.0, "MPESA-BK4491", "ADMITTED", f"{now_str}", now_str),
+                    ("TKT-BK-202601", event_id, "Patrick Kamau", "pkamau@kpmg.co.ke", "0728990011", "KPMG Audit & SASRA Observer", "👁️ Independent Auditor / Regulatory Observer", 5000.0, "MPESA-BK2026", "ADMITTED", f"{now_str}", now_str)
+                ]
+                cur.executemany("""
+                    INSERT INTO event_tickets_registry (
+                        ticket_id, event_id, attendee_name, email, phone, organization,
+                        ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, sample_sacco_tickets)
+            conn.commit()
+            conn.close()
+            return self.get_event_by_id(event_id) or {}
+        except Exception:
+            return self.get_event_by_id(event_id) or {}
+
     def register_event_ticket(
         self, event_id: str, attendee_name: str, email: str, phone: str,
         organization: str, ticket_tier: str, amount_paid: float, mpesa_trans_id: str

@@ -158,6 +158,25 @@ tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp = st.tabs([
 # TAB 1: ATTENDEE REGISTRATION & M-PESA TICKETING
 # ==============================================================================
 with tab_reg:
+    # Ensure Banki Kuu SACCO ready-to-demo event exists in database
+    bk_event = backend.ensure_banki_kuu_sacco_event()
+
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, rgba(245, 197, 66, 0.18) 0%, rgba(9, 31, 61, 0.85) 100%); border: 2px solid #F5C542; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.45);">
+        <div>
+            <span style="background: #F5C542; color: #020712; font-weight: 900; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px;">
+                🏦 READY-TO-DEMO SUITE
+            </span>
+            <h4 style="margin: 4px 0 2px 0; color: #FFFFFF; font-size: 1.1rem; font-weight: 800;">
+                Banki Kuu SACCO — 58th AGM & Board Elections Platform
+            </h4>
+            <div style="font-size: 0.78rem; color: #CBD5E1;">
+                Pre-configured for statutory shareholder accreditation, M-Pesa digital pass, live SASRA quorum tracking & encrypted e-voting.
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     st.markdown("### 🎟️ Attendee Self-Registration & Dynamic QR Ticket Pass")
     st.caption("Register for upcoming corporate sports championships, AGMs, conferences, galas, or marathons. Pay via Safaricom M-Pesa STK Push and receive an encrypted digital pass instantly:")
 
@@ -200,8 +219,12 @@ with tab_reg:
 
         event_options = {f"{e['title']} ({e['event_id']})": e for e in filtered_events}
         
-        # Preselect if event_id is in query params
+        # Default index preference for Banki Kuu SACCO if available
         default_idx = 0
+        for idx, k in enumerate(event_options.keys()):
+            if "BANKI-KUU-SACCO" in k.upper() or "BANKI KUU" in k.upper():
+                default_idx = idx
+                break
         if param_event_id:
             for idx, k in enumerate(event_options.keys()):
                 if param_event_id.upper() in k.upper():
@@ -279,8 +302,10 @@ with tab_reg:
                         key=f"agm_del_{selected_event['event_id']}"
                     )
 
+                    default_acc = "SACCO-3428" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else ""
                     agm_acc_num = st.text_input(
                         "Shareholder / CDSC / Member Account Number:*",
+                        value=default_acc,
                         placeholder="e.g. CDSC-8492019 / SACCO-1049 / MEM-3428",
                         key=f"agm_acc_{selected_event['event_id']}"
                     )
@@ -313,10 +338,15 @@ with tab_reg:
                     chosen_amt = std_p if "Standard" in tier_choice else vip_p
                     tier_clean_name = "Standard Pass" if "Standard" in tier_choice else "VIP Executive Pass"
 
-                att_name = st.text_input("Full Name (as per Official ID / National ID):*", placeholder="e.g. Wallace Mbugua")
-                att_email = st.text_input("Email Address (for pass delivery):*", placeholder="e.g. wallace@enterprise.co.ke")
-                att_org = st.text_input("Organization / Company / Sacco Branch:*", placeholder="e.g. Finance & Accounts / Equity Bank")
-                att_phone = st.text_input("Safaricom M-Pesa Phone Number:*", placeholder="07XX XXX XXX", value="0722123456", help="Mobile number for STK Push prompt")
+                def_name = "Samuel Gathigi Njuguna" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else ""
+                def_email = "sam.gathigi@gmail.com" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else ""
+                def_org = "Banki Kuu Staff SACCO Society" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else ""
+                def_phone = "0722849000" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else "0722123456"
+
+                att_name = st.text_input("Full Name (as per Official ID / National ID):*", value=def_name, placeholder="e.g. Wallace Mbugua")
+                att_email = st.text_input("Email Address (for pass delivery):*", value=def_email, placeholder="e.g. wallace@enterprise.co.ke")
+                att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Finance & Accounts / Equity Bank")
+                att_phone = st.text_input("Safaricom M-Pesa Phone Number:*", placeholder="07XX XXX XXX", value=def_phone, help="Mobile number for STK Push prompt")
 
                 st.markdown(f"""
                 <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
