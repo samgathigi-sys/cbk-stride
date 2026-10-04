@@ -415,7 +415,7 @@ with tab_reg:
                     )
 
                     tier_clean_name = agm_del_status.split("(")[0].strip()
-                    chosen_amt = 5000.0  # Statutory AGM Accreditation fee fixed at KES 5,000
+                    chosen_amt = 0.0 if is_bks_mode else 5000.0  # Paid centrally by SACCO Finance Manager for BKS mode
 
                 else:
                     # Standard Non-AGM Ticket Tier Selection
@@ -440,16 +440,28 @@ with tab_reg:
                 att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Finance & Accounts / Equity Bank")
                 att_phone = st.text_input("Safaricom M-Pesa Phone Number:*", placeholder="07XX XXX XXX", value=def_phone, help="Mobile number for STK Push prompt")
 
-                st.markdown(f"""
-                <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #34D399; font-weight: 800; font-size: 0.92rem;">💰 Total Payable: KES {chosen_amt:,.0f}</span>
-                        <span style="background: #10B981; color: #020712; font-size: 0.68rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">DARAJA STK</span>
+                if is_bks_mode:
+                    st.markdown(f"""
+                    <div style="background: rgba(16, 185, 129, 0.15); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #34D399; font-weight: 800; font-size: 0.92rem;">🏛️ Member Accreditation: KES 0 (Complimentary)</span>
+                            <span style="background: #10B981; color: #020712; font-size: 0.68rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">SACCO PRE-PAID</span>
+                        </div>
+                        <span style="color: #CBD5E1; font-size: 0.76rem;">Platform deployment & accreditation fees paid centrally by <strong>Banki Kuu Staff SACCO Secretariat</strong>. Members do not pay.</span>
                     </div>
-                    <span style="color: #94A3B8; font-size: 0.74rem;">Paybill: <strong>{selected_event['mpesa_paybill']}</strong> • Instant Automated Handset Push</span>
-                </div>
-                """, unsafe_allow_html=True)
-                btn_sub_ticket = st.form_submit_button(f"📲 Pay KES {chosen_amt:,.0f} via M-Pesa STK & Register", type="primary", use_container_width=True)
+                    """, unsafe_allow_html=True)
+                    btn_sub_ticket = st.form_submit_button("✅ Accredit Member & Generate Mobile Pass", type="primary", use_container_width=True)
+                else:
+                    st.markdown(f"""
+                    <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #34D399; font-weight: 800; font-size: 0.92rem;">💰 Total Payable: KES {chosen_amt:,.0f}</span>
+                            <span style="background: #10B981; color: #020712; font-size: 0.68rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">DARAJA STK</span>
+                        </div>
+                        <span style="color: #94A3B8; font-size: 0.74rem;">Paybill: <strong>{selected_event['mpesa_paybill']}</strong> • Instant Automated Handset Push</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    btn_sub_ticket = st.form_submit_button(f"📲 Pay KES {chosen_amt:,.0f} via M-Pesa STK & Register", type="primary", use_container_width=True)
 
                 if btn_sub_ticket:
                     if not att_name.strip():
@@ -463,22 +475,45 @@ with tab_reg:
                     else:
                         org_tag = f"{att_org.strip()} (Ref: {agm_acc_num.strip()})" if is_agm else att_org.strip()
                         
-                        # Set STK Pending Payload to trigger interactive handset simulator
-                        st.session_state["stk_pending_payload"] = {
-                            "event_id": selected_event["event_id"],
-                            "event_title": selected_event["title"],
-                            "attendee_name": att_name.strip(),
-                            "email": att_email.strip(),
-                            "phone": att_phone.strip(),
-                            "organization": org_tag or "Independent Delegate",
-                            "ticket_tier": tier_clean_name,
-                            "amount_paid": chosen_amt,
-                            "paybill": selected_event.get("mpesa_paybill", "849200"),
-                            "acc_num": agm_acc_num.strip() if is_agm else att_phone.strip()[-4:],
-                            "is_agm": is_agm
-                        }
-                        st.session_state["pub_active_ticket"] = None
-                        st.rerun()
+                        if is_bks_mode:
+                            # Direct complimentary accreditation for Banki Kuu SACCO member
+                            sim_tx = f"BKS-ACC-{int(time.time())}"[-10:]
+                            ok_t, msg_t, tkt_obj = backend.register_event_ticket(
+                                event_id=selected_event["event_id"],
+                                attendee_name=att_name.strip(),
+                                email=att_email.strip(),
+                                phone=att_phone.strip(),
+                                organization=org_tag or "Banki Kuu SACCO Member",
+                                ticket_tier=tier_clean_name,
+                                amount_paid=0.0,
+                                mpesa_trans_id=sim_tx
+                            )
+                            if ok_t:
+                                st.session_state["pub_active_ticket"] = tkt_obj
+                                st.session_state["pub_active_event"] = selected_event
+                                st.session_state["stk_pending_payload"] = None
+                                st.success(f"🎉 Accredited! {att_name.strip()} has been recorded. Digital mobile pass issued.")
+                                st.balloons()
+                                st.rerun()
+                            else:
+                                st.error(msg_t)
+                        else:
+                            # Set STK Pending Payload to trigger interactive handset simulator for paid tickets
+                            st.session_state["stk_pending_payload"] = {
+                                "event_id": selected_event["event_id"],
+                                "event_title": selected_event["title"],
+                                "attendee_name": att_name.strip(),
+                                "email": att_email.strip(),
+                                "phone": att_phone.strip(),
+                                "organization": org_tag or "Independent Delegate",
+                                "ticket_tier": tier_clean_name,
+                                "amount_paid": chosen_amt,
+                                "paybill": selected_event.get("mpesa_paybill", "849200"),
+                                "acc_num": agm_acc_num.strip() if is_agm else att_phone.strip()[-4:],
+                                "is_agm": is_agm
+                            }
+                            st.session_state["pub_active_ticket"] = None
+                            st.rerun()
 
             # ==================================================================
             # BULK ROSTER UPLOAD & BATCH DELEGATE PIPELINE
