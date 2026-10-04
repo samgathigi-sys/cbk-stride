@@ -1489,6 +1489,71 @@ if tab_wizard is not None:
                 df_ev_display = pd.DataFrame(ev_list)[["event_id", "title", "category", "event_date", "venue", "standard_price", "status"]]
                 st.dataframe(df_ev_display, use_container_width=True, hide_index=True)
 
+        st.markdown("---")
+        with st.expander("📜 Returning Officer AGM Ballot Builder & Candidate Manager", expanded=is_bks_mode or is_wz_agm):
+            st.markdown("""
+            <div style="background: rgba(245, 197, 66, 0.1); border: 1.5px solid #F5C542; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px;">
+                <span style="color: #F5C542; font-weight: 800; font-size: 0.9rem;">🏛️ SECRETARIAT & RETURNING OFFICER BALLOT EDITOR</span>
+                <p style="margin: 4px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
+                    Configure and lock the official AGM agenda, candidate nominations, and ordinary resolutions before voting opens. Changes saved here dynamically update the <strong>Digital Voting Booth (Tab 4)</strong> for all accredited delegates.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            cur_cfg = st.session_state.get("sacco_ballot_config", {
+                "res1_title": "Ordinary Resolution 1: Approval of Audited Financial Statements for FY2025 and Declaration of a 14% First & Final Dividend",
+                "res1_options": ["FOR (Approve Accounts & 14% Dividend)", "AGAINST (Reject Accounts)", "ABSTAIN"],
+                "res2_title": "Item 2: Election of Supervisory Board Member (Nairobi East & Central Region)",
+                "res2_candidates": [
+                    "Sarah Wanjiru CPA(K) (Independent, Audit & Finance)",
+                    "Eng. David Ndung'u (Incumbent, Risk & Governance)",
+                    "Dr. Peter Otieno (Institutional Nominee)"
+                ],
+                "res3_title": "Ordinary Resolution 2: Appointment of External Statutory Auditors for FY2026",
+                "res3_auditors": ["Re-appoint KPMG Kenya", "Appoint PKF Kenya", "Appoint Deloitte East Africa", "ABSTAIN"]
+            })
+
+            b_col1, b_col2, b_col3 = st.columns(3)
+            with b_col1:
+                st.markdown("##### 📜 Item 1: Ordinary Resolution 1")
+                cfg_r1_title = st.text_input("Resolution Title / Motion Description:", value=cur_cfg["res1_title"], key="cfg_r1_title")
+                cfg_r1_opts_raw = st.text_area("Voting Options (one per line):", value="\n".join(cur_cfg["res1_options"]), height=120, key="cfg_r1_opts_raw")
+
+            with b_col2:
+                st.markdown("##### 🗳️ Item 2: Board Candidate List")
+                cfg_r2_title = st.text_input("Election / Position Title:", value=cur_cfg["res2_title"], key="cfg_r2_title")
+                cfg_r2_cands_raw = st.text_area("Nominated Candidates (one per line):", value="\n".join(cur_cfg["res2_candidates"]), height=120, key="cfg_r2_cands_raw")
+
+            with b_col3:
+                st.markdown("##### 🏛️ Item 3: Statutory Auditors")
+                cfg_r3_title = st.text_input("Auditor Appointment Motion Title:", value=cur_cfg["res3_title"], key="cfg_r3_title")
+                cfg_r3_auds_raw = st.text_area("Auditor Choices (one per line):", value="\n".join(cur_cfg["res3_auditors"]), height=120, key="cfg_r3_auds_raw")
+
+            if st.button("🔒 Save & Lock Official AGM Ballot Paper", type="primary", use_container_width=True, key="btn_save_ballot_config"):
+                r1_opts = [line.strip() for line in cfg_r1_opts_raw.splitlines() if line.strip()]
+                r2_cands = [line.strip() for line in cfg_r2_cands_raw.splitlines() if line.strip()]
+                r3_auds = [line.strip() for line in cfg_r3_auds_raw.splitlines() if line.strip()]
+
+                if not r1_opts:
+                    r1_opts = ["FOR (Approve Accounts)", "AGAINST (Reject Accounts)", "ABSTAIN"]
+                if not r2_cands:
+                    r2_cands = ["Candidate A", "Candidate B"]
+                if not r3_auds:
+                    r3_auds = ["Re-appoint KPMG Kenya", "ABSTAIN"]
+
+                st.session_state["sacco_ballot_config"] = {
+                    "res1_title": cfg_r1_title.strip() or cur_cfg["res1_title"],
+                    "res1_options": r1_opts,
+                    "res2_title": cfg_r2_title.strip() or cur_cfg["res2_title"],
+                    "res2_candidates": r2_cands,
+                    "res3_title": cfg_r3_title.strip() or cur_cfg["res3_title"],
+                    "res3_auditors": r3_auds
+                }
+                st.success("✅ Ballot Configuration Saved & Locked! Delegate voting booth (Tab 4) updated live.")
+                st.balloons()
+                st.rerun()
+
+
     # ==============================================================================
 # TAB 3: GATE USHER SCANNER & ACCREDITATION ROSTER
 # ==============================================================================
@@ -1816,36 +1881,46 @@ with tab_ballot:
                     st.success(f"✓ Ballot Cast & Certified! Vote was recorded on {voted_ballot['cast_time']}.")
                     st.code(f"Cryptographic Proof: {voted_ballot['ballot_hash']}")
                 else:
+                    b_config = st.session_state.get("sacco_ballot_config", {
+                        "res1_title": "Ordinary Resolution 1: Approval of Audited Financial Statements for FY2025 and Declaration of a 14% First & Final Dividend",
+                        "res1_options": ["FOR (Approve Accounts & 14% Dividend)", "AGAINST (Reject Accounts)", "ABSTAIN"],
+                        "res2_title": "Item 2: Election of Supervisory Board Member (Nairobi East & Central Region)",
+                        "res2_candidates": [
+                            "Sarah Wanjiru CPA(K) (Independent, Audit & Finance)",
+                            "Eng. David Ndung'u (Incumbent, Risk & Governance)",
+                            "Dr. Peter Otieno (Institutional Nominee)"
+                        ],
+                        "res3_title": "Ordinary Resolution 2: Appointment of External Statutory Auditors for FY2026",
+                        "res3_auditors": ["Re-appoint KPMG Kenya", "Appoint PKF Kenya", "Appoint Deloitte East Africa", "ABSTAIN"]
+                    })
+
                     with st.form(key=f"form_ballot_{sel_tkt['ticket_id']}"):
-                        st.markdown("##### 📜 Item 1: Ordinary Resolution 1")
-                        st.caption("Approval of Audited Financial Statements for FY2025 and Declaration of a 14% First & Final Dividend:")
+                        st.markdown(f"##### 📜 {b_config['res1_title']}")
+                        st.caption("Cast your vote on Item 1 Ordinary Resolution:")
                         v_res1 = st.radio(
                             "Your Vote on Resolution 1:*",
-                            ["FOR (Approve Accounts & 14% Dividend)", "AGAINST (Reject Accounts)", "ABSTAIN"],
+                            b_config["res1_options"],
                             index=None,
-                            key="v_res1_radio"
+                            key=f"v_res1_radio_{sel_tkt['ticket_id']}"
                         )
 
-                        st.markdown("##### 🗳️ Item 2: Election of Supervisory Board Member")
-                        st.caption("Select one candidate to represent Nairobi East & Central Region on the Supervisory Committee:")
+                        st.markdown(f"##### 🗳️ {b_config['res2_title']}")
+                        st.caption("Select one nominated candidate for Item 2:")
                         v_res2 = st.radio(
                             "Candidate Selection:*",
-                            [
-                                "Sarah Wanjiru CPA(K) (Independent, Audit & Finance)",
-                                "Eng. David Ndung'u (Incumbent, Risk & Governance)",
-                                "Dr. Peter Otieno (Institutional Nominee)"
-                            ],
+                            b_config["res2_candidates"],
                             index=None,
-                            key="v_res2_radio"
+                            key=f"v_res2_radio_{sel_tkt['ticket_id']}"
                         )
 
-                        st.markdown("##### 🏛️ Item 3: Ordinary Resolution 2")
-                        st.caption("Appointment of Independent External Statutory Auditors for Financial Year 2026:")
+                        st.markdown(f"##### 🏛️ {b_config['res3_title']}")
+                        st.caption("Select statutory auditor for Item 3:")
+                        aud_options = ["Select Statutory Auditor..."] + [a for a in b_config["res3_auditors"] if a != "Select Statutory Auditor..."]
                         v_res3 = st.selectbox(
                             "Statutory Auditor Appointment:*",
-                            ["Select Statutory Auditor...", "Re-appoint KPMG Kenya", "Appoint PKF Kenya", "Appoint Deloitte East Africa", "ABSTAIN"],
+                            aud_options,
                             index=0,
-                            key="v_res3_sel"
+                            key=f"v_res3_sel_{sel_tkt['ticket_id']}"
                         )
 
                         btn_submit_ballot = st.form_submit_button(
