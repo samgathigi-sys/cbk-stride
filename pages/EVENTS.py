@@ -1239,9 +1239,18 @@ if tab_wizard is not None:
             audit_fee = extract_module_fee(sc_q4)
             audit_tag = sc_q4.split("—")[0].strip()
 
-            subtotal = base_fee + voting_fee + hw_fee + audit_fee
-            vat_amt = subtotal * 0.16
-            grand_total = subtotal + vat_amt
+            if is_bks_mode:
+                base_fee = 10000.0
+                voting_fee = 0.0
+                hw_fee = 0.0
+                audit_fee = 0.0
+                subtotal = 10000.0
+                vat_amt = 0.0
+                grand_total = 10000.0
+            else:
+                subtotal = base_fee + voting_fee + hw_fee + audit_fee
+                vat_amt = subtotal * 0.16
+                grand_total = subtotal + vat_amt
 
             st.markdown("---")
             if is_bks_mode:
@@ -1345,8 +1354,8 @@ if tab_wizard is not None:
             <span style="color: #F5C542; font-weight: 900; font-size: 0.82rem; letter-spacing: 1.2px; text-transform: uppercase;">
                 STRIDE™ SCOPE QUOTATION
             </span>
-            <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #34D399; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 800;">
-                LIVE PRO-FORMA
+            <span style="background: rgba(245, 197, 66, 0.18); border: 1px solid #F5C542; color: #F5C542; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 800;">
+                {"🎉 INTRODUCTORY SACCO OFFER (KES 10,000 FLAT)" if is_bks_mode else "LIVE PRO-FORMA"}
             </span>
         </div>
     
