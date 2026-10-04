@@ -1433,6 +1433,15 @@ with tab_verify:
                 
                 voting_delegates = len(principals) + len(proxies)
                 quorum_target = 25  # Statutory floor standard
+                if cur_roster_evt and cur_roster_evt.get("description"):
+                    desc_str = cur_roster_evt["description"]
+                    if "150 Delegates" in desc_str or "Tier-1 Sacco" in desc_str:
+                        quorum_target = 150
+                    elif "100 Accredited" in desc_str:
+                        quorum_target = 100
+                    elif "50 Members" in desc_str:
+                        quorum_target = 50
+
                 quorum_pct = min(100, int((voting_delegates / quorum_target) * 100))
 
                 st.markdown("""
@@ -1627,14 +1636,14 @@ with tab_ballot:
                     elif "Board Director" in sel_tkt["ticket_tier"]:
                         v_weight = 50000
 
+                    gate_badge = '<span style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; border: 1px solid #10B981;">🟢 GATE ACCREDITED</span>' if sel_tkt.get("gate_status") == "ADMITTED" else '<span style="background: rgba(245, 197, 66, 0.2); color: #F5C542; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; border: 1px solid #F5C542;">🌐 HYBRID / REMOTE VOTER</span>'
+
                     # Delegate Voting Credentials Card
                     st.markdown(f"""
                     <div style="background: rgba(8, 28, 58, 0.85); border: 2px solid #00F2FE; border-radius: 12px; padding: 14px 18px; margin: 8px 0 16px 0; box-shadow: 0 6px 20px rgba(0,242,254,0.2);">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="color: #00F2FE; font-weight: 900; font-size: 0.82rem; letter-spacing: 1px;">🔒 AUTHENTICATED DELEGATE BALLOT</span>
-                            <span style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; border: 1px solid #10B981;">
-                                VERIFIED VOTER
-                            </span>
+                            {gate_badge}
                         </div>
                         <div style="font-size: 1.1rem; font-weight: 800; color: #FFFFFF; margin-top: 6px;">{sel_tkt['attendee_name']}</div>
                         <div style="font-size: 0.8rem; color: #94A3B8;">{sel_tkt['organization']} • Serial: <code>{sel_tkt['ticket_id']}</code></div>
@@ -1699,6 +1708,8 @@ with tab_ballot:
                                 res3_auditor=v_res3
                             )
                             if ok_b:
+                                if sel_tkt.get("gate_status") != "ADMITTED":
+                                    backend.verify_and_admit_ticket(sel_tkt["ticket_id"])
                                 st.session_state["last_cast_ballot"] = b_rec
                                 st.balloons()
                                 st.rerun()
