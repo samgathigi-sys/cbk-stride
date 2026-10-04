@@ -2749,14 +2749,48 @@ class AttendanceBackend:
         self, event_id: str, attendee_name: str, email: str, phone: str,
         organization: str, ticket_tier: str, amount_paid: float, mpesa_trans_id: str
     ) -> Tuple[bool, str, Dict[str, Any]]:
-        """Registers an attendee ticket with verified M-Pesa receipt."""
+        """Registers an attendee ticket with verified M-Pesa receipt or SACCO accreditation."""
         try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+
+            # Check if ticket already registered for this phone/email under this event
+            clean_phone = phone.strip() if phone else ""
+            clean_email = email.strip() if email else ""
+            clean_name = attendee_name.strip() if attendee_name else ""
+
+            if clean_phone or clean_email or clean_name:
+                cur.execute("""
+                    SELECT * FROM event_tickets_registry 
+                    WHERE event_id = ? AND (
+                        (phone != '' AND phone = ?) OR 
+                        (email != '' AND email = ?) OR
+                        (attendee_name != '' AND LOWER(attendee_name) = LOWER(?))
+                    )
+                    LIMIT 1
+                """, (event_id, clean_phone, clean_email, clean_name))
+                existing_row = cur.fetchone()
+                if existing_row:
+                    t_dict = dict(existing_row)
+                    conn.close()
+                    return True, "Member already accredited! Displaying existing ticket pass.", t_dict
+
             now_dt = get_eat_now()
             now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
-            ticket_id = f"TKT-{mpesa_trans_id[-6:]}-{random.randint(10, 99)}"
 
-            conn = sqlite3.connect(self.db_path, timeout=10)
-            cur = conn.cursor()
+            # Generate stable ticket ID
+            clean_ref = "".join([c for c in mpesa_trans_id if c.isalnum()]).upper()
+            if clean_ref and len(clean_ref) >= 6:
+                ticket_id = f"TKT-{clean_ref[-6:]}"
+            else:
+                ticket_id = f"TKT-{clean_ref}-{random.randint(10, 99)}"
+
+            # Ensure ticket_id uniqueness
+            cur.execute("SELECT COUNT(*) FROM event_tickets_registry WHERE ticket_id = ?", (ticket_id,))
+            if cur.fetchone()[0] > 0:
+                ticket_id = f"{ticket_id}-{random.randint(10, 99)}"
+
             cur.execute("""
                 INSERT INTO event_tickets_registry (
                     ticket_id, event_id, attendee_name, email, phone, organization,

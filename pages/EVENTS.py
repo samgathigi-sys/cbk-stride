@@ -480,7 +480,11 @@ with tab_reg:
                         
                         if is_event_bks:
                             # Direct complimentary accreditation for Banki Kuu SACCO member
-                            sim_tx = f"BKS-ACC-{int(time.time())}"[-10:]
+                            clean_acc = "".join([c for c in agm_acc_num if c.isalnum()]).upper() if (is_agm and agm_acc_num) else ""
+                            clean_ph = "".join([c for c in att_phone if c.isdigit()])
+                            ref_code = clean_acc if clean_acc else (clean_ph[-6:] if clean_ph else "342805")
+                            sim_tx = f"BKS-{ref_code}"
+
                             ok_t, msg_t, tkt_obj = backend.register_event_ticket(
                                 event_id=selected_event["event_id"],
                                 attendee_name=att_name.strip(),
