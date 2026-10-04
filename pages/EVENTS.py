@@ -189,7 +189,19 @@ active_ticket_param = (
     or st.query_params.get("verify_tkt")
 )
 if active_ticket_param:
-    st.session_state["active_ticket_id"] = active_ticket_param.strip()
+    clean_tparam = active_ticket_param.strip()
+    st.session_state["active_ticket_id"] = clean_tparam
+    # Query database to resolve delegate profile
+    resolved_tkt = backend.get_ticket_by_id(clean_tparam)
+    if not resolved_tkt:
+        # Search by mpesa_trans_id, ref code, or partial ID
+        all_sac_tkts = backend.get_tickets_by_event("EVT-BANKI-KUU-SACCO")
+        for t in all_sac_tkts:
+            if clean_tparam.upper() in t.get("ticket_id", "").upper() or clean_tparam.upper() in t.get("mpesa_trans_id", "").upper():
+                resolved_tkt = t
+                break
+    if resolved_tkt:
+        st.session_state["pub_active_ticket"] = resolved_tkt
 
 # ------------------------------------------------------------------------------
 # MAIN PORTAL TABS
@@ -395,11 +407,34 @@ with tab_reg:
                         key=f"agm_del_{selected_event['event_id']}"
                     )
 
-                    default_acc = "SACCO-3428" if is_event_bks else ""
+                    loaded_tkt = st.session_state.get("pub_active_ticket")
+                    
+                    # Extract member account number dynamically
+                    default_acc = ""
+                    if loaded_tkt:
+                        import re
+                        m_ref = re.search(r'Ref:\s*([^)]+)', loaded_tkt.get("organization", ""))
+                        if m_ref:
+                            default_acc = m_ref.group(1).strip()
+                        elif loaded_tkt.get("mpesa_trans_id", "").startswith("BK"):
+                            default_acc = f"SACCO-{loaded_tkt['mpesa_trans_id'][2:]}"
+                        else:
+                            default_acc = loaded_tkt.get("mpesa_trans_id", "")
+
+                    if loaded_tkt:
+                        st.markdown(f"""
+                        <div style="background: rgba(16, 185, 129, 0.18); border: 1.5px solid #10B981; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+                            <span style="color: #34D399; font-weight: 800; font-size: 0.88rem;">🟢 Verified Delegate Credentials Loaded</span>
+                            <p style="margin: 2px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
+                                Welcome <strong>{loaded_tkt.get('attendee_name')}</strong> (Member Ref: <code>{default_acc or loaded_tkt.get('ticket_id')}</code>). Your official pass is active on the right.
+                            </p>
+                        </div>
+                        """, unsafe_allow_html=True)
+
                     agm_acc_num = st.text_input(
                         "Shareholder / CDSC / Member Account Number:*",
                         value=default_acc,
-                        placeholder="e.g. CDSC-8492019 / SACCO-1049 / MEM-3428",
+                        placeholder="e.g. SACCO-342804 / CDSC-8492019",
                         key=f"agm_acc_{selected_event['event_id']}"
                     )
 
@@ -431,14 +466,16 @@ with tab_reg:
                     chosen_amt = std_p if "Standard" in tier_choice else vip_p
                     tier_clean_name = "Standard Pass" if "Standard" in tier_choice else "VIP Executive Pass"
 
-                def_name = ""
-                def_email = ""
-                def_org = "Banki Kuu Staff SACCO Society" if is_event_bks else ""
-                def_phone = ""
+                loaded_tkt = st.session_state.get("pub_active_ticket")
+                qp_name = st.query_params.get("name", "").strip()
+                def_name = loaded_tkt.get("attendee_name", "") if loaded_tkt else (qp_name or "")
+                def_email = loaded_tkt.get("email", "") if loaded_tkt else ""
+                def_org = loaded_tkt.get("organization", "").split("(")[0].strip() if loaded_tkt else ("Banki Kuu Staff SACCO Society" if is_event_bks else "")
+                def_phone = loaded_tkt.get("phone", "") if loaded_tkt else ""
 
-                att_name = st.text_input("Full Name (as per Official ID / National ID):*", value=def_name, placeholder="e.g. Samuel Gathigi")
+                att_name = st.text_input("Full Name (as per Official ID / National ID):*", value=def_name, placeholder="e.g. Official Full Name")
                 att_email = st.text_input("Email Address (for pass delivery):*", value=def_email, placeholder="e.g. member@centralbank.go.ke")
-                att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Governor's Secretariat / Bank Supervision")
+                att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Finance & Accounts / Bank Supervision")
                 phone_lbl = "Mobile Phone Number (for WhatsApp Pass delivery):*" if is_event_bks else "Safaricom M-Pesa Phone Number:*"
                 phone_hlp = "Mobile number to receive instant WhatsApp pass & voting credentials" if is_event_bks else "Mobile number for STK Push prompt"
                 att_phone = st.text_input(phone_lbl, placeholder="07XX XXX XXX", value=def_phone, help=phone_hlp)

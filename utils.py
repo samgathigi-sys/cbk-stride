@@ -3108,6 +3108,34 @@ class AttendanceBackend:
         except Exception:
             return []
 
+    def get_ticket_by_id(self, ticket_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves a single ticket by its unique ticket_id (Supabase Postgres primary, SQLite fallback)."""
+        if not ticket_id:
+            return None
+        clean_tid = str(ticket_id).strip()
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("SELECT * FROM event_tickets_registry WHERE ticket_id = %s LIMIT 1;", (clean_tid,))
+                row = cur.fetchone()
+                pg_conn.close()
+                if row:
+                    return dict(row)
+            except Exception:
+                pass
+
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM event_tickets_registry WHERE ticket_id = ? LIMIT 1", (clean_tid,))
+            row = cur.fetchone()
+            conn.close()
+            return dict(row) if row else None
+        except Exception:
+            return None
+
     def get_event_tickets(self, event_id: str) -> List[Dict[str, Any]]:
         """Alias for get_tickets_by_event."""
         return self.get_tickets_by_event(event_id)
