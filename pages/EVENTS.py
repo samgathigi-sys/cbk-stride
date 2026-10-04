@@ -1519,7 +1519,8 @@ if tab_wizard is not None:
             </div>
             """, unsafe_allow_html=True)
 
-            cur_cfg = st.session_state.get("sacco_ballot_config", {
+            db_cfg = backend.get_ballot_config("EVT-BANKI-KUU-SACCO")
+            default_cfg = {
                 "res1_title": "Ordinary Resolution 1: Approval of Audited Financial Statements for FY2025 and Declaration of a 14% First & Final Dividend",
                 "res1_options": ["FOR (Approve Accounts & 14% Dividend)", "AGAINST (Reject Accounts)", "ABSTAIN"],
                 "res2_title": "Item 2: Election of Supervisory Board Member (Nairobi East & Central Region)",
@@ -1530,7 +1531,8 @@ if tab_wizard is not None:
                 ],
                 "res3_title": "Ordinary Resolution 2: Appointment of External Statutory Auditors for FY2026",
                 "res3_auditors": ["Re-appoint KPMG Kenya", "Appoint PKF Kenya", "Appoint Deloitte East Africa", "ABSTAIN"]
-            })
+            }
+            cur_cfg = db_cfg if db_cfg else st.session_state.get("sacco_ballot_config", default_cfg)
 
             b_col1, b_col2, b_col3 = st.columns(3)
             with b_col1:
@@ -1560,7 +1562,7 @@ if tab_wizard is not None:
                 if not r3_auds:
                     r3_auds = ["Re-appoint KPMG Kenya", "ABSTAIN"]
 
-                st.session_state["sacco_ballot_config"] = {
+                saved_ballot = {
                     "res1_title": cfg_r1_title.strip() or cur_cfg["res1_title"],
                     "res1_options": r1_opts,
                     "res2_title": cfg_r2_title.strip() or cur_cfg["res2_title"],
@@ -1568,7 +1570,9 @@ if tab_wizard is not None:
                     "res3_title": cfg_r3_title.strip() or cur_cfg["res3_title"],
                     "res3_auditors": r3_auds
                 }
-                st.success("✅ Ballot Configuration Saved & Locked! Delegate voting booth (Tab 4) updated live.")
+                st.session_state["sacco_ballot_config"] = saved_ballot
+                backend.save_ballot_config("EVT-BANKI-KUU-SACCO", saved_ballot, locked=1)
+                st.success("✅ Ballot Configuration Saved & Locked in Supabase Cloud Database! Delegate voting booth (Tab 4) updated live.")
                 st.balloons()
                 st.rerun()
 
@@ -1900,7 +1904,8 @@ with tab_ballot:
                     st.success(f"✓ Ballot Cast & Certified! Vote was recorded on {voted_ballot['cast_time']}.")
                     st.code(f"Cryptographic Proof: {voted_ballot['ballot_hash']}")
                 else:
-                    b_config = st.session_state.get("sacco_ballot_config", {
+                    db_ballot_cfg = backend.get_ballot_config(v_eid) or backend.get_ballot_config("EVT-BANKI-KUU-SACCO")
+                    b_config = db_ballot_cfg if db_ballot_cfg else st.session_state.get("sacco_ballot_config", {
                         "res1_title": "Ordinary Resolution 1: Approval of Audited Financial Statements for FY2025 and Declaration of a 14% First & Final Dividend",
                         "res1_options": ["FOR (Approve Accounts & 14% Dividend)", "AGAINST (Reject Accounts)", "ABSTAIN"],
                         "res2_title": "Item 2: Election of Supervisory Board Member (Nairobi East & Central Region)",

@@ -544,9 +544,54 @@ class AttendanceBackend:
         self.gspread_error = None
         self._login_attempts: Dict[str, List[float]] = {}
 
+        self.supabase_url = self._resolve_supabase_url()
+        self.supabase_enabled = bool(self.supabase_url)
+
         self._init_sqlite()
         self._init_gspread()
         self._ensure_sample_data_if_empty()
+
+    def _resolve_supabase_url(self) -> Optional[str]:
+        """Resolves Supabase PostgreSQL connection string from Streamlit secrets, env, or local secrets.toml."""
+        try:
+            import streamlit as st
+            if hasattr(st, "secrets") and "SUPABASE_DB_URL" in st.secrets:
+                val = str(st.secrets["SUPABASE_DB_URL"]).strip()
+                if val and "PASTE_YOUR" not in val:
+                    return val
+        except Exception:
+            pass
+
+        if "SUPABASE_DB_URL" in os.environ:
+            val = os.environ["SUPABASE_DB_URL"].strip()
+            if val and "PASTE_YOUR" not in val:
+                return val
+
+        local_secrets = os.path.join(os.path.dirname(__file__), ".streamlit", "secrets.toml")
+        if os.path.exists(local_secrets):
+            try:
+                import toml
+                d = toml.load(local_secrets)
+                if "SUPABASE_DB_URL" in d:
+                    val = str(d["SUPABASE_DB_URL"]).strip()
+                    if val and "PASTE_YOUR" not in val:
+                        return val
+            except Exception:
+                pass
+        return None
+
+    def _get_pg_conn(self):
+        """Returns an active PostgreSQL connection to Supabase (with RealDictCursor), or None."""
+        if not self.supabase_url:
+            return None
+        try:
+            import psycopg2
+            from psycopg2.extras import RealDictCursor
+            conn = psycopg2.connect(self.supabase_url, cursor_factory=RealDictCursor, connect_timeout=5)
+            conn.autocommit = False
+            return conn
+        except Exception:
+            return None
 
     def _init_sqlite(self):
         """Creates the local audit database schema."""
@@ -788,6 +833,17 @@ class AttendanceBackend:
             cur.execute("ALTER TABLE facility_feedback_registry ADD COLUMN venue TEXT DEFAULT ''")
         except Exception:
             pass
+
+        # Create Returning Officer Ballot Configuration Table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS event_ballot_config (
+                event_id TEXT PRIMARY KEY,
+                config_json TEXT NOT NULL,
+                locked INTEGER DEFAULT 0,
+                updated_at TEXT NOT NULL
+            )
+        """)
+
 
         try:
             cur.execute("ALTER TABLE captain_credentials ADD COLUMN passkey_hash TEXT DEFAULT ''")
@@ -2534,6 +2590,27 @@ class AttendanceBackend:
             now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
             event_id = f"EVT-{now_dt.strftime('%Y%m%d')}-{random.randint(100, 999)}"
             
+            # Supabase Postgres write
+            pg_conn = self._get_pg_conn()
+            if pg_conn:
+                try:
+                    pcur = pg_conn.cursor()
+                    pcur.execute("""
+                        INSERT INTO events_registry (
+                            event_id, title, organizer_name, category, event_date, event_time, venue,
+                            description, gate_mode, is_paid, standard_price, vip_price, mpesa_paybill,
+                            created_at, status
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'ACTIVE')
+                        ON CONFLICT (event_id) DO UPDATE SET title = EXCLUDED.title, venue = EXCLUDED.venue, description = EXCLUDED.description;
+                    """, (
+                        event_id, title, organizer_name, category, event_date, event_time, venue,
+                        description, gate_mode, 1 if is_paid else 0, standard_price, vip_price, mpesa_paybill, now_str
+                    ))
+                    pg_conn.commit()
+                    pg_conn.close()
+                except Exception:
+                    pass
+
             conn = sqlite3.connect(self.db_path, timeout=10)
             cur = conn.cursor()
             cur.execute("""
@@ -2563,6 +2640,21 @@ class AttendanceBackend:
 
     def get_events(self, status: str = "ACTIVE") -> List[Dict[str, Any]]:
         """Retrieves all registered events ordered by event_date."""
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                if status == "ALL":
+                    cur.execute("SELECT * FROM events_registry ORDER BY event_date ASC, event_time ASC;")
+                else:
+                    cur.execute("SELECT * FROM events_registry WHERE status = %s ORDER BY event_date ASC, event_time ASC;", (status,))
+                rows = cur.fetchall()
+                pg_conn.close()
+                if rows:
+                    return [dict(r) for r in rows]
+            except Exception:
+                pass
+
         try:
             conn = sqlite3.connect(self.db_path, timeout=10)
             conn.row_factory = sqlite3.Row
@@ -2579,6 +2671,18 @@ class AttendanceBackend:
 
     def get_event_by_id(self, event_id: str) -> Optional[Dict[str, Any]]:
         """Retrieves an event by its unique ID."""
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("SELECT * FROM events_registry WHERE event_id = %s LIMIT 1;", (event_id,))
+                row = cur.fetchone()
+                pg_conn.close()
+                if row:
+                    return dict(row)
+            except Exception:
+                pass
+
         try:
             conn = sqlite3.connect(self.db_path, timeout=10)
             conn.row_factory = sqlite3.Row
@@ -2590,9 +2694,84 @@ class AttendanceBackend:
         except Exception:
             return None
 
+    def get_ballot_config(self, event_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves Returning Officer ballot configuration from Supabase Postgres (or SQLite fallback)."""
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("SELECT config_json, locked FROM event_ballot_config WHERE event_id = %s LIMIT 1;", (event_id,))
+                row = cur.fetchone()
+                pg_conn.close()
+                if row:
+                    data = json.loads(row["config_json"])
+                    data["locked"] = bool(row.get("locked", 0))
+                    return data
+            except Exception:
+                pass
+
+        try:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT config_json, locked FROM event_ballot_config WHERE event_id = ? LIMIT 1", (event_id,))
+            row = cur.fetchone()
+            conn.close()
+            if row:
+                data = json.loads(row["config_json"])
+                data["locked"] = bool(row["locked"])
+                return data
+        except Exception:
+            pass
+        return None
+
+    def save_ballot_config(self, event_id: str, config_dict: Dict[str, Any], locked: int = 0) -> Tuple[bool, str]:
+        """Persists Returning Officer ballot configuration into Supabase Postgres (and SQLite mirror)."""
+        now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+        config_json = json.dumps(config_dict)
+
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("""
+                    INSERT INTO event_ballot_config (event_id, config_json, locked, updated_at)
+                    VALUES (%s, %s, %s, %s)
+                    ON CONFLICT (event_id) DO UPDATE SET config_json = EXCLUDED.config_json, locked = EXCLUDED.locked, updated_at = EXCLUDED.updated_at;
+                """, (event_id, config_json, locked, now_str))
+                pg_conn.commit()
+                pg_conn.close()
+            except Exception:
+                pass
+
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT OR REPLACE INTO event_ballot_config (event_id, config_json, locked, updated_at)
+                VALUES (?, ?, ?, ?)
+            """, (event_id, config_json, locked, now_str))
+            conn.commit()
+            conn.close()
+            return True, "Ballot configuration saved and locked in Supabase Cloud Database!"
+        except Exception as e:
+            return False, f"Failed to save ballot configuration: {e}"
+
     def ensure_banki_kuu_sacco_event(self) -> Dict[str, Any]:
         """Ensures the Banki Kuu SACCO 58th AGM & Board Elections event exists in database."""
         event_id = "EVT-BANKI-KUU-SACCO"
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("SELECT * FROM events_registry WHERE event_id = %s LIMIT 1;", (event_id,))
+                row = cur.fetchone()
+                pg_conn.close()
+                if row:
+                    return dict(row)
+            except Exception:
+                pass
+
         try:
             conn = sqlite3.connect(self.db_path, timeout=10)
             cur = conn.cursor()
@@ -2675,10 +2854,8 @@ class AttendanceBackend:
     def bulk_ingest_event_tickets(
         self, event_id: str, df_roster: pd.DataFrame
     ) -> Tuple[bool, str, Dict[str, Any]]:
-        """Bulk ingests delegates into event_tickets_registry from a DataFrame."""
+        """Bulk ingests delegates into event_tickets_registry from a DataFrame (Supabase Postgres + SQLite)."""
         try:
-            conn = sqlite3.connect(self.db_path, timeout=10)
-            cur = conn.cursor()
             now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
 
             records = []
@@ -2719,15 +2896,46 @@ class AttendanceBackend:
                     role_val, amt_val, tx_id, "ADMITTED", now_str, now_str
                 ))
 
-            cur.executemany("""
-                INSERT OR REPLACE INTO event_tickets_registry (
-                    ticket_id, event_id, attendee_name, email, phone, organization,
-                    ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, records)
+            # 1. Supabase Postgres Ingestion
+            pg_conn = self._get_pg_conn()
+            if pg_conn:
+                try:
+                    cur = pg_conn.cursor()
+                    cur.executemany("""
+                        INSERT INTO event_tickets_registry (
+                            ticket_id, event_id, attendee_name, email, phone, organization,
+                            ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (ticket_id) DO UPDATE SET
+                            attendee_name = EXCLUDED.attendee_name,
+                            email = EXCLUDED.email,
+                            phone = EXCLUDED.phone,
+                            organization = EXCLUDED.organization,
+                            ticket_tier = EXCLUDED.ticket_tier,
+                            amount_paid = EXCLUDED.amount_paid,
+                            mpesa_trans_id = EXCLUDED.mpesa_trans_id,
+                            gate_status = EXCLUDED.gate_status,
+                            checkin_time = EXCLUDED.checkin_time;
+                    """, records)
+                    pg_conn.commit()
+                    pg_conn.close()
+                except Exception:
+                    pass
 
-            conn.commit()
-            conn.close()
+            # 2. SQLite Ingestion (Local Mirror / Fallback)
+            try:
+                conn = sqlite3.connect(self.db_path, timeout=10)
+                cur = conn.cursor()
+                cur.executemany("""
+                    INSERT OR REPLACE INTO event_tickets_registry (
+                        ticket_id, event_id, attendee_name, email, phone, organization,
+                        ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, records)
+                conn.commit()
+                conn.close()
+            except Exception:
+                pass
 
             self.log_audit_event(
                 staff_id="SECRETARIAT",
@@ -2749,17 +2957,44 @@ class AttendanceBackend:
         self, event_id: str, attendee_name: str, email: str, phone: str,
         organization: str, ticket_tier: str, amount_paid: float, mpesa_trans_id: str
     ) -> Tuple[bool, str, Dict[str, Any]]:
-        """Registers an attendee ticket with verified M-Pesa receipt or SACCO accreditation."""
+        """Registers an attendee ticket with verified M-Pesa receipt or SACCO accreditation (Supabase + SQLite)."""
+        clean_phone = phone.strip() if phone else ""
+        clean_email = email.strip() if email else ""
+        clean_name = attendee_name.strip() if attendee_name else ""
+        now_dt = get_eat_now()
+        now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
+
+        # Check existing ticket in Supabase Postgres
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                if clean_phone or clean_email or clean_name:
+                    cur.execute("""
+                        SELECT * FROM event_tickets_registry 
+                        WHERE event_id = %s AND (
+                            (phone != '' AND phone = %s) OR 
+                            (email != '' AND email = %s) OR
+                            (attendee_name != '' AND LOWER(attendee_name) = LOWER(%s))
+                        )
+                        LIMIT 1;
+                    """, (event_id, clean_phone, clean_email, clean_name))
+                    existing_row = cur.fetchone()
+                    if existing_row:
+                        t_dict = dict(existing_row)
+                        pg_conn.close()
+                        return True, "Member already accredited! Displaying existing ticket pass.", t_dict
+            except Exception:
+                pass
+            finally:
+                if pg_conn and not pg_conn.closed:
+                    pg_conn.close()
+
+        # Check existing ticket in SQLite
         try:
             conn = sqlite3.connect(self.db_path, timeout=10)
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
-
-            # Check if ticket already registered for this phone/email under this event
-            clean_phone = phone.strip() if phone else ""
-            clean_email = email.strip() if email else ""
-            clean_name = attendee_name.strip() if attendee_name else ""
-
             if clean_phone or clean_email or clean_name:
                 cur.execute("""
                     SELECT * FROM event_tickets_registry 
@@ -2775,24 +3010,64 @@ class AttendanceBackend:
                     t_dict = dict(existing_row)
                     conn.close()
                     return True, "Member already accredited! Displaying existing ticket pass.", t_dict
+            conn.close()
+        except Exception:
+            pass
 
-            now_dt = get_eat_now()
-            now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
+        # Generate stable ticket ID
+        clean_ref = "".join([c for c in mpesa_trans_id if c.isalnum()]).upper()
+        if clean_ref and len(clean_ref) >= 6:
+            ticket_id = f"TKT-{clean_ref[-6:]}"
+        else:
+            ticket_id = f"TKT-{clean_ref}-{random.randint(10, 99)}"
 
-            # Generate stable ticket ID
-            clean_ref = "".join([c for c in mpesa_trans_id if c.isalnum()]).upper()
-            if clean_ref and len(clean_ref) >= 6:
-                ticket_id = f"TKT-{clean_ref[-6:]}"
-            else:
-                ticket_id = f"TKT-{clean_ref}-{random.randint(10, 99)}"
+        ticket_dict = {
+            "ticket_id": ticket_id,
+            "event_id": event_id,
+            "attendee_name": attendee_name,
+            "email": email,
+            "phone": phone,
+            "organization": organization,
+            "ticket_tier": ticket_tier,
+            "amount_paid": amount_paid,
+            "mpesa_trans_id": mpesa_trans_id,
+            "gate_status": "REGISTERED",
+            "checkin_time": "",
+            "created_at": now_str
+        }
 
-            # Ensure ticket_id uniqueness
-            cur.execute("SELECT COUNT(*) FROM event_tickets_registry WHERE ticket_id = ?", (ticket_id,))
-            if cur.fetchone()[0] > 0:
-                ticket_id = f"{ticket_id}-{random.randint(10, 99)}"
+        # Insert into Supabase Postgres
+        inserted_pg = False
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("""
+                    INSERT INTO event_tickets_registry (
+                        ticket_id, event_id, attendee_name, email, phone, organization,
+                        ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'REGISTERED', '', %s)
+                    ON CONFLICT (ticket_id) DO UPDATE SET
+                        attendee_name = EXCLUDED.attendee_name,
+                        email = EXCLUDED.email,
+                        phone = EXCLUDED.phone,
+                        organization = EXCLUDED.organization;
+                """, (
+                    ticket_id, event_id, attendee_name, email, phone, organization,
+                    ticket_tier, amount_paid, mpesa_trans_id, now_str
+                ))
+                pg_conn.commit()
+                pg_conn.close()
+                inserted_pg = True
+            except Exception:
+                pass
 
+        # Insert into SQLite (local mirror)
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cur = conn.cursor()
             cur.execute("""
-                INSERT INTO event_tickets_registry (
+                INSERT OR REPLACE INTO event_tickets_registry (
                     ticket_id, event_id, attendee_name, email, phone, organization,
                     ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'REGISTERED', '', ?)
@@ -2802,26 +3077,26 @@ class AttendanceBackend:
             ))
             conn.commit()
             conn.close()
-
-            ticket_dict = {
-                "ticket_id": ticket_id,
-                "event_id": event_id,
-                "attendee_name": attendee_name,
-                "email": email,
-                "phone": phone,
-                "organization": organization,
-                "ticket_tier": ticket_tier,
-                "amount_paid": amount_paid,
-                "mpesa_trans_id": mpesa_trans_id,
-                "gate_status": "REGISTERED",
-                "created_at": now_str
-            }
             return True, "Ticket registered successfully!", ticket_dict
         except Exception as e:
+            if inserted_pg:
+                return True, "Ticket registered successfully in Supabase Cloud!", ticket_dict
             return False, f"Ticket registration failed: {e}", {}
 
     def get_tickets_by_event(self, event_id: str) -> List[Dict[str, Any]]:
-        """Retrieves all registered tickets for an event."""
+        """Retrieves all registered tickets for an event (Supabase Postgres primary, SQLite fallback)."""
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("SELECT * FROM event_tickets_registry WHERE event_id = %s ORDER BY id DESC;", (event_id,))
+                rows = cur.fetchall()
+                pg_conn.close()
+                if rows:
+                    return [dict(r) for r in rows]
+            except Exception:
+                pass
+
         try:
             conn = sqlite3.connect(self.db_path, timeout=10)
             conn.row_factory = sqlite3.Row
@@ -2838,7 +3113,46 @@ class AttendanceBackend:
         return self.get_tickets_by_event(event_id)
 
     def verify_and_admit_ticket(self, ticket_id: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
-        """Validates ticket QR code at gate, admits once, and prevents duplicate re-entry."""
+        """Validates ticket QR code at gate, admits once, and prevents duplicate re-entry (Supabase + SQLite)."""
+        now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # 1. Check Supabase Postgres
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("SELECT * FROM event_tickets_registry WHERE ticket_id = %s LIMIT 1;", (ticket_id,))
+                row = cur.fetchone()
+                if row:
+                    ticket = dict(row)
+                    if ticket.get("gate_status") == "ADMITTED":
+                        pg_conn.close()
+                        return False, f"🛑 DUPLICATE SCAN DENIED: Pass was already admitted at {ticket.get('checkin_time', 'Earlier')}.", ticket
+
+                    cur.execute("UPDATE event_tickets_registry SET gate_status = 'ADMITTED', checkin_time = %s WHERE ticket_id = %s;", (now_str, ticket_id))
+                    pg_conn.commit()
+                    pg_conn.close()
+                    ticket["gate_status"] = "ADMITTED"
+                    ticket["checkin_time"] = now_str
+
+                    # Mirror admission in SQLite
+                    try:
+                        conn = sqlite3.connect(self.db_path, timeout=5)
+                        c = conn.cursor()
+                        c.execute("UPDATE event_tickets_registry SET gate_status = 'ADMITTED', checkin_time = ? WHERE ticket_id = ?", (now_str, ticket_id))
+                        conn.commit()
+                        conn.close()
+                    except Exception:
+                        pass
+
+                    return True, f"✅ VALID TICKET: Welcome {ticket['attendee_name']}! Admitted successfully.", ticket
+            except Exception:
+                pass
+            finally:
+                if pg_conn and not pg_conn.closed:
+                    pg_conn.close()
+
+        # 2. SQLite Fallback
         try:
             conn = sqlite3.connect(self.db_path, timeout=10)
             conn.row_factory = sqlite3.Row
@@ -2854,7 +3168,6 @@ class AttendanceBackend:
                 conn.close()
                 return False, f"🛑 DUPLICATE SCAN DENIED: Pass was already admitted at {ticket.get('checkin_time', 'Earlier')}.", ticket
 
-            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
             cur.execute("UPDATE event_tickets_registry SET gate_status = 'ADMITTED', checkin_time = ? WHERE ticket_id = ?", (now_str, ticket_id))
             conn.commit()
             conn.close()
@@ -2879,24 +3192,84 @@ class AttendanceBackend:
         res3_auditor: str
     ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
         """
-        Records a single, tamper-evident cryptographic ballot for an accredited delegate.
+        Records a single, tamper-evident cryptographic ballot for an accredited delegate (Supabase + SQLite).
         Prevents double voting and calculates voting weight based on shareholdings/ordinary rights.
         """
+        now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
+        raw_hash_seed = f"{event_id}|{ticket_id}|{voting_weight}|{res1_vote}|{res2_candidate}|{res3_auditor}|{now_str}".encode('utf-8')
+        ballot_hash = "SHA256:" + hashlib.sha256(raw_hash_seed).hexdigest()[:20]
+
+        ballot_record = {
+            "event_id": event_id,
+            "ticket_id": ticket_id,
+            "voter_name": voter_name,
+            "voter_organization": voter_organization,
+            "voting_weight": voting_weight,
+            "res1_vote": res1_vote,
+            "res2_candidate": res2_candidate,
+            "res3_auditor": res3_auditor,
+            "ballot_hash": ballot_hash,
+            "cast_time": now_str
+        }
+
+        # 1. Check & Insert in Supabase Postgres
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("SELECT id, cast_time, ballot_hash FROM event_ballots_registry WHERE event_id = %s AND ticket_id = %s LIMIT 1;", (event_id, ticket_id))
+                prev = cur.fetchone()
+                if prev:
+                    pg_conn.close()
+                    return False, f"🛑 DOUBLE-VOTING PREVENTED: Ballot for Ticket {ticket_id} was already cast at {prev['cast_time']} (Proof: {prev['ballot_hash']}).", None
+
+                cur.execute("""
+                    INSERT INTO event_ballots_registry (
+                        event_id, ticket_id, voter_name, voter_organization, voting_weight,
+                        res1_vote, res2_candidate, res3_auditor, ballot_hash, cast_time
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                """, (
+                    event_id, ticket_id, voter_name, voter_organization, voting_weight,
+                    res1_vote, res2_candidate, res3_auditor, ballot_hash, now_str
+                ))
+                pg_conn.commit()
+                pg_conn.close()
+
+                # Mirror into SQLite
+                try:
+                    conn = sqlite3.connect(self.db_path)
+                    c = conn.cursor()
+                    c.execute("""
+                        INSERT OR IGNORE INTO event_ballots_registry (
+                            event_id, ticket_id, voter_name, voter_organization, voting_weight,
+                            res1_vote, res2_candidate, res3_auditor, ballot_hash, cast_time
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        event_id, ticket_id, voter_name, voter_organization, voting_weight,
+                        res1_vote, res2_candidate, res3_auditor, ballot_hash, now_str
+                    ))
+                    conn.commit()
+                    conn.close()
+                except Exception:
+                    pass
+
+                return True, f"🗳️ Ballot Confirmed! Vote recorded with {voting_weight:,} voting power.", ballot_record
+            except Exception:
+                pass
+            finally:
+                if pg_conn and not pg_conn.closed:
+                    pg_conn.close()
+
+        # 2. SQLite Fallback
         try:
             conn = sqlite3.connect(self.db_path)
             cur = conn.cursor()
-            
-            # Check if this ticket already cast a ballot in this event
             cur.execute("SELECT id, cast_time, ballot_hash FROM event_ballots_registry WHERE event_id = ? AND ticket_id = ?", (event_id, ticket_id))
             prev = cur.fetchone()
             if prev:
                 conn.close()
                 return False, f"🛑 DOUBLE-VOTING PREVENTED: Ballot for Ticket {ticket_id} was already cast at {prev[1]} (Proof: {prev[2]}).", None
-            
-            now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
-            raw_hash_seed = f"{event_id}|{ticket_id}|{voting_weight}|{res1_vote}|{res2_candidate}|{res3_auditor}|{now_str}".encode('utf-8')
-            ballot_hash = "SHA256:" + hashlib.sha256(raw_hash_seed).hexdigest()[:20]
-            
+
             cur.execute("""
                 INSERT INTO event_ballots_registry (
                     event_id, ticket_id, voter_name, voter_organization, voting_weight,
@@ -2908,32 +3281,34 @@ class AttendanceBackend:
             ))
             conn.commit()
             conn.close()
-            
-            ballot_record = {
-                "event_id": event_id,
-                "ticket_id": ticket_id,
-                "voter_name": voter_name,
-                "voter_organization": voter_organization,
-                "voting_weight": voting_weight,
-                "res1_vote": res1_vote,
-                "res2_candidate": res2_candidate,
-                "res3_auditor": res3_auditor,
-                "ballot_hash": ballot_hash,
-                "cast_time": now_str
-            }
             return True, f"🗳️ Ballot Confirmed! Vote recorded with {voting_weight:,} voting power.", ballot_record
         except Exception as e:
             return False, f"Voting error: {e}", None
 
     def get_event_ballots(self, event_id: str) -> List[Dict[str, Any]]:
-        """Retrieves all ballots cast for an event."""
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM event_ballots_registry WHERE event_id = ? ORDER BY id DESC", (event_id,))
-        rows = [dict(r) for r in cur.fetchall()]
-        conn.close()
-        return rows
+        """Retrieves all ballots cast for an event (Supabase Postgres primary, SQLite fallback)."""
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
+            try:
+                cur = pg_conn.cursor()
+                cur.execute("SELECT * FROM event_ballots_registry WHERE event_id = %s ORDER BY id DESC;", (event_id,))
+                rows = cur.fetchall()
+                pg_conn.close()
+                if rows:
+                    return [dict(r) for r in rows]
+            except Exception:
+                pass
+
+        try:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM event_ballots_registry WHERE event_id = ? ORDER BY id DESC", (event_id,))
+            rows = [dict(r) for r in cur.fetchall()]
+            conn.close()
+            return rows
+        except Exception:
+            return []
 
     def get_election_results(self, event_id: str) -> Dict[str, Any]:
         """Calculates vote totals (both raw voter count and weighted voting power) for all resolutions."""
@@ -3107,26 +3482,12 @@ class AttendanceBackend:
         rating: int,
         feedback_text: str
     ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
-        """Analyzes and stores feedback in event_feedback_registry."""
+        """Analyzes and stores feedback in event_feedback_registry (Supabase Postgres + SQLite)."""
         try:
             nlp_res = self.analyze_feedback_nlp(feedback_text)
             now_str = get_eat_now().strftime("%Y-%m-%d %H:%M:%S")
             aspects_json_str = json.dumps(nlp_res["aspects"])
-            
-            conn = sqlite3.connect(self.db_path)
-            cur = conn.cursor()
-            cur.execute("""
-                INSERT INTO event_feedback_registry (
-                    event_id, ticket_id, attendee_name, rating, feedback_text,
-                    sentiment_score, sentiment_label, aspects_json, submitted_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                event_id, ticket_id, attendee_name, rating, feedback_text,
-                nlp_res["polarity"], nlp_res["label"], aspects_json_str, now_str
-            ))
-            conn.commit()
-            conn.close()
-            
+
             feedback_record = {
                 "event_id": event_id,
                 "ticket_id": ticket_id,
@@ -3138,26 +3499,87 @@ class AttendanceBackend:
                 "aspects": nlp_res["aspects"],
                 "submitted_at": now_str
             }
+
+            # 1. Insert into Supabase Postgres
+            pg_conn = self._get_pg_conn()
+            if pg_conn:
+                try:
+                    cur = pg_conn.cursor()
+                    cur.execute("""
+                        INSERT INTO event_feedback_registry (
+                            event_id, ticket_id, attendee_name, rating, feedback_text,
+                            sentiment_score, sentiment_label, aspects_json, submitted_at
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """, (
+                        event_id, ticket_id, attendee_name, rating, feedback_text,
+                        nlp_res["polarity"], nlp_res["label"], aspects_json_str, now_str
+                    ))
+                    pg_conn.commit()
+                    pg_conn.close()
+                except Exception:
+                    pass
+
+            # 2. Insert into SQLite (local mirror)
+            try:
+                conn = sqlite3.connect(self.db_path)
+                cur = conn.cursor()
+                cur.execute("""
+                    INSERT INTO event_feedback_registry (
+                        event_id, ticket_id, attendee_name, rating, feedback_text,
+                        sentiment_score, sentiment_label, aspects_json, submitted_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    event_id, ticket_id, attendee_name, rating, feedback_text,
+                    nlp_res["polarity"], nlp_res["label"], aspects_json_str, now_str
+                ))
+                conn.commit()
+                conn.close()
+            except Exception:
+                pass
+
             return True, f"Feedback submitted successfully! NLP classified as {nlp_res['label']} ({nlp_res['polarity']:+.2f}).", feedback_record
         except Exception as e:
             return False, f"Feedback error: {e}", None
 
     def get_event_feedback(self, event_id: str) -> List[Dict[str, Any]]:
-        """Retrieves all feedback records for an event."""
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM event_feedback_registry WHERE event_id = ? ORDER BY id DESC", (event_id,))
-        rows = []
-        for r in cur.fetchall():
-            d = dict(r)
+        """Retrieves all feedback records for an event (Supabase Postgres primary, SQLite fallback)."""
+        pg_conn = self._get_pg_conn()
+        if pg_conn:
             try:
-                d["aspects"] = json.loads(d.get("aspects_json", "[]"))
+                cur = pg_conn.cursor()
+                cur.execute("SELECT * FROM event_feedback_registry WHERE event_id = %s ORDER BY id DESC;", (event_id,))
+                rows = cur.fetchall()
+                pg_conn.close()
+                if rows:
+                    results = []
+                    for r in rows:
+                        d = dict(r)
+                        try:
+                            d["aspects"] = json.loads(d.get("aspects_json", "[]"))
+                        except Exception:
+                            d["aspects"] = []
+                        results.append(d)
+                    return results
             except Exception:
-                d["aspects"] = []
-            rows.append(d)
-        conn.close()
-        return rows
+                pass
+
+        try:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM event_feedback_registry WHERE event_id = ? ORDER BY id DESC", (event_id,))
+            rows = []
+            for r in cur.fetchall():
+                d = dict(r)
+                try:
+                    d["aspects"] = json.loads(d.get("aspects_json", "[]"))
+                except Exception:
+                    d["aspects"] = []
+                rows.append(d)
+            conn.close()
+            return rows
+        except Exception:
+            return []
 
     # ==========================================================================
     # CBK SPORTS & FACILITY NLP SATISFACTION ENGINE

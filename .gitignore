@@ -11,3 +11,6 @@ Thumbs.db
 *investor*
 *Investor*
 *.db
+
+.streamlit/secrets.toml
+secrets.toml
