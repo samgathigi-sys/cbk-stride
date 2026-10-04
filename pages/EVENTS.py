@@ -1816,16 +1816,39 @@ with tab_nlp:
 
         fb_ev_opts = {f"{e['title']} ({e['event_id']})": e for e in v_events}
         default_fb_idx = 0
-        for idx, (k, e) in enumerate(fb_ev_opts.items()):
-            if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper():
-                default_fb_idx = idx
-                break
+        if is_bks_mode or param_event_id == "EVT-BANKI-KUU-SACCO":
+            for idx, (k, e) in enumerate(fb_ev_opts.items()):
+                if "BANKI-KUU-SACCO" in e["event_id"].upper():
+                    default_fb_idx = idx
+                    break
+        else:
+            for idx, (k, e) in enumerate(fb_ev_opts.items()):
+                if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper():
+                    default_fb_idx = idx
+                    break
 
         fb_sel_label = st.selectbox("Assembly / Event to Review:*", list(fb_ev_opts.keys()), index=default_fb_idx, key="fb_sel_event")
         fb_selected_evt = fb_ev_opts[fb_sel_label]
         fb_eid = fb_selected_evt["event_id"]
 
-        fb_name = st.text_input("Your Name / Delegate Identifier:*", value="Sarah Wanjiku", key="fb_in_name")
+        # Dynamically resolve delegate name from URL or active ticket
+        nlp_qp_name = st.query_params.get("name", "").strip()
+        nlp_active_tkt = st.session_state.get("active_ticket_id") or st.query_params.get("confirm", st.query_params.get("tkt", st.query_params.get("ticket_id", "")))
+        
+        default_nlp_name = ""
+        if nlp_qp_name:
+            default_nlp_name = nlp_qp_name
+        elif nlp_active_tkt:
+            fb_tkts = backend.get_event_tickets(fb_eid)
+            for t in fb_tkts:
+                if nlp_active_tkt.strip().upper() in t.get("ticket_id", "").upper():
+                    default_nlp_name = t.get("attendee_name", "")
+                    break
+        
+        if not default_nlp_name:
+            default_nlp_name = "Stanley Gicho" if is_bks_mode else "Accredited Delegate"
+
+        fb_name = st.text_input("Your Name / Delegate Identifier:*", value=default_nlp_name, key="fb_in_name")
         fb_rating = st.slider("Overall Satisfaction Rating (1 to 5 Stars):*", min_value=1, max_value=5, value=5, key="fb_in_rating")
 
         # Test Chip Injectors
