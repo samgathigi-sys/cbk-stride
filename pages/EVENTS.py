@@ -149,6 +149,17 @@ is_bks_mode = (param_event_id == "EVT-BANKI-KUU-SACCO" or "bks" in st.query_para
 if is_bks_mode:
     param_event_id = "EVT-BANKI-KUU-SACCO"
 
+# Track active delegate ticket across tabs
+active_ticket_param = (
+    st.query_params.get("confirm")
+    or st.query_params.get("ticket_id")
+    or st.query_params.get("tkt")
+    or st.query_params.get("vote_tkt")
+    or st.query_params.get("verify_tkt")
+)
+if active_ticket_param:
+    st.session_state["active_ticket_id"] = active_ticket_param.strip()
+
 # ------------------------------------------------------------------------------
 # MAIN PORTAL TABS
 # ------------------------------------------------------------------------------
@@ -1366,8 +1377,8 @@ with tab_verify:
 
     v_col1, v_col2 = st.columns([1.1, 1.4])
 
-    # Read ticket from query params if passed via email QR scan
-    qp_confirm_tkt = st.query_params.get("confirm", st.query_params.get("tkt", st.query_params.get("ticket_id", "")))
+    # Read ticket from query params or active session state
+    qp_confirm_tkt = st.session_state.get("active_ticket_id") or st.query_params.get("confirm", st.query_params.get("tkt", st.query_params.get("ticket_id", "")))
     default_verify_val = qp_confirm_tkt if qp_confirm_tkt else ("TKT-BK-342805" if is_bks_mode else "TKT-849201-11")
 
     with v_col1:
@@ -1382,6 +1393,7 @@ with tab_verify:
             else:
                 ok_adm, msg_adm, adm_ticket = backend.verify_and_admit_ticket(test_tkt_id.strip())
                 if ok_adm:
+                    st.session_state["active_ticket_id"] = test_tkt_id.strip()
                     st.success(msg_adm)
                     st.balloons()
                 else:
@@ -1516,7 +1528,14 @@ with tab_ballot:
             if "BANKI-KUU-SACCO" in e["event_id"].upper() or "BANKI KUU" in e["title"].upper():
                 default_v_idx = idx
                 break
-        qp_vote_tkt = st.query_params.get("vote_tkt") or st.query_params.get("tkt") or st.query_params.get("verify_tkt")
+        qp_vote_tkt = (
+            st.query_params.get("confirm")
+            or st.query_params.get("ticket_id")
+            or st.query_params.get("tkt")
+            or st.query_params.get("vote_tkt")
+            or st.query_params.get("verify_tkt")
+            or st.session_state.get("active_ticket_id")
+        )
         if qp_vote_tkt:
             for idx, (k, e) in enumerate(v_evt_opts.items()):
                 e_tkts = backend.get_event_tickets(e["event_id"])
@@ -1542,20 +1561,18 @@ with tab_ballot:
             """, unsafe_allow_html=True)
 
             ev_tickets = backend.get_tickets_by_event(v_eid) if hasattr(backend, "get_tickets_by_event") else backend.get_event_tickets(v_eid)
-            admitted_tkts = [t for t in ev_tickets if t.get("gate_status") == "ADMITTED"]
-            if not admitted_tkts:
-                admitted_tkts = ev_tickets
 
-            # Map tickets by ticket_id, mpesa_trans_id, organization/member_id, and name
+            # Map all tickets by ticket_id, mpesa_trans_id, organization/member_id, and name
             tkt_lookup = {}
-            for t in admitted_tkts:
+            for t in ev_tickets:
                 tkt_lookup[t["ticket_id"].upper()] = t
-                tkt_lookup[t["mpesa_trans_id"].upper()] = t
+                if t.get("mpesa_trans_id"):
+                    tkt_lookup[t["mpesa_trans_id"].upper()] = t
                 if "Ref:" in t.get("organization", ""):
                     ref_part = t["organization"].split("Ref:")[-1].replace(")", "").strip().upper()
                     tkt_lookup[ref_part] = t
 
-            if not admitted_tkts:
+            if not ev_tickets:
                 st.warning("No accredited delegates found for this assembly yet.")
                 st.info("💡 Tap below to generate your certified 500-member cohort:")
                 if st.button("⚡ Generate 500 Accredited SACCO Delegates", type="primary", use_container_width=True, key="btn_quick_accredit_voter"):
@@ -1564,34 +1581,40 @@ with tab_ballot:
                     st.success("Accredited! Refreshing voting booth...")
                     st.rerun()
             else:
-                default_v_tkt = qp_vote_tkt or ("TKT-BK-342801" if "BANKI-KUU-SACCO" in v_eid else admitted_tkts[0]["ticket_id"])
+                default_v_tkt = qp_vote_tkt or st.session_state.get("active_ticket_id") or ev_tickets[0]["ticket_id"]
                 
                 eval_mode = st.checkbox("🧪 Evaluator Shortcut (Show Delegate Dropdown for Quick Demo)", value=False, key="chk_eval_voter_mode")
                 
                 sel_tkt = None
                 if eval_mode:
-                    tkt_voter_opts = {f"{t['attendee_name']} ({t['ticket_id']} — {t['ticket_tier']})": t for t in admitted_tkts}
-                    sel_voter_key = st.selectbox("Select Accredited Delegate (Demo Shortcut):*", list(tkt_voter_opts.keys()), key="sel_voter_ticket_demo")
+                    tkt_voter_opts = {f"{t['attendee_name']} ({t['ticket_id']} — {t['ticket_tier']})": t for t in ev_tickets}
+                    default_drop_idx = 0
+                    if default_v_tkt:
+                        for i, (k_opt, t_opt) in enumerate(tkt_voter_opts.items()):
+                            if default_v_tkt.strip().upper() in t_opt["ticket_id"].upper() or default_v_tkt.strip().upper() in k_opt.upper():
+                                default_drop_idx = i
+                                break
+                    sel_voter_key = st.selectbox("Select Accredited Delegate (Demo Shortcut):*", list(tkt_voter_opts.keys()), index=default_drop_idx, key="sel_voter_ticket_demo")
                     sel_tkt = tkt_voter_opts[sel_voter_key]
                 else:
                     v_input_tkt = st.text_input(
                         "🔑 Enter Your Confidential Ticket Serial ID / Member Account ID:*",
                         value=default_v_tkt,
-                        placeholder="e.g. TKT-BK-342801 or SACCO-3428",
+                        placeholder="e.g. TKT-BK-342805 or SACCO-342805",
                         help="Enter the Ticket Serial ID printed on your digital pass to unlock your ballot paper."
                     )
                     clean_input = v_input_tkt.strip().upper()
                     if clean_input in tkt_lookup:
                         sel_tkt = tkt_lookup[clean_input]
                     else:
-                        for t in admitted_tkts:
+                        for t in ev_tickets:
                             if clean_input and (clean_input in t["ticket_id"].upper() or clean_input in t["attendee_name"].upper() or clean_input in t.get("organization","").upper()):
                                 sel_tkt = t
                                 break
 
                 if not sel_tkt:
-                    st.error(f"❌ Ticket Serial ID '{v_input_tkt}' not found or not yet accredited at gate scanner.")
-                    st.info("💡 Try entering `TKT-BK-342801` or check 'Evaluator Shortcut' above to select a delegate.")
+                    st.error(f"❌ Ticket Serial ID '{v_input_tkt}' not found in accredited roster.")
+                    st.info("💡 Try entering your Ticket Serial ID (e.g. `TKT-BK-342805`) or check 'Evaluator Shortcut' above.")
                 else:
                     # Compute voting weight based on ticket tier
                     v_weight = 1
