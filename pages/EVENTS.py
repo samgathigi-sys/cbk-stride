@@ -1822,6 +1822,7 @@ with tab_ballot:
                         v_res1 = st.radio(
                             "Your Vote on Resolution 1:*",
                             ["FOR (Approve Accounts & 14% Dividend)", "AGAINST (Reject Accounts)", "ABSTAIN"],
+                            index=None,
                             key="v_res1_radio"
                         )
 
@@ -1834,6 +1835,7 @@ with tab_ballot:
                                 "Eng. David Ndung'u (Incumbent, Risk & Governance)",
                                 "Dr. Peter Otieno (Institutional Nominee)"
                             ],
+                            index=None,
                             key="v_res2_radio"
                         )
 
@@ -1841,7 +1843,8 @@ with tab_ballot:
                         st.caption("Appointment of Independent External Statutory Auditors for Financial Year 2026:")
                         v_res3 = st.selectbox(
                             "Statutory Auditor Appointment:*",
-                            ["Re-appoint KPMG Kenya", "Appoint PKF Kenya", "Appoint Deloitte East Africa", "ABSTAIN"],
+                            ["Select Statutory Auditor...", "Re-appoint KPMG Kenya", "Appoint PKF Kenya", "Appoint Deloitte East Africa", "ABSTAIN"],
+                            index=0,
                             key="v_res3_sel"
                         )
 
@@ -1852,24 +1855,31 @@ with tab_ballot:
                         )
 
                         if btn_submit_ballot:
-                            ok_b, msg_b, b_rec = backend.cast_event_ballot(
-                                event_id=v_eid,
-                                ticket_id=sel_tkt["ticket_id"],
-                                voter_name=sel_tkt["attendee_name"],
-                                voter_organization=sel_tkt["organization"],
-                                voting_weight=v_weight,
-                                res1_vote=v_res1,
-                                res2_candidate=v_res2,
-                                res3_auditor=v_res3
-                            )
-                            if ok_b:
-                                if sel_tkt.get("gate_status") != "ADMITTED":
-                                    backend.verify_and_admit_ticket(sel_tkt["ticket_id"])
-                                st.session_state["last_cast_ballot"] = b_rec
-                                st.balloons()
-                                st.rerun()
+                            if not v_res1:
+                                st.error("❌ Please cast your vote on Item 1 (Ordinary Resolution 1).")
+                            elif not v_res2:
+                                st.error("❌ Please select a candidate for Item 2 (Supervisory Board Member).")
+                            elif not v_res3 or v_res3.startswith("Select"):
+                                st.error("❌ Please select an option for Item 3 (Statutory Auditor Appointment).")
                             else:
-                                st.error(msg_b)
+                                ok_b, msg_b, b_rec = backend.cast_event_ballot(
+                                    event_id=v_eid,
+                                    ticket_id=sel_tkt["ticket_id"],
+                                    voter_name=sel_tkt["attendee_name"],
+                                    voter_organization=sel_tkt["organization"],
+                                    voting_weight=v_weight,
+                                    res1_vote=v_res1,
+                                    res2_candidate=v_res2,
+                                    res3_auditor=v_res3
+                                )
+                                if ok_b:
+                                    if sel_tkt.get("gate_status") != "ADMITTED":
+                                        backend.verify_and_admit_ticket(sel_tkt["ticket_id"])
+                                    st.session_state["last_cast_ballot"] = b_rec
+                                    st.balloons()
+                                    st.rerun()
+                                else:
+                                    st.error(msg_b)
 
         with col_ballot_scrut:
             st.markdown("#### 📊 Returning Officer Live Telemetry Screen")
