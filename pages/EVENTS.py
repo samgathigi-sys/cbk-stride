@@ -196,12 +196,8 @@ with tab_reg:
         with st.expander("🎬 WATCH LIVE MOTION DEMO: 5-Step SACCO AGM Delegate Journey (Interactive Boardroom Video)", expanded=True):
             try:
                 import streamlit.components.v1 as components
-                motion_path = os.path.join(os.path.dirname(__file__), "..", "..", "brain", "13019df5-c73e-40a7-9dbf-48db7e5f7a5e", "Banki_Kuu_SACCO_Delegate_Journey_Animation.html")
-                if os.path.exists(motion_path):
-                    with open(motion_path, "r", encoding="utf-8") as f:
-                        motion_html = f.read()
-                else:
-                    motion_html = """<!DOCTYPE html><html><head><script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script></head><body class="bg-slate-950 text-white p-4"><h3 class="text-amber-400 font-bold">🎬 Banki Kuu SACCO 5-Step Delegate Motion Video</h3><p class="text-sm text-slate-300">Click play on the video player control bar above to watch the end-to-end simulation!</p></body></html>"""
+                import motion_demo
+                motion_html = motion_demo.get_bks_motion_html()
                 components.html(motion_html, height=620, scrolling=True)
             except Exception as ex:
                 st.info("💡 Interactive Motion Video Simulation ready for Board Presentation.")
