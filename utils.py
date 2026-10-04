@@ -2616,22 +2616,29 @@ class AttendanceBackend:
                 1, 5000.0, 5000.0, "849200", now_str
             ))
             
-            cur.execute("SELECT COUNT(*) FROM event_tickets_registry WHERE event_id = ?", (event_id,))
-            if cur.fetchone()[0] == 0:
-                sample_sacco_tickets = [
-                    ("TKT-BK-342801", event_id, "Samuel Gathigi Njuguna", "sam.gathigi@gmail.com", "0722849000", "Banki Kuu Staff SACCO (Ref: SACCO-3428)", "🗳️ Principal Shareholder / Voting Member", 5000.0, "MPESA-BK3428", "ADMITTED", f"{now_str}", now_str),
-                    ("TKT-BK-102948", event_id, "Dr. Beatrice Kiptoo", "b.kiptoo@centralbank.go.ke", "0733456789", "Banki Kuu Staff SACCO (Ref: SACCO-1029)", "🗳️ Principal Shareholder / Voting Member", 5000.0, "MPESA-BK1029", "ADMITTED", f"{now_str}", now_str),
-                    ("TKT-BK-992018", event_id, "Eric Mwangi", "e.mwangi@centralbank.go.ke", "0720987654", "Banki Kuu Staff SACCO (Ref: SACCO-9920)", "📜 Duly Appointed Proxy Holder", 5000.0, "MPESA-BK9920", "ADMITTED", f"{now_str}", now_str),
-                    ("TKT-BK-881920", event_id, "Kenneth Mutai", "kmutai@centralbank.go.ke", "0721112233", "Banki Kuu Staff SACCO (Ref: SACCO-8819)", "👔 Executive Board Director / Committee Member", 5000.0, "MPESA-BK8819", "ADMITTED", f"{now_str}", now_str),
-                    ("TKT-BK-449102", event_id, "Catherine Ochieng", "c.ochieng@centralbank.go.ke", "0725556677", "Banki Kuu Staff SACCO (Ref: SACCO-4491)", "🗳️ Principal Shareholder / Voting Member", 5000.0, "MPESA-BK4491", "ADMITTED", f"{now_str}", now_str),
-                    ("TKT-BK-202601", event_id, "Patrick Kamau", "pkamau@kpmg.co.ke", "0728990011", "KPMG Audit & SASRA Observer", "👁️ Independent Auditor / Regulatory Observer", 5000.0, "MPESA-BK2026", "ADMITTED", f"{now_str}", now_str)
-                ]
-                cur.executemany("""
-                    INSERT INTO event_tickets_registry (
-                        ticket_id, event_id, attendee_name, email, phone, organization,
-                        ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, sample_sacco_tickets)
+            sample_sacco_tickets = [
+                ("TKT-BK-342801", event_id, "Samuel Gathigi", "sam.gathigi@gmail.com", "0722849000", "Banki Kuu SACCO (IT & Digital Services — Ref:SACCO-342801)", "VIP Shareholder Delegate", 5000.0, "SACCO-342801", "REGISTERED", "", now_str),
+                ("TKT-BK-342802", event_id, "Dr. Beatrice Kiptoo", "sam.gathigi+beatrice@gmail.com", "0733456789", "Banki Kuu SACCO (Internal Audit — Ref:SACCO-342802)", "VIP Shareholder Delegate", 5000.0, "SACCO-342802", "REGISTERED", "", now_str),
+                ("TKT-BK-342803", event_id, "Capt. Geoffrey Kemboi", "sam.gathigi+geoffrey@gmail.com", "0722112233", "Banki Kuu SACCO (Banking Operations — Ref:SACCO-342803)", "VIP Shareholder Delegate", 5000.0, "SACCO-342803", "REGISTERED", "", now_str),
+                ("TKT-BK-342804", event_id, "Joyce Cheruiyot", "sam.gathigi+joyce@gmail.com", "0725556677", "Banki Kuu SACCO (Finance & Accounts — Ref:SACCO-342804)", "VIP Shareholder Delegate", 5000.0, "SACCO-342804", "REGISTERED", "", now_str),
+                ("TKT-BK-342805", event_id, "Stanley Gicho", "sam.gathigi+stanley@gmail.com", "0720987654", "Banki Kuu SACCO (Human Resources — Ref:SACCO-342805)", "VIP Shareholder Delegate", 5000.0, "SACCO-342805", "REGISTERED", "", now_str),
+                ("TKT-BK-342806", event_id, "Mary Wambui", "sam.gathigi+mary@gmail.com", "0728990011", "Banki Kuu SACCO (Legal & Secretariat — Ref:SACCO-342806)", "VIP Shareholder Delegate", 5000.0, "SACCO-342806", "REGISTERED", "", now_str),
+                ("TKT-BK-342807", event_id, "David Kiiru", "sam.gathigi+david@gmail.com", "0721113344", "Banki Kuu SACCO (Monetary Policy — Ref:SACCO-342807)", "VIP Shareholder Delegate", 5000.0, "SACCO-342807", "REGISTERED", "", now_str),
+                ("TKT-BK-342808", event_id, "Linda Otieno", "sam.gathigi+linda@gmail.com", "0724445566", "Banki Kuu SACCO (Financial Markets — Ref:SACCO-342808)", "VIP Shareholder Delegate", 5000.0, "SACCO-342808", "REGISTERED", "", now_str),
+                ("TKT-BK-342809", event_id, "Eric Mwangi", "sam.gathigi+eric@gmail.com", "0727778899", "Banki Kuu SACCO (Currency Logistics — Ref:SACCO-342809)", "VIP Shareholder Delegate", 5000.0, "SACCO-342809", "REGISTERED", "", now_str),
+                ("TKT-BK-342810", event_id, "Grace Mutisya", "sam.gathigi+grace@gmail.com", "0729990011", "Banki Kuu SACCO (Governor's Office — Ref:SACCO-342810)", "VIP Shareholder Delegate", 5000.0, "SACCO-342810", "REGISTERED", "", now_str),
+                ("TKT-BK-102948", event_id, "Dr. Beatrice Kiptoo", "b.kiptoo@centralbank.go.ke", "0733456789", "Banki Kuu Staff SACCO (Ref: SACCO-1029)", "🗳️ Principal Shareholder / Voting Member", 5000.0, "MPESA-BK1029", "ADMITTED", f"{now_str}", now_str),
+                ("TKT-BK-992018", event_id, "Eric Mwangi", "e.mwangi@centralbank.go.ke", "0720987654", "Banki Kuu Staff SACCO (Ref: SACCO-9920)", "📜 Duly Appointed Proxy Holder", 5000.0, "MPESA-BK9920", "ADMITTED", f"{now_str}", now_str),
+                ("TKT-BK-881920", event_id, "Kenneth Mutai", "kmutai@centralbank.go.ke", "0721112233", "Banki Kuu Staff SACCO (Ref: SACCO-8819)", "👔 Executive Board Director / Committee Member", 5000.0, "MPESA-BK8819", "ADMITTED", f"{now_str}", now_str),
+                ("TKT-BK-449102", event_id, "Catherine Ochieng", "c.ochieng@centralbank.go.ke", "0725556677", "Banki Kuu Staff SACCO (Ref: SACCO-4491)", "🗳️ Principal Shareholder / Voting Member", 5000.0, "MPESA-BK4491", "ADMITTED", f"{now_str}", now_str),
+                ("TKT-BK-202601", event_id, "Patrick Kamau", "pkamau@kpmg.co.ke", "0728990011", "KPMG Audit & SASRA Observer", "👁️ Independent Auditor / Regulatory Observer", 5000.0, "MPESA-BK2026", "ADMITTED", f"{now_str}", now_str)
+            ]
+            cur.executemany("""
+                INSERT OR IGNORE INTO event_tickets_registry (
+                    ticket_id, event_id, attendee_name, email, phone, organization,
+                    ticket_tier, amount_paid, mpesa_trans_id, gate_status, checkin_time, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, sample_sacco_tickets)
             conn.commit()
             conn.close()
             return self.get_event_by_id(event_id) or {}
