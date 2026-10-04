@@ -430,14 +430,14 @@ with tab_reg:
                     chosen_amt = std_p if "Standard" in tier_choice else vip_p
                     tier_clean_name = "Standard Pass" if "Standard" in tier_choice else "VIP Executive Pass"
 
-                def_name = "Samuel Gathigi Njuguna" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else ""
-                def_email = "sam.gathigi@gmail.com" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else ""
+                def_name = ""
+                def_email = ""
                 def_org = "Banki Kuu Staff SACCO Society" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else ""
-                def_phone = "0722849000" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else "0722123456"
+                def_phone = ""
 
-                att_name = st.text_input("Full Name (as per Official ID / National ID):*", value=def_name, placeholder="e.g. Wallace Mbugua")
-                att_email = st.text_input("Email Address (for pass delivery):*", value=def_email, placeholder="e.g. wallace@enterprise.co.ke")
-                att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Finance & Accounts / Equity Bank")
+                att_name = st.text_input("Full Name (as per Official ID / National ID):*", value=def_name, placeholder="e.g. Samuel Gathigi")
+                att_email = st.text_input("Email Address (for pass delivery):*", value=def_email, placeholder="e.g. member@centralbank.go.ke")
+                att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Governor's Secretariat / Bank Supervision")
                 phone_lbl = "Mobile Phone Number (for WhatsApp Pass delivery):*" if is_bks_mode else "Safaricom M-Pesa Phone Number:*"
                 phone_hlp = "Mobile number to receive instant WhatsApp pass & voting credentials" if is_bks_mode else "Mobile number for STK Push prompt"
                 att_phone = st.text_input(phone_lbl, placeholder="07XX XXX XXX", value=def_phone, help=phone_hlp)
