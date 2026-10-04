@@ -1284,20 +1284,25 @@ if tab_wizard is not None:
                 
                     scoping_meta = f"{e_desc.strip()} [STRIDE Scope: Category={wz_cat}, Tier={scale_tag}, Module={voting_tag}, HW={hw_tag}, Fee=KES {grand_total:,.0f}, Inv={inv_ref}, M-Pesa={mpesa_ref}]"
                 
-                    ok_ev, msg_ev, new_eid = backend.create_event(
-                        title=e_title.strip(),
-                        organizer_name=e_host.strip(),
-                        category=wz_cat,
-                        event_date=d_str,
-                        event_time=e_time.strip(),
-                        venue=e_venue.strip(),
-                        description=scoping_meta,
-                        gate_mode=clean_gate_mode,
-                        is_paid=e_paid,
-                        standard_price=e_std_price,
-                        vip_price=e_vip_price,
-                        mpesa_paybill=e_paybill.strip()
-                    )
+                    if is_bks_mode:
+                        new_eid = "EVT-BANKI-KUU-SACCO"
+                        ok_ev = True
+                        msg_ev = "Payment settled for Banki Kuu SACCO 58th AGM!"
+                    else:
+                        ok_ev, msg_ev, new_eid = backend.create_event(
+                            title=e_title.strip(),
+                            organizer_name=e_host.strip(),
+                            category=wz_cat,
+                            event_date=d_str,
+                            event_time=e_time.strip(),
+                            venue=e_venue.strip(),
+                            description=scoping_meta,
+                            gate_mode=clean_gate_mode,
+                            is_paid=e_paid,
+                            standard_price=e_std_price,
+                            vip_price=e_vip_price,
+                            mpesa_paybill=e_paybill.strip()
+                        )
                     if ok_ev:
                         invoice_record = {
                             "inv_ref": inv_ref,
