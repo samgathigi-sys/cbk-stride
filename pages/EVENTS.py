@@ -241,7 +241,7 @@ with tab_reg:
                     58th Annual General Meeting & Board Elections Platform
                 </h3>
                 <div style="font-size: 0.82rem; color: #CBD5E1;">
-                    Statutory Shareholder Accreditation • M-Pesa Digital Pass • Live SASRA Quorum Telemetry • Encrypted E-Voting
+                    Statutory Shareholder Accreditation • Digital Mobile Pass • Live SASRA Quorum Telemetry • Encrypted E-Voting
                 </div>
             </div>
         </div>
@@ -748,6 +748,18 @@ with tab_reg:
                 verify_qr_data = f"https://cbk-stride.streamlit.app/EVENTS?verify_tkt={t_id}"
                 qr_code_url = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={verify_qr_data}"
 
+                clean_event_title = cur_evt['title'].replace("🏦", "").strip()
+                clean_org = t_org.replace("â€\"", "-").replace("—", "-").replace("–", "-")
+
+                if is_agm:
+                    pass_clearance_html = f"""<div style="margin-top: 12px; padding: 8px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; font-size: 0.78rem; color: #34D399; font-weight: 800;">
+                        ✓ STATUTORY ACCREDITATION CONFIRMED • SACCO PRE-PAID • CLEARANCE REF: {t_tx}
+                    </div>"""
+                else:
+                    pass_clearance_html = f"""<div style="margin-top: 12px; padding: 8px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; font-size: 0.78rem; color: #34D399; font-weight: 800;">
+                        ✓ PAYMENT CONFIRMED • KES {t_amt:,.0f} • REF: {t_tx}
+                    </div>"""
+
                 st.markdown(textwrap.dedent(f"""
                 <div style="background: linear-gradient(135deg, #091F3D 0%, #030F21 100%); border: 2.5px solid #F5C542; border-radius: 16px; padding: 20px; box-shadow: 0 12px 36px rgba(0,0,0,0.65); text-align: center;">
                     <div style="font-size: 0.72rem; color: #F5C542; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;">STRIDE™ ENTERPRISE DIGITAL PASS</div>
@@ -761,22 +773,48 @@ with tab_reg:
                         <img src="{qr_code_url}" alt="Ticket QR" style="display: block; width: 160px; height: 160px;" />
                     </div>
                     <h3 style="margin: 4px 0 1px 0; color: #FFFFFF; font-size: 1.2rem; font-weight: 800;">{t_name}</h3>
-                    <div style="font-size: 0.82rem; color: #94A3B8;">{t_org}</div>
-                    <div style="margin-top: 12px; padding: 8px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; font-size: 0.78rem; color: #34D399; font-weight: 800;">
-                        ✓ M-PESA CONFIRMED • KES {t_amt:,.0f} • REF: {t_tx}
-                    </div>
+                    <div style="font-size: 0.82rem; color: #94A3B8;">{clean_org}</div>
+                    {pass_clearance_html}
                     <div style="margin-top: 6px; font-size: 0.7rem; color: #64748B;">
                         Ticket Serial: <code>{t_id}</code> • Status: <strong>{cur_ticket.get('gate_status', 'REGISTERED')}</strong>
                     </div>
                 </div>
                 """), unsafe_allow_html=True)
 
+                if is_agm:
+                    download_text = f"""BANKI KUU SACCO — 58TH AGM OFFICIAL DELEGATE PASS
+=============================================================
+Event: {clean_event_title}
+Delegate Name: {t_name}
+Organization / Division: {clean_org}
+Accreditation Tier: {t_tier}
+Ticket Serial ID: {t_id}
+Secretariat Clearance Ref: {t_tx}
+Clearance Type: Statutory Shareholder (Complimentary / SACCO Pre-Paid)
+Accreditation Status: {cur_ticket.get('gate_status', 'REGISTERED')}
+Verification & Voting URL: {verify_qr_data}
+=============================================================
+Present this digital pass at the auditorium entrance for gate scan.
+"""
+                    download_filename = f"Banki_Kuu_SACCO_Pass_{t_id}.txt"
+                else:
+                    download_text = f"""STRIDE DIGITAL PASS
+Event: {cur_evt['title']}
+Attendee: {t_name}
+Org: {clean_org}
+Tier: {t_tier}
+Ticket ID: {t_id}
+Receipt: {t_tx}
+Amount: KES {t_amt:,.0f}
+Scan URL: {verify_qr_data}"""
+                    download_filename = f"STRIDE_Ticket_{t_id}.txt"
+
                 c_p1, c_p2 = st.columns(2)
                 with c_p1:
                     st.download_button(
                         label="📥 Download Pass (.txt)",
-                        data=f"STRIDE DIGITAL PASS\nEvent: {cur_evt['title']}\nAttendee: {t_name}\nOrg: {t_org}\nTier: {t_tier}\nTicket ID: {t_id}\nReceipt: {t_tx}\nAmount: KES {t_amt:,}\nScan URL: {verify_qr_data}".encode('utf-8'),
-                        file_name=f"STRIDE_Ticket_{t_id}.txt",
+                        data=download_text.encode('utf-8'),
+                        file_name=download_filename,
                         mime="text/plain",
                         use_container_width=True
                     )
@@ -806,7 +844,7 @@ with tab_reg:
                 "email": "Email Address",
                 "phone": "Phone Number",
                 "gate_status": "Check-in Status",
-                "mpesa_trans_id": "M-Pesa Receipt Ref"
+                "mpesa_trans_id": "Secretariat Clearance Ref" if is_agm else "Payment Ref"
             }
             df_show.rename(columns=rename_map, inplace=True)
 
@@ -1767,10 +1805,25 @@ with tab_verify:
             if not event_tickets:
                 st.info("No tickets registered for this event yet.")
             else:
-                df_tkt_show = pd.DataFrame(event_tickets)[[
-                    "ticket_id", "attendee_name", "organization", "ticket_tier",
-                    "amount_paid", "mpesa_trans_id", "gate_status", "checkin_time"
-                ]]
+                if is_roster_agm:
+                    df_tkt_show = pd.DataFrame(event_tickets)[[
+                        "ticket_id", "attendee_name", "organization", "ticket_tier",
+                        "mpesa_trans_id", "gate_status", "checkin_time"
+                    ]].copy()
+                    df_tkt_show.rename(columns={
+                        "ticket_id": "Pass Serial ID",
+                        "attendee_name": "Delegate Name",
+                        "organization": "Department / Branch",
+                        "ticket_tier": "Accreditation Tier",
+                        "mpesa_trans_id": "Clearance Ref",
+                        "gate_status": "Gate Status",
+                        "checkin_time": "Check-in Timestamp"
+                    }, inplace=True)
+                else:
+                    df_tkt_show = pd.DataFrame(event_tickets)[[
+                        "ticket_id", "attendee_name", "organization", "ticket_tier",
+                        "amount_paid", "mpesa_trans_id", "gate_status", "checkin_time"
+                    ]].copy()
                 st.dataframe(df_tkt_show, use_container_width=True, hide_index=True)
 
                 # Export accreditation register
