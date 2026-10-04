@@ -107,47 +107,78 @@ backend: AttendanceBackend = st.session_state.backend
 now_dt = get_eat_now()
 
 # ------------------------------------------------------------------------------
-# TOP GLOBAL NAVIGATION BAR
-# ------------------------------------------------------------------------------
-c_nav1, c_nav2 = st.columns([2, 1.2])
-with c_nav1:
-    st.markdown(f"""
-    <div style="display: flex; align-items: center; gap: 14px; padding: 10px 0;">
-        <div style="background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 100%); width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(0,242,254,0.3);">
-            🎟️
-        </div>
-        <div>
-            <h2 style="margin: 0; font-size: 1.45rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.5px;">
-                STRIDE™ <span style="font-weight: 400; color: #F5C542; font-size: 1rem;">| Public Accreditation & Event Gateway</span>
-            </h2>
-            <div style="font-size: 0.78rem; color: #94A3B8;">
-                Self-Registration • M-Pesa STK Ticketing • Universal Event Creator • Anti-Counterfeit QR Gates
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with c_nav2:
-    st.markdown(f"""
-    <div style="text-align: right; margin-top: 10px;">
-        <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #34D399; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800;">
-            ● M-PESA DARAJA LIVE GATEWAY
-        </span>
-        <div style="font-size: 0.72rem; color: #64748B; margin-top: 4px;">
-            <span style="color: #94A3B8;">STRIDE™ Enterprise</span> • <a href="/DEMO" style="color: #F5C542; text-decoration: none;">🧪 Evaluator Sandbox</a>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("---")
-
-# ------------------------------------------------------------------------------
 # READ QUERY PARAMS (IF ACCESSED VIA DIRECT EVENT QR OR LINK)
 # ------------------------------------------------------------------------------
 param_event_id = st.query_params.get("event_id", "")
 is_bks_mode = (param_event_id == "EVT-BANKI-KUU-SACCO" or "bks" in st.query_params or "bksacco" in st.query_params or "bankikuu" in st.query_params or st.query_params.get("bks", "") == "1")
 if is_bks_mode:
     param_event_id = "EVT-BANKI-KUU-SACCO"
+
+# ------------------------------------------------------------------------------
+# TOP GLOBAL NAVIGATION BAR
+# ------------------------------------------------------------------------------
+if is_bks_mode:
+    c_nav1, c_nav2 = st.columns([2.2, 1.1])
+    with c_nav1:
+        st.markdown(f"""
+        <div style="display: flex; align-items: center; gap: 14px; padding: 10px 0;">
+            <div style="background: linear-gradient(135deg, #F5C542 0%, #D4AF37 50%, #996515 100%); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; box-shadow: 0 4px 18px rgba(245,197,66,0.4);">
+                🏦
+            </div>
+            <div>
+                <h2 style="margin: 0; font-size: 1.45rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.5px;">
+                    Banki Kuu SACCO <span style="font-weight: 500; color: #F5C542; font-size: 1rem;">| Shareholder Accreditation & E-Voting Portal</span>
+                </h2>
+                <div style="font-size: 0.78rem; color: #94A3B8;">
+                    Central Bank of Kenya Staff SACCO Society Ltd. • 58th AGM & Board Elections • KICC Main Auditorium
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with c_nav2:
+        st.markdown(f"""
+        <div style="text-align: right; margin-top: 8px;">
+            <span style="background: rgba(245, 197, 66, 0.15); border: 1.5px solid #F5C542; color: #F5C542; padding: 5px 14px; border-radius: 20px; font-size: 0.76rem; font-weight: 900; letter-spacing: 0.5px; box-shadow: 0 0 12px rgba(245,197,66,0.2);">
+                👑 BANKI KUU SACCO LIVE PORTAL
+            </span>
+            <div style="font-size: 0.72rem; color: #64748B; margin-top: 4px;">
+                <span style="color: #94A3B8;">Central Bank of Kenya</span> • <a href="/DEMO" style="color: #00F2FE; text-decoration: none;">🧪 Evaluator Sandbox</a>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+else:
+    c_nav1, c_nav2 = st.columns([2, 1.2])
+    with c_nav1:
+        st.markdown(f"""
+        <div style="display: flex; align-items: center; gap: 14px; padding: 10px 0;">
+            <div style="background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 100%); width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(0,242,254,0.3);">
+                🎟️
+            </div>
+            <div>
+                <h2 style="margin: 0; font-size: 1.45rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.5px;">
+                    STRIDE™ <span style="font-weight: 400; color: #F5C542; font-size: 1rem;">| Public Accreditation & Event Gateway</span>
+                </h2>
+                <div style="font-size: 0.78rem; color: #94A3B8;">
+                    Self-Registration • M-Pesa STK Ticketing • Universal Event Creator • Anti-Counterfeit QR Gates
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with c_nav2:
+        st.markdown(f"""
+        <div style="text-align: right; margin-top: 10px;">
+            <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #34D399; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800;">
+                ● M-PESA DARAJA LIVE GATEWAY
+            </span>
+            <div style="font-size: 0.72rem; color: #64748B; margin-top: 4px;">
+                <span style="color: #94A3B8;">STRIDE™ Enterprise</span> • <a href="/DEMO" style="color: #F5C542; text-decoration: none;">🧪 Evaluator Sandbox</a>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+st.markdown("---")
 
 # Track active delegate ticket across tabs
 active_ticket_param = (
@@ -187,21 +218,38 @@ with tab_reg:
     # Ensure Banki Kuu SACCO ready-to-demo event exists in database
     bk_event = backend.ensure_banki_kuu_sacco_event()
 
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, rgba(245, 197, 66, 0.18) 0%, rgba(9, 31, 61, 0.85) 100%); border: 2px solid #F5C542; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.45);">
-        <div>
-            <span style="background: #F5C542; color: #020712; font-weight: 900; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px;">
-                🏦 READY-TO-DEMO SUITE
-            </span>
-            <h4 style="margin: 4px 0 2px 0; color: #FFFFFF; font-size: 1.1rem; font-weight: 800;">
-                Banki Kuu SACCO — 58th AGM & Board Elections Platform
-            </h4>
-            <div style="font-size: 0.78rem; color: #CBD5E1;">
-                Pre-configured for statutory shareholder accreditation, M-Pesa digital pass, live SASRA quorum tracking & encrypted e-voting.
+    if is_bks_mode:
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, rgba(245, 197, 66, 0.22) 0%, rgba(9, 31, 61, 0.95) 100%); border: 2px solid #F5C542; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+            <div>
+                <span style="background: #F5C542; color: #020712; font-weight: 900; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.2px;">
+                    🏦 CENTRAL BANK OF KENYA STAFF SACCO SOCIETY LTD.
+                </span>
+                <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.25rem; font-weight: 900;">
+                    58th Annual General Meeting & Board Elections Platform
+                </h3>
+                <div style="font-size: 0.82rem; color: #CBD5E1;">
+                    Statutory Shareholder Accreditation • M-Pesa Digital Pass • Live SASRA Quorum Telemetry • Encrypted E-Voting
+                </div>
             </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, rgba(245, 197, 66, 0.18) 0%, rgba(9, 31, 61, 0.85) 100%); border: 2px solid #F5C542; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.45);">
+            <div>
+                <span style="background: #F5C542; color: #020712; font-weight: 900; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px;">
+                    🏦 READY-TO-DEMO SUITE
+                </span>
+                <h4 style="margin: 4px 0 2px 0; color: #FFFFFF; font-size: 1.1rem; font-weight: 800;">
+                    Banki Kuu SACCO — 58th AGM & Board Elections Platform
+                </h4>
+                <div style="font-size: 0.78rem; color: #CBD5E1;">
+                    Pre-configured for statutory shareholder accreditation, M-Pesa digital pass, live SASRA quorum tracking & encrypted e-voting.
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     if is_bks_mode:
         with st.expander("🎬 WATCH LIVE MOTION DEMO: 5-Step SACCO AGM Delegate Journey (Interactive Boardroom Video)", expanded=True):
@@ -213,67 +261,75 @@ with tab_reg:
             except Exception as ex:
                 st.info("💡 Interactive Motion Video Simulation ready for Board Presentation.")
 
-    st.markdown("### 🎟️ Attendee Self-Registration & Dynamic QR Ticket Pass")
-    st.caption("Register for upcoming corporate sports championships, AGMs, conferences, galas, or marathons. Pay via Safaricom M-Pesa STK Push and receive an encrypted digital pass instantly:")
+    if is_bks_mode:
+        st.markdown("### 🎟️ Banki Kuu SACCO Delegate Accreditation & Dynamic QR Pass")
+        st.caption("Accredit for the Banki Kuu Staff SACCO 58th AGM & Board Elections. Receive your certified mobile pass & secret voting token instantly:")
+    else:
+        st.markdown("### 🎟️ Attendee Self-Registration & Dynamic QR Ticket Pass")
+        st.caption("Register for upcoming corporate sports championships, AGMs, conferences, galas, or marathons. Pay via Safaricom M-Pesa STK Push and receive an encrypted digital pass instantly:")
 
     # Retrieve published events from SQLite
     all_events = backend.get_events(status="ACTIVE")
     if not all_events:
         st.warning("No active events currently published. Use the 'Event Creator Wizard' tab to create your first event!")
     else:
-        # Category Filter Pull-Down
-        col_flt1, col_flt2 = st.columns([1.4, 2])
-        with col_flt1:
-            cat_filter = st.selectbox(
-                "Filter Events by Type (Pull-Down):*",
-                [
-                    "🌟 All Events & Assemblies",
-                    "👔 Annual General Meetings (AGM) & Shareholder Assemblies",
-                    "🏆 Sports Tournaments & Derbies",
-                    "🏃 Marathons, Fun Runs & Athletics",
-                    "💡 Industry Conferences & Summits",
-                    "🎉 Corporate Galas & Dinners"
-                ],
-                key="pub_cat_filter"
-            )
+        if is_bks_mode:
+            selected_event = bk_event
+        else:
+            # Category Filter Pull-Down
+            col_flt1, col_flt2 = st.columns([1.4, 2])
+            with col_flt1:
+                cat_filter = st.selectbox(
+                    "Filter Events by Type (Pull-Down):*",
+                    [
+                        "🌟 All Events & Assemblies",
+                        "👔 Annual General Meetings (AGM) & Shareholder Assemblies",
+                        "🏆 Sports Tournaments & Derbies",
+                        "🏃 Marathons, Fun Runs & Athletics",
+                        "💡 Industry Conferences & Summits",
+                        "🎉 Corporate Galas & Dinners"
+                    ],
+                    key="pub_cat_filter"
+                )
 
-        # Filter events list based on category pull-down
-        filtered_events = all_events
-        if "AGM" in cat_filter:
-            filtered_events = [e for e in all_events if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper() or "GENERAL MEETING" in e['title'].upper()]
-        elif "Sports" in cat_filter:
-            filtered_events = [e for e in all_events if "SPORTS" in e['category'].upper() or "DERBY" in e['title'].upper()]
-        elif "Marathon" in cat_filter:
-            filtered_events = [e for e in all_events if "MARATHON" in e['category'].upper() or "RUN" in e['title'].upper()]
-        elif "Conference" in cat_filter:
-            filtered_events = [e for e in all_events if "CONFERENCE" in e['category'].upper() or "SUMMIT" in e['title'].upper()]
-        elif "Gala" in cat_filter:
-            filtered_events = [e for e in all_events if "GALA" in e['category'].upper() or "DINNER" in e['title'].upper()]
-
-        if not filtered_events:
+            # Filter events list based on category pull-down
             filtered_events = all_events
+            if "AGM" in cat_filter:
+                filtered_events = [e for e in all_events if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper() or "GENERAL MEETING" in e['title'].upper()]
+            elif "Sports" in cat_filter:
+                filtered_events = [e for e in all_events if "SPORTS" in e['category'].upper() or "DERBY" in e['title'].upper()]
+            elif "Marathon" in cat_filter:
+                filtered_events = [e for e in all_events if "MARATHON" in e['category'].upper() or "RUN" in e['title'].upper()]
+            elif "Conference" in cat_filter:
+                filtered_events = [e for e in all_events if "CONFERENCE" in e['category'].upper() or "SUMMIT" in e['title'].upper()]
+            elif "Gala" in cat_filter:
+                filtered_events = [e for e in all_events if "GALA" in e['category'].upper() or "DINNER" in e['title'].upper()]
 
-        event_options = {f"{e['title']} ({e['event_id']})": e for e in filtered_events}
-        
-        # Default index preference for Banki Kuu SACCO if available
-        default_idx = 0
-        for idx, k in enumerate(event_options.keys()):
-            if "BANKI-KUU-SACCO" in k.upper() or "BANKI KUU" in k.upper():
-                default_idx = idx
-                break
-        if param_event_id:
+            if not filtered_events:
+                filtered_events = all_events
+
+            event_options = {f"{e['title']} ({e['event_id']})": e for e in filtered_events}
+            
+            # Default index preference for Banki Kuu SACCO if available
+            default_idx = 0
             for idx, k in enumerate(event_options.keys()):
-                if param_event_id.upper() in k.upper():
+                if "BANKI-KUU-SACCO" in k.upper() or "BANKI KUU" in k.upper():
                     default_idx = idx
                     break
+            if param_event_id:
+                for idx, k in enumerate(event_options.keys()):
+                    if param_event_id.upper() in k.upper():
+                        default_idx = idx
+                        break
 
-        selected_label = st.selectbox(
-            "Select Event / Function to Register For:*",
-            list(event_options.keys()),
-            index=default_idx,
-            key="pub_reg_event_sel"
-        )
-        selected_event = event_options[selected_label]
+            selected_label = st.selectbox(
+                "Select Event / Function to Register For:*",
+                list(event_options.keys()),
+                index=default_idx,
+                key="pub_reg_event_sel"
+            )
+            selected_event = event_options[selected_label]
+
         is_agm = ("AGM" in selected_event['category'].upper() or "AGM" in selected_event['title'].upper() or "SHAREHOLDER" in selected_event['title'].upper() or "GENERAL MEETING" in selected_event['title'].upper())
 
         # Display Event Overview Card
@@ -1402,6 +1458,24 @@ with tab_verify:
         st.markdown("---")
         st.caption("💡 **Quick Test Tickets:** You can copy any Ticket ID from the accredited roster on the right and test admission.")
 
+        if is_bks_mode:
+            st.markdown("<div style='font-size: 0.78rem; color: #F5C542; font-weight: 800; margin-top: 10px;'>💡 Quick Demo Banki Kuu SACCO Delegates:</div>", unsafe_allow_html=True)
+            c_gb1, c_gb2 = st.columns(2)
+            with c_gb1:
+                if st.button("👤 Samuel Gathigi", key="btn_quick_tkt_sam", use_container_width=True):
+                    st.session_state["active_ticket_id"] = "TKT-BK-342801"
+                    st.rerun()
+                if st.button("👤 Capt. Geoffrey", key="btn_quick_tkt_geoff", use_container_width=True):
+                    st.session_state["active_ticket_id"] = "TKT-BK-342803"
+                    st.rerun()
+            with c_gb2:
+                if st.button("👤 Dr. Beatrice Kiptoo", key="btn_quick_tkt_bea", use_container_width=True):
+                    st.session_state["active_ticket_id"] = "TKT-BK-342802"
+                    st.rerun()
+                if st.button("👤 Joyce Cheruiyot", key="btn_quick_tkt_joyce", use_container_width=True):
+                    st.session_state["active_ticket_id"] = "TKT-BK-342804"
+                    st.rerun()
+
     with v_col2:
         st.markdown("#### 📋 Live Event Accredited Roster")
         roster_evt_options = [e["event_id"] + " — " + e["title"] for e in all_events] if all_events else ["None"]
@@ -1593,6 +1667,22 @@ with tab_ballot:
                 default_v_tkt = qp_vote_tkt or st.session_state.get("active_ticket_id") or ev_tickets[0]["ticket_id"]
                 
                 eval_mode = st.checkbox("🧪 Evaluator Shortcut (Show Delegate Dropdown for Quick Demo)", value=False, key="chk_eval_voter_mode")
+                
+                if is_bks_mode and not eval_mode:
+                    st.markdown("<div style='font-size: 0.78rem; color: #00F2FE; font-weight: 800; margin-bottom: 6px;'>💡 Quick Demo Voters:</div>", unsafe_allow_html=True)
+                    c_vb1, c_vb2, c_vb3 = st.columns(3)
+                    with c_vb1:
+                        if st.button("👤 Samuel (IT)", key="btn_vote_sam", use_container_width=True):
+                            st.session_state["active_ticket_id"] = "TKT-BK-342801"
+                            st.rerun()
+                    with c_vb2:
+                        if st.button("👤 Dr. Beatrice", key="btn_vote_bea", use_container_width=True):
+                            st.session_state["active_ticket_id"] = "TKT-BK-342802"
+                            st.rerun()
+                    with c_vb3:
+                        if st.button("👤 Capt. Geoffrey", key="btn_vote_geoff", use_container_width=True):
+                            st.session_state["active_ticket_id"] = "TKT-BK-342803"
+                            st.rerun()
                 
                 sel_tkt = None
                 if eval_mode:
@@ -1880,7 +1970,8 @@ with tab_nlp:
             if st.button("🇰🇪 Swahili Feedback", key="btn_chip_swa", use_container_width=True):
                 st.session_state["nlp_sample_box"] = "Chakula kilichelewa kidogo ukumbini lakini usajili wa simu na kura ya kidijitali ilikuwa safi na haraka sana!"
 
-        preset_val = st.session_state.get("nlp_sample_box", "The M-Pesa STK self-registration and QR gate pass was lightning fast! Zero lines at Radisson Blu entrance, and the digital quorum screen gave us total transparency on the dividend vote.")
+        default_preset = "The M-Pesa STK self-registration and WhatsApp QR gate pass were lightning fast! Zero lines at KICC main entrance, and the digital quorum screen gave us total transparency on the 14% dividend vote." if is_bks_mode else "The M-Pesa STK self-registration and QR gate pass was lightning fast! Zero lines at venue entrance, and the digital quorum screen gave us total transparency on the dividend vote."
+        preset_val = st.session_state.get("nlp_sample_box", default_preset)
         fb_text = st.text_area("Your Open-Ended Feedback:*", value=preset_val, height=110, key="fb_in_text")
 
         # Live Pre-Flight NLP Preview
@@ -1997,9 +2088,17 @@ with tab_nlp:
 # ------------------------------------------------------------------------------
 # FOOTER
 # ------------------------------------------------------------------------------
-st.markdown("""
-<div style="text-align: center; margin-top: 3rem; padding: 1.4rem; border-top: 1px solid rgba(245, 197, 66, 0.25); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.6); border-radius: 12px;">
-    <strong style="color: #F5C542;">STRIDE™</strong> • Enterprise Event Telemetry, Accreditation & M-Pesa Ticketing Platform<br>
-    <span style="font-size: 0.75rem; color: #64748B;">Multi-Tenant Commercial Event Management & Gate Control • <a href="/DEMO" style="color: #F5C542; text-decoration: none;">🧪 Evaluator Sandbox</a></span>
-</div>
-""", unsafe_allow_html=True)
+if is_bks_mode:
+    st.markdown("""
+    <div style="text-align: center; margin-top: 3rem; padding: 1.4rem; border-top: 1.5px solid rgba(245, 197, 66, 0.35); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.8); border-radius: 12px;">
+        <strong style="color: #F5C542;">Banki Kuu Staff SACCO Society Ltd.</strong> • 58th AGM & Board Elections Governance Portal<br>
+        <span style="font-size: 0.75rem; color: #64748B;">Powered by STRIDE™ Enterprise Telemetry & E-Voting Platform • SASRA Statutory Compliance Certified • <a href="/DEMO" style="color: #00F2FE; text-decoration: none;">🧪 Evaluator Sandbox</a></span>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <div style="text-align: center; margin-top: 3rem; padding: 1.4rem; border-top: 1px solid rgba(245, 197, 66, 0.25); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.6); border-radius: 12px;">
+        <strong style="color: #F5C542;">STRIDE™</strong> • Enterprise Event Telemetry, Accreditation & M-Pesa Ticketing Platform<br>
+        <span style="font-size: 0.75rem; color: #64748B;">Multi-Tenant Commercial Event Management & Gate Control • <a href="/DEMO" style="color: #F5C542; text-decoration: none;">🧪 Evaluator Sandbox</a></span>
+    </div>
+    """, unsafe_allow_html=True)
