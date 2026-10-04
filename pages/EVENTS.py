@@ -671,14 +671,28 @@ with tab_reg:
 
             elif not cur_ticket:
                 st.markdown("#### 🎟️ Digital Mobile Pass")
-                st.info("👈 Fill out the registration form on the left and tap **'Pay KES 5,000 via M-Pesa STK & Register'** to generate your official pass.")
+                info_msg = "👈 Fill out the form on the left and tap **'Accredit Member & Generate Mobile Pass'** to generate your official pass." if is_bks_mode else "👈 Fill out the registration form on the left and tap **'Pay KES 5,000 via M-Pesa STK & Register'** to generate your official pass."
+                st.info(info_msg)
                 st.markdown("""
-                <div style="background: rgba(8, 24, 48, 0.6); border: 2px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 40px 20px; text-align: center; color: #64748B;">
-                    <div style="font-size: 3.5rem; margin-bottom: 10px;">🎟️</div>
-                    <div style="font-weight: 700; color: #94A3B8; font-size: 1rem;">No Active Ticket Pass Generated Yet</div>
-                    <div style="font-size: 0.8rem; margin-top: 6px;">Your encrypted dynamic QR ticket pass will render here immediately following payment verification.</div>
+                <div style="background: rgba(8, 24, 48, 0.6); border: 2px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 30px 20px; text-align: center; color: #64748B; margin-bottom: 12px;">
+                    <div style="font-size: 3rem; margin-bottom: 8px;">🎟️</div>
+                    <div style="font-weight: 700; color: #94A3B8; font-size: 0.95rem;">No Active Member Pass Rendered Yet</div>
+                    <div style="font-size: 0.78rem; margin-top: 4px;">Your encrypted dynamic QR ticket pass will render here immediately following accreditation.</div>
                 </div>
                 """, unsafe_allow_html=True)
+
+                if st.button("⚡ Quick Demo: Load Sample Accredited Pass", use_container_width=True, key="btn_quick_demo_pass"):
+                    st.session_state["pub_active_ticket"] = {
+                        "ticket_id": "TKT-BK-342801",
+                        "attendee_name": "Samuel Gathigi Njuguna",
+                        "organization": "Banki Kuu SACCO — Governor's Secretariat",
+                        "ticket_tier": "Principal Shareholder / Voting Member",
+                        "amount_paid": 0.0,
+                        "mpesa_trans_id": "BKS-ACC-342801",
+                        "gate_status": "REGISTERED"
+                    }
+                    st.session_state["pub_active_event"] = selected_event
+                    st.rerun()
             else:
                 st.markdown("#### 🎟️ Digital Mobile Pass")
                 t_tx = cur_ticket["mpesa_trans_id"]
