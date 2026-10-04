@@ -1366,9 +1366,13 @@ with tab_verify:
 
     v_col1, v_col2 = st.columns([1.1, 1.4])
 
+    # Read ticket from query params if passed via email QR scan
+    qp_confirm_tkt = st.query_params.get("confirm", st.query_params.get("tkt", st.query_params.get("ticket_id", "")))
+    default_verify_val = qp_confirm_tkt if qp_confirm_tkt else ("TKT-BK-342805" if is_bks_mode else "TKT-849201-11")
+
     with v_col1:
         st.markdown("#### 🔍 Gate Scanner Simulator")
-        test_tkt_id = st.text_input("Enter Ticket ID to Verify:*", value="TKT-849201-11", placeholder="e.g. TKT-849201-11", key="input_gate_verify_tkt")
+        test_tkt_id = st.text_input("Enter Ticket ID to Verify:*", value=default_verify_val, placeholder="e.g. TKT-BK-342805", key="input_gate_verify_tkt")
         
         btn_admit_gate = st.button("✅ Admit Attendee / Delegate at Gate", type="primary", use_container_width=True)
 
@@ -1388,9 +1392,18 @@ with tab_verify:
 
     with v_col2:
         st.markdown("#### 📋 Live Event Accredited Roster")
+        roster_evt_options = [e["event_id"] + " — " + e["title"] for e in all_events] if all_events else ["None"]
+        default_roster_idx = 0
+        if is_bks_mode or param_event_id:
+            for idx, opt in enumerate(roster_evt_options):
+                if "BANKI-KUU-SACCO" in opt.upper():
+                    default_roster_idx = idx
+                    break
+
         v_evt_choice = st.selectbox(
             "Filter Roster by Event / Assembly (Pull-Down):",
-            [e["event_id"] + " — " + e["title"] for e in all_events] if all_events else ["None"],
+            roster_evt_options,
+            index=default_roster_idx,
             key="sel_roster_evt"
         )
         if all_events and v_evt_choice != "None":
