@@ -195,13 +195,13 @@ if active_ticket_param:
 # MAIN PORTAL TABS
 # ------------------------------------------------------------------------------
 if is_bks_mode:
-    tab_reg, tab_verify, tab_ballot, tab_nlp = st.tabs([
+    tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp = st.tabs([
         "🎟️ Shareholder Accreditation & Bulk Roster",
+        "💳 SACCO Finance Manager Payment & Scoping",
         "📷 Gate Usher Scanner & Quorum Meter",
         "🗳️ Digital Voting & Elections Booth",
         "🤖 Member Feedback & Sentiment Analysis"
     ])
-    tab_wizard = None
 else:
     tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp = st.tabs([
         "🎟️ Attendee Registration & Digital Pass",
@@ -438,7 +438,9 @@ with tab_reg:
                 att_name = st.text_input("Full Name (as per Official ID / National ID):*", value=def_name, placeholder="e.g. Wallace Mbugua")
                 att_email = st.text_input("Email Address (for pass delivery):*", value=def_email, placeholder="e.g. wallace@enterprise.co.ke")
                 att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Finance & Accounts / Equity Bank")
-                att_phone = st.text_input("Safaricom M-Pesa Phone Number:*", placeholder="07XX XXX XXX", value=def_phone, help="Mobile number for STK Push prompt")
+                phone_lbl = "Mobile Phone Number (for WhatsApp Pass delivery):*" if is_bks_mode else "Safaricom M-Pesa Phone Number:*"
+                phone_hlp = "Mobile number to receive instant WhatsApp pass & voting credentials" if is_bks_mode else "Mobile number for STK Push prompt"
+                att_phone = st.text_input(phone_lbl, placeholder="07XX XXX XXX", value=def_phone, help=phone_hlp)
 
                 if is_bks_mode:
                     st.markdown(f"""
@@ -1054,8 +1056,12 @@ def clean_html_card(raw_html: str) -> str:
 
 if tab_wizard is not None:
     with tab_wizard:
-        st.markdown("### 🪄 Universal Event & AGM Commercial Scoping Wizard")
-        st.caption("Answer 4 quick scoping questions to determine your platform deployment scope, calculate your customized fee, and provision certified gate scanners instantly via M-Pesa:")
+        if is_bks_mode:
+            st.markdown("### 💳 Banki Kuu SACCO Finance Manager Payment & Scoping")
+            st.caption("Central platform fee settlement portal for the Banki Kuu Staff SACCO Finance Manager & Secretariat. Settle platform deployment fee via M-Pesa STK Push and generate official tax invoice:")
+        else:
+            st.markdown("### 🪄 Universal Event & AGM Commercial Scoping Wizard")
+            st.caption("Answer 4 quick scoping questions to determine your platform deployment scope, calculate your customized fee, and provision certified gate scanners instantly via M-Pesa:")
 
         wz_col1, wz_col2 = st.columns([1.35, 1])
 
@@ -1238,13 +1244,23 @@ if tab_wizard is not None:
             grand_total = subtotal + vat_amt
 
             st.markdown("---")
-            st.markdown("#### 3️⃣ Organizer Billing & Instant M-Pesa Settlement")
-            b_org = st.text_input("Billing Entity / Organization Name:*", value=e_host if e_host else "Corporate Client", key="wz_b_org")
-            b_email = st.text_input("Billing Email Address (for Official Tax Invoice):*", placeholder="finance@organization.co.ke", key="wz_b_email")
-            b_phone = st.text_input("Safaricom M-Pesa Mobile Number for STK Push:*", value="0722123456", help="STK Push prompt will be dispatched to this handset", key="wz_b_phone")
+            if is_bks_mode:
+                st.markdown("#### 3️⃣ Banki Kuu SACCO Finance Manager M-Pesa STK Settlement")
+                def_b_org = "Banki Kuu Staff SACCO Society Ltd."
+                def_b_email = "finance@bankikuusacco.co.ke"
+                def_b_phone = "0722849000"
+            else:
+                st.markdown("#### 3️⃣ Organizer Billing & Instant M-Pesa Settlement")
+                def_b_org = e_host if e_host else "Corporate Client"
+                def_b_email = ""
+                def_b_phone = "0722123456"
+
+            b_org = st.text_input("Billing Entity / Organization Name:*", value=def_b_org, key="wz_b_org")
+            b_email = st.text_input("Billing Email Address (for Official Tax Invoice):*", value=def_b_email, placeholder="finance@bankikuusacco.co.ke", key="wz_b_email")
+            b_phone = st.text_input("Safaricom M-Pesa Mobile Number for STK Push (Finance Manager Handset):*", value=def_b_phone, help="STK Push prompt will be dispatched to Finance Manager handset", key="wz_b_phone")
 
             btn_pay_provision = st.button(
-                f"💳 Settle KES {grand_total:,.0f} via M-Pesa STK & Launch Gateways",
+                f"💳 Settle KES {grand_total:,.0f} via M-Pesa STK & Provision Platform",
                 type="primary",
                 use_container_width=True,
                 key="btn_wz_pay_provision"
