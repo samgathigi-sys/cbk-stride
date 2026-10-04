@@ -330,7 +330,8 @@ with tab_reg:
             )
             selected_event = event_options[selected_label]
 
-        is_agm = ("AGM" in selected_event['category'].upper() or "AGM" in selected_event['title'].upper() or "SHAREHOLDER" in selected_event['title'].upper() or "GENERAL MEETING" in selected_event['title'].upper())
+        is_event_bks = (is_bks_mode or selected_event['event_id'] == "EVT-BANKI-KUU-SACCO" or "BANKI-KUU-SACCO" in selected_event['event_id'].upper() or "BANKI KUU" in selected_event['title'].upper())
+        is_agm = ("AGM" in selected_event['category'].upper() or "AGM" in selected_event['title'].upper() or "SHAREHOLDER" in selected_event['title'].upper() or "GENERAL MEETING" in selected_event['title'].upper() or is_event_bks)
 
         # Display Event Overview Card
         badge_border_color = "#F5C542" if is_agm else "#00F2FE"
@@ -394,7 +395,7 @@ with tab_reg:
                         key=f"agm_del_{selected_event['event_id']}"
                     )
 
-                    default_acc = "SACCO-3428" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else ""
+                    default_acc = "SACCO-3428" if is_event_bks else ""
                     agm_acc_num = st.text_input(
                         "Shareholder / CDSC / Member Account Number:*",
                         value=default_acc,
@@ -415,7 +416,7 @@ with tab_reg:
                     )
 
                     tier_clean_name = agm_del_status.split("(")[0].strip()
-                    chosen_amt = 0.0 if is_bks_mode else 5000.0  # Paid centrally by SACCO Finance Manager for BKS mode
+                    chosen_amt = 0.0 if is_event_bks else 5000.0  # Paid centrally by SACCO Finance Manager for BKS mode
 
                 else:
                     # Standard Non-AGM Ticket Tier Selection
@@ -432,17 +433,17 @@ with tab_reg:
 
                 def_name = ""
                 def_email = ""
-                def_org = "Banki Kuu Staff SACCO Society" if "BANKI-KUU-SACCO" in selected_event['event_id'].upper() else ""
+                def_org = "Banki Kuu Staff SACCO Society" if is_event_bks else ""
                 def_phone = ""
 
                 att_name = st.text_input("Full Name (as per Official ID / National ID):*", value=def_name, placeholder="e.g. Samuel Gathigi")
                 att_email = st.text_input("Email Address (for pass delivery):*", value=def_email, placeholder="e.g. member@centralbank.go.ke")
                 att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Governor's Secretariat / Bank Supervision")
-                phone_lbl = "Mobile Phone Number (for WhatsApp Pass delivery):*" if is_bks_mode else "Safaricom M-Pesa Phone Number:*"
-                phone_hlp = "Mobile number to receive instant WhatsApp pass & voting credentials" if is_bks_mode else "Mobile number for STK Push prompt"
+                phone_lbl = "Mobile Phone Number (for WhatsApp Pass delivery):*" if is_event_bks else "Safaricom M-Pesa Phone Number:*"
+                phone_hlp = "Mobile number to receive instant WhatsApp pass & voting credentials" if is_event_bks else "Mobile number for STK Push prompt"
                 att_phone = st.text_input(phone_lbl, placeholder="07XX XXX XXX", value=def_phone, help=phone_hlp)
 
-                if is_bks_mode:
+                if is_event_bks:
                     st.markdown(f"""
                     <div style="background: rgba(16, 185, 129, 0.15); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -477,7 +478,7 @@ with tab_reg:
                     else:
                         org_tag = f"{att_org.strip()} (Ref: {agm_acc_num.strip()})" if is_agm else att_org.strip()
                         
-                        if is_bks_mode:
+                        if is_event_bks:
                             # Direct complimentary accreditation for Banki Kuu SACCO member
                             sim_tx = f"BKS-ACC-{int(time.time())}"[-10:]
                             ok_t, msg_t, tkt_obj = backend.register_event_ticket(
