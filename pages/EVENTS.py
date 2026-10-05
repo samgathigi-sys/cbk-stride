@@ -26,7 +26,10 @@ except Exception:
 
 from utils import (
     AttendanceBackend,
-    get_eat_now
+    get_eat_now,
+    mask_phone,
+    mask_email,
+    mask_national_id
 )
 
 # ------------------------------------------------------------------------------
@@ -202,6 +205,86 @@ if active_ticket_param:
                 break
     if resolved_tkt:
         st.session_state["pub_active_ticket"] = resolved_tkt
+
+# ==============================================================================
+# DATA PRIVACY & PII MASKING (KENYA DATA PROTECTION ACT 2019 COMPLIANCE)
+# ==============================================================================
+def render_agm_pii_compliance_bar(tab_context: str = "reg"):
+    """
+    Renders institutional Kenya Data Protection Act 2019 compliance bar
+    with Role-Based Access Control (RBAC) to unlock full unmasked PII.
+    """
+    is_unlocked = st.session_state.get("agm_pii_unlocked", False)
+    auth_officer = st.session_state.get("agm_pii_officer", None)
+
+    # Auto-relock after 15 minutes of inactivity
+    auth_ts = st.session_state.get("agm_pii_auth_time", 0)
+    if is_unlocked and auth_ts > 0 and (time.time() - auth_ts > 900):
+        st.session_state["agm_pii_unlocked"] = False
+        st.session_state["agm_pii_officer"] = None
+        is_unlocked = False
+        auth_officer = None
+
+    if is_unlocked and auth_officer:
+        c1, c2 = st.columns([3, 1])
+        with c1:
+            st.markdown(f"""
+            <div style="background: rgba(16, 185, 129, 0.15); border: 1.5px solid #10B981; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px;">
+                <span style="color: #34D399; font-weight: 800; font-size: 0.85rem;">🔓 PII UNMASKED (KENYA DPA 2019 COMPLIANT SESSION)</span>
+                <div style="color: #CBD5E1; font-size: 0.76rem; margin-top: 2px;">
+                    Active Officer: <strong>{auth_officer.get('full_name')}</strong> ({auth_officer.get('role')}) • Access logged to forensic audit trail (15-min auto-relock active).
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        with c2:
+            if st.button("🔒 Re-Lock PII Masking", key=f"btn_relock_pii_{tab_context}", use_container_width=True):
+                st.session_state["agm_pii_unlocked"] = False
+                st.session_state["agm_pii_officer"] = None
+                st.rerun()
+    else:
+        st.markdown("""
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1.5px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.2rem;">🛡️</span>
+                <div>
+                    <span style="color: #34D399; font-weight: 800; font-size: 0.85rem;">KENYA DATA PROTECTION ACT 2019 — PII ENFORCEMENT ACTIVE</span>
+                    <div style="font-size: 0.74rem; color: #94A3B8;">
+                        Personal phone numbers and institutional emails are masked by default (ODPC § 25 Compliance).
+                    </div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        with st.expander("🔑 Authorized Secretariat Officer? Tap to Unlock Full Unmasked PII", expanded=False):
+            sec_col1, sec_col2, sec_col3 = st.columns([1.2, 1.2, 1])
+            with sec_col1:
+                sec_sid = st.text_input("Officer Staff ID:*", placeholder="e.g. CBK-3428", key=f"sec_sid_{tab_context}")
+            with sec_col2:
+                sec_passkey = st.text_input("Security Passkey:*", type="password", key=f"sec_pkey_{tab_context}")
+            with sec_col3:
+                st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+                if st.button("🔓 Authenticate & Reveal", type="primary", use_container_width=True, key=f"btn_auth_pii_{tab_context}"):
+                    if not sec_sid.strip() or not sec_passkey.strip():
+                        st.error("Please enter both Staff ID and Passkey.")
+                    else:
+                        ok_auth, msg_auth, officer_data = backend.authenticate_officer(sec_sid.strip(), sec_passkey.strip())
+                        if ok_auth and officer_data:
+                            st.session_state["agm_pii_unlocked"] = True
+                            st.session_state["agm_pii_officer"] = officer_data
+                            st.session_state["agm_pii_auth_time"] = time.time()
+                            backend.log_audit_event(
+                                staff_id=officer_data["staff_id"],
+                                officer_name=officer_data["full_name"],
+                                role=officer_data["role"],
+                                action_type="PII_ROSTER_UNMASKED",
+                                resource_name="EVT-BANKI-KUU-SACCO",
+                                notes=f"Officer unmasked PII in {tab_context}"
+                            )
+                            st.success(f"✅ Verified: {officer_data['full_name']} ({officer_data['role']}). Full PII revealed.")
+                            st.rerun()
+                        else:
+                            st.error(msg_auth)
 
 # ------------------------------------------------------------------------------
 # MAIN PORTAL TABS
@@ -848,6 +931,15 @@ Scan URL: {verify_qr_data}"""
             }
             df_show.rename(columns=rename_map, inplace=True)
 
+            # Institutional PII Enforcement (Kenya Data Protection Act 2019)
+            render_agm_pii_compliance_bar(tab_context="tab_reg")
+
+            if not st.session_state.get("agm_pii_unlocked", False):
+                if "Phone Number" in df_show.columns:
+                    df_show["Phone Number"] = df_show["Phone Number"].apply(mask_phone)
+                if "Email Address" in df_show.columns:
+                    df_show["Email Address"] = df_show["Email Address"].apply(mask_email)
+
             search_query = st.text_input("🔍 Search Live Roster (by Name, Account Ref, or Role):", placeholder="e.g. Samuel Gathigi / SACCO-3428 / Board Director", key=f"srch_roster_{selected_event['event_id']}")
             if search_query.strip():
                 q = search_query.strip().lower()
@@ -877,6 +969,40 @@ Scan URL: {verify_qr_data}"""
                 </div>
             </div>
             """, unsafe_allow_html=True)
+
+            # Export live accredited member roster with ODPC § 25 Compliance
+            csv_roster = df_show.to_csv(index=False).encode('utf-8')
+            is_unmasked_tab1 = st.session_state.get("agm_pii_unlocked", False)
+            def _log_roster_csv_export():
+                if st.session_state.get("agm_pii_unlocked", False):
+                    off = st.session_state.get("agm_pii_officer", {})
+                    backend.log_audit_event(
+                        staff_id=off.get("staff_id", "CBK-3428"),
+                        officer_name=off.get("full_name", "Secretariat Officer"),
+                        role=off.get("role", "Secretariat"),
+                        action_type="PII_CSV_EXPORT_UNMASKED",
+                        resource_name=selected_event['event_id'],
+                        notes=f"Exported UNMASKED live accredited member roster CSV ({len(df_show)} records)"
+                    )
+                else:
+                    backend.log_audit_event(
+                        staff_id="PUBLIC_AUDITORIUM",
+                        officer_name="Auditorium Display / Member",
+                        role="Public Delegate",
+                        action_type="PII_CSV_EXPORT_MASKED",
+                        resource_name=selected_event['event_id'],
+                        notes=f"Exported Kenya DPA 2019 MASKED live accredited member roster CSV ({len(df_show)} records)"
+                    )
+
+            st.download_button(
+                label="📥 Download Official Accredited Member Roster (.csv)" if is_unmasked_tab1 else "📥 Download Kenya DPA 2019 Masked Roster (.csv)",
+                data=csv_roster,
+                file_name=f"Accredited_Roster_{selected_event['event_id']}{'_UNMASKED' if is_unmasked_tab1 else '_MASKED'}.csv",
+                mime="text/csv",
+                use_container_width=True,
+                on_click=_log_roster_csv_export,
+                key=f"dl_roster_csv_{selected_event['event_id']}"
+            )
 
 # ==============================================================================
 # TAB 2: EVENT CREATOR WIZARD (FOR ORGANIZERS & CORPORATES)
@@ -1805,35 +1931,99 @@ with tab_verify:
             if not event_tickets:
                 st.info("No tickets registered for this event yet.")
             else:
+                # Institutional PII Enforcement (Kenya Data Protection Act 2019)
+                render_agm_pii_compliance_bar(tab_context="tab_verify")
+
+                df_raw_tkts = pd.DataFrame(event_tickets)
+
                 if is_roster_agm:
-                    df_tkt_show = pd.DataFrame(event_tickets)[[
+                    show_cols_v = [
                         "ticket_id", "attendee_name", "organization", "ticket_tier",
-                        "mpesa_trans_id", "gate_status", "checkin_time"
-                    ]].copy()
+                        "phone", "email", "mpesa_trans_id", "gate_status", "checkin_time"
+                    ]
+                    avail_cols_v = [c for c in show_cols_v if c in df_raw_tkts.columns]
+                    df_tkt_show = df_raw_tkts[avail_cols_v].copy()
                     df_tkt_show.rename(columns={
                         "ticket_id": "Pass Serial ID",
                         "attendee_name": "Delegate Name",
                         "organization": "Department / Branch",
                         "ticket_tier": "Accreditation Tier",
+                        "phone": "Phone Number",
+                        "email": "Email Address",
                         "mpesa_trans_id": "Clearance Ref",
                         "gate_status": "Gate Status",
                         "checkin_time": "Check-in Timestamp"
                     }, inplace=True)
                 else:
-                    df_tkt_show = pd.DataFrame(event_tickets)[[
+                    show_cols_std = [
                         "ticket_id", "attendee_name", "organization", "ticket_tier",
-                        "amount_paid", "mpesa_trans_id", "gate_status", "checkin_time"
-                    ]].copy()
+                        "amount_paid", "phone", "email", "mpesa_trans_id", "gate_status", "checkin_time"
+                    ]
+                    avail_cols_std = [c for c in show_cols_std if c in df_raw_tkts.columns]
+                    df_tkt_show = df_raw_tkts[avail_cols_std].copy()
+                    df_tkt_show.rename(columns={
+                        "ticket_id": "Ticket Serial ID",
+                        "attendee_name": "Attendee Name",
+                        "organization": "Organization",
+                        "ticket_tier": "Tier",
+                        "amount_paid": "Amount Paid (KES)",
+                        "phone": "Phone Number",
+                        "email": "Email Address",
+                        "mpesa_trans_id": "M-Pesa Receipt Ref",
+                        "gate_status": "Gate Status",
+                        "checkin_time": "Check-in Timestamp"
+                    }, inplace=True)
+
+                # Kenya Data Protection Act 2019 Masking
+                is_unmasked = st.session_state.get("agm_pii_unlocked", False)
+                if not is_unmasked:
+                    if "Phone Number" in df_tkt_show.columns:
+                        df_tkt_show["Phone Number"] = df_tkt_show["Phone Number"].apply(mask_phone)
+                    if "Email Address" in df_tkt_show.columns:
+                        df_tkt_show["Email Address"] = df_tkt_show["Email Address"].apply(mask_email)
+
+                # Gate Usher Table Search Filter
+                srch_gate = st.text_input("🔍 Filter Gate Accreditation Register:", placeholder="Filter by name, pass ID, or clearance ref...", key=f"srch_gate_{target_eid}")
+                if srch_gate.strip():
+                    qg = srch_gate.strip().lower()
+                    df_tkt_show = df_tkt_show[
+                        df_tkt_show.apply(lambda r: any(qg in str(v).lower() for v in r.values), axis=1)
+                    ]
+
                 st.dataframe(df_tkt_show, use_container_width=True, hide_index=True)
 
-                # Export accreditation register
+                # Export accreditation register with ODPC § 25 Compliance
                 csv_data = df_tkt_show.to_csv(index=False).encode('utf-8')
+                def _log_gate_csv_export():
+                    if st.session_state.get("agm_pii_unlocked", False):
+                        off = st.session_state.get("agm_pii_officer", {})
+                        backend.log_audit_event(
+                            staff_id=off.get("staff_id", "CBK-3428"),
+                            officer_name=off.get("full_name", "Secretariat Officer"),
+                            role=off.get("role", "Secretariat"),
+                            action_type="PII_CSV_EXPORT_UNMASKED",
+                            resource_name=target_eid,
+                            notes=f"Exported UNMASKED accreditation CSV register ({len(df_tkt_show)} records)"
+                        )
+                    else:
+                        backend.log_audit_event(
+                            staff_id="PUBLIC_TERMINAL",
+                            officer_name="Gate Usher / Public Terminal",
+                            role="Gate Usher",
+                            action_type="PII_CSV_EXPORT_MASKED",
+                            resource_name=target_eid,
+                            notes=f"Exported Kenya DPA 2019 MASKED accreditation CSV register ({len(df_tkt_show)} records)"
+                        )
+
+                dl_label = "📥 Download Official Statutory Accreditation Register (.csv)" if is_unmasked else "📥 Download Kenya DPA 2019 Masked Register (.csv)"
                 st.download_button(
-                    label="📥 Download Official Statutory Accreditation Register (.csv)",
+                    label=dl_label,
                     data=csv_data,
-                    file_name=f"Accreditation_Register_{target_eid}.csv",
+                    file_name=f"Accreditation_Register_{target_eid}{'_UNMASKED' if is_unmasked else '_MASKED'}.csv",
                     mime="text/csv",
-                    use_container_width=True
+                    use_container_width=True,
+                    on_click=_log_gate_csv_export,
+                    key=f"dl_tkt_csv_{target_eid}"
                 )
 
 # ==============================================================================
