@@ -693,6 +693,16 @@ if mode_param in ["tester", "demo", "sandbox"] or sandbox_param in ["1", "true",
     except Exception:
         pass
 
+# Direct routing for Banki Kuu SACCO AGM portal
+sacco_param = qp.get("sacco", "").lower()
+bks_param = qp.get("bks", "").lower()
+portal_param = qp.get("portal", "").lower()
+if sacco_param in ["1", "true", "yes"] or bks_param in ["1", "true", "yes"] or portal_param in ["sacco", "bks"] or "bks" in qp or "sacco" in qp:
+    try:
+        st.switch_page("pages/BKS.py")
+    except Exception:
+        pass
+
 is_sandbox = False
 
 def get_active_portal_url() -> str:
@@ -754,6 +764,27 @@ st.markdown(f"""
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# ------------------------------------------------------------------------------
+# PROMINENT 1-CLICK SACCO AGM PORTAL SWITCHER BANNER
+# ------------------------------------------------------------------------------
+c_sacco_ban1, c_sacco_ban2 = st.columns([3.2, 1.2])
+with c_sacco_ban1:
+    st.markdown("""
+    <div style="background: rgba(245,197,66,0.12); border: 1.5px solid #F5C542; border-radius: 12px; padding: 10px 16px; margin: 8px 0; box-shadow: 0 0 15px rgba(245,197,66,0.2);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.4rem;">🏦</span>
+            <div>
+                <span style="color: #F5C542; font-weight: 900; font-size: 0.98rem; letter-spacing: -0.2px;">Banki Kuu Staff SACCO — 58th AGM & Board Elections Portal</span>
+                <div style="color: #CBD5E1; font-size: 0.76rem;">SASRA Quorum Floor Telemetry • Kenya DPA 2019 Privacy Masking • Decoupled Secret Ballot</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+with c_sacco_ban2:
+    st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+    if st.button("🏛️ Open SACCO AGM Portal →", key="btn_top_open_sacco_portal", use_container_width=True):
+        st.switch_page("pages/BKS.py")
 
 # ==============================================================================
 # 18 CANONICAL CBK SPORTING DISCIPLINES (STRICT ALPHABETICAL ORDER A TO Z)
