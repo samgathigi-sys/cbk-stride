@@ -963,6 +963,25 @@ with c_hdr_login:
                 else:
                     st.error("Please enter Staff ID and Passkey.")
 
+            st.markdown("<div style='font-size: 0.76rem; color: #00F2FE; font-weight: 800; margin-top: 8px;'>⚡ 1-Tap Demo Clearance:</div>", unsafe_allow_html=True)
+            c_p_q1, c_p_q2 = st.columns(2)
+            with c_p_q1:
+                if st.button("👤 Samuel (IT)", key="btn_q_gathigi_pop", use_container_width=True):
+                    ok_p, msg_p, off_p = backend.authenticate_officer("CBK-3428", "3428")
+                    if ok_p and off_p:
+                        st.session_state["authenticated_officer"] = off_p
+                        st.session_state["admin_exports_unlocked"] = True
+                        st.session_state["officer_auth_time"] = time.time()
+                        st.rerun()
+            with c_p_q2:
+                if st.button("♟️ Ogola (Chess)", key="btn_q_ogola_pop", use_container_width=True):
+                    ok_p, msg_p, off_p = backend.authenticate_officer("CBK-3366", "3366")
+                    if ok_p and off_p:
+                        st.session_state["authenticated_officer"] = off_p
+                        st.session_state["admin_exports_unlocked"] = True
+                        st.session_state["officer_auth_time"] = time.time()
+                        st.rerun()
+
             st.markdown("---")
             st.caption("🛡️ **Institutional Governance:** Officer roles are strictly pre-appointed by the Sports Club Chairman (Mr. Angwenyi) or Secretariat Administration via *Integration & Settings*. Unaccredited staff cannot access administrative or financial portals.")
             st.markdown("🧪 *Looking for the evaluator test-drive sandbox?* [Open STRIDE™ Demo Portal](/DEMO)")
@@ -1035,14 +1054,14 @@ tab_titles = ["📋 Captain's Roll Call", "📱 Mobile Check-In", "🏷️ Capta
 
 if cur_officer:
     officer_role = cur_officer.get("role", "")
-    if officer_role in ["Super Admin", "Secretariat Admin", "Executive Chairman"]:
+    if officer_role in ["Super Admin", "Secretariat Admin", "Executive Chairman"] or "Chess Lead" in officer_role or "Secretariat Admin" in officer_role:
         tab_titles.extend([
             "🏛️ Secretariat Operations",
             "📊 HR Analytics Command",
             "💰 Finance & Audit Portal",
             "⚙️ Integration & Settings"
         ])
-    elif officer_role in ["Secretariat Officer", "Secretariat Operations"]:
+    elif officer_role in ["Secretariat Officer", "Secretariat Operations"] or "Chess" in officer_role or "Captain" in officer_role:
         tab_titles.extend([
             "🏛️ Secretariat Operations",
             "📊 HR Analytics Command",
@@ -2803,11 +2822,45 @@ def render_tab_captains_roll_call():
 
             with cap_sub_tab1:
                 st.markdown("#### 🔑 Team Captain Sign-In (Discipline Access Shield)")
+
+                # Quick 1-Tap Login Shortcuts for Captains
+                st.markdown("<div style='font-size: 0.78rem; color: #00F2FE; font-weight: 800; margin-bottom: 6px;'>⚡ 1-Tap Captain Sign-In:</div>", unsafe_allow_html=True)
+                c_qcap1, c_qcap2 = st.columns(2)
+                with c_qcap1:
+                    if st.button("⛳ 1-Tap Sign-In: Capt. Samuel Gathigi (Golf)", key="btn_qcap_golf", use_container_width=True):
+                        ok_cap, msg_cap, prof_cap = backend.authenticate_captain_passkey("CBK-3428", "Golf", "3428")
+                        if ok_cap:
+                            st.session_state["authenticated_captain"] = prof_cap
+                            st.session_state["active_discipline"] = "Golf"
+                            st.session_state["show_first_time_setup"] = False
+                            st.rerun()
+                with c_qcap2:
+                    if st.button("♟️ 1-Tap Sign-In: Capt. Andrew Ogola (Chess)", key="btn_qcap_chess", use_container_width=True):
+                        ok_cap, msg_cap, prof_cap = backend.authenticate_captain_passkey("CBK-3366", "Chess", "3366")
+                        if ok_cap:
+                            st.session_state["authenticated_captain"] = prof_cap
+                            st.session_state["active_discipline"] = "Chess"
+                            st.session_state["show_first_time_setup"] = False
+                            st.rerun()
+
+                st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+
+                # Query param detection
+                default_sport_idx = 0
+                qp_disc = st.query_params.get("discipline") or st.query_params.get("sport")
+                if qp_disc:
+                    for sp_i, sp_name in enumerate(ALL_18_SPORTS):
+                        if qp_disc.strip().lower() in sp_name.lower():
+                            default_sport_idx = sp_i
+                            break
+
+                qp_sid = st.query_params.get("staff_id") or st.query_params.get("sid") or ""
+
                 c_cap_l1, c_cap_l2, c_cap_l3 = st.columns([1.2, 1.1, 1.2])
                 with c_cap_l1:
-                    cap_sel_sport = st.selectbox("Select Your Sport Discipline:", ALL_18_SPORTS, key="cap_in_sport")
+                    cap_sel_sport = st.selectbox("Select Your Sport Discipline:", ALL_18_SPORTS, index=default_sport_idx, key="cap_in_sport")
                 with c_cap_l2:
-                    cap_in_sid = st.text_input("Staff ID / Payroll #:", placeholder="e.g. 3428 or CBK-3428", key="cap_in_sid")
+                    cap_in_sid = st.text_input("Staff ID / Payroll #:", value=qp_sid, placeholder="e.g. 3428 or CBK-3366", key="cap_in_sid")
                 with c_cap_l3:
                     cap_in_pass = st.text_input("Secret Captain Passkey:", type="password", placeholder="Enter secret passkey", key="cap_in_pass")
 
@@ -2825,7 +2878,7 @@ def render_tab_captains_roll_call():
                         ok_cap, msg_cap, prof_cap = backend.authenticate_captain_passkey(cap_in_sid, cap_sel_sport, cap_in_pass)
                         if ok_cap:
                             st.session_state["authenticated_captain"] = prof_cap
-                            st.session_state["active_discipline"] = cap_sel_sport
+                            st.session_state["active_discipline"] = prof_cap.get("discipline", cap_sel_sport)
                             st.session_state["show_first_time_setup"] = False
                             st.success(msg_cap)
                             st.balloons()
