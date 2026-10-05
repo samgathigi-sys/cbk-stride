@@ -46,57 +46,198 @@ except Exception:
     pass
 
 # ------------------------------------------------------------------------------
-# LUXURY CSS THEME (ROYAL NAVY, GOLD & CYAN GLASSMORPHISM)
+# 7 DYNAMIC EXECUTIVE SKINS (TAILORED FOR BROAD DIVERSITY OF SACCO STAKEHOLDERS)
 # ------------------------------------------------------------------------------
-st.markdown("""
+BKS_SKINS = {
+    "sovereign_gold": {
+        "name": "🏛️ Sovereign Central Bank (Midnight & Gold)",
+        "audience": "Board of Directors & Central Bank Executives",
+        "desc": "Official Central Bank institutional aesthetic with 24K Championship Gold accents and Midnight Navy glassmorphism.",
+        "bg": "radial-gradient(circle at 50% -20%, #061B33 0%, #020712 100%)",
+        "card_bg": "linear-gradient(135deg, rgba(7, 25, 51, 0.85) 0%, rgba(3, 13, 28, 0.98) 100%)",
+        "border_color": "rgba(245, 197, 66, 0.35)",
+        "accent_primary": "#F5C542",
+        "accent_secondary": "#00F2FE",
+        "text_main": "#F8FAFC",
+        "text_sub": "#94A3B8",
+        "kpi_border": "#F5C542",
+        "font_family": "'Plus Jakarta Sans', -apple-system, sans-serif",
+        "btn_bg": "linear-gradient(135deg, #F5C542 0%, #D4AF37 100%)",
+        "btn_text": "#020712"
+    },
+    "emerald_coop": {
+        "name": "🌿 Co-operative Emerald (Movement Heritage)",
+        "audience": "Co-operative Delegates & Agricultural Assemblies",
+        "desc": "Deep forest emerald greens, agricultural prosperity, and gold coin highlights honoring SACCO heritage.",
+        "bg": "radial-gradient(circle at 50% -20%, #064E3B 0%, #021B14 100%)",
+        "card_bg": "linear-gradient(135deg, rgba(6, 78, 59, 0.75) 0%, rgba(2, 27, 20, 0.96) 100%)",
+        "border_color": "rgba(52, 211, 153, 0.45)",
+        "accent_primary": "#10B981",
+        "accent_secondary": "#F59E0B",
+        "text_main": "#ECFDF5",
+        "text_sub": "#A7F3D0",
+        "kpi_border": "#10B981",
+        "font_family": "'Plus Jakarta Sans', -apple-system, sans-serif",
+        "btn_bg": "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+        "btn_text": "#FFFFFF"
+    },
+    "senior_clarity": {
+        "name": "👓 Senior Delegate Clarity (High-Contrast / Large Print)",
+        "audience": "Retirees, Pension Delegates & Bright Auditoriums",
+        "desc": "Daylight pure off-white with bold deep navy typography, thick borders, and zero glare for effortless readability.",
+        "bg": "linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 100%)",
+        "card_bg": "#FFFFFF",
+        "border_color": "#94A3B8",
+        "accent_primary": "#1E40AF",
+        "accent_secondary": "#B45309",
+        "text_main": "#0F172A",
+        "text_sub": "#334155",
+        "kpi_border": "#1E40AF",
+        "font_family": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+        "btn_bg": "#1E40AF",
+        "btn_text": "#FFFFFF"
+    },
+    "fintech_neon": {
+        "name": "⚡ Fintech Neo-Bank (Digital Youth Generation)",
+        "audience": "Tech-Forward Members & Mobile-First Generation",
+        "desc": "Dark obsidian with neon purple, ultraviolet cyan, and luminous border glows for next-gen members.",
+        "bg": "radial-gradient(circle at 50% -20%, #1E1035 0%, #0A0414 100%)",
+        "card_bg": "linear-gradient(135deg, rgba(30, 16, 53, 0.88) 0%, rgba(10, 4, 20, 0.98) 100%)",
+        "border_color": "rgba(168, 85, 247, 0.5)",
+        "accent_primary": "#A855F7",
+        "accent_secondary": "#06B6D4",
+        "text_main": "#FAF5FF",
+        "text_sub": "#D8B4FE",
+        "kpi_border": "#A855F7",
+        "font_family": "'Plus Jakarta Sans', -apple-system, sans-serif",
+        "btn_bg": "linear-gradient(135deg, #A855F7 0%, #7C3AED 100%)",
+        "btn_text": "#FFFFFF"
+    },
+    "sasra_gazette": {
+        "name": "📜 SASRA Regulatory Gazette (Editorial / Legal)",
+        "audience": "Statutory Auditors, Lawyers & Returning Officers",
+        "desc": "Official archival parchment paper, deep burgundy seals, and classic editorial typography for statutory governance.",
+        "bg": "linear-gradient(180deg, #FAF7F2 0%, #F5EFEB 100%)",
+        "card_bg": "#FFFFFF",
+        "border_color": "#D6C7B2",
+        "accent_primary": "#831843",
+        "accent_secondary": "#92400E",
+        "text_main": "#1C1917",
+        "text_sub": "#57534E",
+        "kpi_border": "#831843",
+        "font_family": "'Georgia', 'Times New Roman', serif",
+        "btn_bg": "linear-gradient(135deg, #831843 0%, #701A75 100%)",
+        "btn_text": "#FFFFFF"
+    },
+    "harambee_sovereign": {
+        "name": "🇰🇪 Harambee Sovereign (Patriotic Unity)",
+        "audience": "All SACCO Members & National Cohesion",
+        "desc": "Kenya national colours (Obsidian, Crimson, Savanna Gold, and Maasai Green) celebrating patriotic shareholder unity.",
+        "bg": "radial-gradient(circle at 50% -20%, #200505 0%, #080808 100%)",
+        "card_bg": "linear-gradient(135deg, rgba(40, 10, 10, 0.9) 0%, rgba(10, 10, 10, 0.98) 100%)",
+        "border_color": "rgba(220, 38, 38, 0.5)",
+        "accent_primary": "#DC2626",
+        "accent_secondary": "#16A34A",
+        "text_main": "#FEF2F2",
+        "text_sub": "#FCA5A5",
+        "kpi_border": "#EAB308",
+        "font_family": "'Plus Jakarta Sans', -apple-system, sans-serif",
+        "btn_bg": "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
+        "btn_text": "#FFFFFF"
+    },
+    "nordic_slate": {
+        "name": "❄️ Nordic Minimalist Slate (Executive Swiss)",
+        "audience": "C-Suite Corporate Governance & Risk Officers",
+        "desc": "Monochrome slate with surgical hairline dividers and iceberg cyan for minimalist executive clarity.",
+        "bg": "linear-gradient(180deg, #0F172A 0%, #020617 100%)",
+        "card_bg": "rgba(15, 23, 42, 0.88)",
+        "border_color": "rgba(148, 163, 184, 0.3)",
+        "accent_primary": "#38BDF8",
+        "accent_secondary": "#94A3B8",
+        "text_main": "#F8FAFC",
+        "text_sub": "#94A3B8",
+        "kpi_border": "#38BDF8",
+        "font_family": "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif",
+        "btn_bg": "linear-gradient(135deg, #0284C7 0%, #0369A1 100%)",
+        "btn_text": "#FFFFFF"
+    }
+}
+
+# Resolve active skin from query parameters or session state
+cur_skin_key = st.query_params.get("skin") or st.session_state.get("bks_skin", "sovereign_gold")
+if cur_skin_key not in BKS_SKINS:
+    cur_skin_key = "sovereign_gold"
+
+skin = BKS_SKINS[cur_skin_key]
+is_light = cur_skin_key in ["senior_clarity", "sasra_gazette"]
+
+# Inject Dynamic Skin CSS
+st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;600;800&display=swap');
     
-    html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
-    }
-    .stApp {
-        background: radial-gradient(circle at 50% -20%, #061B33 0%, #020712 100%) !important;
-        color: #F8FAFC !important;
-    }
-    .kpi-card {
-        background: linear-gradient(135deg, rgba(7, 25, 51, 0.75) 0%, rgba(3, 13, 28, 0.95) 100%);
-        border: 1px solid rgba(245, 197, 66, 0.25);
-        border-left: 4.5px solid #F5C542;
+    html, body, [class*="css"] {{
+        font-family: {skin['font_family']} !important;
+    }}
+    .stApp {{
+        background: {skin['bg']} !important;
+        color: {skin['text_main']} !important;
+    }}
+    h1, h2, h3, h4, h5, h6 {{
+        color: {skin['text_main']} !important;
+    }}
+    p, span, label, div {{
+        color: {skin['text_main'] if not is_light else '#0F172A'};
+    }}
+    .kpi-card {{
+        background: {skin['card_bg']} !important;
+        border: 1.5px solid {skin['border_color']} !important;
+        border-left: 5px solid {skin['kpi_border']} !important;
         border-radius: 12px;
         padding: 14px 18px;
         margin-bottom: 12px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-    .kpi-title {
-        font-size: 0.72rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }}
+    .kpi-title {{
+        font-size: 0.74rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1.2px;
-        color: #94A3B8;
-    }
-    .kpi-value {
-        font-size: 1.65rem;
+        color: {skin['text_sub']} !important;
+    }}
+    .kpi-value {{
+        font-size: 1.75rem;
         font-weight: 900;
         margin: 4px 0 2px 0;
-        color: #FFFFFF;
-    }
-    .kpi-sub {
+        color: {skin['accent_primary']} !important;
+    }}
+    .kpi-sub {{
         font-size: 0.78rem;
-        color: #CBD5E1;
-    }
-    .event-card {
-        background: rgba(8, 24, 48, 0.7);
-        border: 1.5px solid rgba(0, 242, 254, 0.3);
+        color: {skin['text_sub']} !important;
+    }}
+    .event-card {{
+        background: {skin['card_bg']} !important;
+        border: 1.5px solid {skin['border_color']} !important;
         border-radius: 14px;
         padding: 18px;
         margin-bottom: 16px;
-    }
-    .stButton>button {
+    }}
+    .stButton>button {{
         border-radius: 8px !important;
         font-weight: 800 !important;
+        background: {skin['btn_bg']} !important;
+        color: {skin['btn_text']} !important;
+        border: none !important;
         transition: all 0.2s ease-in-out !important;
-    }
+    }}
+    .stTabs [data-baseweb="tab"] {{
+        color: {skin['text_sub']} !important;
+        font-weight: 700 !important;
+    }}
+    .stTabs [aria-selected="true"] {{
+        color: {skin['accent_primary']} !important;
+        border-bottom-color: {skin['accent_primary']} !important;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -118,21 +259,21 @@ if is_bks_mode:
     param_event_id = "EVT-BANKI-KUU-SACCO"
 
 # ------------------------------------------------------------------------------
-# TOP GLOBAL NAVIGATION BAR
+# TOP GLOBAL NAVIGATION BAR & 7-SKIN CHANGER
 # ------------------------------------------------------------------------------
 if is_bks_mode:
-    c_nav1, c_nav2 = st.columns([2.2, 1.1])
+    c_nav1, c_nav2 = st.columns([2.3, 1.1])
     with c_nav1:
         st.markdown(f"""
         <div style="display: flex; align-items: center; gap: 14px; padding: 10px 0;">
-            <div style="background: linear-gradient(135deg, #F5C542 0%, #D4AF37 50%, #996515 100%); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; box-shadow: 0 4px 18px rgba(245,197,66,0.4);">
+            <div style="background: {skin['btn_bg']}; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; box-shadow: 0 4px 18px rgba(0,0,0,0.3);">
                 🏦
             </div>
             <div>
-                <h2 style="margin: 0; font-size: 1.45rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.5px;">
-                    Banki Kuu SACCO <span style="font-weight: 500; color: #F5C542; font-size: 1rem;">| Shareholder Accreditation & E-Voting Portal</span>
+                <h2 style="margin: 0; font-size: 1.45rem; font-weight: 900; color: {skin['text_main']}; letter-spacing: -0.5px;">
+                    Banki Kuu SACCO <span style="font-weight: 600; color: {skin['accent_primary']}; font-size: 1rem;">| Shareholder Accreditation & E-Voting Portal</span>
                 </h2>
-                <div style="font-size: 0.78rem; color: #94A3B8;">
+                <div style="font-size: 0.78rem; color: {skin['text_sub']};">
                     Central Bank of Kenya Staff SACCO Society Ltd. • 58th AGM & Board Elections • KICC Main Auditorium
                 </div>
             </div>
@@ -142,14 +283,43 @@ if is_bks_mode:
     with c_nav2:
         st.markdown(f"""
         <div style="text-align: right; margin-top: 8px;">
-            <span style="background: rgba(245, 197, 66, 0.15); border: 1.5px solid #F5C542; color: #F5C542; padding: 5px 14px; border-radius: 20px; font-size: 0.76rem; font-weight: 900; letter-spacing: 0.5px; box-shadow: 0 0 12px rgba(245,197,66,0.2);">
-                👑 BANKI KUU SACCO LIVE PORTAL
+            <span style="background: rgba(0,0,0,0.2); border: 1.5px solid {skin['accent_primary']}; color: {skin['accent_primary']}; padding: 5px 14px; border-radius: 20px; font-size: 0.76rem; font-weight: 900; letter-spacing: 0.5px;">
+                👑 58th AGM LIVE PORTAL
             </span>
-            <div style="font-size: 0.72rem; color: #64748B; margin-top: 4px;">
-                <span style="color: #94A3B8;">Central Bank of Kenya</span> • <a href="/DEMO" style="color: #00F2FE; text-decoration: none;">🧪 Evaluator Sandbox</a>
+            <div style="font-size: 0.72rem; color: {skin['text_sub']}; margin-top: 4px;">
+                <span>Central Bank of Kenya</span> • <a href="/DEMO" style="color: {skin['accent_secondary']}; text-decoration: none;">🧪 Evaluator Sandbox</a>
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+    # --------------------------------------------------------------------------
+    # ELEGANT 7-SKIN CHANGER CONTROL BAR
+    # --------------------------------------------------------------------------
+    with st.expander(f"🎨 Theme Persona: **{skin['name']}** *(Click to Switch 7 Board Skins)*", expanded=False):
+        c_sk1, c_sk2 = st.columns([1.5, 3.5])
+        with c_sk1:
+            st.markdown(f"<div style='font-size: 0.82rem; font-weight: 800; color: {skin['accent_primary']}; margin-top: 4px;'>Select Stakeholder Skin:</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='font-size: 0.75rem; color: {skin['text_sub']};'><i>Targeted for: {skin['audience']}</i></div>", unsafe_allow_html=True)
+        with c_sk2:
+            skin_keys = list(BKS_SKINS.keys())
+            skin_labels = [BKS_SKINS[k]["name"] for k in skin_keys]
+            cur_idx = skin_keys.index(cur_skin_key) if cur_skin_key in skin_keys else 0
+            sel_label = st.selectbox(
+                "Executive Theme:",
+                skin_labels,
+                index=cur_idx,
+                key="bks_skin_selector",
+                label_visibility="collapsed"
+            )
+            picked_key = skin_keys[skin_labels.index(sel_label)]
+            if picked_key != cur_skin_key:
+                st.session_state["bks_skin"] = picked_key
+                st.query_params["skin"] = picked_key
+                st.rerun()
+
+        st.caption(f"💡 **About This Skin:** {skin['desc']}")
+        st.markdown("---")
+
 else:
     c_nav1, c_nav2 = st.columns([2, 1.2])
     with c_nav1:
