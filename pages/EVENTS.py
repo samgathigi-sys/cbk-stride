@@ -190,6 +190,10 @@ active_ticket_param = (
     or st.query_params.get("tkt")
     or st.query_params.get("vote_tkt")
     or st.query_params.get("verify_tkt")
+    or st.query_params.get("staff_id")
+    or st.query_params.get("sid")
+    or st.query_params.get("member_id")
+    or st.query_params.get("name")
 )
 if active_ticket_param:
     clean_tparam = active_ticket_param.strip()
@@ -197,10 +201,15 @@ if active_ticket_param:
     # Query database to resolve delegate profile
     resolved_tkt = backend.get_ticket_by_id(clean_tparam)
     if not resolved_tkt:
-        # Search by mpesa_trans_id, ref code, or partial ID
+        # Search by mpesa_trans_id, ref code, name, staff id, or partial ID
         all_sac_tkts = backend.get_tickets_by_event("EVT-BANKI-KUU-SACCO")
+        ct_up = clean_tparam.upper()
         for t in all_sac_tkts:
-            if clean_tparam.upper() in t.get("ticket_id", "").upper() or clean_tparam.upper() in t.get("mpesa_trans_id", "").upper():
+            if (ct_up in t.get("ticket_id", "").upper()
+                or ct_up in t.get("mpesa_trans_id", "").upper()
+                or ct_up in t.get("attendee_name", "").upper()
+                or ct_up in t.get("organization", "").upper()
+                or (ct_up in ["3366", "CBK-3366", "OGOLA", "ANDREW OGOLA"] and "3366" in t.get("ticket_id", ""))):
                 resolved_tkt = t
                 break
     if resolved_tkt:
@@ -806,18 +815,35 @@ with tab_reg:
                 </div>
                 """, unsafe_allow_html=True)
 
-                if st.button("⚡ Quick Demo: Load Sample Accredited Pass", use_container_width=True, key="btn_quick_demo_pass"):
-                    st.session_state["pub_active_ticket"] = {
-                        "ticket_id": "TKT-BK-342801",
-                        "attendee_name": "Samuel Gathigi Njuguna",
-                        "organization": "Banki Kuu SACCO — Governor's Secretariat",
-                        "ticket_tier": "Principal Shareholder / Voting Member",
-                        "amount_paid": 0.0,
-                        "mpesa_trans_id": "BKS-ACC-342801",
-                        "gate_status": "REGISTERED"
-                    }
-                    st.session_state["pub_active_event"] = selected_event
-                    st.rerun()
+                c_dem1, c_dem2 = st.columns(2)
+                with c_dem1:
+                    if st.button("⚡ Quick Demo: Samuel Gathigi", use_container_width=True, key="btn_quick_demo_pass"):
+                        st.session_state["pub_active_ticket"] = {
+                            "ticket_id": "TKT-BK-342801",
+                            "attendee_name": "Samuel Gathigi Njuguna",
+                            "organization": "Banki Kuu SACCO — Governor's Secretariat",
+                            "ticket_tier": "Principal Shareholder / Voting Member",
+                            "amount_paid": 0.0,
+                            "mpesa_trans_id": "BKS-ACC-342801",
+                            "gate_status": "REGISTERED"
+                        }
+                        st.session_state["pub_active_event"] = selected_event
+                        st.rerun()
+                with c_dem2:
+                    if st.button("♟️ Quick Demo: Andrew Ogola (Chess)", use_container_width=True, key="btn_quick_demo_ogola"):
+                        st.session_state["pub_active_ticket"] = {
+                            "ticket_id": "TKT-BK-3366",
+                            "attendee_name": "Andrew Ogola",
+                            "email": "aogola@centralbank.go.ke",
+                            "phone": "0726103890",
+                            "organization": "Banki Kuu Staff SACCO (IT & Digital Services — Ref:SACCO-3366 / Chess Captain)",
+                            "ticket_tier": "Principal Voting Shareholder",
+                            "amount_paid": 0.0,
+                            "mpesa_trans_id": "BK3366",
+                            "gate_status": "REGISTERED"
+                        }
+                        st.session_state["pub_active_event"] = selected_event
+                        st.rerun()
             else:
                 st.markdown("#### 🎟️ Digital Mobile Pass")
                 t_tx = cur_ticket["mpesa_trans_id"]
@@ -2103,7 +2129,7 @@ with tab_ballot:
                 
                 if is_bks_mode and not eval_mode:
                     st.markdown("<div style='font-size: 0.78rem; color: #00F2FE; font-weight: 800; margin-bottom: 6px;'>💡 Quick Demo Voters:</div>", unsafe_allow_html=True)
-                    c_vb1, c_vb2, c_vb3 = st.columns(3)
+                    c_vb1, c_vb2, c_vb3, c_vb4 = st.columns(4)
                     with c_vb1:
                         if st.button("👤 Samuel (IT)", key="btn_vote_sam", use_container_width=True):
                             st.session_state["active_ticket_id"] = "TKT-BK-342801"
@@ -2115,6 +2141,10 @@ with tab_ballot:
                     with c_vb3:
                         if st.button("👤 Capt. Geoffrey", key="btn_vote_geoff", use_container_width=True):
                             st.session_state["active_ticket_id"] = "TKT-BK-342803"
+                            st.rerun()
+                    with c_vb4:
+                        if st.button("♟️ Andrew Ogola (Chess)", key="btn_vote_ogola", use_container_width=True):
+                            st.session_state["active_ticket_id"] = "TKT-BK-3366"
                             st.rerun()
                 
                 sel_tkt = None
@@ -2132,7 +2162,7 @@ with tab_ballot:
                     v_input_tkt = st.text_input(
                         "🔑 Enter Your Confidential Ticket Serial ID / Member Account ID:*",
                         value=default_v_tkt,
-                        placeholder="e.g. TKT-BK-342805 or SACCO-342805",
+                        placeholder="e.g. TKT-BK-342805, TKT-BK-3366, or 3366",
                         help="Enter the Ticket Serial ID printed on your digital pass to unlock your ballot paper."
                     )
                     clean_input = v_input_tkt.strip().upper()
@@ -2140,7 +2170,10 @@ with tab_ballot:
                         sel_tkt = tkt_lookup[clean_input]
                     else:
                         for t in ev_tickets:
-                            if clean_input and (clean_input in t["ticket_id"].upper() or clean_input in t["attendee_name"].upper() or clean_input in t.get("organization","").upper()):
+                            if clean_input and (clean_input in t["ticket_id"].upper()
+                                or clean_input in t["attendee_name"].upper()
+                                or clean_input in t.get("organization","").upper()
+                                or (clean_input in ["3366", "CBK-3366", "OGOLA", "ANDREW OGOLA"] and "3366" in t.get("ticket_id", ""))):
                                 sel_tkt = t
                                 break
 
