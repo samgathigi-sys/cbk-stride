@@ -63,6 +63,61 @@ def render_retreat_badges_ui():
 
     st.markdown("<hr style='border: 0; border-top: 1px solid rgba(222, 172, 48, 0.3); margin: 15px 0 20px 0;'>", unsafe_allow_html=True)
 
+    # Commercial Press-Ready Print Center Section
+    press_dir = os.path.join(base_dir, "PRESS_READY_OUTPUT")
+    duplex_pdf = os.path.join(press_dir, "CBK_MOMBASA_2026_PRESS_READY_BADGES_DUPLEX.pdf")
+    impos_pdf = os.path.join(press_dir, "CBK_MOMBASA_2026_IMPOSITION_SHEETS_4UP.pdf")
+
+    with st.expander("🖨️ Commercial Press-Ready Print Documents (300 DPI Glossy Cardstock Run)", expanded=True):
+        st.markdown("""
+        <div style="background: rgba(2, 6, 14, 0.7); border: 1.5px solid #00F2FE; border-radius: 10px; padding: 14px 18px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h4 style="margin: 0 0 4px 0; color: #FFFFFF; font-size: 1.05rem;">
+                        Commercial Print Shop Package: 60 Executive Delegate Badges
+                    </h4>
+                    <div style="font-size: 0.8rem; color: #CBD5E1;">
+                        Standard 300 DPI High-Resolution • 4-Up Imposition with Crop Marks & Bleed • Duplex Mirror Alignment
+                    </div>
+                </div>
+                <div>
+                    <span style="background: rgba(245, 197, 66, 0.2); border: 1px solid #F5C542; color: #F5C542; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">
+                        GLOSSY CARDSTOCK READY
+                    </span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        pcol1, pcol2 = st.columns(2)
+        with pcol1:
+            if os.path.exists(impos_pdf):
+                with open(impos_pdf, "rb") as f:
+                    pdf_bytes = f.read()
+                st.download_button(
+                    label="📄 Download 4-Up Imposition Sheets (30 Pgs, Crop Marks)",
+                    data=pdf_bytes,
+                    file_name="CBK_MOMBASA_2026_IMPOSITION_SHEETS_4UP_300DPI.pdf",
+                    mime="application/pdf",
+                    key="dl_impos_pdf"
+                )
+                st.caption("Recommended for commercial press operators with guillotine cutting.")
+
+        with pcol2:
+            if os.path.exists(duplex_pdf):
+                with open(duplex_pdf, "rb") as f:
+                    duplex_bytes = f.read()
+                st.download_button(
+                    label="📑 Download 120-Page Duplex Deck (Front & Back 1:1)",
+                    data=duplex_bytes,
+                    file_name="CBK_MOMBASA_2026_PRESS_READY_BADGES_DUPLEX_300DPI.pdf",
+                    mime="application/pdf",
+                    key="dl_duplex_pdf"
+                )
+                st.caption("Recommended for direct duplex card printers (Zebra / Fargo / Evolis).")
+
+    st.markdown("<hr style='border: 0; border-top: 1px solid rgba(222, 172, 48, 0.2); margin: 15px 0 20px 0;'>", unsafe_allow_html=True)
+
     # Filters and Search
     f_col1, f_col2, f_col3 = st.columns([1.5, 2, 2.5])
     with f_col1:
