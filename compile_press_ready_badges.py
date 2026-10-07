@@ -247,37 +247,69 @@ def render_front_badge(participant, token_id, full_hash):
     draw.rounded_rectangle([(px0, py0), (px1, py1)], radius=24, fill=GOLD_PRIMARY, outline=GOLD_LIGHT, width=2)
     draw.text((BADGE_W // 2, py0 + pill_h // 2), role_str, fill=TEXT_DARK, font=f_role, anchor="mm")
     
-    # 5. Dark Glassmorphic Telemetry Data Panel
-    box_y0 = 840
-    box_y1 = 1050
+    # 5. Dark Glassmorphic Telemetry Data Panel with Embedded Front QR Key
+    box_y0 = 835
+    box_y1 = 1060
     draw.rounded_rectangle([(70, box_y0), (BADGE_W - 70, box_y1)], radius=18, fill=COLOR_GLASS_FILL, outline=COLOR_GLASS_BORDER, width=2)
     
-    f_lbl = get_font(15, bold=True)
-    f_val = get_font(18, bold=True)
+    # Generate Tokenized QR Code for this participant
+    payload_data = {
+        "iss": "BANKI_KUU_SACCO",
+        "evt": "MSA_RETREAT_2026",
+        "tid": token_id,
+        "sig": full_hash[:16],
+        "sec": "ODPC_SEC_25",
+        "v": 1
+    }
+    payload_str = json.dumps(payload_data, separators=(',', ':'))
     
-    # Left Column
-    draw.text((110, box_y0 + 32), "DIGITAL TOKEN ID", fill=GRAY_MUTED, font=f_lbl)
-    draw.text((110, box_y0 + 64), token_id, fill=GOLD_LIGHT, font=f_val)
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        box_size=10,
+        border=1,
+    )
+    qr.add_data(payload_str)
+    qr.make(fit=True)
+    qr_img = qr.make_image(fill_color=COLOR_BG_DEEP, back_color=(255, 255, 255)).convert("RGBA")
+    
+    # Left Column: Credential Telemetry
+    f_lbl = get_font(14, bold=True)
+    f_val = get_font(17, bold=True)
+    
+    draw.text((105, box_y0 + 26), "DIGITAL TOKEN ID", fill=GRAY_MUTED, font=f_lbl)
+    draw.text((105, box_y0 + 54), token_id, fill=GOLD_LIGHT, font=f_val)
     
     serial_str = str(participant.get("sno", "N/A")).strip()
-    draw.text((110, box_y0 + 115), "STAFF / S.NO", fill=GRAY_MUTED, font=f_lbl)
-    draw.text((110, box_y0 + 147), f"#{serial_str}", fill=WHITE, font=f_val)
+    draw.text((105, box_y0 + 94), "STAFF / S.NO", fill=GRAY_MUTED, font=f_lbl)
+    draw.text((105, box_y0 + 122), f"#{serial_str}", fill=WHITE, font=f_val)
     
-    # Vertical divider inside glass panel
-    draw.line([(BADGE_W // 2, box_y0 + 25), (BADGE_W // 2, box_y1 - 25)], fill=(245, 197, 66, 80), width=1)
-    
-    # Right Column
     tier_str = participant.get("tier", "EXECUTIVE")
-    draw.text((BADGE_W // 2 + 40, box_y0 + 32), "ACCESS CLEARANCE", fill=GRAY_MUTED, font=f_lbl)
-    draw.text((BADGE_W // 2 + 40, box_y0 + 64), f"{tier_str} PASS", fill=NEON_CYAN, font=f_val)
+    draw.text((370, box_y0 + 26), "ACCESS CLEARANCE", fill=GRAY_MUTED, font=f_lbl)
+    draw.text((370, box_y0 + 54), f"{tier_str} PASS", fill=NEON_CYAN, font=f_val)
     
     dept_str = participant.get("dept", "GOVERNANCE")
-    draw.text((BADGE_W // 2 + 40, box_y0 + 115), "DELEGATION SECTOR", fill=GRAY_MUTED, font=f_lbl)
-    draw.text((BADGE_W // 2 + 40, box_y0 + 147), dept_str, fill=WHITE, font=f_val)
+    draw.text((370, box_y0 + 94), "SECTOR / UNIT", fill=GRAY_MUTED, font=f_lbl)
+    draw.text((370, box_y0 + 122), dept_str[:18], fill=WHITE, font=f_val)
+    
+    # Right Column: High-Visibility Scannable Front QR Code Box
+    qr_f_box_x0 = 665
+    qr_f_box_y0 = box_y0 + 15
+    qr_f_box_w = 195
+    qr_f_box_h = 195
+    draw.rounded_rectangle([(qr_f_box_x0, qr_f_box_y0), (qr_f_box_x0 + qr_f_box_w, qr_f_box_y0 + qr_f_box_h)], radius=12, fill=(255, 255, 255), outline=GOLD_PRIMARY, width=2)
+    
+    # Paste Front QR inside
+    qr_f_disp = 150
+    qr_f_resized = qr_img.resize((qr_f_disp, qr_f_disp), Image.Resampling.LANCZOS)
+    overlay.paste(qr_f_resized, (qr_f_box_x0 + (qr_f_box_w - qr_f_disp) // 2, qr_f_box_y0 + 10), qr_f_resized)
+    
+    f_f_qr_lbl = get_font(11, bold=True)
+    draw.text((qr_f_box_x0 + qr_f_box_w // 2, qr_f_box_y0 + 172), "SCAN TO ACCREDIT", fill=(10, 32, 70), font=f_f_qr_lbl, anchor="mm")
     
     # 6. Cryptographic ODPC Security Watermark Strip
-    sec_y0 = 1085
-    sec_y1 = 1175
+    sec_y0 = 1090
+    sec_y1 = 1180
     draw.rounded_rectangle([(70, sec_y0), (BADGE_W - 70, sec_y1)], radius=12, fill=COLOR_GLASS_FILL_DARK, outline=NEON_CYAN, width=1)
     f_sec_h = get_font(15, bold=True)
     f_sec_t = get_font(12, bold=False)
@@ -351,10 +383,10 @@ def render_back_badge(participant, token_id, full_hash):
         draw.text((320, cy0 + 30), title_main, fill=WHITE, font=f_day_t1, anchor="lm")
         draw.text((95, cy0 + 72), f"• {title_sub}", fill=GRAY_LIGHT, font=f_day_t2, anchor="lm")
         
-    # 3. Centerpiece Tokenized QR Code Container
-    qr_box_y0 = 530
-    qr_box_y1 = 910
-    qr_box_w = 580
+    # 3. Centerpiece Tokenized QR Code Container (Large & Bold)
+    qr_box_y0 = 515
+    qr_box_y1 = 925
+    qr_box_w = 600
     qr_box_x0 = (BADGE_W - qr_box_w) // 2
     qr_box_x1 = qr_box_x0 + qr_box_w
     
@@ -381,20 +413,20 @@ def render_back_badge(participant, token_id, full_hash):
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color=COLOR_BG_DEEP, back_color=(255, 255, 255)).convert("RGBA")
     
-    qr_disp_size = 250
+    qr_disp_size = 280
     qr_resized = qr_img.resize((qr_disp_size, qr_disp_size), Image.Resampling.LANCZOS)
     
     paste_x = (BADGE_W - qr_disp_size) // 2
-    paste_y = qr_box_y0 + 22
+    paste_y = qr_box_y0 + 20
     overlay.paste(qr_resized, (paste_x, paste_y), qr_resized)
     
-    f_qr_label = get_font(16, bold=True)
-    f_qr_tok = get_font(19, bold=True)
+    f_qr_label = get_font(17, bold=True)
+    f_qr_tok = get_font(20, bold=True)
     f_qr_sig = get_font(13, bold=False)
     
-    draw.text((BADGE_W // 2, qr_box_y0 + 295), "DIGITAL EVENT ACCESS KEY", fill=TEXT_DARK, font=f_qr_label, anchor="mm")
-    draw.text((BADGE_W // 2, qr_box_y0 + 325), token_id, fill=(10, 32, 70), font=f_qr_tok, anchor="mm")
-    draw.text((BADGE_W // 2, qr_box_y0 + 355), "SCAN FOR SESSIONS, MEALS & RETREAT ACCESS", fill=GOLD_DARK, font=f_qr_sig, anchor="mm")
+    draw.text((BADGE_W // 2, qr_box_y0 + 318), "DIGITAL EVENT ACCESS KEY", fill=TEXT_DARK, font=f_qr_label, anchor="mm")
+    draw.text((BADGE_W // 2, qr_box_y0 + 350), token_id, fill=(10, 32, 70), font=f_qr_tok, anchor="mm")
+    draw.text((BADGE_W // 2, qr_box_y0 + 380), "SCAN FOR SESSIONS, MEALS & RETREAT ACCESS", fill=GOLD_DARK, font=f_qr_sig, anchor="mm")
     
     # 4. ODPC Compliance Shield & PII-Masked Metadata Box
     meta_y0 = 940
@@ -613,9 +645,36 @@ def run_compiler():
     front_badges = []
     back_badges = []
     
-    print("\n--- PHASE 1: Rendering 300 DPI High-Resolution Badges ---")
+    qr_out_dir = os.path.join(OUTPUT_DIR, "INDIVIDUAL_QR_CODES_300DPI")
+    os.makedirs(qr_out_dir, exist_ok=True)
+    
+    print("\n--- PHASE 1: Rendering 300 DPI High-Resolution Badges & Standalone QR Keys ---")
     for idx, p in enumerate(participants, 1):
         token_id, full_hash = generate_participant_token(p["sno"], p["id_no"], p["name"], idx)
+        
+        # Save standalone high-res 300 DPI QR Code file for this delegate
+        clean_name = "".join([c if c.isalnum() or c in ("-", "_") else "_" for c in p["name"]]).strip("_")
+        qr_filename = f"{idx:02d}_{p['sno']}_{clean_name}_qr_300dpi.png"
+        qr_file_path = os.path.join(qr_out_dir, qr_filename)
+        
+        payload_data = {
+            "iss": "BANKI_KUU_SACCO",
+            "evt": "MSA_RETREAT_2026",
+            "tid": token_id,
+            "sig": full_hash[:16],
+            "sec": "ODPC_SEC_25",
+            "v": 1
+        }
+        qr_obj = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=12,
+            border=2,
+        )
+        qr_obj.add_data(json.dumps(payload_data, separators=(',', ':')))
+        qr_obj.make(fit=True)
+        qr_standalone = qr_obj.make_image(fill_color=(2, 4, 8), back_color=(255, 255, 255))
+        qr_standalone.save(qr_file_path, "PNG", dpi=(300, 300))
         
         fb = render_front_badge(p, token_id, full_hash)
         bb = render_back_badge(p, token_id, full_hash)
@@ -624,7 +683,7 @@ def run_compiler():
         back_badges.append(bb)
         
         if idx % 10 == 0 or idx == len(participants):
-            print(f"  Rendered [{idx}/{len(participants)}] {p['name']} ({p['role']})")
+            print(f"  Rendered [{idx}/{len(participants)}] {p['name']} ({p['role']}) -> QR: {token_id}")
             
     # Save Sample High-Res Review Badges (Delegate 01 & CEO Delegate 13)
     sample_front_path = os.path.join(PREVIEW_DIR, "delegate_01_front_300dpi.png")
