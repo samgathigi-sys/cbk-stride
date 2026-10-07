@@ -469,20 +469,22 @@ def render_agm_pii_compliance_bar(tab_context: str = "reg"):
 # MAIN PORTAL TABS
 # ------------------------------------------------------------------------------
 if is_bks_mode:
-    tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp = st.tabs([
+    tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp, tab_retreat = st.tabs([
         "🎟️ Shareholder Accreditation & Bulk Roster",
         "💳 SACCO Finance Manager Payment & Scoping",
         "📷 Gate Usher Scanner & Quorum Meter",
         "🗳️ Digital Voting & Elections Booth",
-        "🤖 Member Feedback & Sentiment Analysis"
+        "🤖 Member Feedback & Sentiment Analysis",
+        "🏖️ Mombasa Retreat Badges & Passes"
     ])
 else:
-    tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp = st.tabs([
+    tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp, tab_retreat = st.tabs([
         "🎟️ Attendee Registration & Digital Pass",
         "🪄 Event Creator Wizard (Organizers)",
         "📷 Gate Usher Scanner & Accreditation Roster",
         "🗳️ Digital Voting & Elections Booth",
-        "🤖 NLP Attendee Sentiment & Pulse Survey"
+        "🤖 NLP Attendee Sentiment & Pulse Survey",
+        "🏖️ Mombasa Retreat Badges & Passes"
     ])
 
 # ==============================================================================
@@ -2741,6 +2743,13 @@ with tab_nlp:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
+
+# ==============================================================================
+# TAB 6: MOMBASA RETREAT BADGES & DIGITAL PASSES
+# ==============================================================================
+with tab_retreat:
+    import retreat_badges_ui
+    retreat_badges_ui.render_retreat_badges_ui()
 
 # ------------------------------------------------------------------------------
 # FOOTER
