@@ -577,19 +577,16 @@ def build_imposition_sheet(badge_images, sheet_num, total_sheets, is_back_sheet=
     
     return sheet
 
-# ==============================================================================
-# PARTICIPANT DATA LOADER (60 EXECUTIVES)
-# ==============================================================================
-def load_60_executive_participants(excel_path):
+def load_retreat_participants(excel_path, limit=None):
     wb = openpyxl.load_workbook(excel_path, data_only=True)
-    execs = []
+    delegates = []
     
     # 1. BOD, Supervisory, Branch Reps, CEO (29 delegates)
     ws1 = wb['BOD,SC,BRANCH REPS & BHC BOD']
     for r in ws1.iter_rows(values_only=True):
         if r[0] is not None and str(r[0]).strip().isdigit():
             role_val = str(r[3]).strip() if r[3] and str(r[3]).strip() not in ('', 'None') else 'BRANCH REP'
-            execs.append({
+            delegates.append({
                 "sno": str(r[1]).strip(),
                 "name": str(r[2]).strip(),
                 "role": role_val,
@@ -599,13 +596,15 @@ def load_60_executive_participants(excel_path):
                 "tier": "EXECUTIVE",
                 "dept": "GOVERNANCE & LEADERSHIP"
             })
+            if limit and len(delegates) >= limit:
+                return delegates
             
     # 2. Secretariat Leadership (24 delegates)
     ws2 = wb['SECRETARIAT']
     for r in ws2.iter_rows(values_only=True):
         if r[0] is not None and str(r[0]).strip().isdigit():
             role_val = str(r[3]).strip() if r[3] and str(r[3]).strip() not in ('', 'None') else 'SECRETARIAT LEAD'
-            execs.append({
+            delegates.append({
                 "sno": str(r[1]).strip(),
                 "name": str(r[2]).strip(),
                 "role": role_val,
@@ -615,13 +614,15 @@ def load_60_executive_participants(excel_path):
                 "tier": "EXECUTIVE",
                 "dept": "SECRETARIAT LEADERSHIP"
             })
+            if limit and len(delegates) >= limit:
+                return delegates
             
-    # 3. Top Canteen & Logistics Leads (7 delegates to complete exactly 60)
+    # 3. Operations, Canteen & Logistics Staff (42 delegates)
     ws3 = wb['CANTEEN']
     for r in ws3.iter_rows(values_only=True):
-        if r[0] is not None and str(r[0]).strip().isdigit() and len(execs) < 60:
-            role_val = str(r[3]).strip() if r[3] and str(r[3]).strip() not in ('', 'None') else 'LOGISTICS LEAD'
-            execs.append({
+        if r[0] is not None and str(r[0]).strip().isdigit():
+            role_val = str(r[3]).strip() if r[3] and str(r[3]).strip() not in ('', 'None') else 'OPERATIONS & LOGISTICS'
+            delegates.append({
                 "sno": str(r[1]).strip(),
                 "name": str(r[2]).strip(),
                 "role": role_val,
@@ -629,17 +630,20 @@ def load_60_executive_participants(excel_path):
                 "phone_no": str(r[5]).strip(),
                 "email": str(r[6] if len(r)>6 else '').strip(),
                 "tier": "OPERATIONS",
-                "dept": "LOGISTICS & OPERATIONS"
+                "dept": "HOSPITALITY & LOGISTICS"
             })
+            if limit and len(delegates) >= limit:
+                return delegates
             
-    return execs
+    return delegates
 
 # ==============================================================================
 # MAIN BATCH COMPILER & PDF GENERATOR
 # ==============================================================================
-def run_compiler():
-    print(f"Loading 60 executive retreat participants from {EXCEL_PATH}...")
-    participants = load_60_executive_participants(EXCEL_PATH)
+def run_compiler(limit=None):
+    desc = f"{limit} executive" if limit else "ALL 95"
+    print(f"Loading {desc} retreat participants from {EXCEL_PATH}...")
+    participants = load_retreat_participants(EXCEL_PATH, limit=limit)
     print(f"Loaded {len(participants)} delegates.")
     
     front_badges = []
@@ -696,7 +700,7 @@ def run_compiler():
     front_badges[12].save(ceo_front_path, "PNG", dpi=(300, 300))
     back_badges[12].save(ceo_back_path, "PNG", dpi=(300, 300))
     
-    print("\n--- PHASE 2: Compiling 120-Page Duplex Press-Ready PDF (300 DPI) ---")
+    print(f"\n--- PHASE 2: Compiling Duplex Press-Ready PDF ({len(participants)*2} Pages at 300 DPI) ---")
     duplex_pdf_path = os.path.join(OUTPUT_DIR, "CBK_MOMBASA_2026_PRESS_READY_BADGES_DUPLEX.pdf")
     
     # Interleave Front 1, Back 1, Front 2, Back 2...
@@ -714,9 +718,9 @@ def run_compiler():
     )
     print(f"Saved: {duplex_pdf_path} ({len(duplex_pages)} pages)")
     
-    print("\n--- PHASE 3: Compiling 4-Up Commercial Imposition Sheets (300 DPI) ---")
+    print(f"\n--- PHASE 3: Compiling 4-Up Commercial Imposition Sheets ({math.ceil(len(participants)/4)*2} Pages at 300 DPI) ---")
     imposition_sheets = []
-    total_sheets = math.ceil(len(participants) / 4) # 60 / 4 = 15 sheets
+    total_sheets = math.ceil(len(participants) / 4)
     
     for s_idx in range(total_sheets):
         start_p = s_idx * 4
@@ -756,10 +760,14 @@ def run_compiler():
     
     print("\n==================================================================")
     print("ALL PRESS-READY DOCUMENTS COMPILED SUCCESSFULLY!")
-    print(f"1. Duplex PDF Deck (120 pgs, 300 DPI):   {duplex_pdf_path}")
-    print(f"2. Imposition PDF (30 pgs 4-Up, 300 DPI): {imposition_pdf_path}")
-    print(f"3. Preview Artifacts:                    {PREVIEW_DIR}")
+    print(f"1. Total Participants Processed:         {len(participants)}")
+    print(f"2. Duplex PDF Deck ({len(duplex_pages)} pgs, 300 DPI):   {duplex_pdf_path}")
+    print(f"3. Imposition PDF ({len(imposition_sheets)} pgs 4-Up, 300 DPI): {imposition_pdf_path}")
+    print(f"4. Standalone 300 DPI QR Codes (95 files): {qr_out_dir}")
+    print(f"5. Preview Artifacts:                    {PREVIEW_DIR}")
     print("==================================================================")
 
 if __name__ == "__main__":
-    run_compiler()
+    import sys
+    limit_arg = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else None
+    run_compiler(limit=limit_arg)
