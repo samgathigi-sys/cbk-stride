@@ -31,6 +31,7 @@ FILES_TO_UPLOAD = [
     "stride-chat.css",
     "stride-chat.js",
     "strideanalytics_whitepaper.pdf",
+    "stride_cadence_executive_whitepaper.pdf",
     "NAVISION_TRIAL_BALANCE_2025_EXPORT.csv",
     "demo.html"
 ]
