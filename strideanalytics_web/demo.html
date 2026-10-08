@@ -325,39 +325,55 @@
                                 <tbody class="divide-y divide-slate-800/60">
                                     <tr>
                                         <td class="py-2 text-white font-bold">LN-FOSA-8803</td>
-                                        <td class="py-2 text-cyan-400">TKN-SHA256-992381</td>
+                                        <td class="py-2 text-cyan-400 font-mono">TKN-SHA256-992381</td>
                                         <td class="py-2 text-slate-300">Salary Advance 30D</td>
                                         <td class="py-2 text-white">80,000.00</td>
                                         <td class="py-2 text-amber-400 font-bold">7 Days</td>
                                         <td class="py-2 text-rose-400 font-bold">3.85%</td>
-                                        <td class="py-2 text-right"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">SMS Soft Nudge</span></td>
+                                        <td class="py-2 text-right">
+                                            <button onclick="resolveLocalMember('LN-FOSA-8803', 'TKN-SHA256-992381', 'Jane W. Mwangi', '0722 *** 419', 'Salary Advance 30D', '80,000.00', '7 Days Past Due', 'SMS Soft Nudge: Scheduled for 09:00 AM')" class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold text-[10px] transition-all">
+                                                🔍 Resolve &amp; Remediate
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="py-2 text-white font-bold">LN-ASST-8805</td>
-                                        <td class="py-2 text-cyan-400">TKN-SHA256-774195</td>
+                                        <td class="py-2 text-cyan-400 font-mono">TKN-SHA256-774195</td>
                                         <td class="py-2 text-slate-300">Vehicle Asset Finance</td>
                                         <td class="py-2 text-white">3,150,000.00</td>
                                         <td class="py-2 text-rose-400 font-bold">14 Days</td>
                                         <td class="py-2 text-rose-400 font-bold">5.92%</td>
-                                        <td class="py-2 text-right"><span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300">Credit Officer Call</span></td>
+                                        <td class="py-2 text-right">
+                                            <button onclick="resolveLocalMember('LN-ASST-8805', 'TKN-SHA256-774195', 'Peter K. Omondi', '0733 *** 821', 'Vehicle Asset Finance', '3,150,000.00', '14 Days Past Due', 'Credit Officer Priority Escalation & Direct Call')" class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 font-bold text-[10px] transition-all">
+                                                🔍 Resolve &amp; Remediate
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="py-2 text-white font-bold">LN-FOSA-8807</td>
-                                        <td class="py-2 text-cyan-400">TKN-SHA256-664188</td>
+                                        <td class="py-2 text-cyan-400 font-mono">TKN-SHA256-664188</td>
                                         <td class="py-2 text-slate-300">Business Working Capital</td>
                                         <td class="py-2 text-white">620,000.00</td>
                                         <td class="py-2 text-amber-400 font-bold">10 Days</td>
                                         <td class="py-2 text-rose-400 font-bold">4.45%</td>
-                                        <td class="py-2 text-right"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">Guarantor Pre-Alert</span></td>
+                                        <td class="py-2 text-right">
+                                            <button onclick="resolveLocalMember('LN-FOSA-8807', 'TKN-SHA256-664188', 'Fatuma A. Hassan', '0710 *** 552', 'Business Working Capital', '620,000.00', '10 Days Past Due', 'Guarantor Pre-Notification Alert via SMS/Email')" class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold text-[10px] transition-all">
+                                                🔍 Resolve &amp; Remediate
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="py-2 text-white font-bold">LN-FOSA-8810</td>
-                                        <td class="py-2 text-cyan-400">TKN-SHA256-773419</td>
+                                        <td class="py-2 text-cyan-400 font-mono">TKN-SHA256-773419</td>
                                         <td class="py-2 text-slate-300">Biashara Micro Advance</td>
                                         <td class="py-2 text-white">190,000.00</td>
                                         <td class="py-2 text-amber-400 font-bold">8 Days</td>
                                         <td class="py-2 text-rose-400 font-bold">4.10%</td>
-                                        <td class="py-2 text-right"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">SMS Soft Nudge</span></td>
+                                        <td class="py-2 text-right">
+                                            <button onclick="resolveLocalMember('LN-FOSA-8810', 'TKN-SHA256-773419', 'Samuel N. Gathigi', '0701 *** 114', 'Biashara Micro Advance', '190,000.00', '8 Days Past Due', 'Automated M-Pesa STK Push Repayment Reminder')" class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold text-[10px] transition-all">
+                                                🔍 Resolve &amp; Remediate
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -919,14 +935,87 @@
             renderCadence(key);
         }
 
-        function exportCadenceReport() {
-            window.location.href = 'stride_cadence_executive_whitepaper.pdf';
+        function resolveLocalMember(loanRef, token, name, phone, product, balance, overdue, action) {
+            document.getElementById('modal-loan-ref').textContent = loanRef;
+            document.getElementById('modal-token').textContent = token;
+            document.getElementById('modal-member-name').textContent = name;
+            document.getElementById('modal-member-phone').textContent = phone;
+            document.getElementById('modal-product').textContent = product;
+            document.getElementById('modal-balance').textContent = 'KES ' + balance;
+            document.getElementById('modal-overdue').textContent = overdue;
+            document.getElementById('modal-action').textContent = action;
+            document.getElementById('local-resolution-modal').classList.remove('hidden');
+        }
+
+        function closeResolutionModal() {
+            document.getElementById('local-resolution-modal').classList.add('hidden');
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             renderCadence('weekly');
         });
     </script>
+
+    <!-- SACCO INTERNAL LOCAL PERIMETER RESOLUTION MODAL -->
+    <div id="local-resolution-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="glass-panel max-w-lg w-full p-6 md:p-8 rounded-3xl border border-cyan-400/50 space-y-6 relative shadow-2xl shadow-cyan-500/20">
+            <button onclick="closeResolutionModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white font-mono text-lg">✕</button>
+            
+            <div class="border-b border-cyan-500/30 pb-4">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-xs font-mono text-emerald-400 uppercase font-bold tracking-wider">SACCO ON-PREMISES PERIMETER RESOLUTION</span>
+                </div>
+                <h3 class="text-xl font-bold font-heading text-white">Local Token ➔ Member Entity Resolver</h3>
+                <p class="text-xs text-slate-400 mt-1">
+                    Executed strictly on client workstation. The Stride cloud engine only saw the salted token; this reverse mapping runs against the SACCO's internal core database.
+                </p>
+            </div>
+
+            <div class="space-y-3 font-mono text-xs">
+                <div class="p-3 bg-navy-950 rounded-xl border border-slate-800 flex justify-between items-center">
+                    <span class="text-slate-400">Air-Gapped Token:</span>
+                    <span class="text-cyan-400 font-bold" id="modal-token">TKN-SHA256-992381</span>
+                </div>
+                <div class="p-3 bg-navy-900 rounded-xl border border-cyan-500/30 flex justify-between items-center">
+                    <span class="text-slate-400">Resolved Member Name:</span>
+                    <span class="text-white font-bold text-sm" id="modal-member-name">Jane W. Mwangi</span>
+                </div>
+                <div class="p-3 bg-navy-900 rounded-xl border border-slate-800 flex justify-between items-center">
+                    <span class="text-slate-400">Primary Contact (SMS Gateway):</span>
+                    <span class="text-emerald-400 font-bold" id="modal-member-phone">0722 *** 419</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="p-3 bg-navy-950 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 block text-[10px]">Facility Ref:</span>
+                        <span class="text-white font-bold" id="modal-loan-ref">LN-FOSA-8803</span>
+                    </div>
+                    <div class="p-3 bg-navy-950 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 block text-[10px]">Exposure Balance:</span>
+                        <span class="text-white font-bold" id="modal-balance">KES 80,000.00</span>
+                    </div>
+                </div>
+                <div class="p-3 bg-navy-900 rounded-xl border border-amber-500/30 space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-amber-400 font-bold">Early Delinquency Status:</span>
+                        <span class="text-amber-300 font-bold" id="modal-overdue">7 Days Past Due</span>
+                    </div>
+                    <div class="text-[11px] text-slate-300 pt-1 border-t border-slate-800">
+                        <span class="text-slate-400">Target Remediation: </span><span id="modal-action" class="text-cyan-300 font-semibold">SMS Soft Nudge</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 flex gap-3">
+                <button onclick="alert('✅ Remediation dispatched to SACCO Internal SMS/Call Queue successfully!'); closeResolutionModal();" class="flex-1 py-3 rounded-xl neon-button text-navy-950 font-bold text-xs font-mono">
+                    📲 Dispatch Remediation Action
+                </button>
+                <button onclick="closeResolutionModal()" class="px-5 py-3 rounded-xl bg-navy-900 border border-slate-700 text-slate-300 hover:text-white font-bold text-xs font-mono">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Stride AI Sovereign Copilot (Bottom Right) -->
     <script src="stride-chat.js?v=3.0"></script>
