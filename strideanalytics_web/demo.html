@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institutional Cadence Demo | StrideAnalytics — Predictive Intelligence Suite</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#020408',
+                            900: '#050b14',
+                            800: '#0a1526',
+                            700: '#0f223f',
+                        },
+                        cyan: {
+                            400: '#00f3ff',
+                            500: '#00c8d7',
+                        },
+                        purple: {
+                            400: '#b026ff',
+                            500: '#8b00e8',
+                            600: '#6700b0',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        heading: ['Cabinet Grotesk', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for High-Fidelity Financial Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #020408;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            background-image: 
+                radial-gradient(circle at 12% 18%, rgba(0, 243, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 88% 82%, rgba(176, 38, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(10, 21, 38, 0.5) 0%, transparent 100%);
+            background-attachment: fixed;
+        }
+        .glass-panel {
+            background: rgba(10, 21, 38, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+        }
+        .glass-card {
+            background: rgba(5, 11, 20, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(176, 38, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(0, 243, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0, 243, 255, 0.25);
+        }
+        .neon-button {
+            background: linear-gradient(135deg, #00f3ff 0%, #8b00e8 100%);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.5), 0 0 45px rgba(139, 0, 232, 0.3);
+            transform: translateY(-1px);
+        }
+        .cadence-tab-active {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(139, 0, 232, 0.25)) !important;
+            border-color: #00f3ff !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Sovereign Ribbon -->
+    <div class="border-b border-purple-500/20 bg-navy-950/80 px-6 py-2.5 text-xs text-slate-400 font-mono flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>STRIDE PREDICTIVE CADENCE INTELLIGENCE DEMO</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <span class="text-cyan-400 font-semibold">FOUR REVENUE CADENCES</span>
+            <span class="text-purple-400 font-bold">SASRA CAP 490B &amp; ODPC 2019 READY</span>
+            <span>NAIROBI, KENYA</span>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-purple-500/20">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center font-bold text-navy-950 text-xl font-heading shadow-lg shadow-purple-500/30 shrink-0 group-hover:scale-105 transition-transform">
+                    S
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight font-heading bg-gradient-to-r from-white via-cyan-200 to-purple-400 bg-clip-text text-transparent">STRIDE</span>
+                    <span class="text-xs tracking-widest text-cyan-400 block uppercase font-semibold">strideanalytics.co.ke</span>
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                <a href="index.html" class="hover:text-cyan-400 transition-colors">← Ecosystem Home</a>
+                <a href="stride-sacco.html" class="hover:text-cyan-400 transition-colors">Stride-SACCO 10-Yr</a>
+                <a href="demo.html" class="text-cyan-400 font-bold border-b border-cyan-400 pb-0.5">Cadence Demo</a>
+                <a href="about.html" class="hover:text-cyan-400 transition-colors">Who We Are</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <a href="about.html#contact-hub" class="px-5 py-2.5 rounded-xl neon-button text-white font-semibold text-sm shadow-lg shadow-cyan-500/20">
+                    Schedule Institutional Pilot
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full space-y-12">
+
+        <!-- Hero Header -->
+        <section class="text-center max-w-4xl mx-auto space-y-4">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-semibold tracking-wide uppercase">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span> Predictive Intelligence vs Legacy Core Banking
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold font-heading tracking-tight">
+                THE INSTITUTIONAL <br>
+                <span class="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">CADENCE INTELLIGENCE SUITE</span>
+            </h1>
+            <p class="text-base md:text-lg text-slate-300 leading-relaxed font-light">
+                Legacy ERPs (Navision, Bankers Realm, Finacle) are historical record keepers — they record what happened yesterday. Stride transforms raw balances into a continuous predictive heartbeat across <strong>Weekly, Monthly, Quarterly, and Annual</strong> institutional cadences.
+            </p>
+        </section>
+
+        <!-- Cadence Switcher Tabs -->
+        <section class="glass-panel p-2.5 rounded-2xl border border-cyan-500/30 flex flex-wrap md:flex-nowrap gap-2 justify-center">
+            <button onclick="switchCadence('weekly')" id="tab-weekly" class="flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-mono font-bold border border-transparent transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-white">
+                <span>⚡ WEEKLY</span> <span class="hidden lg:inline text-[11px] opacity-75">(Early Warning &amp; Default Radar)</span>
+            </button>
+            <button onclick="switchCadence('monthly')" id="tab-monthly" class="flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-mono font-bold border border-transparent transition-all flex items-center justify-center gap-2 cadence-tab-active">
+                <span>🗓️ MONTHLY</span> <span class="hidden lg:inline text-[11px] opacity-75">(SASRA Form 1 &amp; 4 Return Engine)</span>
+            </button>
+            <button onclick="switchCadence('quarterly')" id="tab-quarterly" class="flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-mono font-bold border border-transparent transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-white">
+                <span>📈 QUARTERLY</span> <span class="hidden lg:inline text-[11px] opacity-75">(Board Strategy &amp; CBR Stress)</span>
+            </button>
+            <button onclick="switchCadence('annual')" id="tab-annual" class="flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-mono font-bold border border-transparent transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-white">
+                <span>🏛️ ANNUAL</span> <span class="hidden lg:inline text-[11px] opacity-75">(AGM Assembly &amp; Dividends)</span>
+            </button>
+        </section>
+
+        <!-- Dynamic Cadence Content Area -->
+        <section id="cadence-display" class="space-y-10">
+
+            <!-- Dynamic Header Card -->
+            <div class="glass-panel p-8 rounded-3xl border border-cyan-500/30 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-mono text-cyan-400 uppercase font-bold tracking-widest block mb-1" id="cadence-tag">
+                            MONTHLY CADENCE • MANDATORY REGULATORY FILING
+                        </span>
+                        <h2 class="text-2xl md:text-3xl font-bold font-heading text-white" id="cadence-title">
+                            Automated SASRA Form 1 &amp; 4 Prudential Return Engine
+                        </h2>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-3.5 py-1.5 rounded-xl bg-navy-950/90 text-emerald-400 border border-emerald-500/40 text-xs font-mono font-bold" id="cadence-status">
+                            FILING SLA: 100% TIMELY
+                        </span>
+                        <button onclick="exportCadenceReport()" class="px-4 py-2 rounded-xl neon-button text-white font-bold text-xs font-mono shadow-lg shadow-cyan-500/20">
+                            Download Cadence Brief (PDF)
+                        </button>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed" id="cadence-desc">
+                    By the 15th of every month, SASRA mandates Section 24 filings. While competitors spend 2 weeks in stressful Excel reconciliations, Stride ingests the Navision trial balance in 30 seconds, auto-calculates Core Capital and Liquidity ratios, and produces cryptographic filing artifacts.
+                </p>
+            </div>
+
+            <!-- Dynamic 4 Metric Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6" id="cadence-metrics">
+                <!-- Injected via JavaScript -->
+            </div>
+
+            <!-- Interactive Visual Chart & Comparative Intelligence Box -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Left: Chart.js Visual Canvas (8 Cols) -->
+                <div class="lg:col-span-8 glass-panel p-6 md:p-8 rounded-3xl border border-purple-500/30 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold font-heading text-white" id="chart-title">Prudential Ratio Trajectory</h3>
+                            <span class="text-xs text-slate-400 font-mono" id="chart-subtitle">Monthly Capital Adequacy vs Statutory 10% Floor</span>
+                        </div>
+                        <span class="text-[11px] font-mono text-cyan-300 px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/30">
+                            GPU Accelerated
+                        </span>
+                    </div>
+                    <div class="relative w-full h-[320px] bg-navy-950/70 p-4 rounded-2xl border border-purple-500/20">
+                        <canvas id="cadenceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right: The "Why Internal Software Has No Clue" Contrast Box (4 Cols) -->
+                <div class="lg:col-span-4 glass-card p-6 md:p-8 rounded-3xl border border-cyan-500/30 space-y-6">
+                    <div class="border-b border-purple-500/20 pb-3">
+                        <span class="text-[11px] font-mono text-rose-400 uppercase font-bold tracking-wider">THE COMPETITIVE ADVANTAGE</span>
+                        <h4 class="text-lg font-bold font-heading text-white">Why Internal Software Has No Clue</h4>
+                    </div>
+
+                    <div class="space-y-4 text-xs font-mono">
+                        <div class="bg-navy-950/90 p-3.5 rounded-xl border border-rose-500/30 space-y-1">
+                            <span class="text-rose-400 font-bold block">❌ What Navision / Legacy ERPs See:</span>
+                            <span class="text-slate-400" id="legacy-see">Static ledger rows (e.g. GL Account 10300 = KES 7.45B). Zero forward projection, zero early warning alerts, zero predictive defaults.</span>
+                        </div>
+
+                        <div class="bg-navy-950/90 p-3.5 rounded-xl border border-emerald-500/40 space-y-1">
+                            <span class="text-emerald-400 font-bold block">✓ What StrideAnalytics Reveals:</span>
+                            <span class="text-cyan-200" id="stride-reveal">Mathematical probability of migration into PAR>30, CBR rate shock impact (-42bps), and automated capital preservation recommendations.</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-purple-500/20 text-[11px] text-slate-400">
+                        <strong>Commercial Value:</strong> Eliminates regulatory fines, prevents millions in surprise loan write-offs, and provides the CEO instant board defense.
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- The Revenue Math & Subscription Value Calculator -->
+        <section class="glass-panel p-8 md:p-12 rounded-3xl border border-purple-500/30 space-y-8">
+            <div class="max-w-3xl">
+                <div class="inline-block px-3 py-1 rounded bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono text-xs uppercase mb-2">
+                    Commercial Alignment
+                </div>
+                <h3 class="text-2xl md:text-4xl font-bold font-heading text-white">
+                    Why SACCOs Happily Pay KES 1.8M – 3.5M Annually
+                </h3>
+                <p class="text-slate-300 text-sm mt-2">
+                    Replacing 3 disconnected software vendors, manual accounting overtime, and risk consulting retainers with a single sovereign platform.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-l-cyan-400 space-y-2">
+                    <div class="text-xs font-mono text-slate-400 uppercase">1. Regulatory Fine Avoidance</div>
+                    <div class="text-2xl font-black font-mono text-cyan-400">KES 2.5M+ Saved</div>
+                    <p class="text-slate-400 text-xs">Eliminates SASRA statutory delays, missed filing penalties, and capital buffer compliance breach citations.</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-l-purple-400 space-y-2">
+                    <div class="text-xs font-mono text-slate-400 uppercase">2. Preemptive NPL Recovery</div>
+                    <div class="text-2xl font-black font-mono text-purple-400">KES 14.8M Preserved</div>
+                    <p class="text-slate-400 text-xs">Weekly early warning radar flags defaulting borrowers 21 days before traditional 30-day arrears recognition.</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-l-emerald-400 space-y-2">
+                    <div class="text-xs font-mono text-slate-400 uppercase">3. Boardroom Decision Speed</div>
+                    <div class="text-2xl font-black font-mono text-emerald-400">&lt; 30 Seconds</div>
+                    <p class="text-slate-400 text-xs">Replaces 120 hours of manual Excel consolidation per quarter with 1-click sovereign boardroom telemetry.</p>
+                </div>
+            </div>
+
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-purple-500/20">
+                <div class="text-xs font-mono text-slate-400">
+                    Ready to schedule a customized boardroom demonstration for your institution?
+                </div>
+                <div class="flex gap-4">
+                    <a href="about.html#contact-hub" class="px-6 py-3 rounded-xl neon-button text-white font-bold text-xs shadow-lg shadow-cyan-500/20">
+                        Request Institutional Pilot
+                    </a>
+                    <a href="strideanalytics_whitepaper.pdf" download class="px-6 py-3 rounded-xl glass-panel text-cyan-300 font-bold text-xs border border-cyan-500/40 hover:border-cyan-400 flex items-center gap-2">
+                        <span>📄</span> Download Whitepaper
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-purple-500/20 bg-navy-950 py-12 text-slate-500 text-sm relative z-10 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-cyan-400 to-purple-600 flex items-center justify-center font-bold text-navy-950 font-heading">S</div>
+                <span class="font-bold text-white tracking-tight">StrideAnalytics Cadence Demo</span>
+            </div>
+            <p class="text-xs text-center">© 2026 StrideAnalytics.co.ke. 100% Kenya Data Protection Act (ODPC) Compliant. Stronger Leaders. A Better Tomorrow.</p>
+            <div class="flex items-center gap-6 text-xs">
+                <a href="index.html" class="hover:text-cyan-400 transition-colors">Overview</a>
+                <a href="stride-sacco.html" class="hover:text-cyan-400 transition-colors">Stride-SACCO 10-Yr</a>
+                <a href="about.html" class="hover:text-cyan-400 transition-colors">Who We Are</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Cadence Controller Logic -->
+    <script>
+        const cadenceData = {
+            weekly: {
+                tag: "WEEKLY CADENCE • CREDIT RISK & EARLY WARNING RADAR",
+                title: "Predictive Loan Book Migration & Default Risk Radar",
+                desc: "Every Monday morning, the Credit Risk team ingests the weekly loan repayment ledger. Stride's machine intelligence model flags high-probability default transitions (PAR > 30) up to 21 days before legacy core banking systems recognize them.",
+                status: "RADAR ACTIVE: 14 AT-RISK ACCOUNTS",
+                metrics: [
+                    { label: "Active Monitored Book", val: "KES 11.95B", sub: "68,400 Total Loans", color: "cyan" },
+                    { label: "Early-Warning Flagged", val: "KES 42.1M", sub: "14 Accounts at Risk", color: "amber" },
+                    { label: "Predicted 30d Default (PD)", val: "1.42%", sub: "Industry Avg: 4.80%", color: "emerald" },
+                    { label: "Preventable Loss Potential", val: "KES 18.5M", sub: "Early Intervention", color: "purple" }
+                ],
+                chartTitle: "Weekly Default Probability Velocity (PD %)",
+                chartSubtitle: "Predicted Default Velocity over 8-Week Rolling Horizon",
+                labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8"],
+                data: [1.85, 1.72, 1.64, 1.58, 1.50, 1.45, 1.42, 1.38],
+                chartColor: "#00f3ff",
+                legacySee: "Only flags accounts AFTER they cross 30 days in arrears. By then, recovery costs spike 400%.",
+                strideReveal: "Uses member savings velocity, guarantor strength, and mobile cash flow drops to catch distress at Day 7."
+            },
+            monthly: {
+                tag: "MONTHLY CADENCE • MANDATORY REGULATORY FILING",
+                title: "Automated SASRA Form 1 & 4 Prudential Return Engine",
+                desc: "By the 15th of every month, SASRA mandates Section 24 filings. While competitors spend 2 weeks in stressful Excel reconciliations, Stride ingests the Navision trial balance in 30 seconds, auto-calculates Core Capital and Liquidity ratios, and produces cryptographic filing artifacts.",
+                status: "FILING SLA: 100% TIMELY",
+                metrics: [
+                    { label: "Core Capital / Assets", val: "14.6%", sub: "Statutory Floor: 10.0%", color: "emerald" },
+                    { label: "Liquidity Ratio (Form 4)", val: "34.2%", sub: "Statutory Floor: 15.0%", color: "cyan" },
+                    { label: "PAR > 30 Days (NPL)", val: "3.85%", sub: "Statutory Limit: 5.0%", color: "emerald" },
+                    { label: "SASRA Form 1 Assembly", val: "< 30 Sec", sub: "Automated Compilation", color: "purple" }
+                ],
+                chartTitle: "Monthly Prudential Capital Adequacy Trajectory",
+                chartSubtitle: "Core Capital / Assets ratio mapped over past 12 Months",
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                data: [13.8, 13.9, 14.1, 14.0, 14.2, 14.3, 14.2, 14.4, 14.5, 14.5, 14.6, 14.6],
+                chartColor: "#10b981",
+                legacySee: "Static ledger rows (e.g. GL Account 10300 = KES 7.45B). Zero forward projection, zero early warning alerts.",
+                strideReveal: "Instant multi-ratio CAMEL composite scoring with automated Section 24 statutory validation."
+            },
+            quarterly: {
+                tag: "QUARTERLY CADENCE • EXECUTIVE BOARD STRATEGY & STRESS TESTING",
+                title: "Macro Economic Stress Testing & Boardroom Pack Telemetry",
+                desc: "Ahead of each quarterly Board of Directors meeting, Stride simulates severe macro stress scenarios: CBK Central Bank Rate (+300bps) increases, agricultural sector downturns, and sudden member deposit withdrawal runs.",
+                status: "BOARD PACK: VERIFIED AUDITED",
+                metrics: [
+                    { label: "Quarterly Asset Expansion", val: "+KES 410M", sub: "Closing: KES 14.82B", color: "cyan" },
+                    { label: "CBR +300bps Shock Impact", val: "-0.42%", sub: "Spread Absorbable", color: "emerald" },
+                    { label: "Simulated 15% Run Survival", val: "22.4%", sub: "Min SASRA Floor: 15%", color: "purple" },
+                    { label: "Boardroom Pack Prep Time", val: "1-Click", sub: "Saved: 120 Man-Hours", color: "emerald" }
+                ],
+                chartTitle: "Quarterly Shock Absorption Capacity",
+                chartSubtitle: "Liquidity Ratio before vs after Simulated 15% Deposit Run",
+                labels: ["Q1 Baseline", "Q1 Post-Shock", "Q2 Baseline", "Q2 Post-Shock", "Q3 Baseline", "Q3 Post-Shock", "Q4 Baseline", "Q4 Post-Shock"],
+                data: [32.5, 21.0, 33.1, 21.4, 33.8, 21.9, 34.2, 22.4],
+                chartColor: "#b026ff",
+                legacySee: "Historical profit and loss statement. Incapable of simulating interest rate shocks or capital calls.",
+                strideReveal: "Mathematically models balance sheet resilience, proving boardroom fiduciary duty compliance."
+            },
+            annual: {
+                tag: "ANNUAL CADENCE • SOVEREIGN ASSEMBLY & DIVIDEND MODELING",
+                title: "Audited AGM Assembly, Merkle Quorum & Rebate Optimization",
+                desc: "For the Annual General Meeting, Stride integrates AGMplan electronic quorum tracking, cryptographically verified delegate voting, and optimal dividend payout modeling (e.g. 11.8%) balancing member reward against statutory retention reserves.",
+                status: "AGM QUORUM: 78.4% CERTIFIED",
+                metrics: [
+                    { label: "10-Yr Balance Sheet Peak", val: "KES 14.82B", sub: "10-Yr CAGR: +16.9%", color: "cyan" },
+                    { label: "Recommended Dividend", val: "11.8%", sub: "KES 1.35B Total Payout", color: "purple" },
+                    { label: "Statutory Reserve Added", val: "KES 920M", sub: "SASRA 20% Retention", color: "emerald" },
+                    { label: "Delegate Assembly Quorum", val: "78.4%", sub: "Cryptographic Ballot", color: "cyan" }
+                ],
+                chartTitle: "Annual Dividend & Member Rebate Trajectory (%)",
+                chartSubtitle: "10-Year Historical Dividend Payout Track Record",
+                labels: ["2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"],
+                data: [10.2, 10.5, 10.8, 11.0, 8.5, 10.4, 11.2, 11.4, 11.5, 11.8],
+                chartColor: "#00f3ff",
+                legacySee: "Manual show of hands or paper ballots. Prone to quorum disputes and delegate accreditation bottlenecks.",
+                strideReveal: "Instant biometrically verified quorum, electronic voting audit trail, and mathematical dividend optimization."
+            }
+        };
+
+        let currentChart = null;
+
+        function renderCadence(key) {
+            const data = cadenceData[key];
+            document.getElementById('cadence-tag').textContent = data.tag;
+            document.getElementById('cadence-title').textContent = data.title;
+            document.getElementById('cadence-desc').textContent = data.desc;
+            document.getElementById('cadence-status').textContent = data.status;
+            document.getElementById('chart-title').textContent = data.chartTitle;
+            document.getElementById('chart-subtitle').textContent = data.chartSubtitle;
+            document.getElementById('legacy-see').textContent = data.legacySee;
+            document.getElementById('stride-reveal').textContent = data.strideReveal;
+
+            // Render 4 metrics
+            const metricsContainer = document.getElementById('cadence-metrics');
+            metricsContainer.innerHTML = '';
+            data.metrics.forEach(m => {
+                const borderClass = m.color === 'cyan' ? 'border-l-cyan-400' : m.color === 'purple' ? 'border-l-purple-400' : m.color === 'emerald' ? 'border-l-emerald-400' : 'border-l-amber-400';
+                const textClass = m.color === 'cyan' ? 'text-cyan-400' : m.color === 'purple' ? 'text-purple-300' : m.color === 'emerald' ? 'text-emerald-400' : 'text-amber-300';
+                
+                const card = document.createElement('div');
+                card.className = `glass-card p-6 rounded-2xl border-l-4 ${borderClass}`;
+                card.innerHTML = `
+                    <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1">${m.label}</div>
+                    <div class="text-3xl font-black font-mono ${textClass} mb-1">${m.val}</div>
+                    <div class="text-[11px] text-slate-400 font-mono">${m.sub}</div>
+                `;
+                metricsContainer.appendChild(card);
+            });
+
+            // Update Chart
+            const ctx = document.getElementById('cadenceChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: data.chartTitle,
+                        data: data.data,
+                        borderColor: data.chartColor,
+                        backgroundColor: data.chartColor === '#00f3ff' ? 'rgba(0, 243, 255, 0.12)' : data.chartColor === '#10b981' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(176, 38, 255, 0.12)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: data.chartColor,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#050b14',
+                            titleColor: '#00f3ff',
+                            bodyColor: '#f1f5f9',
+                            borderColor: '#8b00e8',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function switchCadence(key) {
+            ['weekly', 'monthly', 'quarterly', 'annual'].forEach(k => {
+                const tab = document.getElementById('tab-' + k);
+                tab.className = 'flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-mono font-bold border border-transparent transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+            });
+            document.getElementById('tab-' + key).className = 'flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-mono font-bold border border-transparent transition-all flex items-center justify-center gap-2 cadence-tab-active';
+            renderCadence(key);
+        }
+
+        function exportCadenceReport() {
+            window.location.href = 'strideanalytics_whitepaper.pdf';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCadence('monthly');
+        });
+    </script>
+
+    <!-- Stride AI Sovereign Copilot (Bottom Right) -->
+    <script src="stride-chat.js?v=3.0"></script>
+</body>
+</html>
