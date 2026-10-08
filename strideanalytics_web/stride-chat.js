@@ -82,9 +82,9 @@
     // 3. Knowledge Base & Response Engine
     const responses = [
         {
-            keywords: ['running balance', 'summation', 'stock', 'flow', 'ceo', 'banki kuu'],
+            keywords: ['running balance', 'summation', 'stock', 'flow', 'ceo', 'prudential accounting'],
             reply: `💡 <strong>Absolute Running Balance vs Flow:</strong><br><br>
-In institutional accounting (such as Banki Kuu Sacco's model), <strong>Total Loan Book</strong> and <strong>Member Deposits</strong> are <em>Balance Sheet closing balances</em> as of December 31. They must <strong>never</strong> be summed across years.<br><br>
+In institutional accounting (governed by SASRA & IFRS 9 standards), <strong>Total Loan Book</strong> and <strong>Member Deposits</strong> are <em>Balance Sheet closing balances</em> as of December 31. They must <strong>never</strong> be summed across years.<br><br>
 To see annual movement, toggle the <strong>Net Annual Mobilization (Δ YoY Flow)</strong> chart on the <a href="stride-sacco.html" class="text-cyan-400 underline">Stride-SACCO portal</a>.`
         },
         {

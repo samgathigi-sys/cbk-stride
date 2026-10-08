@@ -228,7 +228,7 @@ def build_pdf():
     # Section 3: Navision Export Formats & Accounting Logic
     story.append(Paragraph("3. Microsoft Dynamics NAV Integration & 'Running Balance' Alignment", h1_style))
     story.append(Paragraph(
-        "Following feedback from institutional regulators and executive SACCO management (e.g. Banki Kuu SACCO case study), Stride ingests financial trial balance balances as <b>Absolute Point-in-Time Running Balances</b> rather than arbitrary summation flows:",
+        "Following feedback from institutional regulators and executive SACCO management (governed under SASRA Prudential Directives), Stride ingests financial trial balance balances as <b>Absolute Point-in-Time Running Balances</b> rather than arbitrary summation flows:",
         body_style
     ))
     story.append(Paragraph(
