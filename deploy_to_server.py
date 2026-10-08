@@ -30,7 +30,8 @@ FILES_TO_UPLOAD = [
     "creditscore.html",
     "stride-chat.css",
     "stride-chat.js",
-    "strideanalytics_whitepaper.pdf"
+    "strideanalytics_whitepaper.pdf",
+    "NAVISION_TRIAL_BALANCE_2025_EXPORT.csv"
 ]
 
 def deploy():
