@@ -27,7 +27,9 @@ FILES_TO_UPLOAD = [
     "govstride.html",
     "engine.html",
     "agmplan.html",
-    "creditscore.html"
+    "creditscore.html",
+    "stride-chat.css",
+    "stride-chat.js"
 ]
 
 def deploy():
