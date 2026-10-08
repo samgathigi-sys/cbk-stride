@@ -366,6 +366,247 @@
                 </div>
             </div>
 
+            <!-- MONTHLY SASRA TRIAL BALANCE INGESTION BENCH -->
+            <div id="monthly-upload-bench" class="hidden glass-panel p-8 rounded-3xl border border-emerald-500/40 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-emerald-500/20 pb-4">
+                    <div>
+                        <span class="text-xs font-mono text-emerald-400 uppercase font-bold tracking-wider block mb-1">LIVE TEST BENCH • 30-SECOND PRUDENTIAL FILING</span>
+                        <h3 class="text-xl font-bold font-heading text-white">Monthly Navision / Bankers Realm Trial Balance Ingestion</h3>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <a href="NAVISION_TRIAL_BALANCE_2025_EXPORT.csv" download class="px-4 py-2 rounded-xl bg-navy-900 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-500/20 flex items-center gap-2">
+                            <span>📥</span> <span>Download Navision Export (.csv)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400 block">Select Trial Balance Export:</label>
+                        <select id="monthly-file-select" class="w-full bg-navy-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:border-emerald-400 focus:outline-none">
+                            <option>NAVISION_TRIAL_BALANCE_2025_EXPORT.csv (General Ledger • SASRA Form 1 &amp; 4)</option>
+                            <option>BANKERS_REALM_GL_OCT_2025.csv (Alternative Core Banking)</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400 block">Prudential Form Assembly Engine:</label>
+                        <div class="p-2.5 rounded-xl bg-navy-950 border border-emerald-500/30 text-xs font-mono text-emerald-300 flex items-center justify-between">
+                            <span>SASRA Cap 490B Section 24</span>
+                            <span class="text-emerald-400 font-bold">Auto-Reconciled</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400 block">Execution Action:</label>
+                        <button onclick="runMonthlySasraSim()" id="btn-run-monthly" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:opacity-90 text-navy-950 font-bold text-xs font-mono shadow-lg shadow-emerald-500/20">
+                            ⚡ Ingest &amp; Auto-Generate SASRA Filing
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Monthly Output Area -->
+                <div id="monthly-output-panel" class="hidden bg-navy-950/95 border border-emerald-500/50 p-6 rounded-2xl font-mono text-xs space-y-4">
+                    <div class="flex items-center justify-between border-b border-emerald-500/30 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="text-emerald-300 font-bold text-sm">MONTHLY PRUDENTIAL RETURN GENERATED</span>
+                        </div>
+                        <span class="text-slate-400 text-[11px]">Execution Time: 1.48 Seconds</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-[11px]">
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Core Capital / Assets:</span>
+                            <span class="text-emerald-400 font-bold text-sm">14.6% (Floor: 10.0%)</span>
+                        </div>
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Institutional Capital:</span>
+                            <span class="text-white font-bold text-sm">9.4% (Floor: 8.0%)</span>
+                        </div>
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Form 4 Liquidity Ratio:</span>
+                            <span class="text-cyan-400 font-bold text-sm">34.2% (Floor: 15.0%)</span>
+                        </div>
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Section 24 Compliance:</span>
+                            <span class="text-emerald-400 font-bold text-sm">100% Zero-Breach</span>
+                        </div>
+                    </div>
+
+                    <!-- SASRA Filing Verification Rows -->
+                    <div class="p-4 bg-navy-900/80 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex justify-between items-center text-xs border-b border-slate-800 pb-2">
+                            <span class="text-slate-300 font-bold">Filing Artifacts Prepared</span>
+                            <span class="text-emerald-400">Cryptographically Sealed SHA-256</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
+                            <div class="p-2 bg-navy-950 rounded border border-slate-800">
+                                <span class="text-slate-400 block">Form 1: Statement of Financial Position</span>
+                                <span class="text-cyan-300">Ready for SASRA Portal Submission</span>
+                            </div>
+                            <div class="p-2 bg-navy-950 rounded border border-slate-800">
+                                <span class="text-slate-400 block">Form 2: Statement of Comprehensive Income</span>
+                                <span class="text-cyan-300">Reconciled to GL Account 40000</span>
+                            </div>
+                            <div class="p-2 bg-navy-950 rounded border border-slate-800">
+                                <span class="text-slate-400 block">Form 4: Statement of Liquidity</span>
+                                <span class="text-cyan-300">Net Liquid Assets: KES 4.28B</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUARTERLY BOARDROOM STRESS TEST BENCH -->
+            <div id="quarterly-upload-bench" class="hidden glass-panel p-8 rounded-3xl border border-purple-500/40 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-purple-500/20 pb-4">
+                    <div>
+                        <span class="text-xs font-mono text-purple-400 uppercase font-bold tracking-wider block mb-1">LIVE TEST BENCH • BOARD FIDUCIARY PACK</span>
+                        <h3 class="text-xl font-bold font-heading text-white">Quarterly Macro CBR Stress Testing &amp; Deposit Run Simulation</h3>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-3.5 py-1.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 text-xs font-mono font-bold">
+                            Central Bank of Kenya Rate: 12.75% Base
+                        </span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400 block">Macroeconomic Shock Vector:</label>
+                        <select id="quarterly-scenario-select" class="w-full bg-navy-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:border-purple-400 focus:outline-none">
+                            <option>Scenario A: CBK Rate +300bps &amp; 15% Deposit Run</option>
+                            <option>Scenario B: Agricultural Sector Drought (-25% Tea/Coffee Remittance)</option>
+                            <option>Scenario C: Severe Stagflation (Inflation 9.5% + Fuel Surge)</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400 block">Capital Cushion Target:</label>
+                        <div class="p-2.5 rounded-xl bg-navy-950 border border-purple-500/30 text-xs font-mono text-purple-300 flex items-center justify-between">
+                            <span>Min Liquidity Preservation</span>
+                            <span class="text-purple-400 font-bold">Floor 15.0%</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400 block">Execution Action:</label>
+                        <button onclick="runQuarterlyStressSim()" id="btn-run-quarterly" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold text-xs font-mono shadow-lg shadow-purple-500/20">
+                            🛡️ Execute Dynamic Stress Simulation
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quarterly Output Area -->
+                <div id="quarterly-output-panel" class="hidden bg-navy-950/95 border border-purple-500/50 p-6 rounded-2xl font-mono text-xs space-y-4">
+                    <div class="flex items-center justify-between border-b border-purple-500/30 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse"></span>
+                            <span class="text-purple-300 font-bold text-sm">BOARDROOM FIDUCIARY STRESS MATRIX GENERATED</span>
+                        </div>
+                        <span class="text-slate-400 text-[11px]">Scenario: CBR +300bps / 15% Run</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-[11px]">
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Baseline Liquidity:</span>
+                            <span class="text-white font-bold text-sm">34.2%</span>
+                        </div>
+                        <div class="p-3 bg-navy-900 rounded-xl border border-purple-500/40">
+                            <span class="text-purple-400 block font-bold">Post-Shock Liquidity:</span>
+                            <span class="text-purple-300 font-bold text-sm">22.4% (Survival: PASS)</span>
+                        </div>
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Net Interest Margin Impact:</span>
+                            <span class="text-rose-400 font-bold text-sm">-0.42%</span>
+                        </div>
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Capital Call Requirement:</span>
+                            <span class="text-emerald-400 font-bold text-sm">KES 0.00 (Fully Covered)</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-navy-900/80 rounded-xl border border-purple-500/20 space-y-2 text-slate-300 text-xs">
+                        <span class="text-purple-400 font-bold block uppercase text-[11px]">Boardroom Strategy Recommendation:</span>
+                        <p class="leading-relaxed">
+                            Under a simulated 300bps Central Bank shock, the SACCO maintains a 7.4% buffer above the SASRA 15% statutory liquidity threshold. Recommended executive motion: Maintain dividend reserve at 11.8% while locking KES 1.2B in 91-day CBK Treasury Bills to hedge short-term deposit migration.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANNUAL AGM ASSEMBLY & DIVIDEND BENCH -->
+            <div id="annual-upload-bench" class="hidden glass-panel p-8 rounded-3xl border border-cyan-500/40 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-cyan-500/20 pb-4">
+                    <div>
+                        <span class="text-xs font-mono text-cyan-400 uppercase font-bold tracking-wider block mb-1">LIVE TEST BENCH • SOVEREIGN ASSEMBLY</span>
+                        <h3 class="text-xl font-bold font-heading text-white">Annual General Meeting Quorum &amp; Dividend Optimization Engine</h3>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-3.5 py-1.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-xs font-mono font-bold">
+                            Total Members: 68,400 Delegates
+                        </span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400 block">Proposed Dividend Rate (%):</label>
+                        <select id="annual-dividend-select" class="w-full bg-navy-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:border-cyan-400 focus:outline-none">
+                            <option>11.8% (Recommended • Optimal Statutory Balance)</option>
+                            <option>12.5% (Aggressive Payout)</option>
+                            <option>10.5% (Conservative Capital Preservation)</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400 block">Quorum Verification Standard:</label>
+                        <div class="p-2.5 rounded-xl bg-navy-950 border border-cyan-500/30 text-xs font-mono text-cyan-300 flex items-center justify-between">
+                            <span>AGMplan Cryptographic Ballot</span>
+                            <span class="text-emerald-400 font-bold">Certified</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400 block">Execution Action:</label>
+                        <button onclick="runAnnualAgmSim()" id="btn-run-annual" class="w-full py-2.5 rounded-xl neon-button text-navy-950 font-bold text-xs font-mono shadow-lg shadow-cyan-500/20">
+                            🏛️ Run Quorum Audit &amp; Rebate Model
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Annual Output Area -->
+                <div id="annual-output-panel" class="hidden bg-navy-950/95 border border-cyan-500/50 p-6 rounded-2xl font-mono text-xs space-y-4">
+                    <div class="flex items-center justify-between border-b border-cyan-500/30 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                            <span class="text-cyan-300 font-bold text-sm">AGM QUORUM AUDITED &amp; DIVIDEND SCHEDULE APPROVED</span>
+                        </div>
+                        <span class="text-slate-400 text-[11px]">Audit Protocol: ISO 27001 Merkle Rollup</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-[11px]">
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Accredited Quorum:</span>
+                            <span class="text-emerald-400 font-bold text-sm">78.4% (Threshold: 50%)</span>
+                        </div>
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Total Member Payout:</span>
+                            <span class="text-purple-300 font-bold text-sm">KES 1.35 Billion</span>
+                        </div>
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Statutory Reserve Retained:</span>
+                            <span class="text-cyan-300 font-bold text-sm">KES 920 Million (20%)</span>
+                        </div>
+                        <div class="p-3 bg-navy-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-500 block">Delegate Ballot Integrity:</span>
+                            <span class="text-emerald-400 font-bold text-sm">100% Tamper-Evident</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- The Revenue Math & Subscription Value Calculator -->
@@ -524,14 +765,62 @@
             if (!btn || !panel) return;
             
             btn.disabled = true;
-            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Processing Cryptographic Ingestion...`;
+            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Ingesting Repayment Telemetry...`;
             
             setTimeout(() => {
                 panel.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerHTML = `✅ Ledger Ingested &amp; Early Radar Live`;
                 panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 850);
+            }, 700);
+        }
+
+        function runMonthlySasraSim() {
+            const btn = document.getElementById('btn-run-monthly');
+            const panel = document.getElementById('monthly-output-panel');
+            if (!btn || !panel) return;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Parsing Navision Trial Balance...`;
+            
+            setTimeout(() => {
+                panel.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = `✅ SASRA Form 1 &amp; 4 Return Generated`;
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 700);
+        }
+
+        function runQuarterlyStressSim() {
+            const btn = document.getElementById('btn-run-quarterly');
+            const panel = document.getElementById('quarterly-output-panel');
+            if (!btn || !panel) return;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Running CBR Shock Model...`;
+            
+            setTimeout(() => {
+                panel.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = `✅ Boardroom Stress Matrix Certified`;
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 700);
+        }
+
+        function runAnnualAgmSim() {
+            const btn = document.getElementById('btn-run-annual');
+            const panel = document.getElementById('annual-output-panel');
+            if (!btn || !panel) return;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Calculating Quorum &amp; Dividends...`;
+            
+            setTimeout(() => {
+                panel.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = `✅ AGM Quorum &amp; Payout Modeled`;
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 700);
         }
 
         function renderCadence(key) {
@@ -544,6 +833,18 @@
             document.getElementById('chart-subtitle').textContent = data.chartSubtitle;
             document.getElementById('legacy-see').textContent = data.legacySee;
             document.getElementById('stride-reveal').textContent = data.strideReveal;
+
+            // Toggle active test bench
+            ['weekly', 'monthly', 'quarterly', 'annual'].forEach(k => {
+                const bench = document.getElementById(k + '-upload-bench');
+                if (bench) {
+                    if (k === key) {
+                        bench.classList.remove('hidden');
+                    } else {
+                        bench.classList.add('hidden');
+                    }
+                }
+            });
 
             // Render 4 metrics
             const metricsContainer = document.getElementById('cadence-metrics');
