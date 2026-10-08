@@ -131,8 +131,8 @@
                 <button onclick="toggleAnonymization()" id="anon-btn" class="px-3.5 py-2 rounded-xl text-xs font-mono border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 transition-all flex items-center gap-2">
                     <span id="anon-icon">🔒</span> <span id="anon-text">PII Masking: STRICT</span>
                 </button>
-                <button onclick="triggerStressSim()" class="px-4 py-2 rounded-xl neon-button text-white font-bold text-xs shadow-lg shadow-cyan-500/20">
-                    Run Macro Shock
+                <button onclick="triggerStressSim()" id="btn-macro-shock" class="px-4 py-2 rounded-xl neon-button text-navy-950 font-bold text-xs font-mono shadow-lg shadow-cyan-500/20">
+                    ⚡ Run Macro Shock
                 </button>
             </div>
         </div>
@@ -574,12 +574,36 @@
                 </div>
 
                 <!-- Simulation Result Message Area -->
-                <div id="sim-banner" class="hidden bg-purple-950/60 border border-purple-500/50 p-4 rounded-xl font-mono text-xs text-purple-200">
-                    <div class="flex items-center gap-2 font-bold mb-1">
-                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-                        <span>MACRO SHOCK SIMULATION EXECUTED</span>
+                <div id="sim-banner" class="hidden bg-purple-950/80 border border-purple-500/60 p-5 rounded-2xl font-mono text-xs text-purple-200 space-y-4 shadow-xl shadow-purple-950/50">
+                    <div class="flex items-center justify-between border-b border-purple-500/30 pb-3">
+                        <div class="flex items-center gap-2 font-bold text-sm text-cyan-300">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                            <span>FIDUCIARY MACRO SHOCK EXECUTED (+300 BPS CBR HIKE • 15% DEPOSIT FLIGHT)</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px]">SASRA COMPLIANT</span>
                     </div>
-                    <span>Result: Portfolio absorbs 400bps rate hike with KES 412M reserve preservation. No regulatory recapitalization required.</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
+                        <div class="bg-navy-950 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-slate-400 block text-[10px]">Baseline Liquidity:</span>
+                            <span class="text-white font-bold text-sm">34.2%</span>
+                        </div>
+                        <div class="bg-navy-950 p-2.5 rounded-xl border border-purple-500/40">
+                            <span class="text-purple-300 block text-[10px]">Surviving Liquidity:</span>
+                            <span class="text-cyan-300 font-bold text-sm">22.4% (Pass > 15%)</span>
+                        </div>
+                        <div class="bg-navy-950 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-slate-400 block text-[10px]">Net Margin Impact:</span>
+                            <span class="text-rose-400 font-bold text-sm">-0.42%</span>
+                        </div>
+                        <div class="bg-navy-950 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-slate-400 block text-[10px]">Capital Preservation:</span>
+                            <span class="text-emerald-400 font-bold text-sm">KES 412M Buffer</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-navy-950/90 rounded-xl border border-purple-500/30 text-slate-300 text-[11px] leading-relaxed">
+                        <strong class="text-purple-300 uppercase tracking-wider block mb-1">Boardroom Executive Recommendation:</strong>
+                        Under an adverse 300bps benchmark increase and simultaneous deposit pressure, the balance sheet absorbs liquidity drain without triggering emergency capital calls. Recommended fiduciary action: retain member dividend reserve at 11.8% and rollover KES 1.2B into 91-day sovereign Treasury Bills.
+                    </div>
                 </div>
             </div>
 
@@ -902,6 +926,33 @@
             if (type === 'delta') document.getElementById('btn-chart-delta').className = 'px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/50';
             if (type === 'risk') document.getElementById('btn-chart-risk').className = 'px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/50';
             if (type === 'profit') document.getElementById('btn-chart-profit').className = 'px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50';
+        }
+
+        function triggerStressSim() {
+            const btn = document.getElementById('btn-macro-shock');
+            const banner = document.getElementById('sim-banner');
+            if (!banner) return;
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Running Shock Telemetry...`;
+            }
+
+            // Switch historical trajectory chart to Risk / PAR% & Liquidity Health
+            updateChartType('risk');
+
+            setTimeout(() => {
+                banner.classList.remove('hidden');
+                banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `✅ Macro Shock Executed`;
+                    setTimeout(() => {
+                        btn.innerHTML = `⚡ Run Macro Shock`;
+                    }, 4000);
+                }
+            }, 600);
         }
 
         function generateSupervisoryReport() {
