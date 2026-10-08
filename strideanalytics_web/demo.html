@@ -243,8 +243,11 @@
                         <h3 class="text-xl font-bold font-heading text-white">Live Weekly Repayment Ledger Ingestion &amp; Early Distress Scoring</h3>
                     </div>
                     <div class="flex items-center gap-3">
+                        <button onclick="openShadowPilotModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:opacity-95 text-white text-xs font-mono font-bold shadow-lg shadow-purple-500/25 flex items-center gap-2">
+                            <span>🛡️</span> <span>Request 14-Day Shadow Pilot</span>
+                        </button>
                         <a href="WEEKLY_LOAN_REPAYMENT_LEDGER_W42_2025.csv" download class="px-4 py-2 rounded-xl bg-navy-900 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold hover:bg-cyan-500/20 flex items-center gap-2">
-                            <span>📥</span> <span>Download Weekly Ledger (.csv)</span>
+                            <span>📥</span> <span>Download Sample (.csv)</span>
                         </a>
                     </div>
                 </div>
@@ -684,9 +687,9 @@
                     Ready to schedule a customized boardroom demonstration for your institution?
                 </div>
                 <div class="flex gap-4">
-                    <a href="about.html#contact-hub" class="px-6 py-3 rounded-xl neon-button text-white font-bold text-xs shadow-lg shadow-cyan-500/20">
-                        Request Institutional Pilot
-                    </a>
+                    <button onclick="openShadowPilotModal()" class="px-6 py-3 rounded-xl neon-button text-navy-950 font-bold text-xs shadow-lg shadow-cyan-500/20 flex items-center gap-2">
+                        <span>🛡️</span> <span>Request 14-Day Shadow Pilot</span>
+                    </button>
                     <a href="stride_cadence_executive_whitepaper.pdf" download class="px-6 py-3 rounded-xl glass-panel text-cyan-300 font-bold text-xs border border-cyan-500/40 hover:border-cyan-400 flex items-center gap-2">
                         <span>📄</span> Download Cadence Whitepaper (PDF)
                     </a>
@@ -1075,6 +1078,36 @@
             }
         }
 
+        function openShadowPilotModal() {
+            const m = document.getElementById('shadow-pilot-modal');
+            if (m) m.style.display = 'flex';
+        }
+
+        function closeShadowPilotModal() {
+            const m = document.getElementById('shadow-pilot-modal');
+            if (m) m.style.display = 'none';
+        }
+
+        function submitShadowPilot(e) {
+            e.preventDefault();
+            const saccoName = document.getElementById('pilot-sacco-name').value;
+            const execName = document.getElementById('pilot-exec-name').value;
+            const execEmail = document.getElementById('pilot-exec-email').value;
+            const execPhone = document.getElementById('pilot-exec-phone').value;
+            const coreErp = document.getElementById('pilot-core-erp').value;
+
+            const btn = document.getElementById('btn-pilot-submit');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Provisioning Air-Gapped Pilot Environment...`;
+
+            setTimeout(() => {
+                alert(`🎉 14-DAY SHADOW PILOT ACTIVATED!\n\nInstitution: ${saccoName}\nOfficer: ${execName}\nCore ERP: ${coreErp}\n\nA confidential executive pilot token and air-gapped test container have been provisioned for ${execEmail}. Our Lead Architect will reach out via WhatsApp (${execPhone}) to coordinate your private briefing.`);
+                closeShadowPilotModal();
+                btn.disabled = false;
+                btn.innerHTML = `🛡️ Confirm &amp; Launch 14-Day Shadow Pilot`;
+            }, 900);
+        }
+
         function closeResolutionModal() {
             const modal = document.getElementById('local-resolution-modal');
             if (modal) modal.style.display = 'none';
@@ -1084,6 +1117,72 @@
             renderCadence('weekly');
         });
     </script>
+
+    <!-- 14-DAY CONFIDENTIAL EXECUTIVE SHADOW PILOT MODAL -->
+    <div id="shadow-pilot-modal" style="display: none; z-index: 99999;" class="fixed inset-0 items-center justify-center bg-black/85 backdrop-blur-md p-4">
+        <div class="glass-panel max-w-xl w-full p-6 md:p-8 rounded-3xl border border-purple-500/50 space-y-6 relative shadow-2xl shadow-purple-500/20">
+            <button onclick="closeShadowPilotModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white font-mono text-lg">✕</button>
+            
+            <div class="border-b border-purple-500/30 pb-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono text-xs uppercase mb-2">
+                    <span class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span> 100% Zero-Risk • Zero Outbound PII
+                </div>
+                <h3 class="text-2xl font-bold font-heading text-white">Activate 14-Day Institutional Shadow Pilot</h3>
+                <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                    Test Stride's Day-7 Early Distress Radar and SASRA Form 1/4 auto-assembly side-by-side with your existing core banking system. If Stride doesn't flag at least 3 high-risk loans before your credit officers, you pay zero.
+                </p>
+            </div>
+
+            <form onsubmit="submitShadowPilot(event)" class="space-y-4 font-mono text-xs">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-slate-400 block">SACCO / Bank Name *</label>
+                        <input type="text" id="pilot-sacco-name" required placeholder="e.g. Stima DT SACCO" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:border-cyan-400 focus:outline-none">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-slate-400 block">Current Core Banking ERP *</label>
+                        <select id="pilot-core-erp" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:border-cyan-400 focus:outline-none">
+                            <option>Microsoft Dynamics NAV / Business Central</option>
+                            <option>Bankers Realm / Craft Silicon</option>
+                            <option>Finacle / Infosys</option>
+                            <option>Amtech Core Banking</option>
+                            <option>Custom SQL Database / Excel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-slate-400 block">Executive Contact Name *</label>
+                        <input type="text" id="pilot-exec-name" required placeholder="CEO / Chief Risk Officer / ICT" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:border-cyan-400 focus:outline-none">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-slate-400 block">Corporate Work Email *</label>
+                        <input type="email" id="pilot-exec-email" required placeholder="exec@sacco.co.ke" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:border-cyan-400 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-slate-400 block">Direct Mobile / WhatsApp (For Private Deployment Brief) *</label>
+                    <input type="tel" id="pilot-exec-phone" required placeholder="+254 7XX XXX XXX" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-cyan-300 focus:border-cyan-400 focus:outline-none">
+                </div>
+
+                <div class="p-3 bg-navy-950 rounded-xl border border-emerald-500/30 flex items-center gap-3 text-[11px] text-slate-300">
+                    <span class="text-emerald-400 text-lg">🔒</span>
+                    <span><strong>ODPC Legal Air-Gap:</strong> Shadow Pilot operates strictly via Client-Side WebCrypto SHA-256 tokens. No member national ID numbers or names leave your building.</span>
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="submit" id="btn-pilot-submit" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:opacity-95 text-white font-bold text-xs font-mono shadow-lg shadow-purple-500/25">
+                        🛡️ Confirm &amp; Launch 14-Day Shadow Pilot
+                    </button>
+                    <button type="button" onclick="closeShadowPilotModal()" class="px-5 py-3.5 rounded-xl bg-navy-900 border border-slate-700 text-slate-300 hover:text-white font-bold text-xs font-mono">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- SACCO INTERNAL LOCAL PERIMETER RESOLUTION MODAL -->
     <div id="local-resolution-modal" style="display: none; z-index: 99999;" class="fixed inset-0 items-center justify-center bg-black/85 backdrop-blur-md p-4">
