@@ -249,28 +249,44 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                    <div class="space-y-2">
-                        <label class="text-xs font-mono text-slate-400 block">Select Weekly Repayment Dataset:</label>
-                        <select id="weekly-file-select" class="w-full bg-navy-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:border-cyan-400 focus:outline-none">
-                            <option>WEEKLY_LOAN_REPAYMENT_LEDGER_W42_2025.csv (35 Accounts • Day 7 Early Distress Flags)</option>
-                            <option>WEEKLY_DISBURSEMENT_REGISTER_W43.csv (Simulated Pipeline)</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-xs font-mono text-slate-400 block">ODPC Dynamic Member Masking:</label>
-                        <div class="p-2.5 rounded-xl bg-navy-950 border border-purple-500/30 text-xs font-mono text-cyan-300 flex items-center justify-between">
-                            <span>HMAC-SHA256 Client Salt</span>
-                            <span class="text-emerald-400 font-bold">100% PII Masked</span>
+                <!-- Zero-Knowledge Local Browser Ingestion Bench -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    <!-- Dropzone & File Chooser (5 Cols) -->
+                    <div class="lg:col-span-5 p-5 rounded-2xl bg-navy-950/90 border-2 border-dashed border-cyan-500/40 hover:border-cyan-400 transition-colors flex flex-col justify-center items-center text-center cursor-pointer group" onclick="document.getElementById('custom-csv-file').click()">
+                        <input type="file" id="custom-csv-file" accept=".csv" class="hidden" onchange="handleCustomCsvFile(this)">
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                            📂
+                        </div>
+                        <div class="text-xs font-mono font-bold text-white mb-1" id="custom-file-label">Drop Local Sacco Repayment CSV Here</div>
+                        <div class="text-[10px] text-slate-400 font-mono">or click to browse from workstation • RAM-only processing</div>
+                        <div class="mt-3 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[10px] text-cyan-300 font-mono font-semibold" id="file-status-badge">
+                            Preloaded: WEEKLY_LOAN_REPAYMENT_LEDGER_W42_2025.csv
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="text-xs font-mono text-slate-400 block">Execution Action:</label>
-                        <button onclick="runWeeklyLedgerSim()" id="btn-run-weekly" class="w-full py-2.5 rounded-xl neon-button text-navy-950 font-bold text-xs font-mono shadow-lg shadow-cyan-500/20">
-                            🚀 Ingest &amp; Run Early-Warning Radar
-                        </button>
+                    <!-- Client Salt & Execution Controls (7 Cols) -->
+                    <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-xs font-mono text-slate-400 block">Workstation Secret Salt (Air-Gap):</label>
+                            <input type="text" id="custom-salt-input" value="#sacco-sovereign-2026" class="w-full bg-navy-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-cyan-300 font-mono focus:border-cyan-400 focus:outline-none" placeholder="Enter private salt phrase">
+                            <span class="text-[10px] text-slate-500 font-mono block">Never leaves browser memory</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-mono text-slate-400 block">ODPC Privacy Standard:</label>
+                            <div class="p-2.5 rounded-xl bg-navy-950 border border-emerald-500/30 text-xs font-mono text-cyan-300 flex items-center justify-between">
+                                <span class="text-[11px]">Client WebCrypto</span>
+                                <span class="text-emerald-400 font-bold text-[11px]">100% PII Masked</span>
+                            </div>
+                            <span class="text-[10px] text-emerald-400/80 font-mono block">Section 25 &amp; 41 Compliant</span>
+                        </div>
+
+                        <div class="sm:col-span-2 space-y-2">
+                            <label class="text-xs font-mono text-slate-400 block">Client Execution Action:</label>
+                            <button onclick="processBrowserLocalCsv()" id="btn-run-weekly" class="w-full py-3 rounded-xl neon-button text-navy-950 font-bold text-xs font-mono shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
+                                <span>🚀</span> <span>Hash Client-Side &amp; Run Early-Warning Radar</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -322,7 +338,7 @@
                                         <th class="pb-1.5 text-right">Intervention Action</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-800/60">
+                                <tbody id="early-warning-tbody" class="divide-y divide-slate-800/60">
                                     <tr onclick="resolveLocalMember('LN-FOSA-8803', 'TKN-SHA256-992381', 'Jane W. Mwangi', '0722 *** 419', 'Salary Advance 30D', '80,000.00', '7 Days Past Due', 'SMS Soft Nudge: Scheduled for 09:00 AM')" class="hover:bg-cyan-500/10 cursor-pointer transition-colors group">
                                         <td class="py-2.5 text-white font-bold group-hover:text-cyan-300">LN-FOSA-8803</td>
                                         <td class="py-2.5 text-cyan-400 font-mono">TKN-SHA256-992381</td>
@@ -779,20 +795,110 @@
 
         let currentChart = null;
 
-        function runWeeklyLedgerSim() {
+        let customParsedRows = null;
+        let windowLocalLookup = {
+            "TKN-SHA256-992381": { name: "Jane W. Mwangi", phone: "0722 *** 419" },
+            "TKN-SHA256-774195": { name: "Peter K. Omondi", phone: "0733 *** 821" },
+            "TKN-SHA256-664188": { name: "Fatuma A. Hassan", phone: "0710 *** 552" },
+            "TKN-SHA256-773419": { name: "Samuel N. Gathigi", phone: "0701 *** 114" }
+        };
+
+        async function hashStringSha256(message, salt) {
+            const msgBuffer = new TextEncoder().encode(message + '::' + salt);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return 'TKN-SHA256-' + hashHex.substring(0, 6).toUpperCase();
+        }
+
+        function handleCustomCsvFile(input) {
+            if (!input.files || input.files.length === 0) return;
+            const file = input.files[0];
+            document.getElementById('custom-file-label').textContent = file.name;
+            document.getElementById('file-status-badge').textContent = `Loaded in RAM: ${(file.size / 1024).toFixed(1)} KB • Zero Outbound Transfer`;
+            document.getElementById('file-status-badge').className = "mt-3 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-400 font-mono font-semibold";
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+                if (lines.length <= 1) return;
+                
+                customParsedRows = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+                    if (cols.length >= 5) {
+                        customParsedRows.push({
+                            loanRef: cols[0],
+                            memberName: cols[1],
+                            memberPhone: cols[2],
+                            product: cols[3],
+                            balance: cols[4],
+                            dpd: parseInt(cols[5] || '0') || 7,
+                            pd: cols[6] || '3.50%'
+                        });
+                    }
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        async function processBrowserLocalCsv() {
             const btn = document.getElementById('btn-run-weekly');
             const panel = document.getElementById('weekly-output-panel');
+            const salt = document.getElementById('custom-salt-input').value || '#sacco-sovereign-2026';
             if (!btn || !panel) return;
             
             btn.disabled = true;
-            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Ingesting Repayment Telemetry...`;
+            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Client WebCrypto Hashing in RAM...`;
             
+            // If user uploaded custom rows, hash them in memory
+            if (customParsedRows && customParsedRows.length > 0) {
+                const tbody = document.getElementById('early-warning-tbody');
+                if (tbody) tbody.innerHTML = '';
+                
+                for (let row of customParsedRows) {
+                    const token = await hashStringSha256(row.memberName, salt);
+                    windowLocalLookup[token] = { name: row.memberName, phone: row.memberPhone };
+                    
+                    let actionText = row.dpd >= 14 ? 'Credit Officer Priority Escalation & Direct Call' : row.dpd >= 10 ? 'Guarantor Pre-Notification Alert via SMS/Email' : 'SMS Soft Nudge: Scheduled for 09:00 AM';
+                    let actionBadge = row.dpd >= 14 ? '📞 Officer Call' : row.dpd >= 10 ? '🛡️ Guarantor Alert' : '📲 SMS Soft Nudge';
+                    let badgeClass = row.dpd >= 14 ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+                    let pillClass = row.dpd >= 14 ? 'bg-rose-400' : 'bg-amber-400';
+                    
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-cyan-500/10 cursor-pointer transition-colors group";
+                    tr.onclick = function() {
+                        resolveLocalMember(row.loanRef, token, row.memberName, row.memberPhone, row.product, row.balance, row.dpd + ' Days Past Due', actionText);
+                    };
+                    tr.innerHTML = `
+                        <td class="py-2.5 text-white font-bold group-hover:text-cyan-300">${row.loanRef}</td>
+                        <td class="py-2.5 text-cyan-400 font-mono">${token}</td>
+                        <td class="py-2.5 text-slate-300">${row.product}</td>
+                        <td class="py-2.5 text-white font-bold">${row.balance}</td>
+                        <td class="py-2.5 ${row.dpd >= 14 ? 'text-rose-400' : 'text-amber-400'} font-bold">${row.dpd} Days</td>
+                        <td class="py-2.5 text-rose-400 font-bold">${row.pd}</td>
+                        <td class="py-2.5 text-right">
+                            <button class="px-2.5 py-1 rounded-lg ${badgeClass} border font-bold text-[11px] shadow-sm flex items-center gap-1.5 ml-auto">
+                                <span>${actionBadge}</span>
+                                <span class="text-[9px] ${pillClass} text-navy-950 px-1 py-0.2 rounded font-extrabold uppercase">Resolve</span>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            }
+
             setTimeout(() => {
                 panel.classList.remove('hidden');
                 btn.disabled = false;
-                btn.innerHTML = `✅ Ledger Ingested &amp; Early Radar Live`;
+                btn.innerHTML = `✅ Client-Side Air-Gap Radar Active`;
                 panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 700);
+            }, 600);
+        }
+
+        function runWeeklyLedgerSim() {
+            processBrowserLocalCsv();
         }
 
         function runMonthlySasraSim() {
@@ -940,19 +1046,38 @@
         }
 
         function resolveLocalMember(loanRef, token, name, phone, product, balance, overdue, action) {
-            document.getElementById('modal-loan-ref').textContent = loanRef;
-            document.getElementById('modal-token').textContent = token;
-            document.getElementById('modal-member-name').textContent = name;
-            document.getElementById('modal-member-phone').textContent = phone;
-            document.getElementById('modal-product').textContent = product;
-            document.getElementById('modal-balance').textContent = 'KES ' + balance;
-            document.getElementById('modal-overdue').textContent = overdue;
-            document.getElementById('modal-action').textContent = action;
-            document.getElementById('local-resolution-modal').classList.remove('hidden');
+            try {
+                const elRef = document.getElementById('modal-loan-ref');
+                if (elRef) elRef.textContent = loanRef;
+                const elTok = document.getElementById('modal-token');
+                if (elTok) elTok.textContent = token;
+                const elName = document.getElementById('modal-member-name');
+                if (elName) elName.textContent = name;
+                const elPhone = document.getElementById('modal-member-phone');
+                if (elPhone) elPhone.textContent = phone;
+                const elProd = document.getElementById('modal-product');
+                if (elProd) elProd.textContent = product;
+                const elBal = document.getElementById('modal-balance');
+                if (elBal) elBal.textContent = 'KES ' + balance;
+                const elDue = document.getElementById('modal-overdue');
+                if (elDue) elDue.textContent = overdue;
+                const elAct = document.getElementById('modal-action');
+                if (elAct) elAct.textContent = action;
+                
+                const modal = document.getElementById('local-resolution-modal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                } else {
+                    alert('🔒 Local Perimeter Resolution:\nToken: ' + token + '\nResolved Member: ' + name + ' (' + phone + ')\nExposure: KES ' + balance + '\nStatus: ' + overdue + '\nRemediation: ' + action);
+                }
+            } catch (err) {
+                alert('🔒 Local Perimeter Resolution:\nToken: ' + token + '\nResolved Member: ' + name + ' (' + phone + ')\nExposure: KES ' + balance + '\nStatus: ' + overdue + '\nRemediation: ' + action);
+            }
         }
 
         function closeResolutionModal() {
-            document.getElementById('local-resolution-modal').classList.add('hidden');
+            const modal = document.getElementById('local-resolution-modal');
+            if (modal) modal.style.display = 'none';
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -961,7 +1086,7 @@
     </script>
 
     <!-- SACCO INTERNAL LOCAL PERIMETER RESOLUTION MODAL -->
-    <div id="local-resolution-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div id="local-resolution-modal" style="display: none; z-index: 99999;" class="fixed inset-0 items-center justify-center bg-black/85 backdrop-blur-md p-4">
         <div class="glass-panel max-w-lg w-full p-6 md:p-8 rounded-3xl border border-cyan-400/50 space-y-6 relative shadow-2xl shadow-cyan-500/20">
             <button onclick="closeResolutionModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white font-mono text-lg">✕</button>
             
