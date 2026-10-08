@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGMplan™ | Live Assembly Governance, Quorum Tracking & Electronic Voting</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#050B14', 950: '#020408' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .neon-bg {
+            background: radial-gradient(circle at 50% 12%, rgba(59, 130, 246, 0.22), rgba(6, 182, 212, 0.12), transparent 60%),
+                        radial-gradient(circle at 10% 70%, rgba(59, 130, 246, 0.16), transparent 50%),
+                        radial-gradient(circle at 90% 85%, rgba(147, 51, 234, 0.14), transparent 45%),
+                        #020408;
+        }
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.88);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+        }
+        .glass-panel:hover {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.25);
+        }
+        .wave-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3b82f6, #06b6d4, transparent);
+            filter: blur(1px);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="neon-bg text-slate-100 min-h-screen flex flex-col antialiased relative overflow-x-hidden">
+
+    <div class="wave-line top-[15%] left-0 animate-pulse"></div>
+    <div class="wave-line top-[55%] left-0"></div>
+
+    <!-- Ticker -->
+    <div class="bg-gradient-to-r from-blue-950 via-slate-900 to-cyan-950 border-b border-blue-500/30 py-2.5 px-4 text-xs font-medium text-blue-300 tracking-wider text-center uppercase flex items-center justify-center gap-3 z-20 overflow-x-auto whitespace-nowrap">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <span class="font-mono">58TH ANNUAL GENERAL ASSEMBLY: LIVE VOTING ACTIVE</span>
+        <span class="text-slate-600">•</span>
+        <span class="font-mono text-emerald-400">QUORUM CONFIRMED (84.12% ACCREDITATION)</span>
+        <span class="text-slate-600">•</span>
+        <span class="font-mono">CRYPTOGRAPHIC RESOLUTION STAMPING ENGAGED</span>
+    </div>
+
+    <!-- Header with Back to Home -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-blue-500/25">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-semibold hover:bg-blue-500/20 transition-all">
+                    <span>←</span>
+                    <span>Back to Overview</span>
+                </a>
+                <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center font-bold text-navy-950 text-lg font-heading shadow-md shadow-blue-500/25">
+                        A
+                    </div>
+                    <div>
+                        <span class="text-lg font-extrabold tracking-tight font-heading text-white">AGMplan<span class="text-blue-400">™</span></span>
+                        <span class="text-[10px] tracking-widest text-slate-400 block uppercase font-mono">Assembly & Electronic Voting Suite</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="hidden lg:flex items-center gap-2 bg-navy-950/80 px-3 py-1.5 rounded-lg border border-blue-500/20 text-xs font-mono text-slate-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>Accreditation Gate: <strong class="text-cyan-400">ONLINE (MOMBASA / KICC)</strong></span>
+                </div>
+                <button onclick="castSampleVote()" class="px-4 py-2 rounded-xl bg-blue-500/20 border border-blue-400/50 text-blue-300 text-xs font-semibold hover:bg-blue-500/30 transition-all">
+                    Vote Ballot Demo
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-6 py-12 flex-1 w-full relative z-10">
+        
+        <!-- Module Banner -->
+        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-blue-500/20 pb-8">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-mono uppercase mb-3">
+                    Institutional Governance • Cooperatives Act § 27
+                </div>
+                <h1 class="text-4xl md:text-5xl font-extrabold font-heading text-white tracking-tight">
+                    Assembly Quorum & <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">Live Electronic Ballot</span>
+                </h1>
+                <p class="text-slate-400 text-sm md:text-base mt-2 max-w-2xl">
+                    High-throughput physical gate scanning, verified quorum accreditation telemetry, and weighted electronic balloting for statutory member resolutions.
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-2 rounded-xl">
+                    ● Quorum Attained: 84.12%
+                </span>
+            </div>
+        </div>
+
+        <!-- 4 KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            
+            <div class="glass-panel rounded-2xl p-6 border-blue-500/40 relative">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>QUORUM ACCREDITATION</span>
+                    <span class="text-emerald-400 font-bold">LEGAL QUORUM</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-white mb-1" id="quorum-val">84.12%</div>
+                <div class="text-xs text-slate-400">Registered: <span class="text-cyan-300 font-bold" id="delegates-val">8,412 / 10,000</span></div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-400 to-emerald-400 h-2 rounded-full" style="width: 84.12%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                    <span>●</span> Minimum 25% Threshold Exceeded
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 relative">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>GATE THROUGHPUT</span>
+                    <span class="text-cyan-400 font-bold">Fast Lane</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-cyan-400 mb-1">34 / Min</div>
+                <div class="text-xs text-slate-400">Avg Scan Time: <span class="text-white font-bold">0.8 Seconds</span></div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full" style="width: 88%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-cyan-300 flex items-center gap-1">
+                    <span>●</span> QR Optical Verification Active
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 relative">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>BALLOT INTEGRITY</span>
+                    <span class="text-purple-300 font-bold">1 Member 1 Vote</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-white mb-1">100.0%</div>
+                <div class="text-xs text-slate-400">Zero Ghost Votes or Collusion</div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-500 to-cyan-400 h-2 rounded-full" style="width: 100%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-purple-300 flex items-center gap-1">
+                    <span>●</span> Cryptographic Nonce Verified
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 relative">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>STATUTORY RESOLUTIONS</span>
+                    <span class="text-emerald-400 font-bold">Live Order</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-emerald-400 mb-1">5 Passed</div>
+                <div class="text-xs text-slate-400">1 Motion Currently on Floor</div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-400 to-blue-400 h-2 rounded-full" style="width: 83%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                    <span>●</span> Real-time Ministry Filing
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Live Resolution Motion Ballot (Interactive) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+            
+            <!-- Active Resolution Ballot -->
+            <div class="lg:col-span-2 glass-panel rounded-2xl p-8 border-blue-500/30">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                    <div>
+                        <div class="text-xs font-mono text-cyan-400 mb-1 uppercase">Motion #04 (Floor Vote Active)</div>
+                        <h2 class="text-xl font-bold font-heading text-white">Approval of 14.5% Dividend Distribution on Share Capital</h2>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold animate-pulse">
+                        LIVE BALLOT
+                    </span>
+                </div>
+
+                <!-- Tally Breakdown -->
+                <div class="space-y-6 mb-8 font-mono">
+                    <!-- In Favor -->
+                    <div>
+                        <div class="flex justify-between items-center text-xs mb-2">
+                            <span class="text-slate-300 font-bold flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-emerald-400"></span> IN FAVOR (YES)
+                            </span>
+                            <span class="text-emerald-400 font-bold" id="favor-pct">92.4% (7,772 Votes)</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                            <div class="bg-gradient-to-r from-emerald-400 to-cyan-400 h-3 rounded-full transition-all duration-500" id="favor-bar" style="width: 92.4%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Against -->
+                    <div>
+                        <div class="flex justify-between items-center text-xs mb-2">
+                            <span class="text-slate-300 font-bold flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-rose-400"></span> AGAINST (NO)
+                            </span>
+                            <span class="text-rose-400 font-bold" id="against-pct">5.1% (429 Votes)</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                            <div class="bg-rose-500 h-3 rounded-full transition-all duration-500" id="against-bar" style="width: 5.1%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Abstain -->
+                    <div>
+                        <div class="flex justify-between items-center text-xs mb-2">
+                            <span class="text-slate-300 font-bold flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-slate-400"></span> ABSTAIN
+                            </span>
+                            <span class="text-slate-400 font-bold" id="abstain-pct">2.5% (211 Votes)</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                            <div class="bg-slate-500 h-3 rounded-full transition-all duration-500" id="abstain-bar" style="width: 2.5%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Cast Vote Action -->
+                <div class="bg-navy-950/90 rounded-xl p-5 border border-slate-800">
+                    <span class="text-xs font-mono text-slate-400 block mb-3">Simulate Delegate Voting Action (Weighted Shareholder Key #342801):</span>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="castVote('FAVOR')" class="px-5 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 font-mono text-xs font-bold hover:bg-emerald-500/30 transition-all flex items-center gap-2">
+                            <span>✔</span> VOTE YES (IN FAVOR)
+                        </button>
+                        <button onclick="castVote('AGAINST')" class="px-5 py-2.5 rounded-xl bg-rose-500/20 border border-rose-500/50 text-rose-300 font-mono text-xs font-bold hover:bg-rose-500/30 transition-all flex items-center gap-2">
+                            <span>✖</span> VOTE NO (AGAINST)
+                        </button>
+                        <button onclick="castVote('ABSTAIN')" class="px-5 py-2.5 rounded-xl bg-slate-700/40 border border-slate-600 text-slate-300 font-mono text-xs font-bold hover:bg-slate-700/60 transition-all">
+                            ABSTAIN
+                        </button>
+                    </div>
+                    <div id="vote-feedback" class="hidden mt-3 text-xs font-mono text-cyan-300 pt-2 border-t border-slate-800"></div>
+                </div>
+            </div>
+
+            <!-- Assembly Operations Panel -->
+            <div class="glass-panel rounded-2xl p-8 border-cyan-500/30 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xl font-bold font-heading text-white mb-4">Accreditation Channels</h3>
+                    <div class="space-y-4 font-mono text-xs">
+                        <div class="p-3 rounded-xl bg-navy-950/80 border border-slate-800">
+                            <div class="flex justify-between text-slate-400 mb-1">
+                                <span>Main Auditorium (Physical)</span>
+                                <span class="text-white font-bold">5,820 Seats</span>
+                            </div>
+                            <div class="text-emerald-400 font-semibold">● 97% Full (Mombasa Serena / KICC)</div>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-navy-950/80 border border-slate-800">
+                            <div class="flex justify-between text-slate-400 mb-1">
+                                <span>Encrypted Remote Proxy</span>
+                                <span class="text-white font-bold">2,592 Voters</span>
+                            </div>
+                            <div class="text-cyan-400 font-semibold">● Authenticated 2FA Token</div>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-navy-950/80 border border-slate-800">
+                            <div class="flex justify-between text-slate-400 mb-1">
+                                <span>SASRA Observer Node</span>
+                                <span class="text-white font-bold">Connected</span>
+                            </div>
+                            <div class="text-purple-300 font-semibold">● Real-time Audit Mirror</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-800">
+                    <div class="text-[11px] font-mono text-slate-400">
+                        Cryptographic Stamp: <strong class="text-cyan-300">ODPC-AGM-2026-SHA256</strong>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-blue-500/20 bg-navy-950 py-10 text-slate-500 text-xs px-6 relative z-10 mt-12">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-white">StrideAnalytics</span>
+                <span>• AGMplan™ Assembly Core v2.4</span>
+            </div>
+            <div>
+                <a href="index.html" class="text-blue-400 hover:underline">← Return to Ecosystem Home</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function castVote(type) {
+            const fb = document.getElementById('vote-feedback');
+            fb.classList.remove('hidden');
+            fb.innerHTML = `[✔] Ballot Successfully Encrypted: Voted <strong>${type}</strong> for Motion #04. Transaction ID: 0x${Math.random().toString(16).substring(2, 10).toUpperCase()}`;
+            
+            if (type === 'FAVOR') {
+                document.getElementById('favor-pct').textContent = '92.5% (7,773 Votes)';
+            }
+        }
+        function castSampleVote() {
+            castVote('FAVOR');
+        }
+    </script>
+</body>
+</html>

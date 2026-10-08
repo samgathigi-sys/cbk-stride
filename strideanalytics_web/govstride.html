@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GovStride™ | Sovereign Public Sector Governance & Encrypted Audit Chains</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#050B14', 950: '#020408' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .neon-bg {
+            background: radial-gradient(circle at 50% 12%, rgba(147, 51, 234, 0.22), rgba(6, 182, 212, 0.1), transparent 60%),
+                        radial-gradient(circle at 10% 70%, rgba(147, 51, 234, 0.18), transparent 50%),
+                        radial-gradient(circle at 90% 85%, rgba(59, 130, 246, 0.15), transparent 45%),
+                        #020408;
+        }
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.88);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+        }
+        .glass-panel:hover {
+            border-color: rgba(168, 85, 247, 0.6);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.25);
+        }
+        .wave-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #9333ea, #3b82f6, transparent);
+            filter: blur(1px);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="neon-bg text-slate-100 min-h-screen flex flex-col antialiased relative overflow-x-hidden">
+
+    <div class="wave-line top-[15%] left-0 animate-pulse"></div>
+    <div class="wave-line top-[55%] left-0"></div>
+
+    <!-- Ticker -->
+    <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-cyan-950 border-b border-purple-500/30 py-2.5 px-4 text-xs font-medium text-purple-300 tracking-wider text-center uppercase flex items-center justify-center gap-3 z-20 overflow-x-auto whitespace-nowrap">
+        <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse shrink-0"></span>
+        <span class="font-mono">PUBLIC FINANCE MANAGEMENT (PFM) ACT 2012 PROTOCOL</span>
+        <span class="text-slate-600">•</span>
+        <span class="font-mono text-cyan-300">SHA-256 ZERO-KNOWLEDGE APPROVAL LEDGER</span>
+        <span class="text-slate-600">•</span>
+        <span class="font-mono">SOVEREIGN MINISTERIAL CLEARANCE ACTIVE</span>
+    </div>
+
+    <!-- Navigation Header with Back to Home -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-purple-500/25">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold hover:bg-purple-500/20 transition-all">
+                    <span>←</span>
+                    <span>Back to Overview</span>
+                </a>
+                <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center font-bold text-white text-lg font-heading shadow-md shadow-purple-500/30">
+                        G
+                    </div>
+                    <div>
+                        <span class="text-lg font-extrabold tracking-tight font-heading text-white">GovStride<span class="text-purple-400">™</span></span>
+                        <span class="text-[10px] tracking-widest text-slate-400 block uppercase font-mono">Sovereign Public Sector Governance</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="hidden lg:flex items-center gap-2 bg-navy-950/80 px-3 py-1.5 rounded-lg border border-purple-500/20 text-xs font-mono text-slate-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>Vault Security: <strong class="text-emerald-400">ENCRYPTED FIPS-140-3</strong></span>
+                </div>
+                <a href="index.html#subdomain-test" class="px-4 py-2 rounded-xl bg-purple-500/20 border border-purple-400/50 text-purple-300 text-xs font-semibold hover:bg-purple-500/30 transition-all">
+                    Switch Entity
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-6 py-12 flex-1 w-full relative z-10">
+        
+        <!-- Module Banner -->
+        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-purple-500/20 pb-8">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-mono uppercase mb-3">
+                    Cryptographic Document Integrity • PFM Act Compliant
+                </div>
+                <h1 class="text-4xl md:text-5xl font-extrabold font-heading text-white tracking-tight">
+                    Sovereign Governance & <span class="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">Approval Chains</span>
+                </h1>
+                <p class="text-slate-400 text-sm md:text-base mt-2 max-w-2xl">
+                    End-to-end multi-signatory digital warrants, immutable blockchain audit ledgers, and secure rooms for high-stakes public sector decision-making.
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-2 rounded-xl">
+                    ● 14 Active Warrants In Transit
+                </span>
+            </div>
+        </div>
+
+        <!-- 4 Primary KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            
+            <div class="glass-panel rounded-2xl p-6 border-purple-500/40 relative">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>ACTIVE APPROVAL CHAINS</span>
+                    <span class="text-purple-300 font-bold">14 Warrants</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-white mb-1">100%</div>
+                <div class="text-xs text-slate-400">Audit Trail Cryptographic Coverage</div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-400 to-cyan-400 h-2 rounded-full" style="width: 100%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-purple-300 flex items-center gap-1">
+                    <span>●</span> Zero Paper Latency
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 relative">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>AVG CLEARANCE VELOCITY</span>
+                    <span class="text-emerald-400 font-bold">4.2 Hours</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-emerald-400 mb-1">-78%</div>
+                <div class="text-xs text-slate-400">Turnaround Time vs Manual Files</div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-400 to-cyan-400 h-2 rounded-full" style="width: 78%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                    <span>●</span> Zero Bottlenecks Detected
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 relative">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>MULTI-STAKEHOLDER ROOMS</span>
+                    <span class="text-cyan-400 font-bold">Encrypted</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-white mb-1">8 Rooms</div>
+                <div class="text-xs text-slate-400">Zero-Knowledge Cabinet Sessions</div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-cyan-400 to-purple-400 h-2 rounded-full" style="width: 65%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-cyan-300 flex items-center gap-1">
+                    <span>●</span> E2E Biometric 2FA Verified
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 relative">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>AUDIT RECORD TAMPERING</span>
+                    <span class="text-emerald-400 font-bold">Zero Incidents</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-emerald-400 mb-1">0.00%</div>
+                <div class="text-xs text-slate-400">SHA-256 Merkle Consistency</div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-500 to-emerald-400 h-2 rounded-full" style="width: 100%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-purple-300 flex items-center gap-1">
+                    <span>●</span> Immutable Block Ledger
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Multi-Signatory Cryptographic Pipeline -->
+        <div class="glass-panel rounded-2xl p-8 border-purple-500/30 mb-10">
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-800">
+                <div>
+                    <h2 class="text-xl font-bold font-heading text-white">Live Document Clearance Pipeline (Warrant #WRT-2026-904)</h2>
+                    <p class="text-xs text-slate-400">Subject: Annual Fiscal Devolution Grant Disbursement (KES 450,000,000)</p>
+                </div>
+                <span class="px-3 py-1 rounded bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono text-xs">
+                    Stage 3 of 4: Pending Accounting Officer
+                </span>
+            </div>
+
+            <!-- Visual 4-Step Chain -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 relative">
+                
+                <!-- Step 1: Legal -->
+                <div class="bg-navy-950/90 rounded-xl p-5 border border-emerald-500/40 relative">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[10px] font-mono text-slate-400">STAGE 01</span>
+                        <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">PASSED</span>
+                    </div>
+                    <div class="font-bold text-white text-sm mb-1">Legal Counsel Review</div>
+                    <div class="text-xs text-slate-400 mb-3">Adv. K. M. Mwangi</div>
+                    <div class="text-[10px] font-mono text-slate-500 break-all border-t border-slate-800 pt-2">
+                        HASH: e4b2...9f81
+                    </div>
+                </div>
+
+                <!-- Step 2: Internal Audit -->
+                <div class="bg-navy-950/90 rounded-xl p-5 border border-emerald-500/40 relative">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[10px] font-mono text-slate-400">STAGE 02</span>
+                        <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">PASSED</span>
+                    </div>
+                    <div class="font-bold text-white text-sm mb-1">Internal Audit Oversight</div>
+                    <div class="text-xs text-slate-400 mb-3">CPA P. Nyambu</div>
+                    <div class="text-[10px] font-mono text-slate-500 break-all border-t border-slate-800 pt-2">
+                        HASH: 7a1c...4d2e
+                    </div>
+                </div>
+
+                <!-- Step 3: Accounting Officer (Current) -->
+                <div class="bg-navy-950/90 rounded-xl p-5 border-2 border-cyan-400 shadow-lg shadow-cyan-500/20 relative animate-pulse">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[10px] font-mono text-cyan-300 font-bold">STAGE 03 (NOW)</span>
+                        <span class="text-[10px] font-mono text-cyan-400 bg-cyan-500/20 px-2 py-0.5 rounded font-bold">PENDING SIGN</span>
+                    </div>
+                    <div class="font-bold text-white text-sm mb-1">Accounting Officer</div>
+                    <div class="text-xs text-slate-400 mb-3">Principal Sec. S. Gathigi</div>
+                    <div class="text-[10px] font-mono text-cyan-400 border-t border-slate-800 pt-2 flex items-center justify-between">
+                        <span>Awaiting Token Key</span>
+                        <button onclick="signSimulatedWarrant()" class="px-2 py-0.5 bg-cyan-400 text-navy-950 font-bold rounded hover:bg-cyan-300">SIGN NOW</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Final Cabinet Sec -->
+                <div class="bg-navy-950/60 rounded-xl p-5 border border-slate-800 opacity-60 relative">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[10px] font-mono text-slate-500">STAGE 04</span>
+                        <span class="text-[10px] font-mono text-slate-500">QUEUED</span>
+                    </div>
+                    <div class="font-bold text-slate-400 text-sm mb-1">Cabinet Secretary Seal</div>
+                    <div class="text-xs text-slate-500 mb-3">Hon. Cabinet Secretary</div>
+                    <div class="text-[10px] font-mono text-slate-600 border-t border-slate-800 pt-2">
+                        Pending Stage 03
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Interactive Terminal output -->
+            <div id="sign-output" class="hidden bg-slate-950 rounded-xl p-5 border border-emerald-500/40 font-mono text-xs text-emerald-400 space-y-1">
+                <div>[+] Cryptographic Nonce Verified: 0x934FA82C71</div>
+                <div>[+] Signature Applied: Accounting Officer (SHA-256: d8f391a27e...bc94)</div>
+                <div>[+] Merkle Block #44,192 Appended & Distributed to Sovereign Audit Node.</div>
+                <div class="text-white font-bold">[✔] WARRANT #WRT-2026-904 ADVANCED TO CABINET SECRETARY STAGE.</div>
+            </div>
+        </div>
+
+        <!-- Sovereign Policy Implementation Tracker -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+            
+            <div class="glass-panel rounded-2xl p-8 border-slate-800">
+                <h3 class="text-lg font-bold font-heading text-white mb-4">Policy Directives Implementation</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-1.5">
+                            <span class="text-slate-300">PFM 2026 Digital Procurement Migration</span>
+                            <span class="text-cyan-400 font-bold">92% Complete</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-cyan-400 to-purple-400 h-2 rounded-full" style="width: 92%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-1.5">
+                            <span class="text-slate-300">Public Asset De-Risking & Verification</span>
+                            <span class="text-emerald-400 font-bold">78% Complete</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-emerald-400 to-cyan-400 h-2 rounded-full" style="width: 78%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-1.5">
+                            <span class="text-slate-300">Zero-Paper Ministerial Audit Ledger</span>
+                            <span class="text-purple-300 font-bold">100% Deployed</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-purple-400 to-indigo-400 h-2 rounded-full" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-8 border-slate-800 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold font-heading text-white mb-2">Secure Multi-Stakeholder Rooms</h3>
+                    <p class="text-xs text-slate-400 mb-6">Zero-knowledge collaborative environments equipped with ephemeral session keys and watermark tracing.</p>
+                    
+                    <div class="space-y-3 font-mono text-xs">
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-navy-950/70 border border-slate-800">
+                            <div>
+                                <strong class="text-white block">Room Alpha: Devolution Fiscal Allocation</strong>
+                                <span class="text-slate-500">6 Verified Delegations Present</span>
+                            </div>
+                            <span class="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">LIVE</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-navy-950/70 border border-slate-800">
+                            <div>
+                                <strong class="text-white block">Room Beta: SACCO Solvency Supervisory Room</strong>
+                                <span class="text-slate-500">Regulator & Board Committee</span>
+                            </div>
+                            <span class="px-2 py-1 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">ACTIVE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center">
+                    <span class="text-xs text-slate-400 font-mono">ODPC Act 2019 Encrypted</span>
+                    <a href="engine.html" class="text-xs font-semibold text-purple-400 hover:text-purple-300">Inspect Cryptographic Engine →</a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-purple-500/20 bg-navy-950 py-10 text-slate-500 text-xs px-6 relative z-10 mt-12">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-white">StrideAnalytics</span>
+                <span>• GovStride™ Sovereign Governance v2.4</span>
+            </div>
+            <div>
+                <a href="index.html" class="text-purple-400 hover:underline">← Return to Ecosystem Home</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function signSimulatedWarrant() {
+            const out = document.getElementById('sign-output');
+            out.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

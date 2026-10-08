@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrideAnalytics | Sovereign Intelligence & Governance Suite</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#050B14', 950: '#020408' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .neon-bg {
+            background: radial-gradient(circle at 50% 15%, rgba(147, 51, 234, 0.18), rgba(6, 182, 212, 0.12), transparent 60%),
+                        radial-gradient(circle at 10% 70%, rgba(59, 130, 246, 0.15), transparent 50%),
+                        radial-gradient(circle at 90% 90%, rgba(147, 51, 234, 0.12), transparent 40%),
+                        #020408;
+        }
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-panel:hover {
+            border-color: rgba(6, 182, 212, 0.55);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);
+            transform: translateY(-4px);
+        }
+        .neon-glow-text {
+            text-shadow: 0 0 25px rgba(6, 182, 212, 0.45);
+        }
+        .neon-button {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #9333ea 100%);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            opacity: 0.95;
+            box-shadow: 0 0 30px rgba(147, 51, 234, 0.7);
+            transform: translateY(-1px);
+        }
+        .wave-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #06b6d4, #9333ea, transparent);
+            filter: blur(1px);
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body class="neon-bg text-slate-100 min-h-screen flex flex-col antialiased relative overflow-x-hidden">
+
+    <div class="wave-line top-[15%] left-0 animate-pulse"></div>
+    <div class="wave-line top-[45%] left-0"></div>
+    <div class="wave-line top-[75%] left-0"></div>
+
+    <!-- Compliance Ticker -->
+    <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-cyan-950 border-b border-purple-500/30 py-2.5 px-3 text-xs font-medium text-cyan-300 tracking-wider text-center uppercase flex items-center justify-center gap-3 z-20 overflow-x-auto whitespace-nowrap">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
+        <span class="font-mono">100% KENYA DATA PROTECTION ACT (ODPC) COMPLIANT</span>
+        <span class="text-slate-600">•</span>
+        <span class="font-mono">SASRA § 34 LIQUIDITY TELEMETRY</span>
+        <span class="text-slate-600">•</span>
+        <span class="font-mono">ZERO-CAPEX SOVEREIGN DEPLOYMENT</span>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-purple-500/20">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center font-bold text-navy-950 text-xl font-heading shadow-lg shadow-purple-500/30 shrink-0 group-hover:scale-105 transition-transform">
+                    S
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight font-heading bg-gradient-to-r from-white via-cyan-200 to-purple-400 bg-clip-text text-transparent">STRIDE</span>
+                    <span class="text-xs tracking-widest text-cyan-400 block uppercase font-semibold">strideanalytics.co.ke</span>
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                <a href="#solutions" class="hover:text-cyan-400 transition-colors">Solutions</a>
+                <a href="engine.html" class="hover:text-cyan-400 transition-colors">Engine</a>
+                <a href="#subdomain-test" class="hover:text-cyan-400 transition-colors">Client Portal</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <a href="#subdomain-test" class="px-5 py-2.5 rounded-xl neon-button text-white font-semibold text-sm shadow-lg shadow-cyan-500/20">
+                    Request Demo
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative pt-20 pb-28 px-6 text-center z-10">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold tracking-wide uppercase mb-8">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> Next-Gen Sovereign Architecture
+        </div>
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight font-heading max-w-5xl mx-auto leading-tight mb-8 neon-glow-text">
+            SOVEREIGN INTELLIGENCE & <br><span class="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">GOVERNANCE SUITE</span>
+        </h1>
+        <p class="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto font-light leading-relaxed mb-12">
+            Zero-capex, ODPC-compliant digital architecture powered by immersive multi-tenant intelligence for Africa's financial and public institutions.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="#solutions" class="px-8 py-4 rounded-xl neon-button text-white font-bold text-base shadow-xl shadow-cyan-500/25">
+                Explore Solution Matrix ↓
+            </a>
+            <a href="#subdomain-test" class="px-8 py-4 rounded-xl glass-panel text-slate-200 font-semibold text-base border border-purple-500/30 hover:border-cyan-400">
+                Test Client Portal Routing →
+            </a>
+        </div>
+    </section>
+
+    <!-- Core Solution Matrix (ALL CARDS ARE FULLY CLICKABLE) -->
+    <section id="solutions" class="py-24 border-t border-purple-500/20 bg-navy-950/60 relative z-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-block px-3 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono text-xs uppercase mb-3">Live Enterprise Modules</div>
+                <h2 class="text-3xl md:text-5xl font-bold font-heading mb-4 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Core Ecosystem Modules</h2>
+                <p class="text-slate-400 text-sm md:text-base">Click any module card below to launch its dedicated live telemetry dashboard and simulation sandbox.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- 1. SaccoStride (CLICKABLE ANCHOR) -->
+                <a href="saccostride.html" class="glass-panel rounded-2xl p-8 flex flex-col justify-between group cursor-pointer border border-cyan-500/30 hover:border-cyan-400">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold text-xl shadow-lg shadow-cyan-500/20 group-hover:scale-110 transition-transform">
+                                S
+                            </div>
+                            <span class="text-xs font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span> KES 18.4B Tracked
+                            </span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-heading mb-3 text-white group-hover:text-cyan-300 transition-colors flex items-center justify-between">
+                            SaccoStride
+                            <span class="text-cyan-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-lg">→</span>
+                        </h3>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">Digital Core for Modern SACCOs with automated bottom-line financial tracking, cost reduction, NPL containment, and penalty avoidance.</p>
+                    </div>
+                    <div>
+                        <ul class="space-y-2.5 text-xs text-slate-300 border-t border-purple-500/20 pt-4 mb-4">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Automated Financial Tracking</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> NPL Containment Engine (3.12%)</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Operational Efficiency Audits</li>
+                        </ul>
+                        <div class="flex items-center justify-between text-xs font-semibold text-cyan-400 group-hover:underline">
+                            <span>Open SACCO Liquidity Dashboard</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 2. GovStride (CLICKABLE ANCHOR) -->
+                <a href="govstride.html" class="glass-panel rounded-2xl p-8 flex flex-col justify-between group cursor-pointer border border-purple-500/30 hover:border-purple-400">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 font-bold text-xl shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform">
+                                G
+                            </div>
+                            <span class="text-xs font-mono text-purple-300 bg-purple-500/10 border border-purple-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Sovereign Clearance
+                            </span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-heading mb-3 text-white group-hover:text-purple-300 transition-colors flex items-center justify-between">
+                            GovStride
+                            <span class="text-purple-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-lg">→</span>
+                        </h3>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">Sovereign Public Sector Governance featuring encrypted document approval chains, policy tracking, and secure multi-stakeholder collaboration tools.</p>
+                    </div>
+                    <div>
+                        <ul class="space-y-2.5 text-xs text-slate-300 border-t border-purple-500/20 pt-4 mb-4">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Encrypted Approval Chains</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Policy Tracking Interface</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Secure Multi-Stakeholder Rooms</li>
+                        </ul>
+                        <div class="flex items-center justify-between text-xs font-semibold text-purple-400 group-hover:underline">
+                            <span>Open Governance & Audit Ledger</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 3. StrideAnalytics Engine (CLICKABLE ANCHOR) -->
+                <a href="engine.html" class="glass-panel rounded-2xl p-8 flex flex-col justify-between group cursor-pointer border-cyan-500/50 shadow-xl shadow-cyan-500/15 hover:border-cyan-300">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center text-navy-950 font-bold text-xl shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-navy-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> 98.64% Accuracy
+                            </span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-heading mb-3 text-white group-hover:text-cyan-300 transition-colors flex items-center justify-between">
+                            StrideAnalytics Engine
+                            <span class="text-cyan-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-lg">→</span>
+                        </h3>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">Predictive Intelligence core delivering automated PII masking, federated learning simulations, and immutable cryptographic audit trails.</p>
+                    </div>
+                    <div>
+                        <ul class="space-y-2.5 text-xs text-slate-300 border-t border-purple-500/20 pt-4 mb-4">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Automated PII Masking (ODPC § 25)</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Federated Learning Framework</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> SHA-256 Cryptographic Logs</li>
+                        </ul>
+                        <div class="flex items-center justify-between text-xs font-semibold text-cyan-400 group-hover:underline">
+                            <span>Open Engine Telemetry Sandbox</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 4. AGMplan (CLICKABLE ANCHOR) -->
+                <a href="agmplan.html" class="glass-panel rounded-2xl p-8 flex flex-col justify-between group cursor-pointer border border-blue-500/30 hover:border-blue-400">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
+                                A
+                            </div>
+                            <span class="text-xs font-mono text-blue-300 bg-blue-500/10 border border-blue-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span> 84.1% Quorum
+                            </span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-heading mb-3 text-white group-hover:text-blue-300 transition-colors flex items-center justify-between">
+                            AGMplan
+                            <span class="text-blue-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-lg">→</span>
+                        </h3>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">AGM & General Assembly Management engineered with live digital voting modules and real-time quorum tracking for large-scale institutional meetings.</p>
+                    </div>
+                    <div>
+                        <ul class="space-y-2.5 text-xs text-slate-300 border-t border-purple-500/20 pt-4 mb-4">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Live Digital Voting & Tally</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Real-time Quorum Tracking</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Automated Resolution Filings</li>
+                        </ul>
+                        <div class="flex items-center justify-between text-xs font-semibold text-blue-400 group-hover:underline">
+                            <span>Open Live Assembly Voting Booth</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 5. CreditScore (CLICKABLE ANCHOR) -->
+                <a href="creditscore.html" class="glass-panel rounded-2xl p-8 flex flex-col justify-between group cursor-pointer md:col-span-2 lg:col-span-2 border border-indigo-500/30 hover:border-cyan-400">
+                    <div class="flex flex-col md:flex-row gap-8 justify-between items-start">
+                        <div class="max-w-md">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-xl shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">
+                                    C
+                                </div>
+                                <span class="text-xs font-mono text-cyan-400 bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Prime Tier: 784/900
+                                </span>
+                            </div>
+                            <h3 class="text-2xl font-bold font-heading mb-3 text-white group-hover:text-cyan-300 transition-colors flex items-center gap-2">
+                                CreditScore
+                                <span class="text-cyan-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-lg">→</span>
+                            </h3>
+                            <p class="text-slate-400 text-sm mb-6 leading-relaxed">Predictive Lending & Risk Analytics featuring advanced AI-driven scoring models and probability of default indicator risk mapping for robust financial underwriting.</p>
+                            <div class="flex items-center gap-2 text-xs font-semibold text-cyan-400 group-hover:underline">
+                                <span>Launch Underwriting Simulator & Risk Meter</span>
+                                <span>→</span>
+                            </div>
+                        </div>
+
+                        <!-- Telemetry Badge inside CreditScore Card -->
+                        <div class="w-full md:w-80 bg-navy-950/90 p-5 rounded-xl border border-purple-500/30 text-xs font-mono text-cyan-400 space-y-3 shadow-inner">
+                            <div class="flex justify-between items-center border-b border-purple-500/20 pb-2">
+                                <span class="text-slate-400">Model Accuracy:</span>
+                                <span class="text-white font-bold text-sm">98.4%</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-purple-500/20 pb-2">
+                                <span class="text-slate-400">Risk Threshold:</span>
+                                <span class="text-white font-bold">Dynamic AI</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-purple-500/20 pb-2">
+                                <span class="text-slate-400">Default Probability:</span>
+                                <span class="text-emerald-400 font-bold">1.42% (Low Risk)</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-1">
+                                <span class="text-slate-400">ODPC Validation:</span>
+                                <span class="text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">PASSED</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Subdomain Simulator -->
+    <section id="subdomain-test" class="py-24 border-t border-purple-500/20 relative z-10 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="glass-panel rounded-3xl p-8 md:p-12 border border-cyan-500/30 shadow-2xl">
+                <div class="text-center max-w-xl mx-auto mb-10">
+                    <span class="text-cyan-400 font-semibold text-xs tracking-widest uppercase block mb-2 font-mono">Wildcard Infrastructure (*.strideanalytics.co.ke)</span>
+                    <h2 class="text-3xl font-bold font-heading">Multi-Tenant Client Portal Simulator</h2>
+                    <p class="text-slate-400 text-sm mt-2">Test how client subdomains dynamically load isolated organizational workspaces with ODPC PII masking.</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-8">
+                    <input type="text" id="subdomain-input" value="bankikuu" class="flex-1 bg-navy-950/90 border border-purple-500/40 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 font-mono" placeholder="clientname">
+                    <button onclick="simulateRouting()" class="px-6 py-3 neon-button text-white font-bold text-sm rounded-xl shadow-lg shadow-cyan-500/20">
+                        Launch Portal
+                    </button>
+                </div>
+
+                <div id="routing-output" class="hidden bg-navy-950/90 rounded-2xl p-6 border border-cyan-500/40 font-mono text-xs text-slate-300 space-y-3">
+                    <div class="flex items-center justify-between border-b border-purple-500/30 pb-3">
+                        <span class="text-cyan-400 font-bold text-sm" id="out-url">https://bankikuu.strideanalytics.co.ke</span>
+                        <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Active Session</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 pt-2">
+                        <div><span class="text-slate-500 block">Tenant ID:</span> <span id="out-tenant" class="text-white">BNK-8820-KE</span></div>
+                        <div><span class="text-slate-500 block">Compliance Profile:</span> <span class="text-cyan-300">ODPC Strict Masking</span></div>
+                    </div>
+                    <div class="pt-3 border-t border-purple-500/20 flex gap-4">
+                        <a href="saccostride.html" class="text-cyan-400 hover:underline">→ Open SaccoStride Module</a>
+                        <a href="agmplan.html" class="text-blue-400 hover:underline">→ Open AGMplan Module</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-purple-500/20 bg-navy-950 py-12 text-slate-500 text-sm relative z-10 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-cyan-400 to-purple-600 flex items-center justify-center font-bold text-navy-950 font-heading">S</div>
+                <span class="font-bold text-white tracking-tight">StrideAnalytics</span>
+            </div>
+            <p class="text-xs text-center">© 2026 StrideAnalytics.co.ke. 100% Kenya Data Protection Act (ODPC) Compliant. Stronger Leaders. A Better Tomorrow.</p>
+            <div class="flex items-center gap-6 text-xs">
+                <a href="saccostride.html" class="hover:text-cyan-400 transition-colors">SaccoStride</a>
+                <a href="govstride.html" class="hover:text-purple-400 transition-colors">GovStride</a>
+                <a href="engine.html" class="hover:text-cyan-400 transition-colors">Engine</a>
+                <a href="agmplan.html" class="hover:text-blue-400 transition-colors">AGMplan</a>
+                <a href="creditscore.html" class="hover:text-indigo-400 transition-colors">CreditScore</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function simulateRouting() {
+            const input = document.getElementById('subdomain-input').value.trim().toLowerCase() || 'client';
+            const output = document.getElementById('routing-output');
+            const urlOut = document.getElementById('out-url');
+            const tenantOut = document.getElementById('out-tenant');
+            
+            urlOut.textContent = `https://${input}.strideanalytics.co.ke`;
+            tenantOut.textContent = `${input.toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}-KE`;
+            output.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

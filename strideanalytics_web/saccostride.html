@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaccoStride™ | Live SACCO Liquidity & Financial Intelligence Core</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#050B14', 950: '#020408' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .neon-bg {
+            background: radial-gradient(circle at 50% 10%, rgba(6, 182, 212, 0.18), rgba(147, 51, 234, 0.12), transparent 60%),
+                        radial-gradient(circle at 10% 60%, rgba(59, 130, 246, 0.16), transparent 50%),
+                        radial-gradient(circle at 90% 85%, rgba(6, 182, 212, 0.14), transparent 45%),
+                        #020408;
+        }
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.88);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+        }
+        .glass-panel:hover {
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);
+        }
+        .neon-glow-text {
+            text-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+        }
+        .wave-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #06b6d4, #3b82f6, transparent);
+            filter: blur(1px);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="neon-bg text-slate-100 min-h-screen flex flex-col antialiased relative overflow-x-hidden">
+
+    <div class="wave-line top-[12%] left-0 animate-pulse"></div>
+    <div class="wave-line top-[50%] left-0"></div>
+
+    <!-- Compliance Ticker -->
+    <div class="bg-gradient-to-r from-cyan-950 via-slate-900 to-purple-950 border-b border-cyan-500/30 py-2.5 px-4 text-xs font-medium text-cyan-300 tracking-wider text-center uppercase flex items-center justify-center gap-3 z-20 overflow-x-auto whitespace-nowrap">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <span class="font-mono">SASRA PRUDENTIAL STANDARD COMPLIANCE: 100%</span>
+        <span class="text-slate-600">•</span>
+        <span class="font-mono">ODPC ACT 2019 SEC. 25 ENCRYPTED TELEMETRY</span>
+        <span class="text-slate-600">•</span>
+        <span class="font-mono text-emerald-400">LIQUIDITY SURPLUS: +13.4% OVER STATUTORY REQUIREMENT</span>
+    </div>
+
+    <!-- Navigation Header with Back to Home -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-cyan-500/25">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold hover:bg-cyan-500/20 transition-all">
+                    <span>←</span>
+                    <span>Back to Overview</span>
+                </a>
+                <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-navy-950 text-lg font-heading shadow-md shadow-cyan-500/20">
+                        S
+                    </div>
+                    <div>
+                        <span class="text-lg font-extrabold tracking-tight font-heading text-white">SaccoStride<span class="text-cyan-400">™</span></span>
+                        <span class="text-[10px] tracking-widest text-slate-400 block uppercase font-mono">Digital Core & Liquidity Suite</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="hidden lg:flex items-center gap-2 bg-navy-950/80 px-3 py-1.5 rounded-lg border border-cyan-500/20 text-xs font-mono text-slate-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>Active SACCO Cluster: <strong class="text-cyan-400">CBK-TIER-1</strong></span>
+                </div>
+                <a href="index.html#subdomain-test" class="px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 text-xs font-semibold hover:bg-cyan-500/30 transition-all">
+                    Switch Tenant
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-6 py-12 flex-1 w-full relative z-10">
+        
+        <!-- Module Banner -->
+        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-cyan-500/20 pb-8">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono uppercase mb-3">
+                    Automated Bottom-Line Core • SASRA § 34
+                </div>
+                <h1 class="text-4xl md:text-5xl font-extrabold font-heading text-white tracking-tight">
+                    SACCO Liquidity & <span class="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Solvency Command</span>
+                </h1>
+                <p class="text-slate-400 text-sm md:text-base mt-2 max-w-2xl">
+                    Real-time liquidity buffer stress-testing, automated Non-Performing Loan (NPL) containment, and statutory penalty avoidance telemetry.
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="refreshMetrics()" class="px-4 py-2.5 rounded-xl bg-navy-950/90 border border-cyan-500/30 text-cyan-300 text-xs font-mono flex items-center gap-2 hover:border-cyan-400 transition-all">
+                    <span id="refresh-icon">🔄</span>
+                    <span>Sync SASRA Telemetry</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 4 Primary KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            
+            <!-- Liquidity Ratio -->
+            <div class="glass-panel rounded-2xl p-6 border-cyan-500/40 relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl"></div>
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>LIQUIDITY RATIO</span>
+                    <span class="text-emerald-400 font-bold">+13.4% Buffer</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-white mb-1" id="val-liquidity">28.40%</div>
+                <div class="text-xs text-slate-400">Statutory Min: <span class="text-cyan-300 font-semibold">15.00%</span></div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-cyan-400 to-emerald-400 h-2 rounded-full" style="width: 82%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                    <span>●</span> SASRA Section 34 Healthy
+                </div>
+            </div>
+
+            <!-- Asset Base Under Observation -->
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>TOTAL ASSET BASE</span>
+                    <span class="text-cyan-400 font-bold">+9.8% YoY</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-white mb-1" id="val-assets">KES 18.42B</div>
+                <div class="text-xs text-slate-400">Loan Portfolio: <span class="text-cyan-300 font-semibold">KES 14.18B</span></div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-400 to-cyan-400 h-2 rounded-full" style="width: 77%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-cyan-300 flex items-center gap-1">
+                    <span>●</span> Deposit Base: KES 15.60B
+                </div>
+            </div>
+
+            <!-- NPL Containment Ratio -->
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>NPL CONTAINMENT</span>
+                    <span class="text-emerald-400 font-bold">-62% Below Peer Avg</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-emerald-400 mb-1" id="val-npl">3.12%</div>
+                <div class="text-xs text-slate-400">Industry Benchmark: <span class="text-rose-400 font-semibold">8.40%</span></div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-400 to-cyan-400 h-2 rounded-full" style="width: 38%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                    <span>●</span> Early Watch: 1.05%
+                </div>
+            </div>
+
+            <!-- Core Capital Ratio -->
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                    <span>CORE CAPITAL / ASSETS</span>
+                    <span class="text-emerald-400 font-bold">+4.8% Excess</span>
+                </div>
+                <div class="text-3xl font-extrabold font-mono text-white mb-1" id="val-capital">14.80%</div>
+                <div class="text-xs text-slate-400">Statutory Min: <span class="text-cyan-300 font-semibold">10.00%</span></div>
+                <div class="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-400 to-cyan-400 h-2 rounded-full" style="width: 74%;"></div>
+                </div>
+                <div class="mt-2 text-[11px] font-mono text-purple-300 flex items-center gap-1">
+                    <span>●</span> Institutional Capital: KES 2.72B
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Interactive Liquidity Stress Tester & SASRA Matrix -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+            
+            <!-- Left: Interactive Stress Testing Engine -->
+            <div class="lg:col-span-2 glass-panel rounded-2xl p-8 border-cyan-500/30">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                    <div>
+                        <h2 class="text-xl font-bold font-heading text-white">Dynamic Liquidity Shock Simulator</h2>
+                        <p class="text-xs text-slate-400">Simulate rapid deposit outflow shocks to test statutory liquidity buffer survivability in real time.</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono">
+                        Monte Carlo Model
+                    </span>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center text-xs font-mono mb-2">
+                            <span class="text-slate-300">Deposit Shock Outflow:</span>
+                            <span class="text-cyan-400 font-bold text-base" id="shock-display">7.5% Sudden Run</span>
+                        </div>
+                        <input type="range" id="shock-slider" min="0" max="25" step="0.5" value="7.5" oninput="runStressTest(this.value)" class="w-full accent-cyan-400 cursor-pointer bg-slate-800 rounded-lg h-2">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                            <span>0% (Baseline)</span>
+                            <span>5% (Moderate Stress)</span>
+                            <span>15% (Severe Run)</span>
+                            <span>25% (Extreme Shock)</span>
+                        </div>
+                    </div>
+
+                    <!-- Stress Output Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-navy-950/90 p-5 rounded-xl border border-slate-800 font-mono">
+                        <div>
+                            <span class="text-xs text-slate-500 block mb-1">Post-Shock Liquidity</span>
+                            <span class="text-xl font-bold text-white" id="post-shock-ratio">22.84%</span>
+                            <span class="text-[10px] text-emerald-400 block mt-1" id="post-shock-status">✅ Above 15% Floor</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 block mb-1">Surviving Cash Buffer</span>
+                            <span class="text-xl font-bold text-cyan-300" id="post-shock-cash">KES 3.56B</span>
+                            <span class="text-[10px] text-slate-400 block mt-1">Sufficient for 64 Days</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 block mb-1">SASRA Action Required</span>
+                            <span class="text-xl font-bold text-emerald-400" id="post-shock-action">NONE</span>
+                            <span class="text-[10px] text-slate-400 block mt-1">Regulatory Green Zone</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 text-xs text-slate-300 flex items-start gap-3">
+                        <span class="text-purple-400 text-lg">🛡️</span>
+                        <div>
+                            <strong class="text-purple-300 font-semibold">Automated SASRA Penalty Avoidance Safeguard:</strong>
+                            <p class="mt-1 text-slate-400 leading-relaxed">
+                                StrideAnalytics automatically triggers contingency treasury sweeps and inter-bank liquidity lines before any SACCO reaches within 200 bps of regulatory minimums, eliminating regulatory fines and cease-and-desist exposure.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: SASRA Prudential Compliance Matrix -->
+            <div class="glass-panel rounded-2xl p-8 border-purple-500/30 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                        <h2 class="text-xl font-bold font-heading text-white">Regulatory Health</h2>
+                        <span class="px-2.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">PASS</span>
+                    </div>
+
+                    <div class="space-y-4 text-xs font-mono">
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-navy-950/60 border border-slate-800">
+                            <span class="text-slate-300">External Borrowing Ratio</span>
+                            <span class="text-emerald-400 font-bold">4.2% <span class="text-slate-500">(Max 25%)</span></span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-navy-950/60 border border-slate-800">
+                            <span class="text-slate-300">Institutional Capital</span>
+                            <span class="text-emerald-400 font-bold">11.4% <span class="text-slate-500">(Min 8%)</span></span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-navy-950/60 border border-slate-800">
+                            <span class="text-slate-300">Single Obligor Exposure</span>
+                            <span class="text-emerald-400 font-bold">2.8% <span class="text-slate-500">(Max 5%)</span></span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 rounded-lg bg-navy-950/60 border border-slate-800">
+                            <span class="text-slate-300">Statutory Return Filing</span>
+                            <span class="text-cyan-400 font-bold">AUTOMATED (24H)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-800 text-center">
+                    <a href="creditscore.html" class="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center justify-center gap-1.5">
+                        <span>Review Credit Underwriting Risk Scores</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Live Synthetic Transaction Stream (ODPC-Masked) -->
+        <div class="glass-panel rounded-2xl p-8 border-slate-800">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <h2 class="text-lg font-bold font-heading text-white">Live Core Banking Telemetry Stream (ODPC § 25 Compliant)</h2>
+                </div>
+                <span class="text-xs font-mono text-slate-500">AES-256 MASKED LOGS</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left font-mono text-xs">
+                    <thead>
+                        <tr class="text-slate-500 border-b border-slate-800 pb-3">
+                            <th class="py-2.5">TIMESTAMP (EAT)</th>
+                            <th>TRANSACTION TYPE</th>
+                            <th>MEMBER TOKEN</th>
+                            <th>VOLUME</th>
+                            <th>LIQUIDITY IMPACT</th>
+                            <th>VALIDATION</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 text-slate-300" id="telemetry-table-body">
+                        <tr>
+                            <td class="py-3 text-cyan-400">14:52:18</td>
+                            <td class="font-bold text-white">FOSA Salary Clearing Batch</td>
+                            <td>TKN-0028-****</td>
+                            <td class="text-emerald-400 font-bold">+KES 48,250,000</td>
+                            <td class="text-emerald-400">+0.26% Inflow</td>
+                            <td><span class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">RECONCILED</span></td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 text-cyan-400">14:50:04</td>
+                            <td class="font-bold text-white">BOSA Development Loan Advance</td>
+                            <td>TKN-3419-****</td>
+                            <td class="text-rose-400 font-bold">-KES 3,500,000</td>
+                            <td class="text-slate-400">-0.02% Buffer</td>
+                            <td><span class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">AUDITED</span></td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 text-cyan-400">14:46:31</td>
+                            <td class="font-bold text-white">Treasury Repo Liquidity Inflow</td>
+                            <td>TREASURY-FED-01</td>
+                            <td class="text-emerald-400 font-bold">+KES 120,000,000</td>
+                            <td class="text-emerald-400">+0.65% Buffer</td>
+                            <td><span class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">SETTLED</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-cyan-500/20 bg-navy-950 py-10 text-slate-500 text-xs px-6 relative z-10 mt-12">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-white">StrideAnalytics</span>
+                <span>• SaccoStride™ Digital Core v2.4</span>
+            </div>
+            <div>
+                <a href="index.html" class="text-cyan-400 hover:underline">← Return to Ecosystem Home</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function runStressTest(val) {
+            const shock = parseFloat(val);
+            document.getElementById('shock-display').textContent = shock.toFixed(1) + '% Sudden Run';
+            
+            // Baseline 28.4%
+            const postShock = Math.max(8.0, 28.4 - (shock * 0.74));
+            const cash = Math.max(1.1, 4.4 - (shock * 0.11));
+            
+            const ratioEl = document.getElementById('post-shock-ratio');
+            const statusEl = document.getElementById('post-shock-status');
+            const cashEl = document.getElementById('post-shock-cash');
+            const actionEl = document.getElementById('post-shock-action');
+
+            ratioEl.textContent = postShock.toFixed(2) + '%';
+            cashEl.textContent = 'KES ' + cash.toFixed(2) + 'B';
+
+            if (postShock >= 15.0) {
+                ratioEl.className = 'text-xl font-bold text-white';
+                statusEl.textContent = '✅ Above 15% Statutory Floor';
+                statusEl.className = 'text-[10px] text-emerald-400 block mt-1';
+                actionEl.textContent = 'NONE';
+                actionEl.className = 'text-xl font-bold text-emerald-400';
+            } else if (postShock >= 12.0) {
+                ratioEl.className = 'text-xl font-bold text-amber-400';
+                statusEl.textContent = '⚠️ Caution: Inside 200bps Buffer';
+                statusEl.className = 'text-[10px] text-amber-400 block mt-1';
+                actionEl.textContent = 'AUTO-SWEEP TREASURY';
+                actionEl.className = 'text-xl font-bold text-amber-400';
+            } else {
+                ratioEl.className = 'text-xl font-bold text-rose-400';
+                statusEl.textContent = '❌ Critical: Deficit Below Statutory Floor';
+                statusEl.className = 'text-[10px] text-rose-400 block mt-1';
+                actionEl.textContent = 'CALL INTER-SACCO LINE';
+                actionEl.className = 'text-xl font-bold text-rose-400';
+            }
+        }
+
+        function refreshMetrics() {
+            const icon = document.getElementById('refresh-icon');
+            icon.classList.add('animate-spin');
+            setTimeout(() => {
+                icon.classList.remove('animate-spin');
+                const delta = (Math.random() * 0.4 - 0.2).toFixed(2);
+                document.getElementById('val-liquidity').textContent = (28.40 + parseFloat(delta)).toFixed(2) + '%';
+            }, 600);
+        }
+    </script>
+</body>
+</html>
