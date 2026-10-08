@@ -4,21 +4,21 @@
  * ODPC privacy compliance, and multi-tenant guidance.
  */
 (function() {
-    // 1. Inject Stylesheet if not present
+    // 1. Inject Stylesheet if not present with cache busting
     if (!document.getElementById('stride-chat-css')) {
         const link = document.createElement('link');
         link.id = 'stride-chat-css';
         link.rel = 'stylesheet';
-        link.href = 'stride-chat.css';
+        link.href = 'stride-chat.css?v=' + Date.now();
         document.head.appendChild(link);
     }
 
-    // 2. Build Widget HTML
+    // 2. Build Widget HTML with inline right-side positioning to bypass any cached CSS
     const widgetContainer = document.createElement('div');
     widgetContainer.id = 'stride-ai-container';
     widgetContainer.innerHTML = `
-        <!-- Floating Launcher Bubble (Bottom-Left) -->
-        <div id="stride-launcher" class="stride-ai-bubble" onclick="toggleStrideChat()">
+        <!-- Floating Launcher Bubble (Bottom-Right) -->
+        <div id="stride-launcher" class="stride-ai-bubble" style="right: 24px !important; left: auto !important;" onclick="toggleStrideChat()">
             <div class="avatar-ring">
                 S
                 <span class="pulse-dot"></span>
@@ -32,7 +32,7 @@
         </div>
 
         <!-- Chat Window -->
-        <div id="stride-chat-box" class="stride-ai-window">
+        <div id="stride-chat-box" class="stride-ai-window" style="right: 24px !important; left: auto !important;">
             <!-- Header -->
             <div class="stride-chat-header">
                 <div class="flex items-center gap-2.5">
