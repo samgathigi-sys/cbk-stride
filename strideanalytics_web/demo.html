@@ -275,7 +275,7 @@
                 </div>
 
                 <!-- Live Upload Ingestion Output Area -->
-                <div id="weekly-output-panel" class="hidden bg-navy-950/95 border border-cyan-500/50 p-6 rounded-2xl font-mono text-xs space-y-4">
+                <div id="weekly-output-panel" class="bg-navy-950/95 border border-cyan-500/50 p-6 rounded-2xl font-mono text-xs space-y-4">
                     <div class="flex items-center justify-between border-b border-purple-500/30 pb-3">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -323,55 +323,59 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-800/60">
-                                    <tr>
-                                        <td class="py-2 text-white font-bold">LN-FOSA-8803</td>
-                                        <td class="py-2 text-cyan-400 font-mono">TKN-SHA256-992381</td>
-                                        <td class="py-2 text-slate-300">Salary Advance 30D</td>
-                                        <td class="py-2 text-white">80,000.00</td>
-                                        <td class="py-2 text-amber-400 font-bold">7 Days</td>
-                                        <td class="py-2 text-rose-400 font-bold">3.85%</td>
-                                        <td class="py-2 text-right">
-                                            <button onclick="resolveLocalMember('LN-FOSA-8803', 'TKN-SHA256-992381', 'Jane W. Mwangi', '0722 *** 419', 'Salary Advance 30D', '80,000.00', '7 Days Past Due', 'SMS Soft Nudge: Scheduled for 09:00 AM')" class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold text-[10px] transition-all">
-                                                🔍 Resolve &amp; Remediate
+                                    <tr onclick="resolveLocalMember('LN-FOSA-8803', 'TKN-SHA256-992381', 'Jane W. Mwangi', '0722 *** 419', 'Salary Advance 30D', '80,000.00', '7 Days Past Due', 'SMS Soft Nudge: Scheduled for 09:00 AM')" class="hover:bg-cyan-500/10 cursor-pointer transition-colors group">
+                                        <td class="py-2.5 text-white font-bold group-hover:text-cyan-300">LN-FOSA-8803</td>
+                                        <td class="py-2.5 text-cyan-400 font-mono">TKN-SHA256-992381</td>
+                                        <td class="py-2.5 text-slate-300">Salary Advance 30D</td>
+                                        <td class="py-2.5 text-white font-bold">80,000.00</td>
+                                        <td class="py-2.5 text-amber-400 font-bold">7 Days</td>
+                                        <td class="py-2.5 text-rose-400 font-bold">3.85%</td>
+                                        <td class="py-2.5 text-right">
+                                            <button class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/40 font-bold text-[11px] shadow-sm flex items-center gap-1.5 ml-auto">
+                                                <span>📲 SMS Soft Nudge</span>
+                                                <span class="text-[9px] bg-amber-400 text-navy-950 px-1 py-0.2 rounded font-extrabold uppercase">Resolve</span>
                                             </button>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td class="py-2 text-white font-bold">LN-ASST-8805</td>
-                                        <td class="py-2 text-cyan-400 font-mono">TKN-SHA256-774195</td>
-                                        <td class="py-2 text-slate-300">Vehicle Asset Finance</td>
-                                        <td class="py-2 text-white">3,150,000.00</td>
-                                        <td class="py-2 text-rose-400 font-bold">14 Days</td>
-                                        <td class="py-2 text-rose-400 font-bold">5.92%</td>
-                                        <td class="py-2 text-right">
-                                            <button onclick="resolveLocalMember('LN-ASST-8805', 'TKN-SHA256-774195', 'Peter K. Omondi', '0733 *** 821', 'Vehicle Asset Finance', '3,150,000.00', '14 Days Past Due', 'Credit Officer Priority Escalation & Direct Call')" class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 font-bold text-[10px] transition-all">
-                                                🔍 Resolve &amp; Remediate
+                                    <tr onclick="resolveLocalMember('LN-ASST-8805', 'TKN-SHA256-774195', 'Peter K. Omondi', '0733 *** 821', 'Vehicle Asset Finance', '3,150,000.00', '14 Days Past Due', 'Credit Officer Priority Escalation & Direct Call')" class="hover:bg-cyan-500/10 cursor-pointer transition-colors group">
+                                        <td class="py-2.5 text-white font-bold group-hover:text-cyan-300">LN-ASST-8805</td>
+                                        <td class="py-2.5 text-cyan-400 font-mono">TKN-SHA256-774195</td>
+                                        <td class="py-2.5 text-slate-300">Vehicle Asset Finance</td>
+                                        <td class="py-2.5 text-white font-bold">3,150,000.00</td>
+                                        <td class="py-2.5 text-rose-400 font-bold">14 Days</td>
+                                        <td class="py-2.5 text-rose-400 font-bold">5.92%</td>
+                                        <td class="py-2.5 text-right">
+                                            <button class="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/40 font-bold text-[11px] shadow-sm flex items-center gap-1.5 ml-auto">
+                                                <span>📞 Officer Call</span>
+                                                <span class="text-[9px] bg-rose-400 text-navy-950 px-1 py-0.2 rounded font-extrabold uppercase">Resolve</span>
                                             </button>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td class="py-2 text-white font-bold">LN-FOSA-8807</td>
-                                        <td class="py-2 text-cyan-400 font-mono">TKN-SHA256-664188</td>
-                                        <td class="py-2 text-slate-300">Business Working Capital</td>
-                                        <td class="py-2 text-white">620,000.00</td>
-                                        <td class="py-2 text-amber-400 font-bold">10 Days</td>
-                                        <td class="py-2 text-rose-400 font-bold">4.45%</td>
-                                        <td class="py-2 text-right">
-                                            <button onclick="resolveLocalMember('LN-FOSA-8807', 'TKN-SHA256-664188', 'Fatuma A. Hassan', '0710 *** 552', 'Business Working Capital', '620,000.00', '10 Days Past Due', 'Guarantor Pre-Notification Alert via SMS/Email')" class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold text-[10px] transition-all">
-                                                🔍 Resolve &amp; Remediate
+                                    <tr onclick="resolveLocalMember('LN-FOSA-8807', 'TKN-SHA256-664188', 'Fatuma A. Hassan', '0710 *** 552', 'Business Working Capital', '620,000.00', '10 Days Past Due', 'Guarantor Pre-Notification Alert via SMS/Email')" class="hover:bg-cyan-500/10 cursor-pointer transition-colors group">
+                                        <td class="py-2.5 text-white font-bold group-hover:text-cyan-300">LN-FOSA-8807</td>
+                                        <td class="py-2.5 text-cyan-400 font-mono">TKN-SHA256-664188</td>
+                                        <td class="py-2.5 text-slate-300">Business Working Capital</td>
+                                        <td class="py-2.5 text-white font-bold">620,000.00</td>
+                                        <td class="py-2.5 text-amber-400 font-bold">10 Days</td>
+                                        <td class="py-2.5 text-rose-400 font-bold">4.45%</td>
+                                        <td class="py-2.5 text-right">
+                                            <button class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/40 font-bold text-[11px] shadow-sm flex items-center gap-1.5 ml-auto">
+                                                <span>🛡️ Guarantor Alert</span>
+                                                <span class="text-[9px] bg-amber-400 text-navy-950 px-1 py-0.2 rounded font-extrabold uppercase">Resolve</span>
                                             </button>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td class="py-2 text-white font-bold">LN-FOSA-8810</td>
-                                        <td class="py-2 text-cyan-400 font-mono">TKN-SHA256-773419</td>
-                                        <td class="py-2 text-slate-300">Biashara Micro Advance</td>
-                                        <td class="py-2 text-white">190,000.00</td>
-                                        <td class="py-2 text-amber-400 font-bold">8 Days</td>
-                                        <td class="py-2 text-rose-400 font-bold">4.10%</td>
-                                        <td class="py-2 text-right">
-                                            <button onclick="resolveLocalMember('LN-FOSA-8810', 'TKN-SHA256-773419', 'Samuel N. Gathigi', '0701 *** 114', 'Biashara Micro Advance', '190,000.00', '8 Days Past Due', 'Automated M-Pesa STK Push Repayment Reminder')" class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold text-[10px] transition-all">
-                                                🔍 Resolve &amp; Remediate
+                                    <tr onclick="resolveLocalMember('LN-FOSA-8810', 'TKN-SHA256-773419', 'Samuel N. Gathigi', '0701 *** 114', 'Biashara Micro Advance', '190,000.00', '8 Days Past Due', 'Automated M-Pesa STK Push Repayment Reminder')" class="hover:bg-cyan-500/10 cursor-pointer transition-colors group">
+                                        <td class="py-2.5 text-white font-bold group-hover:text-cyan-300">LN-FOSA-8810</td>
+                                        <td class="py-2.5 text-cyan-400 font-mono">TKN-SHA256-773419</td>
+                                        <td class="py-2.5 text-slate-300">Biashara Micro Advance</td>
+                                        <td class="py-2.5 text-white font-bold">190,000.00</td>
+                                        <td class="py-2.5 text-amber-400 font-bold">8 Days</td>
+                                        <td class="py-2.5 text-rose-400 font-bold">4.10%</td>
+                                        <td class="py-2.5 text-right">
+                                            <button class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/40 font-bold text-[11px] shadow-sm flex items-center gap-1.5 ml-auto">
+                                                <span>📲 M-Pesa Push</span>
+                                                <span class="text-[9px] bg-amber-400 text-navy-950 px-1 py-0.2 rounded font-extrabold uppercase">Resolve</span>
                                             </button>
                                         </td>
                                     </tr>
