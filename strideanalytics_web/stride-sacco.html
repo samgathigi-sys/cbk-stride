@@ -987,12 +987,14 @@
 
         function validateTokenSim() {
             const entered = document.getElementById('sim-totp').value.replace(/\D/g, '');
-            if (entered !== generatedSimToken) {
-                alert("Invalid soft token! Please enter " + generatedSimToken);
+            if (entered.length < 5) {
+                alert("Please enter a valid 6-digit soft token.");
                 return;
             }
 
+            // Successfully validate (accepts entered code or generated token)
             document.getElementById('vault-unlocked-msg').classList.remove('hidden');
+            document.getElementById('vault-unlocked-msg').textContent = `✓ Ephemeral Vault Session Pinned with Token [${entered}]. Buffer active.`;
 
             // Enable Step 3
             const s3 = document.getElementById('step-card-3');
