@@ -317,7 +317,7 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-8">
-                    <input type="text" id="subdomain-input" value="bankikuu" class="flex-1 bg-navy-950/90 border border-purple-500/40 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 font-mono" placeholder="clientname">
+                    <input type="text" id="subdomain-input" value="stride-sacco" class="flex-1 bg-navy-950/90 border border-purple-500/40 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 font-mono" placeholder="clientname">
                     <button onclick="simulateRouting()" class="px-6 py-3 neon-button text-white font-bold text-sm rounded-xl shadow-lg shadow-cyan-500/20">
                         Launch Portal
                     </button>
@@ -325,16 +325,21 @@
 
                 <div id="routing-output" class="hidden bg-navy-950/90 rounded-2xl p-6 border border-cyan-500/40 font-mono text-xs text-slate-300 space-y-3">
                     <div class="flex items-center justify-between border-b border-purple-500/30 pb-3">
-                        <span class="text-cyan-400 font-bold text-sm" id="out-url">https://bankikuu.strideanalytics.co.ke</span>
-                        <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Active Session</span>
+                        <span class="text-cyan-400 font-bold text-sm" id="out-url">https://stride-sacco.strideanalytics.co.ke</span>
+                        <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Active Tenant Session</span>
                     </div>
                     <div class="grid grid-cols-2 gap-4 pt-2">
-                        <div><span class="text-slate-500 block">Tenant ID:</span> <span id="out-tenant" class="text-white">BNK-8820-KE</span></div>
-                        <div><span class="text-slate-500 block">Compliance Profile:</span> <span class="text-cyan-300">ODPC Strict Masking</span></div>
+                        <div><span class="text-slate-500 block">Tenant ID:</span> <span id="out-tenant" class="text-white">SACCO-STRIDE-001-KE</span></div>
+                        <div><span class="text-slate-500 block">Compliance Profile:</span> <span class="text-cyan-300">ODPC Strict Masking Active</span></div>
                     </div>
-                    <div class="pt-3 border-t border-purple-500/20 flex gap-4">
-                        <a href="saccostride.html" class="text-cyan-400 hover:underline">→ Open SaccoStride Module</a>
-                        <a href="agmplan.html" class="text-blue-400 hover:underline">→ Open AGMplan Module</a>
+                    <div class="pt-3 border-t border-purple-500/20 flex flex-wrap gap-4 items-center justify-between">
+                        <a href="stride-sacco.html" id="tenant-direct-link" class="px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 font-bold hover:bg-cyan-500/30 transition-all">
+                            🚀 Enter Tenant Dashboard (10-Yr Financials &amp; Risks) →
+                        </a>
+                        <div class="flex gap-4">
+                            <a href="saccostride.html" class="text-cyan-400 hover:underline">SaccoStride Core</a>
+                            <a href="agmplan.html" class="text-blue-400 hover:underline">AGMplan</a>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -22,6 +22,7 @@ LOCAL_DIR = r"C:\Users\user\.gemini\antigravity\scratch\cbk-stride\strideanalyti
 FILES_TO_UPLOAD = [
     "index.html",
     "about.html",
+    "stride-sacco.html",
     "saccostride.html",
     "govstride.html",
     "engine.html",
