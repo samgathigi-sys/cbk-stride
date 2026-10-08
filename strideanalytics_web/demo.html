@@ -242,12 +242,15 @@
                         <span class="text-xs font-mono text-cyan-400 uppercase font-bold tracking-wider block mb-1">LIVE TEST BENCH • ZERO-PORT AIR-GAP</span>
                         <h3 class="text-xl font-bold font-heading text-white">Live Weekly Repayment Ledger Ingestion &amp; Early Distress Scoring</h3>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <button onclick="openShadowPilotModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:opacity-95 text-white text-xs font-mono font-bold shadow-lg shadow-purple-500/25 flex items-center gap-2">
-                            <span>🛡️</span> <span>Request 14-Day Shadow Pilot</span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openShadowPilotModal()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:opacity-95 text-white text-xs font-mono font-bold shadow-lg shadow-purple-500/25 flex items-center gap-1.5">
+                            <span>🛡️</span> <span>Request Shadow Pilot</span>
                         </button>
-                        <a href="WEEKLY_LOAN_REPAYMENT_LEDGER_W42_2025.csv" download class="px-4 py-2 rounded-xl bg-navy-900 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold hover:bg-cyan-500/20 flex items-center gap-2">
-                            <span>📥</span> <span>Download Sample (.csv)</span>
+                        <a href="WEEKLY_LOAN_REPAYMENT_LEDGER_W42_2025.csv" download class="px-3 py-2 rounded-xl bg-navy-900 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold hover:bg-cyan-500/20 flex items-center gap-1.5" title="Salary Checkoff Portfolio">
+                            <span>📥</span> <span>Sample 1 (Salary)</span>
+                        </a>
+                        <a href="MOCK_HIGHLANDS_TEA_SACCO_LOAN_LEDGER.csv" download class="px-3 py-2 rounded-xl bg-navy-900 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-500/20 flex items-center gap-1.5" title="Agri & Business Portfolio">
+                            <span>📥</span> <span>Sample 2 (Highlands Tea)</span>
                         </a>
                     </div>
                 </div>
@@ -860,7 +863,17 @@
                                 "LN-FOSA-8807": "Fatuma A. Hassan",
                                 "LN-BOSA-8808": "James M. Kariuki",
                                 "LN-BOSA-8809": "Beatrice C. Ruto",
-                                "LN-FOSA-8810": "Stephen N. Gitonga"
+                                "LN-FOSA-8810": "Stephen N. Gitonga",
+                                "HTS-LN-1001": "Kiprono Arap Cheruiyot",
+                                "HTS-LN-1002": "Wesley K. Sang",
+                                "HTS-LN-1003": "Chepngetich Mercy",
+                                "HTS-LN-1004": "Emmanuel K. Rono",
+                                "HTS-LN-1005": "Philemon K. Bett",
+                                "HTS-LN-1006": "Gladys C. Langat",
+                                "HTS-LN-1007": "Kipkemoi Bernard",
+                                "HTS-LN-1008": "Tabitha Chebet",
+                                "HTS-LN-1009": "Cosmas K. Korir",
+                                "HTS-LN-1010": "Dr. Geoffrey K. Siele"
                             };
                             memberName = nameMap[loanRef] || `Member (${loanRef})`;
                         }
