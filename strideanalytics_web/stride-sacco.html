@@ -332,18 +332,18 @@
             </div>
         </section>
 
-        <!-- NEW: AIR-GAPPED NAVISION / ERP SOFT-TOKEN INGESTION SIMULATOR -->
-        <section id="navision-ingest" class="glass-panel p-8 md:p-10 rounded-3xl border border-cyan-500/40 space-y-8 relative overflow-hidden">
+        <!-- NEW: AIR-GAPPED CORE BANKING ERP SOFT-TOKEN INGESTION SIMULATOR -->
+        <section id="erp-ingest" class="glass-panel p-8 md:p-10 rounded-3xl border border-cyan-500/40 space-y-8 relative overflow-hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-cyan-500/20 pb-6">
                 <div>
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono text-xs uppercase mb-2">
                         <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span> Air-Gapped Ingestion Security Core
                     </div>
                     <h2 class="text-2xl md:text-3xl font-bold font-heading text-white">
-                        Microsoft Dynamics NAV Soft-Token Ingestion Simulator
+                        Core Banking ERP Soft-Token Ingestion Simulator
                     </h2>
                     <p class="text-slate-400 text-sm">
-                        Experience how SACCO Finance Officers securely upload trial balance reports with zero firewall ports opened and dynamic ODPC PII salting.
+                        Experience how SACCO Finance Officers securely upload trial balance reports from their existing core banking software with zero firewall ports opened and dynamic ODPC PII salting.
                     </p>
                 </div>
                 <div class="flex items-center gap-3">
@@ -403,17 +403,17 @@
                         <span class="text-xs font-mono text-emerald-400 font-bold">STAGE 03</span>
                         <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">ODPC Client-Side Hash</span>
                     </div>
-                    <h4 class="text-base font-bold text-white font-heading">Upload Navision Export</h4>
+                    <h4 class="text-base font-bold text-white font-heading">Upload Core Banking GL Export</h4>
                     <p class="text-slate-400 text-xs">
-                        Download the sample Microsoft Dynamics NAV ledger file or select from catalog:
+                        Download the sample general ledger file or select from catalog:
                     </p>
                     <div class="space-y-2">
-                        <a href="NAVISION_TRIAL_BALANCE_2025_EXPORT.csv" download class="block text-center py-1.5 px-3 rounded-lg bg-navy-900 border border-cyan-500/30 text-cyan-300 text-[11px] font-mono hover:bg-cyan-500/20">
-                            📥 Download Sample NAV Trial Balance (.csv)
+                        <a href="GL_TRIAL_BALANCE_2025_EXPORT.csv" download class="block text-center py-1.5 px-3 rounded-lg bg-navy-900 border border-cyan-500/30 text-cyan-300 text-[11px] font-mono hover:bg-cyan-500/20">
+                            📥 Download Sample Core Banking GL Trial Balance (.csv)
                         </a>
                         <select id="sim-file" class="w-full bg-navy-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none" disabled>
-                            <option>NAVISION_TRIAL_BALANCE_2025_EXPORT.csv (16 GL Lines • KES 14.8B)</option>
-                            <option>Navision_MemberLoanLedger_Q4_2025.csv (48.1 MB • 68k Accounts)</option>
+                            <option>GL_TRIAL_BALANCE_2025_EXPORT.csv (16 GL Lines • KES 14.8B)</option>
+                            <option>CoreBanking_MemberLoanLedger_Q4_2025.csv (48.1 MB • 68k Accounts)</option>
                         </select>
                         <button onclick="runIngestionSim()" id="btn-run-ingest" class="w-full py-2.5 rounded-xl bg-emerald-600/40 text-emerald-200 font-bold text-xs font-mono border border-emerald-500/50 hover:bg-emerald-600/60" disabled>
                             🚀 Tokenize &amp; Ingest to Live Dashboard
@@ -437,7 +437,7 @@
                 <div class="flex items-center justify-between border-b border-emerald-500/20 pb-3">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                        <span class="text-emerald-400 font-bold text-sm">NAVISION DATA INGESTION COMPLETED &amp; AUDITED</span>
+                        <span class="text-emerald-400 font-bold text-sm">CORE BANKING DATA INGESTION COMPLETED &amp; AUDITED</span>
                     </div>
                     <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px]">Zero Firewall Holes</span>
                 </div>

@@ -137,7 +137,7 @@
                 <span class="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">CADENCE INTELLIGENCE SUITE</span>
             </h1>
             <p class="text-base md:text-lg text-slate-300 leading-relaxed font-light">
-                Legacy ERPs (Navision, Bankers Realm, Finacle) are historical record keepers — they record what happened yesterday. Stride transforms raw balances into a continuous predictive heartbeat across <strong>Weekly, Monthly, Quarterly, and Annual</strong> institutional cadences.
+                StrideAnalytics is a non-disruptive intelligence overlay designed to <strong>sit seamlessly on top of your existing core banking system</strong>. While core banking databases serve as essential ledger repositories, Stride elevates raw balances into a continuous predictive heartbeat across <strong>Weekly, Monthly, Quarterly, and Annual</strong> institutional cadences.
             </p>
         </section>
 
@@ -181,7 +181,7 @@
                     </div>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed" id="cadence-desc">
-                    By the 15th of every month, SASRA mandates Section 24 filings. While competitors spend 2 weeks in stressful Excel reconciliations, Stride ingests the Navision trial balance in 30 seconds, auto-calculates Core Capital and Liquidity ratios, and produces cryptographic filing artifacts.
+                    By the 15th of every month, SASRA mandates Section 24 filings. While competitors spend 2 weeks in stressful Excel reconciliations, Stride ingests the core banking general ledger in 30 seconds, auto-calculates Core Capital and Liquidity ratios, and produces cryptographic filing artifacts.
                 </p>
             </div>
 
@@ -212,14 +212,14 @@
                 <!-- Right: The "Why Internal Software Has No Clue" Contrast Box (4 Cols) -->
                 <div class="lg:col-span-4 glass-card p-6 md:p-8 rounded-3xl border border-cyan-500/30 space-y-6">
                     <div class="border-b border-purple-500/20 pb-3">
-                        <span class="text-[11px] font-mono text-rose-400 uppercase font-bold tracking-wider">THE COMPETITIVE ADVANTAGE</span>
-                        <h4 class="text-lg font-bold font-heading text-white">Why Internal Software Has No Clue</h4>
+                        <span class="text-[11px] font-mono text-rose-400 uppercase font-bold tracking-wider">SYNERGY &amp; ADVANTAGE</span>
+                        <h4 class="text-lg font-bold font-heading text-white">How Stride Elevates Core Banking</h4>
                     </div>
 
                     <div class="space-y-4 text-xs font-mono">
-                        <div class="bg-navy-950/90 p-3.5 rounded-xl border border-rose-500/30 space-y-1">
-                            <span class="text-rose-400 font-bold block">❌ What Navision / Legacy ERPs See:</span>
-                            <span class="text-slate-400" id="legacy-see">Static ledger rows (e.g. GL Account 10300 = KES 7.45B). Zero forward projection, zero early warning alerts, zero predictive defaults.</span>
+                        <div class="bg-navy-950/90 p-3.5 rounded-xl border border-slate-700 space-y-1">
+                            <span class="text-slate-400 font-bold block">📊 Traditional Core Banking Ledgers:</span>
+                            <span class="text-slate-400" id="legacy-see">Static ledger rows (e.g. GL Account 10300 = KES 7.45B). High-fidelity record-keeping, but lacks forward projection, default probability modeling, and early warning radar.</span>
                         </div>
 
                         <div class="bg-navy-950/90 p-3.5 rounded-xl border border-emerald-500/40 space-y-1">
@@ -410,11 +410,11 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-emerald-500/20 pb-4">
                     <div>
                         <span class="text-xs font-mono text-emerald-400 uppercase font-bold tracking-wider block mb-1">LIVE TEST BENCH • 30-SECOND PRUDENTIAL FILING</span>
-                        <h3 class="text-xl font-bold font-heading text-white">Monthly Navision / Bankers Realm Trial Balance Ingestion</h3>
+                        <h3 class="text-xl font-bold font-heading text-white">Monthly Core Banking Trial Balance Ingestion &amp; Regulatory Returns</h3>
                     </div>
                     <div class="flex items-center gap-3">
-                        <a href="NAVISION_TRIAL_BALANCE_2025_EXPORT.csv" download class="px-4 py-2 rounded-xl bg-navy-900 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-500/20 flex items-center gap-2">
-                            <span>📥</span> <span>Download Navision Export (.csv)</span>
+                        <a href="GL_TRIAL_BALANCE_2025_EXPORT.csv" download class="px-4 py-2 rounded-xl bg-navy-900 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-500/20 flex items-center gap-2">
+                            <span>📥</span> <span>Download General Ledger Sample (.csv)</span>
                         </a>
                     </div>
                 </div>
@@ -423,8 +423,8 @@
                     <div class="space-y-2">
                         <label class="text-xs font-mono text-slate-400 block">Select Trial Balance Export:</label>
                         <select id="monthly-file-select" class="w-full bg-navy-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:border-emerald-400 focus:outline-none">
-                            <option>NAVISION_TRIAL_BALANCE_2025_EXPORT.csv (General Ledger • SASRA Form 1 &amp; 4)</option>
-                            <option>BANKERS_REALM_GL_OCT_2025.csv (Alternative Core Banking)</option>
+                            <option>CORE_BANKING_TRIAL_BALANCE_OCT_2025.csv (General Ledger • SASRA Form 1 &amp; 4)</option>
+                            <option>ALTERNATIVE_ERP_GL_EXPORT.csv (Multi-Branch Consolidated)</option>
                         </select>
                     </div>
 
@@ -740,7 +740,7 @@
             monthly: {
                 tag: "MONTHLY CADENCE • MANDATORY REGULATORY FILING",
                 title: "Automated SASRA Form 1 & 4 Prudential Return Engine",
-                desc: "By the 15th of every month, SASRA mandates Section 24 filings. While competitors spend 2 weeks in stressful Excel reconciliations, Stride ingests the Navision trial balance in 30 seconds, auto-calculates Core Capital and Liquidity ratios, and produces cryptographic filing artifacts.",
+                desc: "By the 15th of every month, SASRA mandates Section 24 filings. While competitors spend 2 weeks in stressful Excel reconciliations, Stride seamlessly ingests your core banking trial balance in 30 seconds, auto-calculates Core Capital and Liquidity ratios, and produces cryptographic filing artifacts.",
                 status: "FILING SLA: 100% TIMELY",
                 metrics: [
                     { label: "Core Capital / Assets", val: "14.6%", sub: "Statutory Floor: 10.0%", color: "emerald" },
@@ -957,7 +957,7 @@
             if (!btn || !panel) return;
             
             btn.disabled = true;
-            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Parsing Navision Trial Balance...`;
+            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⚡</span> Parsing Core Banking Trial Balance...`;
             
             setTimeout(() => {
                 panel.classList.remove('hidden');

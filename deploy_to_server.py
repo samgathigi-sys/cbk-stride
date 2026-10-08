@@ -33,6 +33,7 @@ FILES_TO_UPLOAD = [
     "strideanalytics_whitepaper.pdf",
     "stride_cadence_executive_whitepaper.pdf",
     "NAVISION_TRIAL_BALANCE_2025_EXPORT.csv",
+    "GL_TRIAL_BALANCE_2025_EXPORT.csv",
     "WEEKLY_LOAN_REPAYMENT_LEDGER_W42_2025.csv",
     "demo.html"
 ]
