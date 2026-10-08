@@ -29,7 +29,8 @@ FILES_TO_UPLOAD = [
     "agmplan.html",
     "creditscore.html",
     "stride-chat.css",
-    "stride-chat.js"
+    "stride-chat.js",
+    "strideanalytics_whitepaper.pdf"
 ]
 
 def deploy():
