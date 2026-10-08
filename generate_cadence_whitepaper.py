@@ -44,7 +44,7 @@ class NumberedCanvas(canvas.Canvas):
         # Footer
         page_str = f"Page {self._pageNumber} of {page_count}"
         self.drawRightString(558, 36, page_str)
-        self.drawString(54, 36, "EXECUTIVE BRIEFING • STRIDE SYSTEMS LTD • NAIROBI, KENYA • ODPC/CR/2026/0882")
+        self.drawString(54, 36, "EXECUTIVE BRIEFING • STRIDE SYSTEMS LTD • NAIROBI, KENYA • ODPC (2019) COMPLIANT")
         self.setStrokeColor(colors.HexColor("#334155"))
         self.setLineWidth(0.5)
         self.line(54, 48, 558, 48)
@@ -285,7 +285,7 @@ def build_pdf():
         Paragraph("<b>STRIDE SOVEREIGN GOVERNANCE & PREDICTIVE ANALYTICS</b><br/>"
                   "Stride Systems Ltd • Nairobi Financial Corridor, Upper Hill / Kilimani, Kenya<br/>"
                   "<b>Executive Enquiries:</b> info@strideanalytics.co.ke | <b>Live Portal:</b> https://strideanalytics.co.ke<br/>"
-                  "<i>Statutory Registrations: Data Protection Act Certificate #ODPC/CR/2026/0882 • SASRA Tier-1 Compliant</i>", callout_style)
+                  "<i>Statutory Compliance: Kenya Data Protection Act (ODPC 2019) Compliant Architecture • SASRA Tier-1 Ready</i>", callout_style)
     ]]
     closing_table = Table(closing_data, colWidths=[504])
     closing_table.setStyle(TableStyle([
