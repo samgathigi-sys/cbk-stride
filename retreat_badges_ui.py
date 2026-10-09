@@ -5,6 +5,14 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 
+def render_raw_html(html_code: str):
+    clean_lines = [line.strip() for line in html_code.strip().splitlines() if line.strip()]
+    clean_html = "\n".join(clean_lines)
+    if hasattr(st, "html"):
+        st.html(clean_html)
+    else:
+        st.markdown(clean_html, unsafe_allow_html=True)
+
 def _render_badges_core():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(base_dir, "RETREAT_BADGES_REGISTRY.csv")
@@ -34,7 +42,7 @@ def _render_badges_core():
         return
 
     # Header Banner
-    st.markdown("""
+    render_raw_html("""
     <div style="background: linear-gradient(135deg, rgba(6, 18, 38, 0.95) 0%, rgba(10, 32, 70, 0.9) 50%, rgba(2, 10, 24, 0.95) 100%); 
                 border: 2px solid #DEAC30; border-radius: 14px; padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
@@ -58,7 +66,7 @@ def _render_badges_core():
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Top Metrics Bar
     total_delegates = len(df)
@@ -84,7 +92,7 @@ def _render_badges_core():
     impos_pdf = os.path.join(press_dir, "CBK_MOMBASA_2026_IMPOSITION_SHEETS_4UP.pdf")
 
     with st.expander("🖨️ Commercial Press-Ready Print Documents (300 DPI Glossy Cardstock Run)", expanded=True):
-        st.markdown("""
+        render_raw_html("""
         <div style="background: rgba(2, 6, 14, 0.7); border: 1.5px solid #00F2FE; border-radius: 10px; padding: 14px 18px; margin-bottom: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div>
@@ -102,7 +110,7 @@ def _render_badges_core():
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         pcol1, pcol2 = st.columns(2)
         with pcol1:
@@ -174,7 +182,7 @@ def _render_badges_core():
         back_img_path = os.path.join(back_dir, str(row["back_card_file"]))
         qr_img_path = os.path.join(qr_dir, str(row["qr_code_file"]))
 
-        st.markdown(f"""
+        render_raw_html(f"""
         <div style="background: rgba(10, 32, 70, 0.4); border-left: 4px solid #DEAC30; padding: 12px 18px; border-radius: 6px; margin: 15px 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                 <div>
@@ -186,7 +194,7 @@ def _render_badges_core():
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         # Dual Badge Display (Front & Back)
         col_front, col_back = st.columns(2)
@@ -243,7 +251,7 @@ def _render_badges_core():
 
         with meta_c2:
             st.markdown("#### 🛡️ ODPC Compliance & Security Validation")
-            st.markdown(f"""
+            render_raw_html(f"""
             <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; color: #CBD5E1;">
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <td style="padding: 6px 0; color: #94A3B8; width: 140px;"><strong>Protected ID:</strong></td>
@@ -266,7 +274,7 @@ def _render_badges_core():
                     <td style="padding: 6px 0; color: #10B981; font-weight: 700;">✓ Section 25 Certified (HMAC-SHA256 Tokenization)</td>
                 </tr>
             </table>
-            """, unsafe_allow_html=True)
+            """)
 
             if st.button("🧪 Simulate Gate Scanner Validation", key=f"scan_sim_{row['index']}"):
                 st.success(f"✓ Gate Clearance Approved: {row['full_name']} ({row['role']}) — Access Level: {row['tier']}")

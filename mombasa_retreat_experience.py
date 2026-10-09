@@ -33,6 +33,18 @@ def mask_email_addr(email_str: str) -> str:
         return f"{masked_user}@{domain}"
     return "s***@centralbank.go.ke"
 
+def render_raw_html(html_code: str):
+    """
+    Renders HTML cleanly without triggering CommonMark's indented code block rule.
+    Strips leading spaces on each line and passes through st.html or st.markdown.
+    """
+    clean_lines = [line.strip() for line in html_code.strip().splitlines() if line.strip()]
+    clean_html = "\n".join(clean_lines)
+    if hasattr(st, "html"):
+        st.html(clean_html)
+    else:
+        st.markdown(clean_html, unsafe_allow_html=True)
+
 def render_mombasa_retreat_experience():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(base_dir, "RETREAT_BADGES_REGISTRY.csv")
@@ -50,7 +62,7 @@ def render_mombasa_retreat_experience():
         ])
 
     # Luxury Top Banner
-    st.markdown("""
+    render_raw_html("""
     <style>
         .retreat-header {
             background: linear-gradient(135deg, #071F3D 0%, #030F21 60%, #020712 100%);
@@ -110,14 +122,14 @@ def render_mombasa_retreat_experience():
     # Experience Mode Switcher (Delegate View vs. Gate Usher Scanner)
     c_m1, c_m2 = st.columns([2.5, 1.2])
     with c_m1:
-        st.markdown("""
+        render_raw_html("""
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
             <span style="background: #F5C542; color: #020712; font-size: 0.72rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">
                 🇰🇪 STRIDE™ EXECUTIVE RETREAT PASS
             </span>
             <span style="color: #94A3B8; font-size: 0.82rem;">Mombasa Strategic Leadership Retreat 2026</span>
         </div>
-        """, unsafe_allow_html=True)
+        """)
     with c_m2:
         view_role = st.selectbox(
             "Terminal View:",
@@ -180,7 +192,7 @@ def render_mombasa_retreat_experience():
 
         with col_cam:
             # Simulated active camera viewfinder
-            st.markdown(f"""
+            render_raw_html(f"""
             <div style="background: #020712; border: 2.5px solid #10B981; border-radius: 16px; padding: 24px; text-align: center; position: relative;">
                 <div style="font-size: 0.72rem; color: #10B981; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
                     (((●))) ACTIVE OPTICAL VIEWFINDER • 60 FPS
@@ -194,7 +206,7 @@ def render_mombasa_retreat_experience():
                     Targeting Pass Token: <code>{del_token}</code> • Latency: <strong>0.38s</strong>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
             c_btn1, c_btn2 = st.columns(2)
             with c_btn1:
@@ -208,8 +220,10 @@ def render_mombasa_retreat_experience():
                 st.warning(f"Pass #{del_token} flagged for Secretariat Review.")
 
         with col_verify:
+            # Compute initials
+            init_v = "".join([p[0].upper() for p in del_name.split() if p.isalpha()][:2]) or "BK"
             # Verified Pop-up Card
-            st.markdown(f"""
+            render_raw_html(f"""
             <div style="background: linear-gradient(135deg, #092540 0%, #031326 100%); border: 2px solid #10B981; border-radius: 16px; padding: 20px; box-shadow: 0 12px 36px rgba(0,0,0,0.7);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <span style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-weight: 800; font-size: 0.72rem; padding: 3px 10px; border-radius: 4px;">
@@ -219,8 +233,9 @@ def render_mombasa_retreat_experience():
                 </div>
                 
                 <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 14px;">
-                    <div style="width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(135deg, #0284C7, #0369A1); display: flex; align-items: center; justify-content: center; font-size: 2rem; border: 2px solid #F5C542; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-                        👔
+                    <div style="width: 76px; height: 76px; border-radius: 14px; background: linear-gradient(135deg, #0284C7, #071F3D); display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid #F5C542; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                        <span style="font-size: 1.5rem; font-weight: 900; color: #F5C542; line-height: 1;">{init_v}</span>
+                        <span style="font-size: 0.52rem; color: #38BDF8; font-weight: 800; text-transform: uppercase; margin-top: 2px;">DELEGATE</span>
                     </div>
                     <div>
                         <h3 style="margin: 0; color: #FFFFFF; font-size: 1.25rem; font-weight: 800;">{del_name}</h3>
@@ -253,7 +268,7 @@ def render_mombasa_retreat_experience():
                     </span>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         return
 
@@ -262,7 +277,7 @@ def render_mombasa_retreat_experience():
     # --------------------------------------------------------------------------
     
     # 1. LIVE "HAPPENING NOW" SESSION PULSE CARD
-    st.markdown("""
+    render_raw_html("""
     <div style="background: linear-gradient(135deg, rgba(7, 25, 51, 0.85) 0%, rgba(2, 12, 28, 0.95) 100%); 
                 border: 1.5px solid #10B981; border-left: 5px solid #10B981; border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; box-shadow: 0 6px 20px rgba(0,0,0,0.4);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
@@ -283,7 +298,7 @@ def render_mombasa_retreat_experience():
             📍 <strong>Ocean Ballroom A (Ground Floor)</strong> • Keynote Speaker: Dr. Patrick Njoroge (Executive Guest)
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # 2. 4 SUB-MODULE TABS (Pass, Programme, Meals, Voting)
     sub_pass, sub_prog, sub_meals, sub_vote = st.tabs([
@@ -299,79 +314,131 @@ def render_mombasa_retreat_experience():
     with sub_pass:
         col_p1, col_p2 = st.columns([1.15, 1])
 
-        with col_p1:
+        # Resolve local files
+        qr_filename = cur_del.get("qr_code_file")
+        qr_local_path = os.path.join(base_dir, "QR_CODES", str(qr_filename)) if qr_filename else None
+        if qr_local_path and os.path.exists(qr_local_path):
+            import base64
+            with open(qr_local_path, "rb") as qrf:
+                qr_b64 = base64.b64encode(qrf.read()).decode("utf-8")
+                qr_img_src = f"data:image/png;base64,{qr_b64}"
+        else:
             qr_verify_url = f"https://cbk-stride.streamlit.app/EVENTS?verify_token={del_token}"
-            qr_img_api = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={qr_verify_url}"
+            qr_img_src = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={qr_verify_url}"
 
-            st.markdown(f"""
-            <div class="apple-pass-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(245, 197, 66, 0.3); padding-bottom: 12px; margin-bottom: 16px;">
-                    <div>
-                        <div style="font-size: 0.7rem; color: #F5C542; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;">
-                            BANKI KUU SACCO • RETREAT PASS
+        front_filename = cur_del.get("front_card_file")
+        front_local_path = os.path.join(base_dir, "FRONT_CARDS", str(front_filename)) if front_filename else None
+        back_filename = cur_del.get("back_card_file")
+        back_local_path = os.path.join(base_dir, "BACK_CARDS", str(back_filename)) if back_filename else None
+
+        initials = "".join([part[0].upper() for part in del_name.split() if part.isalpha()][:2]) or "BK"
+
+        with col_p1:
+            pass_view_mode = st.radio(
+                "Pass Display View:",
+                ["📱 Executive Digital Pass", "🪪 Commercial 300-DPI Badge (Print Preview)"],
+                horizontal=True,
+                key=f"pass_view_mode_{del_token}"
+            )
+
+            if "Executive Digital Pass" in pass_view_mode:
+                render_raw_html(f"""
+                <div class="apple-pass-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(245, 197, 66, 0.35); padding-bottom: 12px; margin-bottom: 16px;">
+                        <div>
+                            <div style="font-size: 0.72rem; color: #F5C542; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;">
+                                BANKI KUU SACCO • RETREAT PASS
+                            </div>
+                            <div style="font-size: 0.98rem; color: #FFFFFF; font-weight: 800; margin-top: 2px;">
+                                Mombasa Strategic Leadership Retreat 2026
+                            </div>
                         </div>
-                        <div style="font-size: 0.95rem; color: #FFFFFF; font-weight: 800; margin-top: 2px;">
-                            Mombasa Strategic Leadership Retreat 2026
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #F5C542, #B48811); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                            ⭐
                         </div>
                     </div>
-                    <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #F5C542, #B48811); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-                        ⭐
-                    </div>
-                </div>
 
-                <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 18px;">
-                    <div style="width: 82px; height: 82px; border-radius: 12px; background: linear-gradient(135deg, #0284C7, #071F3D); display: flex; align-items: center; justify-content: center; font-size: 2.3rem; border: 2.5px solid #00F2FE; box-shadow: 0 8px 24px rgba(0,0,0,0.6);">
-                        👔
-                    </div>
-                    <div>
-                        <div style="font-size: 1.35rem; font-weight: 900; color: #FFFFFF;">{del_name}</div>
-                        <div style="font-size: 0.85rem; color: #00F2FE; font-weight: 700; margin-top: 1px;">{del_role}</div>
-                        <div style="font-size: 0.72rem; color: #94A3B8; margin-top: 4px;">
-                            Pass Serial: <code>{del_token}</code> • <strong>{del_tier}</strong>
+                    <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 18px;">
+                        <div style="width: 78px; height: 78px; border-radius: 14px; background: linear-gradient(135deg, #0F2B48, #051426); border: 2.5px solid #F5C542; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.6);">
+                            <span style="font-size: 1.5rem; font-weight: 900; color: #F5C542; letter-spacing: 1px; line-height: 1;">{initials}</span>
+                            <span style="font-size: 0.52rem; color: #38BDF8; font-weight: 800; text-transform: uppercase; margin-top: 3px;">DELEGATE</span>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.3rem; font-weight: 900; color: #FFFFFF; line-height: 1.2;">{del_name}</div>
+                            <div style="font-size: 0.85rem; color: #00F2FE; font-weight: 700; margin-top: 2px;">{del_role}</div>
+                            <div style="font-size: 0.72rem; color: #94A3B8; margin-top: 4px;">
+                                Pass Serial: <code style="color: #FFE68C;">{del_token}</code> • <strong>{del_tier}</strong>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div style="background: rgba(255,255,255,0.04); border-radius: 10px; padding: 12px; margin-bottom: 18px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.76rem; margin-bottom: 4px;">
-                        <span style="color: #94A3B8;">Masked Phone:</span>
-                        <strong style="color: #FFFFFF;">{del_phone}</strong>
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px 14px; margin-bottom: 18px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.76rem; margin-bottom: 4px;">
+                            <span style="color: #94A3B8;">Masked Phone:</span>
+                            <strong style="color: #FFFFFF;">{del_phone}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.76rem; margin-bottom: 4px;">
+                            <span style="color: #94A3B8;">Masked Email:</span>
+                            <strong style="color: #FFFFFF;">{del_email}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.76rem;">
+                            <span style="color: #94A3B8;">Resort Accommodation:</span>
+                            <strong style="color: #F5C542;">{assigned_room}</strong>
+                        </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.76rem; margin-bottom: 4px;">
-                        <span style="color: #94A3B8;">Masked Email:</span>
-                        <strong style="color: #FFFFFF;">{del_email}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.76rem;">
-                        <span style="color: #94A3B8;">Resort Accommodation:</span>
-                        <strong style="color: #F5C542;">{assigned_room}</strong>
-                    </div>
-                </div>
 
-                <div style="text-align: center; background: #FFFFFF; border-radius: 12px; padding: 12px; margin: 10px auto; width: 180px; box-shadow: 0 8px 20px rgba(0,0,0,0.6);">
-                    <img src="{qr_img_api}" alt="Pass QR" style="display: block; width: 156px; height: 156px;" />
-                </div>
-                <div style="text-align: center; font-size: 0.7rem; color: #94A3B8; margin-top: 6px;">
-                    Scan with any phone camera at airport, plenary gates & dining pavilions
-                </div>
+                    <div style="text-align: center; background: #FFFFFF; border-radius: 12px; padding: 12px; margin: 10px auto; width: 180px; box-shadow: 0 8px 20px rgba(0,0,0,0.6);">
+                        <img src="{qr_img_src}" alt="Pass QR" style="display: block; width: 156px; height: 156px; margin: 0 auto;" />
+                    </div>
+                    <div style="text-align: center; font-size: 0.7rem; color: #94A3B8; margin-top: 6px;">
+                        Scan with any phone camera at airport, plenary gates & dining pavilions
+                    </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
-                    <span style="font-size: 0.7rem; color: #10B981; font-weight: 800;">✓ QUORUM CERTIFIED</span>
-                    <span style="font-size: 0.7rem; color: #64748B;">ODPC §25 Compliant</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+                        <span style="font-size: 0.7rem; color: #10B981; font-weight: 800;">✓ QUORUM CERTIFIED</span>
+                        <span style="font-size: 0.7rem; color: #64748B;">ODPC §25 Compliant</span>
+                    </div>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
+                """)
+            else:
+                if front_local_path and os.path.exists(front_local_path):
+                    st.image(front_local_path, caption=f"Front: {del_name} — Pass #{del_token}", use_container_width=True)
+                if back_local_path and os.path.exists(back_local_path):
+                    st.image(back_local_path, caption="Back: 3-Day Itinerary & Encrypted Keys", use_container_width=True)
 
         with col_p2:
             st.markdown("#### 📱 Mobile Actions & Offline Pass")
             st.caption("Add to mobile wallet, download offline pass card, or view accreditation metadata:")
 
-            st.download_button(
-                label="📥 Download High-Res Pass Card (.png / .txt)",
-                data=f"STRIDE RETREAT PASS\nName: {del_name}\nRole: {del_role}\nToken: {del_token}\nRoom: {assigned_room}\nVerification URL: {qr_verify_url}",
-                file_name=f"PASS_{del_token}_{del_name.replace(' ', '_')}.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
+            if front_local_path and os.path.exists(front_local_path):
+                with open(front_local_path, "rb") as f:
+                    card_png_bytes = f.read()
+                st.download_button(
+                    label="📥 Download Official 300-DPI Front Badge (.png)",
+                    data=card_png_bytes,
+                    file_name=f"BADGE_{del_token}_{del_name.replace(' ', '_')}.png",
+                    mime="image/png",
+                    use_container_width=True
+                )
+            else:
+                st.download_button(
+                    label="📥 Download High-Res Pass Card (.txt)",
+                    data=f"STRIDE RETREAT PASS\nName: {del_name}\nRole: {del_role}\nToken: {del_token}\nRoom: {assigned_room}",
+                    file_name=f"PASS_{del_token}_{del_name.replace(' ', '_')}.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+
+            if qr_local_path and os.path.exists(qr_local_path):
+                with open(qr_local_path, "rb") as qrf:
+                    qr_bytes = qrf.read()
+                st.download_button(
+                    label="📥 Download Encrypted QR Code (.png)",
+                    data=qr_bytes,
+                    file_name=f"QR_{del_token}.png",
+                    mime="image/png",
+                    use_container_width=True
+                )
 
             if st.button("📲 Add to Apple Wallet / Google Wallet (Simulate)", use_container_width=True):
                 st.success("✓ Apple Wallet pass package generated! (.pkpass ready)")
@@ -437,31 +504,31 @@ def render_mombasa_retreat_experience():
 
         m_col1, m_col2, m_col3 = st.columns(3)
         with m_col1:
-            st.markdown("""
+            render_raw_html("""
             <div style="background: rgba(16, 185, 129, 0.1); border: 1.5px solid #10B981; border-radius: 10px; padding: 14px; text-align: center;">
                 <div style="font-size: 0.72rem; color: #10B981; font-weight: 800;">BREAKFAST BUFFET</div>
                 <div style="font-size: 1.6rem; font-weight: 900; color: #FFFFFF; margin: 4px 0;">CLAIMED ✓</div>
                 <div style="font-size: 0.72rem; color: #CBD5E1;">Scanned at 07:44 AM (Flavours)</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         with m_col2:
-            st.markdown("""
+            render_raw_html("""
             <div style="background: rgba(16, 185, 129, 0.1); border: 1.5px solid #10B981; border-radius: 10px; padding: 14px; text-align: center;">
                 <div style="font-size: 0.72rem; color: #10B981; font-weight: 800;">BUFFET LUNCH</div>
                 <div style="font-size: 1.6rem; font-weight: 900; color: #FFFFFF; margin: 4px 0;">CLAIMED ✓</div>
                 <div style="font-size: 0.72rem; color: #CBD5E1;">Scanned at 01:18 PM (Tamu Tamu)</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         with m_col3:
-            st.markdown("""
+            render_raw_html("""
             <div style="background: rgba(245, 197, 66, 0.1); border: 1.5px solid #F5C542; border-radius: 10px; padding: 14px; text-align: center;">
                 <div style="font-size: 0.72rem; color: #F5C542; font-weight: 800;">SEAFOOD GALA DINNER</div>
                 <div style="font-size: 1.6rem; font-weight: 900; color: #F5C542; margin: 4px 0;">ACTIVE (1/1)</div>
                 <div style="font-size: 0.72rem; color: #CBD5E1;">Ready for 07:00 PM Entrance</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         st.markdown("---")
         st.markdown("##### 🧪 Test Fraud Protection (Simulate Duplicate Meal Claim):")
@@ -478,7 +545,7 @@ def render_mombasa_retreat_experience():
         v_col1, v_col2 = st.columns([1.1, 1.2])
 
         with v_col1:
-            st.markdown(f"""
+            render_raw_html(f"""
             <div style="background: rgba(8, 28, 58, 0.85); border: 1.5px solid #00F2FE; border-radius: 10px; padding: 12px 16px; margin-bottom: 12px;">
                 <div style="font-size: 0.72rem; color: #00F2FE; font-weight: 800;">CERTIFIED VOTER CREDENTIAL</div>
                 <div style="font-size: 1.1rem; font-weight: 800; color: #FFFFFF;">{del_name}</div>
@@ -486,7 +553,7 @@ def render_mombasa_retreat_experience():
                     ⚖️ Allocated Voting Power: 10,000 Votes (Executive Quorum)
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
             with st.form("form_retreat_ballot"):
                 st.markdown("##### 📜 Item 1: Ordinary Resolution 1")
@@ -513,7 +580,7 @@ def render_mombasa_retreat_experience():
             st.metric("Total Ballots Cast", "64 / 95 (67.4% Quorum)", delta="+10,000 Votes")
 
             st.markdown("###### Supervisory Committee Election Tally")
-            st.markdown("""
+            render_raw_html("""
             <div>
                 <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #CBD5E1; font-weight: 700;">
                     <span style="color: #F5C542;">🏆 Sarah Wanjiru CPA(K)</span>
@@ -541,4 +608,5 @@ def render_mombasa_retreat_experience():
                     <div style="background: #94A3B8; height: 100%; width: 6.3%; border-radius: 6px;"></div>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
+
