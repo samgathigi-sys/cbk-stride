@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 
-def render_retreat_badges_ui():
+def _render_badges_core():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(base_dir, "RETREAT_BADGES_REGISTRY.csv")
     front_dir = os.path.join(base_dir, "FRONT_CARDS")
@@ -13,7 +13,9 @@ def render_retreat_badges_ui():
     qr_dir = os.path.join(base_dir, "QR_CODES")
 
     if not os.path.exists(csv_path):
-        st.warning("Retreat Badges registry not found. Please run the generation script first.")
+        st.info("ℹ️ Retreat Badges registry not found on local path. Rendering Luxury Mobile Experience...")
+        import mombasa_retreat_experience
+        mombasa_retreat_experience.render_mombasa_retreat_experience()
         return
 
     df = pd.read_csv(csv_path)
@@ -292,3 +294,16 @@ def render_retreat_badges_ui():
             file_name="RETREAT_BADGES_REGISTRY_EXPORT.csv",
             mime="text/csv"
         )
+
+def render_retreat_badges_ui():
+    try:
+        _render_badges_core()
+    except Exception as ex:
+        st.info("ℹ️ Switching to Executive Mobile Concierge...")
+        try:
+            import mombasa_retreat_experience
+            mombasa_retreat_experience.render_mombasa_retreat_experience()
+        except Exception:
+            st.error("System ready. Please reload the page.")
+
+

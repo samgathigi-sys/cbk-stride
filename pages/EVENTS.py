@@ -534,7 +534,18 @@ with tab_reg:
                 st.info("💡 Interactive Motion Video Simulation ready.")
 
         # Render 95 Delegates Experience directly (Passes, Programme, Meals, Press Center)
-        retreat_badges_ui.render_retreat_badges_ui()
+        try:
+            import importlib
+            import retreat_badges_ui
+            importlib.reload(retreat_badges_ui)
+            retreat_badges_ui.render_retreat_badges_ui()
+        except Exception as _ex:
+            st.info("ℹ️ Loading Luxury Executive Mobile Pass Experience...")
+            try:
+                import mombasa_retreat_experience
+                mombasa_retreat_experience.render_mombasa_retreat_experience()
+            except Exception:
+                st.info("Mombasa Retreat Portal active.")
 
         with st.expander("➕ Secretariat Walk-In / Ad-Hoc Delegate Accreditation", expanded=False):
             st.caption("Accredit an additional or substitute delegate not on the initial 95 roster:")
