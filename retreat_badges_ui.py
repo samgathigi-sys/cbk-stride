@@ -16,7 +16,18 @@ def render_retreat_badges_ui():
         st.warning("Retreat Badges registry not found. Please run the generation script first.")
         return
 
-    df = pd.read_csv(csv_path)
+    # Experience Mode Selector (Luxury Mobile UI vs Print Center)
+    retreat_mode = st.radio(
+        "Select Retreat Experience Interface:",
+        ["📱 Luxury Executive Mobile Pass & Live Experience (New)", "🖨️ Commercial Press-Ready Print Center (Badges PDF)"],
+        horizontal=True,
+        key="mombasa_retreat_mode_toggle"
+    )
+
+    if "Luxury Executive Mobile Pass" in retreat_mode:
+        import mombasa_retreat_experience
+        mombasa_retreat_experience.render_mombasa_retreat_experience()
+        return
 
     # Header Banner
     st.markdown("""
