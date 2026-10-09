@@ -37,6 +37,7 @@ FILES_TO_UPLOAD = [
     "WEEKLY_LOAN_REPAYMENT_LEDGER_W42_2025.csv",
     "MOCK_HIGHLANDS_TEA_SACCO_LOAN_LEDGER.csv",
     "CoreBanking_MemberLoanLedger_Q4_2025.csv",
+    "api_soft_token.php",
     "demo.html"
 ]
 

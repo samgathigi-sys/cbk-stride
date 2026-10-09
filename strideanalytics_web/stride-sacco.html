@@ -1017,18 +1017,31 @@
             generatedSimToken = Math.floor(100000 + Math.random() * 900000).toString();
 
             try {
-                // Attempt Real SMTP Dispatch via Micro-API
-                const res = await fetch('http://localhost:8089/api/request-soft-token', {
+                // 1. First attempt Live Production Server Endpoint
+                let res = await fetch('api_soft_token.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email })
+                    body: JSON.stringify({ action: 'request-soft-token', email: email })
                 });
-                const resData = await res.json();
-                if (resData.status === 'DISPATCHED') {
-                    console.log('Real token sent to:', email);
+
+                if (!res.ok) {
+                    // 2. Fallback to local daemon if running
+                    res = await fetch('http://localhost:8089/api/request-soft-token', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email })
+                    });
+                }
+
+                if (res.ok) {
+                    const resData = await res.json();
+                    if (resData.status === 'DISPATCHED' && resData.token_preview) {
+                        generatedSimToken = resData.token_preview;
+                        console.log('Real token dispatched to inbox:', email, generatedSimToken);
+                    }
                 }
             } catch (err) {
-                console.log('Local API silent relay, fallback to client-side token:', err);
+                console.log('Live email dispatch relay fallback:', err);
             }
 
             document.getElementById('hint-token').textContent = generatedSimToken.slice(0,3) + '-' + generatedSimToken.slice(3);
