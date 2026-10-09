@@ -16,6 +16,8 @@ def render_retreat_badges_ui():
         st.warning("Retreat Badges registry not found. Please run the generation script first.")
         return
 
+    df = pd.read_csv(csv_path)
+
     # Experience Mode Selector (Luxury Mobile UI vs Print Center)
     retreat_mode = st.radio(
         "Select Retreat Experience Interface:",

@@ -156,6 +156,19 @@ def render_mombasa_retreat_experience():
     suite_num = 100 + (int(cur_del["index"]) * 3) % 400
     assigned_room = f"{room_wings[cur_del['index'] % len(room_wings)]} • Suite {suite_num}"
 
+    # Sync with global active ticket for Gate Usher and Ballot tabs
+    ser = str(cur_del.get("serial", "")).strip()
+    idx_num = int(cur_del.get("index", 1))
+    if ser == "3428":
+        db_tkt_id = "TKT-BK-342801"
+    elif ser == "3366":
+        db_tkt_id = "TKT-BK-3366"
+    elif ser == "CASUAL":
+        db_tkt_id = f"TKT-BK-CASUAL-{idx_num:02d}"
+    else:
+        db_tkt_id = f"TKT-BK-{ser}"
+    st.session_state["active_ticket_id"] = db_tkt_id
+
     # --------------------------------------------------------------------------
     # VIEW A: GATE USHER & CONCIERGE SCANNER TERMINAL
     # --------------------------------------------------------------------------

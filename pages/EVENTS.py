@@ -254,7 +254,16 @@ now_dt = get_eat_now()
 # READ QUERY PARAMS (IF ACCESSED VIA DIRECT EVENT QR OR LINK)
 # ------------------------------------------------------------------------------
 param_event_id = st.query_params.get("event_id", "")
-is_bks_mode = (param_event_id == "EVT-BANKI-KUU-SACCO" or "bks" in st.query_params or "bksacco" in st.query_params or "bankikuu" in st.query_params or st.query_params.get("bks", "") == "1")
+is_bks_mode = (
+    param_event_id in ["EVT-BANKI-KUU-SACCO", "EVT-SACCO-RETREAT-2026", "SACCO", "BKS"]
+    or "bks" in st.query_params
+    or "sacco" in st.query_params
+    or "retreat" in st.query_params
+    or "bksacco" in st.query_params
+    or "bankikuu" in st.query_params
+    or st.query_params.get("bks", "") == "1"
+    or st.query_params.get("sacco", "") == "1"
+)
 if is_bks_mode:
     param_event_id = "EVT-BANKI-KUU-SACCO"
 
@@ -271,10 +280,10 @@ if is_bks_mode:
             </div>
             <div>
                 <h2 style="margin: 0; font-size: 1.45rem; font-weight: 900; color: {skin['text_main']}; letter-spacing: -0.5px;">
-                    Banki Kuu SACCO <span style="font-weight: 600; color: {skin['accent_primary']}; font-size: 1rem;">| Shareholder Accreditation & E-Voting Portal</span>
+                    Banki Kuu SACCO <span style="font-weight: 600; color: {skin['accent_primary']}; font-size: 1rem;">| Strategic Retreat & 58th AGM Portal</span>
                 </h2>
                 <div style="font-size: 0.78rem; color: {skin['text_sub']};">
-                    Central Bank of Kenya Staff SACCO Society Ltd. • 58th AGM & Board Elections • KICC Main Auditorium
+                    Central Bank of Kenya Staff SACCO Society Ltd. • PrideInn Paradise, Shanzu, Mombasa • 95 Accredited Delegates
                 </div>
             </div>
         </div>
@@ -284,10 +293,10 @@ if is_bks_mode:
         st.markdown(f"""
         <div style="text-align: right; margin-top: 8px;">
             <span style="background: rgba(0,0,0,0.2); border: 1.5px solid {skin['accent_primary']}; color: {skin['accent_primary']}; padding: 5px 14px; border-radius: 20px; font-size: 0.76rem; font-weight: 900; letter-spacing: 0.5px;">
-                👑 58th AGM LIVE PORTAL
+                👑 MOMBASA RETREAT 2026
             </span>
             <div style="font-size: 0.72rem; color: {skin['text_sub']}; margin-top: 4px;">
-                <span>Central Bank of Kenya</span> • <a href="/DEMO" style="color: {skin['accent_secondary']}; text-decoration: none;">🧪 Evaluator Sandbox</a>
+                <span>Central Bank of Kenya</span> • <span style="color: {skin['accent_secondary']};">PrideInn Paradise, Shanzu</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -465,18 +474,20 @@ def render_agm_pii_compliance_bar(tab_context: str = "reg"):
                         else:
                             st.error(msg_auth)
 
+all_events = backend.get_events(status="ACTIVE") or []
+
 # ------------------------------------------------------------------------------
 # MAIN PORTAL TABS
 # ------------------------------------------------------------------------------
 if is_bks_mode:
-    tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp, tab_retreat = st.tabs([
-        "🎟️ Shareholder Accreditation & Bulk Roster",
-        "💳 SACCO Finance Manager Payment & Scoping",
-        "📷 Gate Usher Scanner & Quorum Meter",
-        "🗳️ Digital Voting & Elections Booth",
-        "🤖 Member Feedback & Sentiment Analysis",
-        "🏖️ Mombasa Retreat Badges & Passes"
+    tab_reg, tab_verify, tab_ballot, tab_nlp = st.tabs([
+        "🎟️ Shareholder & Delegate Accreditation",
+        "📷 Gate Usher & Quorum Verification",
+        "🗳️ Digital Secret Ballot & Voting Chamber",
+        "🤖 Member Feedback & Sentiment Analytics (NLP)"
     ])
+    tab_wizard = None
+    tab_retreat = None
 else:
     tab_reg, tab_wizard, tab_verify, tab_ballot, tab_nlp, tab_retreat = st.tabs([
         "🎟️ Attendee Registration & Digital Pass",
@@ -491,719 +502,737 @@ else:
 # TAB 1: ATTENDEE REGISTRATION & M-PESA TICKETING
 # ==============================================================================
 with tab_reg:
-    # Ensure Banki Kuu SACCO ready-to-demo event exists in database
     bk_event = backend.ensure_banki_kuu_sacco_event()
 
     if is_bks_mode:
-        st.markdown("""
+        import retreat_badges_ui
+        import mombasa_retreat_experience
+
+        st.markdown('''
         <div style="background: linear-gradient(135deg, rgba(245, 197, 66, 0.22) 0%, rgba(9, 31, 61, 0.95) 100%); border: 2px solid #F5C542; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
             <div>
                 <span style="background: #F5C542; color: #020712; font-weight: 900; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.2px;">
-                    🏦 CENTRAL BANK OF KENYA STAFF SACCO SOCIETY LTD.
+                    🏦 BANKI KUU SACCO • MOMBASA RETREAT 2026
                 </span>
                 <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.25rem; font-weight: 900;">
-                    58th Annual General Meeting & Board Elections Platform
+                    58th Annual General Meeting & Executive Retreat Accreditation
                 </h3>
                 <div style="font-size: 0.82rem; color: #CBD5E1;">
-                    Statutory Shareholder Accreditation • Digital Mobile Pass • Live SASRA Quorum Telemetry • Encrypted E-Voting
+                    PrideInn Paradise Beach Resort & Spa, Shanzu • 95 Accredited Delegates • Tokenized QR Passes • ODPC § 25 Compliant
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown("""
-        <div style="background: linear-gradient(135deg, rgba(245, 197, 66, 0.18) 0%, rgba(9, 31, 61, 0.85) 100%); border: 2px solid #F5C542; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.45);">
-            <div>
-                <span style="background: #F5C542; color: #020712; font-weight: 900; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px;">
-                    🏦 READY-TO-DEMO SUITE
-                </span>
-                <h4 style="margin: 4px 0 2px 0; color: #FFFFFF; font-size: 1.1rem; font-weight: 800;">
-                    Banki Kuu SACCO — 58th AGM & Board Elections Platform
-                </h4>
-                <div style="font-size: 0.78rem; color: #CBD5E1;">
-                    Pre-configured for statutory shareholder accreditation, M-Pesa digital pass, live SASRA quorum tracking & encrypted e-voting.
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        ''', unsafe_allow_html=True)
 
-    if is_bks_mode:
-        with st.expander("🎬 WATCH LIVE MOTION DEMO: 5-Step SACCO AGM Delegate Journey (Interactive Boardroom Video)", expanded=True):
+        with st.expander("🎬 Watch Boardroom Motion Demo: 5-Step SACCO AGM Journey", expanded=False):
             try:
                 import streamlit.components.v1 as components
                 import motion_demo
                 motion_html = motion_demo.get_bks_motion_html()
                 components.html(motion_html, height=620, scrolling=True)
-            except Exception as ex:
-                st.info("💡 Interactive Motion Video Simulation ready for Board Presentation.")
+            except Exception:
+                st.info("💡 Interactive Motion Video Simulation ready.")
 
-    if is_bks_mode:
-        st.markdown("### 🎟️ Banki Kuu SACCO Delegate Accreditation & Dynamic QR Pass")
-        st.caption("Accredit for the Banki Kuu Staff SACCO 58th AGM & Board Elections. Receive your certified mobile pass & secret voting token instantly:")
+        # Render 95 Delegates Experience directly (Passes, Programme, Meals, Press Center)
+        retreat_badges_ui.render_retreat_badges_ui()
+
+        with st.expander("➕ Secretariat Walk-In / Ad-Hoc Delegate Accreditation", expanded=False):
+            st.caption("Accredit an additional or substitute delegate not on the initial 95 roster:")
+            with st.form("form_bks_adhoc_reg"):
+                ah_name = st.text_input("Delegate Full Name:*", placeholder="e.g. Mary Wanjiku")
+                ah_role = st.selectbox("Role / Delegation Category:*", [
+                    "BOD - SACCO", "SUPERVISORY - SACCO", "CEO / Secretariat",
+                    "BOD - BHC", "BRANCH REPRESENTATIVE", "COORDINATOR", "GUEST / OBSERVER"
+                ])
+                ah_dept = st.text_input("Department / Branch:*", placeholder="e.g. Mombasa Branch")
+                ah_phone = st.text_input("Phone Number:*", placeholder="0722 000 000")
+                ah_btn = st.form_submit_button("⚡ Accredit & Issue Dynamic Pass", type="primary", use_container_width=True)
+                if ah_btn:
+                    if not ah_name.strip():
+                        st.error("Please enter delegate full name.")
+                    else:
+                        new_tkt_id = f"TKT-BK-AH-{int(time.time()) % 10000}"
+                        new_token = f"BKS-MSA26-AH{int(time.time()) % 1000}"
+                        backend.create_ticket(
+                            event_id="EVT-BANKI-KUU-SACCO",
+                            ticket_id=new_tkt_id,
+                            attendee_name=ah_name.strip(),
+                            email=f"{ah_name.lower().replace(' ', '.')}@centralbank.go.ke",
+                            phone=ah_phone.strip(),
+                            organization=f"Banki Kuu SACCO ({ah_role} — {ah_dept})",
+                            ticket_tier=f"🗳️ EXECUTIVE / {ah_role}",
+                            amount_paid=5000.0,
+                            mpesa_trans_id=new_token,
+                            gate_status="REGISTERED"
+                        )
+                        st.session_state["active_ticket_id"] = new_tkt_id
+                        st.success(f"✅ Delegate {ah_name} accredited successfully! Pass ID: {new_tkt_id}")
+                        st.rerun()
+
     else:
         st.markdown("### 🎟️ Attendee Self-Registration & Dynamic QR Ticket Pass")
         st.caption("Register for upcoming corporate sports championships, AGMs, conferences, galas, or marathons. Pay via Safaricom M-Pesa STK Push and receive an encrypted digital pass instantly:")
 
-    # Retrieve published events from SQLite
-    all_events = backend.get_events(status="ACTIVE")
-    if not all_events:
-        st.warning("No active events currently published. Use the 'Event Creator Wizard' tab to create your first event!")
-    else:
-        if is_bks_mode:
-            selected_event = bk_event
+        # Retrieve published events from SQLite
+        all_events = backend.get_events(status="ACTIVE")
+        if not all_events:
+            st.warning("No active events currently published. Use the 'Event Creator Wizard' tab to create your first event!")
         else:
-            # Category Filter Pull-Down
-            col_flt1, col_flt2 = st.columns([1.4, 2])
-            with col_flt1:
-                cat_filter = st.selectbox(
-                    "Filter Events by Type (Pull-Down):*",
-                    [
-                        "🌟 All Events & Assemblies",
-                        "👔 Annual General Meetings (AGM) & Shareholder Assemblies",
-                        "🏆 Sports Tournaments & Derbies",
-                        "🏃 Marathons, Fun Runs & Athletics",
-                        "💡 Industry Conferences & Summits",
-                        "🎉 Corporate Galas & Dinners"
-                    ],
-                    key="pub_cat_filter"
-                )
-
-            # Filter events list based on category pull-down
-            filtered_events = all_events
-            if "AGM" in cat_filter:
-                filtered_events = [e for e in all_events if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper() or "GENERAL MEETING" in e['title'].upper()]
-            elif "Sports" in cat_filter:
-                filtered_events = [e for e in all_events if "SPORTS" in e['category'].upper() or "DERBY" in e['title'].upper()]
-            elif "Marathon" in cat_filter:
-                filtered_events = [e for e in all_events if "MARATHON" in e['category'].upper() or "RUN" in e['title'].upper()]
-            elif "Conference" in cat_filter:
-                filtered_events = [e for e in all_events if "CONFERENCE" in e['category'].upper() or "SUMMIT" in e['title'].upper()]
-            elif "Gala" in cat_filter:
-                filtered_events = [e for e in all_events if "GALA" in e['category'].upper() or "DINNER" in e['title'].upper()]
-
-            if not filtered_events:
+            if is_bks_mode:
+                selected_event = bk_event
+            else:
+                # Category Filter Pull-Down
+                col_flt1, col_flt2 = st.columns([1.4, 2])
+                with col_flt1:
+                    cat_filter = st.selectbox(
+                        "Filter Events by Type (Pull-Down):*",
+                        [
+                            "🌟 All Events & Assemblies",
+                            "👔 Annual General Meetings (AGM) & Shareholder Assemblies",
+                            "🏆 Sports Tournaments & Derbies",
+                            "🏃 Marathons, Fun Runs & Athletics",
+                            "💡 Industry Conferences & Summits",
+                            "🎉 Corporate Galas & Dinners"
+                        ],
+                        key="pub_cat_filter"
+                    )
+    
+                # Filter events list based on category pull-down
                 filtered_events = all_events
-
-            event_options = {f"{e['title']} ({e['event_id']})": e for e in filtered_events}
-            
-            # Default index preference for Banki Kuu SACCO if available
-            default_idx = 0
-            for idx, k in enumerate(event_options.keys()):
-                if "BANKI-KUU-SACCO" in k.upper() or "BANKI KUU" in k.upper():
-                    default_idx = idx
-                    break
-            if param_event_id:
+                if "AGM" in cat_filter:
+                    filtered_events = [e for e in all_events if "AGM" in e['category'].upper() or "AGM" in e['title'].upper() or "SHAREHOLDER" in e['title'].upper() or "GENERAL MEETING" in e['title'].upper()]
+                elif "Sports" in cat_filter:
+                    filtered_events = [e for e in all_events if "SPORTS" in e['category'].upper() or "DERBY" in e['title'].upper()]
+                elif "Marathon" in cat_filter:
+                    filtered_events = [e for e in all_events if "MARATHON" in e['category'].upper() or "RUN" in e['title'].upper()]
+                elif "Conference" in cat_filter:
+                    filtered_events = [e for e in all_events if "CONFERENCE" in e['category'].upper() or "SUMMIT" in e['title'].upper()]
+                elif "Gala" in cat_filter:
+                    filtered_events = [e for e in all_events if "GALA" in e['category'].upper() or "DINNER" in e['title'].upper()]
+    
+                if not filtered_events:
+                    filtered_events = all_events
+    
+                event_options = {f"{e['title']} ({e['event_id']})": e for e in filtered_events}
+                
+                # Default index preference for Banki Kuu SACCO if available
+                default_idx = 0
                 for idx, k in enumerate(event_options.keys()):
-                    if param_event_id.upper() in k.upper():
+                    if "BANKI-KUU-SACCO" in k.upper() or "BANKI KUU" in k.upper():
                         default_idx = idx
                         break
-
-            selected_label = st.selectbox(
-                "Select Event / Function to Register For:*",
-                list(event_options.keys()),
-                index=default_idx,
-                key="pub_reg_event_sel"
-            )
-            selected_event = event_options[selected_label]
-
-        is_event_bks = (is_bks_mode or selected_event['event_id'] == "EVT-BANKI-KUU-SACCO" or "BANKI-KUU-SACCO" in selected_event['event_id'].upper() or "BANKI KUU" in selected_event['title'].upper())
-        is_agm = ("AGM" in selected_event['category'].upper() or "AGM" in selected_event['title'].upper() or "SHAREHOLDER" in selected_event['title'].upper() or "GENERAL MEETING" in selected_event['title'].upper() or is_event_bks)
-
-        # Display Event Overview Card
-        badge_border_color = "#F5C542" if is_agm else "#00F2FE"
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, rgba(8, 28, 58, 0.8) 0%, rgba(4, 14, 30, 0.9) 100%); border: 1.5px solid rgba(245, 197, 66, 0.4); border-left: 5px solid {badge_border_color}; border-radius: 12px; padding: 16px 20px; margin: 12px 0 20px 0;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
-                <div>
-                    <span style="background: rgba(0, 242, 254, 0.15); color: #00F2FE; border: 1px solid rgba(0,242,254,0.3); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">
-                        {selected_event['category']}
-                    </span>
-                    <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.25rem; font-weight: 800;">{selected_event['title']}</h3>
-                    <p style="margin: 0; font-size: 0.85rem; color: #CBD5E1;">
-                        🏢 Organized by <strong>{selected_event['organizer_name']}</strong>
-                    </p>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 0.85rem; color: #F5C542; font-weight: 700;">
-                        🗓️ {selected_event['event_date']} at {selected_event['event_time']}
-                    </div>
-                    <div style="font-size: 0.78rem; color: #94A3B8;">
-                        📍 {selected_event['venue']}
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top: 10px; font-size: 0.82rem; color: #94A3B8; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
-                📝 <em>{selected_event['description'] or 'Official event accredited under STRIDE™ Enterprise System.'}</em>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        col_reg_f, col_reg_pass = st.columns([1.2, 1])
-
-        with col_reg_f:
-            st.markdown("#### 👤 Attendee Information")
-            with st.form(key=f"form_pub_reg_{selected_event['event_id']}"):
-                std_p = float(selected_event.get("standard_price", 1000.0))
-                vip_p = float(selected_event.get("vip_price", 3500.0))
-                is_free_event = (std_p == 0.0 and vip_p == 0.0)
-
-                # AGM-SPECIFIC ACCREDITATION PULL-DOWN
-                if is_agm:
-                    st.markdown("""
-                    <div style="background: rgba(245, 197, 66, 0.12); border: 1px solid #F5C542; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
-                        <strong style="color: #F5C542; font-size: 0.88rem;">🏛️ Statutory AGM Shareholder Accreditation Mode</strong>
-                        <p style="margin: 2px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
-                            Please select your shareholder voting credential below to receive your certified voting pass and record your presence towards quorum.
+                if param_event_id:
+                    for idx, k in enumerate(event_options.keys()):
+                        if param_event_id.upper() in k.upper():
+                            default_idx = idx
+                            break
+    
+                selected_label = st.selectbox(
+                    "Select Event / Function to Register For:*",
+                    list(event_options.keys()),
+                    index=default_idx,
+                    key="pub_reg_event_sel"
+                )
+                selected_event = event_options[selected_label]
+    
+            is_event_bks = (is_bks_mode or selected_event['event_id'] == "EVT-BANKI-KUU-SACCO" or "BANKI-KUU-SACCO" in selected_event['event_id'].upper() or "BANKI KUU" in selected_event['title'].upper())
+            is_agm = ("AGM" in selected_event['category'].upper() or "AGM" in selected_event['title'].upper() or "SHAREHOLDER" in selected_event['title'].upper() or "GENERAL MEETING" in selected_event['title'].upper() or is_event_bks)
+    
+            # Display Event Overview Card
+            badge_border_color = "#F5C542" if is_agm else "#00F2FE"
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, rgba(8, 28, 58, 0.8) 0%, rgba(4, 14, 30, 0.9) 100%); border: 1.5px solid rgba(245, 197, 66, 0.4); border-left: 5px solid {badge_border_color}; border-radius: 12px; padding: 16px 20px; margin: 12px 0 20px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <span style="background: rgba(0, 242, 254, 0.15); color: #00F2FE; border: 1px solid rgba(0,242,254,0.3); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">
+                            {selected_event['category']}
+                        </span>
+                        <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.25rem; font-weight: 800;">{selected_event['title']}</h3>
+                        <p style="margin: 0; font-size: 0.85rem; color: #CBD5E1;">
+                            🏢 Organized by <strong>{selected_event['organizer_name']}</strong>
                         </p>
                     </div>
-                    """, unsafe_allow_html=True)
-
-                    agm_del_status = st.selectbox(
-                        "Accredited Member / Shareholder Status (Pull-down):*",
-                        [
-                            "🗳️ Principal Shareholder / Voting Member (Direct Voting Rights)",
-                            "📜 Duly Appointed Proxy Holder (Signed Proxy Form Deposited)",
-                            "👔 Executive Board Director / Committee Member",
-                            "🏛️ Institutional Shareholder / Fund Representative",
-                            "⚖️ Company Secretary & Legal Counsel",
-                            "👁️ Independent Auditor / Regulatory Observer (CMA / SASRA)"
-                        ],
-                        key=f"agm_del_{selected_event['event_id']}"
-                    )
-
-                    loaded_tkt = st.session_state.get("pub_active_ticket")
-                    
-                    # Extract member account number dynamically
-                    default_acc = ""
-                    if loaded_tkt:
-                        import re
-                        m_ref = re.search(r'Ref:\s*([^)]+)', loaded_tkt.get("organization", ""))
-                        if m_ref:
-                            default_acc = m_ref.group(1).strip()
-                        elif loaded_tkt.get("mpesa_trans_id", "").startswith("BK"):
-                            default_acc = f"SACCO-{loaded_tkt['mpesa_trans_id'][2:]}"
-                        else:
-                            default_acc = loaded_tkt.get("mpesa_trans_id", "")
-
-                    if loaded_tkt:
-                        st.markdown(f"""
-                        <div style="background: rgba(16, 185, 129, 0.18); border: 1.5px solid #10B981; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
-                            <span style="color: #34D399; font-weight: 800; font-size: 0.88rem;">🟢 Verified Delegate Credentials Loaded</span>
-                            <p style="margin: 2px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
-                                Welcome <strong>{loaded_tkt.get('attendee_name')}</strong> (Member Ref: <code>{default_acc or loaded_tkt.get('ticket_id')}</code>). Your official pass is active on the right.
-                            </p>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.85rem; color: #F5C542; font-weight: 700;">
+                            🗓️ {selected_event['event_date']} at {selected_event['event_time']}
                         </div>
-                        """, unsafe_allow_html=True)
-
-                    agm_acc_num = st.text_input(
-                        "Shareholder / CDSC / Member Account Number:*",
-                        value=default_acc,
-                        placeholder="e.g. SACCO-342804 / CDSC-8492019",
-                        key=f"agm_acc_{selected_event['event_id']}"
-                    )
-
-                    agm_voting_shares = st.selectbox(
-                        "Voting Power / Share Capital Bracket (Pull-down):*",
-                        [
-                            "1 Vote (Standard Ordinary Member / 1-Person 1-Vote)",
-                            "1,000 – 10,000 Shares (Tier 1 Voting Block)",
-                            "10,001 – 100,000 Shares (Tier 2 Voting Block)",
-                            "100,000+ Shares (Institutional Investor / Major Block)",
-                            "0 Votes (Non-Voting Delegate / Observer)"
-                        ],
-                        key=f"agm_shares_{selected_event['event_id']}"
-                    )
-
-                    tier_clean_name = agm_del_status.split("(")[0].strip()
-                    chosen_amt = 0.0 if is_event_bks else 5000.0  # Paid centrally by SACCO Finance Manager for BKS mode
-
-                else:
-                    # Standard Non-AGM Ticket Tier Selection
-                    tier_choice = st.radio(
-                        "Select Registration Tier:*",
-                        [
-                            f"Standard Athlete / Participant Pass — KES {std_p:,.0f}",
-                            f"VIP Executive Delegate (Includes Hospitality) — KES {vip_p:,.0f}"
-                        ],
-                        key="reg_tier_radio"
-                    )
-                    chosen_amt = std_p if "Standard" in tier_choice else vip_p
-                    tier_clean_name = "Standard Pass" if "Standard" in tier_choice else "VIP Executive Pass"
-
-                loaded_tkt = st.session_state.get("pub_active_ticket")
-                qp_name = st.query_params.get("name", "").strip()
-                def_name = loaded_tkt.get("attendee_name", "") if loaded_tkt else (qp_name or "")
-                def_email = loaded_tkt.get("email", "") if loaded_tkt else ""
-                def_org = loaded_tkt.get("organization", "").split("(")[0].strip() if loaded_tkt else ("Banki Kuu Staff SACCO Society" if is_event_bks else "")
-                def_phone = loaded_tkt.get("phone", "") if loaded_tkt else ""
-
-                att_name = st.text_input("Full Name (as per Official ID / National ID):*", value=def_name, placeholder="e.g. Official Full Name")
-                att_email = st.text_input("Email Address (for pass delivery):*", value=def_email, placeholder="e.g. member@centralbank.go.ke")
-                att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Finance & Accounts / Bank Supervision")
-                phone_lbl = "Mobile Phone Number (for WhatsApp Pass delivery):*" if is_event_bks else "Safaricom M-Pesa Phone Number:*"
-                phone_hlp = "Mobile number to receive instant WhatsApp pass & voting credentials" if is_event_bks else "Mobile number for STK Push prompt"
-                att_phone = st.text_input(phone_lbl, placeholder="07XX XXX XXX", value=def_phone, help=phone_hlp)
-
-                if is_event_bks:
-                    st.markdown(f"""
-                    <div style="background: rgba(16, 185, 129, 0.15); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="color: #34D399; font-weight: 800; font-size: 0.92rem;">🏛️ Member Accreditation: KES 0 (Complimentary)</span>
-                            <span style="background: #10B981; color: #020712; font-size: 0.68rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">SACCO PRE-PAID</span>
+                        <div style="font-size: 0.78rem; color: #94A3B8;">
+                            📍 {selected_event['venue']}
                         </div>
-                        <span style="color: #CBD5E1; font-size: 0.76rem;">Platform deployment & accreditation fees paid centrally by <strong>Banki Kuu Staff SACCO Secretariat</strong>. Members do not pay.</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    btn_sub_ticket = st.form_submit_button("✅ Accredit Member & Generate Mobile Pass", type="primary", use_container_width=True)
-                else:
-                    st.markdown(f"""
-                    <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="color: #34D399; font-weight: 800; font-size: 0.92rem;">💰 Total Payable: KES {chosen_amt:,.0f}</span>
-                            <span style="background: #10B981; color: #020712; font-size: 0.68rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">DARAJA STK</span>
-                        </div>
-                        <span style="color: #94A3B8; font-size: 0.74rem;">Paybill: <strong>{selected_event['mpesa_paybill']}</strong> • Instant Automated Handset Push</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    btn_sub_ticket = st.form_submit_button(f"📲 Pay KES {chosen_amt:,.0f} via M-Pesa STK & Register", type="primary", use_container_width=True)
-
-                if btn_sub_ticket:
-                    if not att_name.strip():
-                        st.error("Please enter your Full Name.")
-                    elif not att_email.strip() or "@" not in att_email:
-                        st.error("Please provide a valid email address.")
-                    elif not att_phone.strip() or len(att_phone.strip()) < 9:
-                        st.error("Please provide a valid Safaricom phone number.")
-                    elif is_agm and not agm_acc_num.strip():
-                        st.error("Please provide your Shareholder / CDSC / Member Account Number.")
-                    else:
-                        org_tag = f"{att_org.strip()} (Ref: {agm_acc_num.strip()})" if is_agm else att_org.strip()
-                        
-                        if is_event_bks:
-                            # Direct complimentary accreditation for Banki Kuu SACCO member
-                            clean_acc = "".join([c for c in agm_acc_num if c.isalnum()]).upper() if (is_agm and agm_acc_num) else ""
-                            clean_ph = "".join([c for c in att_phone if c.isdigit()])
-                            ref_code = clean_acc if clean_acc else (clean_ph[-6:] if clean_ph else "342805")
-                            sim_tx = f"BKS-{ref_code}"
-
-                            ok_t, msg_t, tkt_obj = backend.register_event_ticket(
-                                event_id=selected_event["event_id"],
-                                attendee_name=att_name.strip(),
-                                email=att_email.strip(),
-                                phone=att_phone.strip(),
-                                organization=org_tag or "Banki Kuu SACCO Member",
-                                ticket_tier=tier_clean_name,
-                                amount_paid=0.0,
-                                mpesa_trans_id=sim_tx
-                            )
-                            if ok_t:
-                                st.session_state["pub_active_ticket"] = tkt_obj
-                                st.session_state["pub_active_event"] = selected_event
-                                st.session_state["stk_pending_payload"] = None
-                                st.success(f"🎉 Accredited! {att_name.strip()} has been recorded. Digital mobile pass issued.")
-                                st.balloons()
-                                st.rerun()
-                            else:
-                                st.error(msg_t)
-                        else:
-                            # Set STK Pending Payload to trigger interactive handset simulator for paid tickets
-                            st.session_state["stk_pending_payload"] = {
-                                "event_id": selected_event["event_id"],
-                                "event_title": selected_event["title"],
-                                "attendee_name": att_name.strip(),
-                                "email": att_email.strip(),
-                                "phone": att_phone.strip(),
-                                "organization": org_tag or "Independent Delegate",
-                                "ticket_tier": tier_clean_name,
-                                "amount_paid": chosen_amt,
-                                "paybill": selected_event.get("mpesa_paybill", "849200"),
-                                "acc_num": agm_acc_num.strip() if is_agm else att_phone.strip()[-4:],
-                                "is_agm": is_agm
-                            }
-                            st.session_state["pub_active_ticket"] = None
-                            st.rerun()
-
-            # ==================================================================
-            # BULK ROSTER UPLOAD & BATCH DELEGATE PIPELINE
-            # ==================================================================
-            st.markdown("---")
-            with st.expander("⚡ Bulk Member Roster Pipeline & 500-Delegate Batch Pass Engine", expanded=(selected_event["event_id"] == "EVT-BANKI-KUU-SACCO")):
-                st.markdown("""
-                <div style="background: rgba(8, 24, 48, 0.7); border: 1.5px solid rgba(245, 197, 66, 0.4); border-radius: 10px; padding: 12px 16px; margin-bottom: 12px;">
-                    <strong style="color: #F5C542; font-size: 0.9rem;">🚀 Enterprise Bulk Accreditation Pipeline</strong>
-                    <p style="margin: 4px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
-                        Eliminate manual registration for 500+ delegates. Upload a confirmed attendance CSV/Excel file or generate a synthetic 500-member Banki Kuu SACCO cohort with 1 click to achieve instant SASRA quorum accreditation.
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-
-                col_blk1, col_blk2 = st.columns(2)
-                with col_blk1:
-                    sample_template_df = pd.DataFrame([{
-                        "Member_ID": "SACCO-1001",
-                        "Full_Name": "Samuel Gathigi Njuguna",
-                        "Email": "sam.gathigi@gmail.com",
-                        "Phone": "0722849000",
-                        "Organization_Branch": "Banki Kuu Staff SACCO — Governor's Secretariat",
-                        "Accreditation_Role": "🗳️ Principal Shareholder / Voting Member",
-                        "Amount_Paid": 5000.0,
-                        "Attendance_Confirmed": "YES"
-                    }, {
-                        "Member_ID": "SACCO-1002",
-                        "Full_Name": "Dr. Beatrice Kiptoo",
-                        "Email": "b.kiptoo@centralbank.go.ke",
-                        "Phone": "0733456789",
-                        "Organization_Branch": "Banki Kuu Staff SACCO — Bank Supervision",
-                        "Accreditation_Role": "👔 Executive Board Director / Committee Member",
-                        "Amount_Paid": 5000.0,
-                        "Attendance_Confirmed": "YES"
-                    }])
-                    
-                    st.download_button(
-                        label="📥 Download Roster Template (.csv)",
-                        data=sample_template_df.to_csv(index=False).encode('utf-8'),
-                        file_name="Banki_Kuu_SACCO_Master_Delegate_Template.csv",
-                        mime="text/csv",
-                        use_container_width=True
-                    )
-                with col_blk2:
-                    if st.button("⚡ Generate & Ingest 500-Delegate Cohort", type="primary", use_container_width=True, key="btn_gen_500_sacco"):
-                        with st.spinner("Generating 500 Banki Kuu SACCO accredited delegates..."):
-                            df_500 = backend.generate_synthetic_sacco_roster_df(500)
-                            ok_bulk, msg_bulk, stats_bulk = backend.bulk_ingest_event_tickets(selected_event["event_id"], df_500)
-                            if ok_bulk:
-                                st.success(f"🎉 SUCCESS! {stats_bulk['total_ingested']} Banki Kuu SACCO delegates accredited and loaded into SQLite DB!")
-                                st.balloons()
-                                time.sleep(1)
-                                st.rerun()
-                            else:
-                                st.error(msg_bulk)
-
-                st.markdown("##### 📂 Or Drag & Drop Custom CSV / Excel Attendance File:")
-                uploaded_roster = st.file_uploader(
-                    "Upload Delegate Attendance Roster (CSV / XLSX):",
-                    type=["csv", "xlsx", "xls"],
-                    key=f"uploader_roster_{selected_event['event_id']}"
-                )
-
-                if uploaded_roster is not None:
-                    try:
-                        if uploaded_roster.name.endswith(".csv"):
-                            df_up = pd.read_csv(uploaded_roster)
-                        else:
-                            df_up = pd.read_excel(uploaded_roster)
-                        
-                        st.dataframe(df_up.head(5), use_container_width=True)
-                        st.info(f"Loaded file '{uploaded_roster.name}' containing {len(df_up)} delegates.")
-
-                        if st.button(f"🚀 Execute Bulk Accreditation for {len(df_up)} Delegates", type="primary", use_container_width=True, key="btn_exec_bulk_up"):
-                            ok_b, msg_b, stats_b = backend.bulk_ingest_event_tickets(selected_event["event_id"], df_up)
-                            if ok_b:
-                                st.success(msg_b)
-                                st.balloons()
-                                time.sleep(1)
-                                st.rerun()
-                            else:
-                                st.error(msg_b)
-                    except Exception as ex_up:
-                        st.error(f"Error reading file: {ex_up}")
-
-        with col_reg_pass:
-            stk_p = st.session_state.get("stk_pending_payload", None)
-            cur_ticket = st.session_state.get("pub_active_ticket", None)
-            cur_evt = st.session_state.get("pub_active_event", selected_event)
-
-            if stk_p:
-                st.markdown("#### 📱 Safaricom M-Pesa STK Push Simulator")
-                st.markdown(f"""
-                <div style="background: radial-gradient(circle, #0F172A 0%, #020617 100%); border: 3px solid #22C55E; border-radius: 20px; padding: 22px; text-align: center; box-shadow: 0 14px 40px rgba(34, 197, 94, 0.45); margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(34, 197, 94, 0.3); padding-bottom: 8px;">
-                        <span style="color: #22C55E; font-weight: 900; font-size: 0.82rem; letter-spacing: 1.2px;">● SAFARICOM M-PESA DARAJA STK</span>
-                        <span style="background: rgba(34, 197, 94, 0.2); color: #4ADE80; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 10px;">HANDSET POPUP</span>
-                    </div>
-                    <div style="margin: 16px 0 6px 0; color: #FFFFFF; font-size: 1.15rem; font-weight: 800;">
-                        Pay KES {stk_p['amount_paid']:,.0f} to<br><span style="color: #38BDF8;">STRIDE™ AGM GATEWAY</span>?
-                    </div>
-                    <div style="font-size: 0.78rem; color: #94A3B8; margin-bottom: 12px;">
-                        Paybill: <strong>{stk_p['paybill']}</strong> • Ref: <strong>{stk_p['acc_num']}</strong><br>
-                        Prompt dispatched to: <strong>{stk_p['phone']}</strong>
-                    </div>
-                    <div style="background: rgba(30, 41, 59, 0.9); border: 1.5px solid #22C55E; border-radius: 8px; padding: 10px; margin: 12px 0; color: #22C55E; font-family: monospace; font-size: 1.4rem; letter-spacing: 6px;">
-                        ••••
-                    </div>
-                    <div style="font-size: 0.72rem; color: #94A3B8;">
-                        Tap below to simulate entering your M-Pesa PIN on handset:
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
-
-                c_s1, c_s2 = st.columns([1.5, 1])
-                with c_s1:
-                    btn_auth_stk = st.button(
-                        f"✅ Enter PIN & Authorize (KES {stk_p['amount_paid']:,.0f})",
-                        type="primary",
-                        use_container_width=True,
-                        key="btn_confirm_stk_handset"
-                    )
-                with c_s2:
-                    btn_cancel_stk = st.button("❌ Cancel", use_container_width=True, key="btn_cancel_stk_handset")
-
-                if btn_auth_stk:
-                    sim_tx = f"QK{int(time.time())}"[-10:]
-                    ok_t, msg_t, tkt_obj = backend.register_event_ticket(
-                        event_id=stk_p["event_id"],
-                        attendee_name=stk_p["attendee_name"],
-                        email=stk_p["email"],
-                        phone=stk_p["phone"],
-                        organization=stk_p["organization"],
-                        ticket_tier=stk_p["ticket_tier"],
-                        amount_paid=stk_p["amount_paid"],
-                        mpesa_trans_id=sim_tx
-                    )
-                    if ok_t:
-                        st.session_state["pub_active_ticket"] = tkt_obj
-                        st.session_state["pub_active_event"] = selected_event
-                        st.session_state["stk_pending_payload"] = None
-                        st.success(f"🎉 M-Pesa Confirmed! KES {stk_p['amount_paid']:,.0f} paid. Receipt: `{sim_tx}`. Digital pass issued.")
-                        st.balloons()
-                        st.rerun()
-                    else:
-                        st.error(msg_t)
-
-                if btn_cancel_stk:
-                    st.session_state["stk_pending_payload"] = None
-                    st.info("Transaction cancelled.")
-                    st.rerun()
-
-            elif not cur_ticket:
-                st.markdown("#### 🎟️ Digital Mobile Pass")
-                info_msg = "👈 Fill out the form on the left and tap **'Accredit Member & Generate Mobile Pass'** to generate your official pass." if is_bks_mode else "👈 Fill out the registration form on the left and tap **'Pay KES 5,000 via M-Pesa STK & Register'** to generate your official pass."
-                st.info(info_msg)
-                st.markdown("""
-                <div style="background: rgba(8, 24, 48, 0.6); border: 2px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 30px 20px; text-align: center; color: #64748B; margin-bottom: 12px;">
-                    <div style="font-size: 3rem; margin-bottom: 8px;">🎟️</div>
-                    <div style="font-weight: 700; color: #94A3B8; font-size: 0.95rem;">No Active Member Pass Rendered Yet</div>
-                    <div style="font-size: 0.78rem; margin-top: 4px;">Your encrypted dynamic QR ticket pass will render here immediately following accreditation.</div>
-                </div>
-                """, unsafe_allow_html=True)
-
-                c_dem1, c_dem2 = st.columns(2)
-                with c_dem1:
-                    if st.button("⚡ Quick Demo: Samuel Gathigi", use_container_width=True, key="btn_quick_demo_pass"):
-                        st.session_state["pub_active_ticket"] = {
-                            "ticket_id": "TKT-BK-342801",
-                            "attendee_name": "Samuel Gathigi Njuguna",
-                            "organization": "Banki Kuu SACCO — Governor's Secretariat",
-                            "ticket_tier": "Principal Shareholder / Voting Member",
-                            "amount_paid": 0.0,
-                            "mpesa_trans_id": "BKS-ACC-342801",
-                            "gate_status": "REGISTERED"
-                        }
-                        st.session_state["pub_active_event"] = selected_event
-                        st.rerun()
-                with c_dem2:
-                    if st.button("♟️ Quick Demo: Andrew Ogola (Chess)", use_container_width=True, key="btn_quick_demo_ogola"):
-                        st.session_state["pub_active_ticket"] = {
-                            "ticket_id": "TKT-BK-3366",
-                            "attendee_name": "Andrew Ogola",
-                            "email": "aogola@centralbank.go.ke",
-                            "phone": "0726103890",
-                            "organization": "Banki Kuu Staff SACCO (IT & Digital Services — Ref:SACCO-3366 / Chess Captain)",
-                            "ticket_tier": "Principal Voting Shareholder",
-                            "amount_paid": 0.0,
-                            "mpesa_trans_id": "BK3366",
-                            "gate_status": "REGISTERED"
-                        }
-                        st.session_state["pub_active_event"] = selected_event
-                        st.rerun()
-            else:
-                st.markdown("#### 🎟️ Digital Mobile Pass")
-                t_tx = cur_ticket["mpesa_trans_id"]
-                t_id = cur_ticket["ticket_id"]
-                t_name = cur_ticket["attendee_name"]
-                t_org = cur_ticket["organization"]
-                t_tier = cur_ticket["ticket_tier"]
-                t_amt = cur_ticket["amount_paid"]
-
-                # Generate dynamic scannable QR Code pointing to instant verification URL
-                verify_qr_data = f"https://cbk-stride.streamlit.app/EVENTS?verify_tkt={t_id}"
-                qr_code_url = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={verify_qr_data}"
-
-                clean_event_title = cur_evt['title'].replace("🏦", "").strip()
-                clean_org = t_org.replace("â€\"", "-").replace("—", "-").replace("–", "-")
-
-                if is_agm:
-                    pass_clearance_html = f"""<div style="margin-top: 12px; padding: 8px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; font-size: 0.78rem; color: #34D399; font-weight: 800;">
-                        ✓ STATUTORY ACCREDITATION CONFIRMED • SACCO PRE-PAID • CLEARANCE REF: {t_tx}
-                    </div>"""
-                else:
-                    pass_clearance_html = f"""<div style="margin-top: 12px; padding: 8px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; font-size: 0.78rem; color: #34D399; font-weight: 800;">
-                        ✓ PAYMENT CONFIRMED • KES {t_amt:,.0f} • REF: {t_tx}
-                    </div>"""
-
-                st.markdown(textwrap.dedent(f"""
-                <div style="background: linear-gradient(135deg, #091F3D 0%, #030F21 100%); border: 2.5px solid #F5C542; border-radius: 16px; padding: 20px; box-shadow: 0 12px 36px rgba(0,0,0,0.65); text-align: center;">
-                    <div style="font-size: 0.72rem; color: #F5C542; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;">STRIDE™ ENTERPRISE DIGITAL PASS</div>
-                    <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.15rem; font-weight: 800;">{cur_evt['title']}</h3>
-                    <div style="margin: 4px 0 10px 0;">
-                        <span style="background: rgba(0, 242, 254, 0.2); color: #00F2FE; border: 1px solid rgba(0,242,254,0.4); padding: 3px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">
-                            {t_tier}
-                        </span>
-                    </div>
-                    <div style="background: #FFFFFF; border-radius: 12px; padding: 10px; display: inline-block; margin: 10px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-                        <img src="{qr_code_url}" alt="Ticket QR" style="display: block; width: 160px; height: 160px;" />
-                    </div>
-                    <h3 style="margin: 4px 0 1px 0; color: #FFFFFF; font-size: 1.2rem; font-weight: 800;">{t_name}</h3>
-                    <div style="font-size: 0.82rem; color: #94A3B8;">{clean_org}</div>
-                    {pass_clearance_html}
-                    <div style="margin-top: 6px; font-size: 0.7rem; color: #64748B;">
-                        Ticket Serial: <code>{t_id}</code> • Status: <strong>{cur_ticket.get('gate_status', 'REGISTERED')}</strong>
-                    </div>
-                </div>
-                """), unsafe_allow_html=True)
-
-                if is_agm:
-                    download_text = f"""BANKI KUU SACCO — 58TH AGM OFFICIAL DELEGATE PASS
-=============================================================
-Event: {clean_event_title}
-Delegate Name: {t_name}
-Organization / Division: {clean_org}
-Accreditation Tier: {t_tier}
-Ticket Serial ID: {t_id}
-Secretariat Clearance Ref: {t_tx}
-Clearance Type: Statutory Shareholder (Complimentary / SACCO Pre-Paid)
-Accreditation Status: {cur_ticket.get('gate_status', 'REGISTERED')}
-Verification & Voting URL: {verify_qr_data}
-=============================================================
-Present this digital pass at the auditorium entrance for gate scan.
-"""
-                    download_filename = f"Banki_Kuu_SACCO_Pass_{t_id}.txt"
-                else:
-                    download_text = f"""STRIDE DIGITAL PASS
-Event: {cur_evt['title']}
-Attendee: {t_name}
-Org: {clean_org}
-Tier: {t_tier}
-Ticket ID: {t_id}
-Receipt: {t_tx}
-Amount: KES {t_amt:,.0f}
-Scan URL: {verify_qr_data}"""
-                    download_filename = f"STRIDE_Ticket_{t_id}.txt"
-
-                c_p1, c_p2 = st.columns(2)
-                with c_p1:
-                    st.download_button(
-                        label="📥 Download Pass (.txt)",
-                        data=download_text.encode('utf-8'),
-                        file_name=download_filename,
-                        mime="text/plain",
-                        use_container_width=True
-                    )
-                with c_p2:
-                    if st.button("🔄 Register Another Person", use_container_width=True):
-                        st.session_state["pub_active_ticket"] = None
-                        st.rerun()
-
-        # Accredited Member Roster Feed (Un-categorized for SACCO)
-        sacco_tickets = backend.get_tickets_by_event(selected_event['event_id'])
-        if sacco_tickets:
-            st.markdown("---")
-            st.markdown(f"### 📜 Live Accredited Member Roster & SASRA Quorum Feed ({len(sacco_tickets)} Members Recorded)")
-            st.caption("Live statutory shareholder accreditation feed. Shows all confirmed Banki Kuu SACCO members, proxy holders, board directors, and independent auditors:")
-
-            df_display = pd.DataFrame(sacco_tickets)
-            
-            show_cols = ["ticket_id", "attendee_name", "organization", "ticket_tier", "email", "phone", "gate_status", "mpesa_trans_id"]
-            avail_cols = [c for c in show_cols if c in df_display.columns]
-            df_show = df_display[avail_cols].copy()
-            
-            rename_map = {
-                "ticket_id": "Ticket Serial ID",
-                "attendee_name": "Delegate Full Name",
-                "organization": "Department / SACCO Branch Ref",
-                "ticket_tier": "Accreditation Role",
-                "email": "Email Address",
-                "phone": "Phone Number",
-                "gate_status": "Check-in Status",
-                "mpesa_trans_id": "Secretariat Clearance Ref" if is_agm else "Payment Ref"
-            }
-            df_show.rename(columns=rename_map, inplace=True)
-
-            # Institutional PII Enforcement (Kenya Data Protection Act 2019)
-            render_agm_pii_compliance_bar(tab_context="tab_reg")
-
-            if not st.session_state.get("agm_pii_unlocked", False):
-                if "Phone Number" in df_show.columns:
-                    df_show["Phone Number"] = df_show["Phone Number"].apply(mask_phone)
-                if "Email Address" in df_show.columns:
-                    df_show["Email Address"] = df_show["Email Address"].apply(mask_email)
-
-            search_query = st.text_input("🔍 Search Live Roster (by Name, Account Ref, or Role):", placeholder="e.g. Samuel Gathigi / SACCO-3428 / Board Director", key=f"srch_roster_{selected_event['event_id']}")
-            if search_query.strip():
-                q = search_query.strip().lower()
-                df_show = df_show[
-                    df_show.apply(lambda r: any(q in str(v).lower() for v in r.values), axis=1)
-                ]
-
-            st.dataframe(df_show, use_container_width=True, height=380)
-
-            total_members = len(sacco_tickets)
-            quorum_needed = 50  # SASRA Statutory Quorum Floor
-            quorum_pct = min(100.0, (total_members / quorum_needed) * 100)
-            status_badge = "✅ STATUTORY AGM QUORUM ACHIEVED" if total_members >= quorum_needed else "⚠️ PENDING QUORUM ACCREDITATION"
-            
-            st.markdown(f"""
-            <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 10px; padding: 14px 18px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <span style="color: #34D399; font-weight: 800; font-size: 0.9rem;">{status_badge}</span>
-                    <div style="font-size: 0.8rem; color: #CBD5E1; margin-top: 2px;">
-                        Total Accredited Delegates: <strong>{total_members}</strong> • SASRA Statutory Quorum Floor: <strong>{quorum_needed} Members</strong> ({quorum_pct:.1f}% Reached)
-                    </div>
-                </div>
-                <div>
-                    <span style="background: #10B981; color: #020712; font-weight: 900; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem;">
-                        {total_members} / {quorum_needed} DELEGATES RECORDED
-                    </span>
+                <div style="margin-top: 10px; font-size: 0.82rem; color: #94A3B8; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+                    📝 <em>{selected_event['description'] or 'Official event accredited under STRIDE™ Enterprise System.'}</em>
                 </div>
             </div>
             """, unsafe_allow_html=True)
-
-            # Export live accredited member roster with ODPC § 25 Compliance
-            csv_roster = df_show.to_csv(index=False).encode('utf-8')
-            is_unmasked_tab1 = st.session_state.get("agm_pii_unlocked", False)
-            def _log_roster_csv_export():
-                if st.session_state.get("agm_pii_unlocked", False):
-                    off = st.session_state.get("agm_pii_officer", {})
-                    backend.log_audit_event(
-                        staff_id=off.get("staff_id", "CBK-3428"),
-                        officer_name=off.get("full_name", "Secretariat Officer"),
-                        role=off.get("role", "Secretariat"),
-                        action_type="PII_CSV_EXPORT_UNMASKED",
-                        resource_name=selected_event['event_id'],
-                        notes=f"Exported UNMASKED live accredited member roster CSV ({len(df_show)} records)"
+    
+            col_reg_f, col_reg_pass = st.columns([1.2, 1])
+    
+            with col_reg_f:
+                st.markdown("#### 👤 Attendee Information")
+                with st.form(key=f"form_pub_reg_{selected_event['event_id']}"):
+                    std_p = float(selected_event.get("standard_price", 1000.0))
+                    vip_p = float(selected_event.get("vip_price", 3500.0))
+                    is_free_event = (std_p == 0.0 and vip_p == 0.0)
+    
+                    # AGM-SPECIFIC ACCREDITATION PULL-DOWN
+                    if is_agm:
+                        st.markdown("""
+                        <div style="background: rgba(245, 197, 66, 0.12); border: 1px solid #F5C542; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+                            <strong style="color: #F5C542; font-size: 0.88rem;">🏛️ Statutory AGM Shareholder Accreditation Mode</strong>
+                            <p style="margin: 2px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
+                                Please select your shareholder voting credential below to receive your certified voting pass and record your presence towards quorum.
+                            </p>
+                        </div>
+                        """, unsafe_allow_html=True)
+    
+                        agm_del_status = st.selectbox(
+                            "Accredited Member / Shareholder Status (Pull-down):*",
+                            [
+                                "🗳️ Principal Shareholder / Voting Member (Direct Voting Rights)",
+                                "📜 Duly Appointed Proxy Holder (Signed Proxy Form Deposited)",
+                                "👔 Executive Board Director / Committee Member",
+                                "🏛️ Institutional Shareholder / Fund Representative",
+                                "⚖️ Company Secretary & Legal Counsel",
+                                "👁️ Independent Auditor / Regulatory Observer (CMA / SASRA)"
+                            ],
+                            key=f"agm_del_{selected_event['event_id']}"
+                        )
+    
+                        loaded_tkt = st.session_state.get("pub_active_ticket")
+                        
+                        # Extract member account number dynamically
+                        default_acc = ""
+                        if loaded_tkt:
+                            import re
+                            m_ref = re.search(r'Ref:\s*([^)]+)', loaded_tkt.get("organization", ""))
+                            if m_ref:
+                                default_acc = m_ref.group(1).strip()
+                            elif loaded_tkt.get("mpesa_trans_id", "").startswith("BK"):
+                                default_acc = f"SACCO-{loaded_tkt['mpesa_trans_id'][2:]}"
+                            else:
+                                default_acc = loaded_tkt.get("mpesa_trans_id", "")
+    
+                        if loaded_tkt:
+                            st.markdown(f"""
+                            <div style="background: rgba(16, 185, 129, 0.18); border: 1.5px solid #10B981; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+                                <span style="color: #34D399; font-weight: 800; font-size: 0.88rem;">🟢 Verified Delegate Credentials Loaded</span>
+                                <p style="margin: 2px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
+                                    Welcome <strong>{loaded_tkt.get('attendee_name')}</strong> (Member Ref: <code>{default_acc or loaded_tkt.get('ticket_id')}</code>). Your official pass is active on the right.
+                                </p>
+                            </div>
+                            """, unsafe_allow_html=True)
+    
+                        agm_acc_num = st.text_input(
+                            "Shareholder / CDSC / Member Account Number:*",
+                            value=default_acc,
+                            placeholder="e.g. SACCO-342804 / CDSC-8492019",
+                            key=f"agm_acc_{selected_event['event_id']}"
+                        )
+    
+                        agm_voting_shares = st.selectbox(
+                            "Voting Power / Share Capital Bracket (Pull-down):*",
+                            [
+                                "1 Vote (Standard Ordinary Member / 1-Person 1-Vote)",
+                                "1,000 – 10,000 Shares (Tier 1 Voting Block)",
+                                "10,001 – 100,000 Shares (Tier 2 Voting Block)",
+                                "100,000+ Shares (Institutional Investor / Major Block)",
+                                "0 Votes (Non-Voting Delegate / Observer)"
+                            ],
+                            key=f"agm_shares_{selected_event['event_id']}"
+                        )
+    
+                        tier_clean_name = agm_del_status.split("(")[0].strip()
+                        chosen_amt = 0.0 if is_event_bks else 5000.0  # Paid centrally by SACCO Finance Manager for BKS mode
+    
+                    else:
+                        # Standard Non-AGM Ticket Tier Selection
+                        tier_choice = st.radio(
+                            "Select Registration Tier:*",
+                            [
+                                f"Standard Athlete / Participant Pass — KES {std_p:,.0f}",
+                                f"VIP Executive Delegate (Includes Hospitality) — KES {vip_p:,.0f}"
+                            ],
+                            key="reg_tier_radio"
+                        )
+                        chosen_amt = std_p if "Standard" in tier_choice else vip_p
+                        tier_clean_name = "Standard Pass" if "Standard" in tier_choice else "VIP Executive Pass"
+    
+                    loaded_tkt = st.session_state.get("pub_active_ticket")
+                    qp_name = st.query_params.get("name", "").strip()
+                    def_name = loaded_tkt.get("attendee_name", "") if loaded_tkt else (qp_name or "")
+                    def_email = loaded_tkt.get("email", "") if loaded_tkt else ""
+                    def_org = loaded_tkt.get("organization", "").split("(")[0].strip() if loaded_tkt else ("Banki Kuu Staff SACCO Society" if is_event_bks else "")
+                    def_phone = loaded_tkt.get("phone", "") if loaded_tkt else ""
+    
+                    att_name = st.text_input("Full Name (as per Official ID / National ID):*", value=def_name, placeholder="e.g. Official Full Name")
+                    att_email = st.text_input("Email Address (for pass delivery):*", value=def_email, placeholder="e.g. member@centralbank.go.ke")
+                    att_org = st.text_input("Organization / Company / Sacco Branch:*", value=def_org, placeholder="e.g. Finance & Accounts / Bank Supervision")
+                    phone_lbl = "Mobile Phone Number (for WhatsApp Pass delivery):*" if is_event_bks else "Safaricom M-Pesa Phone Number:*"
+                    phone_hlp = "Mobile number to receive instant WhatsApp pass & voting credentials" if is_event_bks else "Mobile number for STK Push prompt"
+                    att_phone = st.text_input(phone_lbl, placeholder="07XX XXX XXX", value=def_phone, help=phone_hlp)
+    
+                    if is_event_bks:
+                        st.markdown(f"""
+                        <div style="background: rgba(16, 185, 129, 0.15); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #34D399; font-weight: 800; font-size: 0.92rem;">🏛️ Member Accreditation: KES 0 (Complimentary)</span>
+                                <span style="background: #10B981; color: #020712; font-size: 0.68rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">SACCO PRE-PAID</span>
+                            </div>
+                            <span style="color: #CBD5E1; font-size: 0.76rem;">Platform deployment & accreditation fees paid centrally by <strong>Banki Kuu Staff SACCO Secretariat</strong>. Members do not pay.</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        btn_sub_ticket = st.form_submit_button("✅ Accredit Member & Generate Mobile Pass", type="primary", use_container_width=True)
+                    else:
+                        st.markdown(f"""
+                        <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 10px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #34D399; font-weight: 800; font-size: 0.92rem;">💰 Total Payable: KES {chosen_amt:,.0f}</span>
+                                <span style="background: #10B981; color: #020712; font-size: 0.68rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">DARAJA STK</span>
+                            </div>
+                            <span style="color: #94A3B8; font-size: 0.74rem;">Paybill: <strong>{selected_event['mpesa_paybill']}</strong> • Instant Automated Handset Push</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        btn_sub_ticket = st.form_submit_button(f"📲 Pay KES {chosen_amt:,.0f} via M-Pesa STK & Register", type="primary", use_container_width=True)
+    
+                    if btn_sub_ticket:
+                        if not att_name.strip():
+                            st.error("Please enter your Full Name.")
+                        elif not att_email.strip() or "@" not in att_email:
+                            st.error("Please provide a valid email address.")
+                        elif not att_phone.strip() or len(att_phone.strip()) < 9:
+                            st.error("Please provide a valid Safaricom phone number.")
+                        elif is_agm and not agm_acc_num.strip():
+                            st.error("Please provide your Shareholder / CDSC / Member Account Number.")
+                        else:
+                            org_tag = f"{att_org.strip()} (Ref: {agm_acc_num.strip()})" if is_agm else att_org.strip()
+                            
+                            if is_event_bks:
+                                # Direct complimentary accreditation for Banki Kuu SACCO member
+                                clean_acc = "".join([c for c in agm_acc_num if c.isalnum()]).upper() if (is_agm and agm_acc_num) else ""
+                                clean_ph = "".join([c for c in att_phone if c.isdigit()])
+                                ref_code = clean_acc if clean_acc else (clean_ph[-6:] if clean_ph else "342805")
+                                sim_tx = f"BKS-{ref_code}"
+    
+                                ok_t, msg_t, tkt_obj = backend.register_event_ticket(
+                                    event_id=selected_event["event_id"],
+                                    attendee_name=att_name.strip(),
+                                    email=att_email.strip(),
+                                    phone=att_phone.strip(),
+                                    organization=org_tag or "Banki Kuu SACCO Member",
+                                    ticket_tier=tier_clean_name,
+                                    amount_paid=0.0,
+                                    mpesa_trans_id=sim_tx
+                                )
+                                if ok_t:
+                                    st.session_state["pub_active_ticket"] = tkt_obj
+                                    st.session_state["pub_active_event"] = selected_event
+                                    st.session_state["stk_pending_payload"] = None
+                                    st.success(f"🎉 Accredited! {att_name.strip()} has been recorded. Digital mobile pass issued.")
+                                    st.balloons()
+                                    st.rerun()
+                                else:
+                                    st.error(msg_t)
+                            else:
+                                # Set STK Pending Payload to trigger interactive handset simulator for paid tickets
+                                st.session_state["stk_pending_payload"] = {
+                                    "event_id": selected_event["event_id"],
+                                    "event_title": selected_event["title"],
+                                    "attendee_name": att_name.strip(),
+                                    "email": att_email.strip(),
+                                    "phone": att_phone.strip(),
+                                    "organization": org_tag or "Independent Delegate",
+                                    "ticket_tier": tier_clean_name,
+                                    "amount_paid": chosen_amt,
+                                    "paybill": selected_event.get("mpesa_paybill", "849200"),
+                                    "acc_num": agm_acc_num.strip() if is_agm else att_phone.strip()[-4:],
+                                    "is_agm": is_agm
+                                }
+                                st.session_state["pub_active_ticket"] = None
+                                st.rerun()
+    
+                # ==================================================================
+                # BULK ROSTER UPLOAD & BATCH DELEGATE PIPELINE
+                # ==================================================================
+                st.markdown("---")
+                with st.expander("⚡ Bulk Member Roster Pipeline & 500-Delegate Batch Pass Engine", expanded=(selected_event["event_id"] == "EVT-BANKI-KUU-SACCO")):
+                    st.markdown("""
+                    <div style="background: rgba(8, 24, 48, 0.7); border: 1.5px solid rgba(245, 197, 66, 0.4); border-radius: 10px; padding: 12px 16px; margin-bottom: 12px;">
+                        <strong style="color: #F5C542; font-size: 0.9rem;">🚀 Enterprise Bulk Accreditation Pipeline</strong>
+                        <p style="margin: 4px 0 0 0; color: #CBD5E1; font-size: 0.78rem;">
+                            Eliminate manual registration for 500+ delegates. Upload a confirmed attendance CSV/Excel file or generate a synthetic 500-member Banki Kuu SACCO cohort with 1 click to achieve instant SASRA quorum accreditation.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+    
+                    col_blk1, col_blk2 = st.columns(2)
+                    with col_blk1:
+                        sample_template_df = pd.DataFrame([{
+                            "Member_ID": "SACCO-1001",
+                            "Full_Name": "Samuel Gathigi Njuguna",
+                            "Email": "sam.gathigi@gmail.com",
+                            "Phone": "0722849000",
+                            "Organization_Branch": "Banki Kuu Staff SACCO — Governor's Secretariat",
+                            "Accreditation_Role": "🗳️ Principal Shareholder / Voting Member",
+                            "Amount_Paid": 5000.0,
+                            "Attendance_Confirmed": "YES"
+                        }, {
+                            "Member_ID": "SACCO-1002",
+                            "Full_Name": "Dr. Beatrice Kiptoo",
+                            "Email": "b.kiptoo@centralbank.go.ke",
+                            "Phone": "0733456789",
+                            "Organization_Branch": "Banki Kuu Staff SACCO — Bank Supervision",
+                            "Accreditation_Role": "👔 Executive Board Director / Committee Member",
+                            "Amount_Paid": 5000.0,
+                            "Attendance_Confirmed": "YES"
+                        }])
+                        
+                        st.download_button(
+                            label="📥 Download Roster Template (.csv)",
+                            data=sample_template_df.to_csv(index=False).encode('utf-8'),
+                            file_name="Banki_Kuu_SACCO_Master_Delegate_Template.csv",
+                            mime="text/csv",
+                            use_container_width=True
+                        )
+                    with col_blk2:
+                        if st.button("⚡ Generate & Ingest 500-Delegate Cohort", type="primary", use_container_width=True, key="btn_gen_500_sacco"):
+                            with st.spinner("Generating 500 Banki Kuu SACCO accredited delegates..."):
+                                df_500 = backend.generate_synthetic_sacco_roster_df(500)
+                                ok_bulk, msg_bulk, stats_bulk = backend.bulk_ingest_event_tickets(selected_event["event_id"], df_500)
+                                if ok_bulk:
+                                    st.success(f"🎉 SUCCESS! {stats_bulk['total_ingested']} Banki Kuu SACCO delegates accredited and loaded into SQLite DB!")
+                                    st.balloons()
+                                    time.sleep(1)
+                                    st.rerun()
+                                else:
+                                    st.error(msg_bulk)
+    
+                    st.markdown("##### 📂 Or Drag & Drop Custom CSV / Excel Attendance File:")
+                    uploaded_roster = st.file_uploader(
+                        "Upload Delegate Attendance Roster (CSV / XLSX):",
+                        type=["csv", "xlsx", "xls"],
+                        key=f"uploader_roster_{selected_event['event_id']}"
                     )
+    
+                    if uploaded_roster is not None:
+                        try:
+                            if uploaded_roster.name.endswith(".csv"):
+                                df_up = pd.read_csv(uploaded_roster)
+                            else:
+                                df_up = pd.read_excel(uploaded_roster)
+                            
+                            st.dataframe(df_up.head(5), use_container_width=True)
+                            st.info(f"Loaded file '{uploaded_roster.name}' containing {len(df_up)} delegates.")
+    
+                            if st.button(f"🚀 Execute Bulk Accreditation for {len(df_up)} Delegates", type="primary", use_container_width=True, key="btn_exec_bulk_up"):
+                                ok_b, msg_b, stats_b = backend.bulk_ingest_event_tickets(selected_event["event_id"], df_up)
+                                if ok_b:
+                                    st.success(msg_b)
+                                    st.balloons()
+                                    time.sleep(1)
+                                    st.rerun()
+                                else:
+                                    st.error(msg_b)
+                        except Exception as ex_up:
+                            st.error(f"Error reading file: {ex_up}")
+    
+            with col_reg_pass:
+                stk_p = st.session_state.get("stk_pending_payload", None)
+                cur_ticket = st.session_state.get("pub_active_ticket", None)
+                cur_evt = st.session_state.get("pub_active_event", selected_event)
+    
+                if stk_p:
+                    st.markdown("#### 📱 Safaricom M-Pesa STK Push Simulator")
+                    st.markdown(f"""
+                    <div style="background: radial-gradient(circle, #0F172A 0%, #020617 100%); border: 3px solid #22C55E; border-radius: 20px; padding: 22px; text-align: center; box-shadow: 0 14px 40px rgba(34, 197, 94, 0.45); margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(34, 197, 94, 0.3); padding-bottom: 8px;">
+                            <span style="color: #22C55E; font-weight: 900; font-size: 0.82rem; letter-spacing: 1.2px;">● SAFARICOM M-PESA DARAJA STK</span>
+                            <span style="background: rgba(34, 197, 94, 0.2); color: #4ADE80; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 10px;">HANDSET POPUP</span>
+                        </div>
+                        <div style="margin: 16px 0 6px 0; color: #FFFFFF; font-size: 1.15rem; font-weight: 800;">
+                            Pay KES {stk_p['amount_paid']:,.0f} to<br><span style="color: #38BDF8;">STRIDE™ AGM GATEWAY</span>?
+                        </div>
+                        <div style="font-size: 0.78rem; color: #94A3B8; margin-bottom: 12px;">
+                            Paybill: <strong>{stk_p['paybill']}</strong> • Ref: <strong>{stk_p['acc_num']}</strong><br>
+                            Prompt dispatched to: <strong>{stk_p['phone']}</strong>
+                        </div>
+                        <div style="background: rgba(30, 41, 59, 0.9); border: 1.5px solid #22C55E; border-radius: 8px; padding: 10px; margin: 12px 0; color: #22C55E; font-family: monospace; font-size: 1.4rem; letter-spacing: 6px;">
+                            ••••
+                        </div>
+                        <div style="font-size: 0.72rem; color: #94A3B8;">
+                            Tap below to simulate entering your M-Pesa PIN on handset:
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+    
+                    c_s1, c_s2 = st.columns([1.5, 1])
+                    with c_s1:
+                        btn_auth_stk = st.button(
+                            f"✅ Enter PIN & Authorize (KES {stk_p['amount_paid']:,.0f})",
+                            type="primary",
+                            use_container_width=True,
+                            key="btn_confirm_stk_handset"
+                        )
+                    with c_s2:
+                        btn_cancel_stk = st.button("❌ Cancel", use_container_width=True, key="btn_cancel_stk_handset")
+    
+                    if btn_auth_stk:
+                        sim_tx = f"QK{int(time.time())}"[-10:]
+                        ok_t, msg_t, tkt_obj = backend.register_event_ticket(
+                            event_id=stk_p["event_id"],
+                            attendee_name=stk_p["attendee_name"],
+                            email=stk_p["email"],
+                            phone=stk_p["phone"],
+                            organization=stk_p["organization"],
+                            ticket_tier=stk_p["ticket_tier"],
+                            amount_paid=stk_p["amount_paid"],
+                            mpesa_trans_id=sim_tx
+                        )
+                        if ok_t:
+                            st.session_state["pub_active_ticket"] = tkt_obj
+                            st.session_state["pub_active_event"] = selected_event
+                            st.session_state["stk_pending_payload"] = None
+                            st.success(f"🎉 M-Pesa Confirmed! KES {stk_p['amount_paid']:,.0f} paid. Receipt: `{sim_tx}`. Digital pass issued.")
+                            st.balloons()
+                            st.rerun()
+                        else:
+                            st.error(msg_t)
+    
+                    if btn_cancel_stk:
+                        st.session_state["stk_pending_payload"] = None
+                        st.info("Transaction cancelled.")
+                        st.rerun()
+    
+                elif not cur_ticket:
+                    st.markdown("#### 🎟️ Digital Mobile Pass")
+                    info_msg = "👈 Fill out the form on the left and tap **'Accredit Member & Generate Mobile Pass'** to generate your official pass." if is_bks_mode else "👈 Fill out the registration form on the left and tap **'Pay KES 5,000 via M-Pesa STK & Register'** to generate your official pass."
+                    st.info(info_msg)
+                    st.markdown("""
+                    <div style="background: rgba(8, 24, 48, 0.6); border: 2px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 30px 20px; text-align: center; color: #64748B; margin-bottom: 12px;">
+                        <div style="font-size: 3rem; margin-bottom: 8px;">🎟️</div>
+                        <div style="font-weight: 700; color: #94A3B8; font-size: 0.95rem;">No Active Member Pass Rendered Yet</div>
+                        <div style="font-size: 0.78rem; margin-top: 4px;">Your encrypted dynamic QR ticket pass will render here immediately following accreditation.</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+    
+                    c_dem1, c_dem2 = st.columns(2)
+                    with c_dem1:
+                        if st.button("⚡ Quick Demo: Samuel Gathigi", use_container_width=True, key="btn_quick_demo_pass"):
+                            st.session_state["pub_active_ticket"] = {
+                                "ticket_id": "TKT-BK-342801",
+                                "attendee_name": "Samuel Gathigi Njuguna",
+                                "organization": "Banki Kuu SACCO — Governor's Secretariat",
+                                "ticket_tier": "Principal Shareholder / Voting Member",
+                                "amount_paid": 0.0,
+                                "mpesa_trans_id": "BKS-ACC-342801",
+                                "gate_status": "REGISTERED"
+                            }
+                            st.session_state["pub_active_event"] = selected_event
+                            st.rerun()
+                    with c_dem2:
+                        if st.button("♟️ Quick Demo: Andrew Ogola (Chess)", use_container_width=True, key="btn_quick_demo_ogola"):
+                            st.session_state["pub_active_ticket"] = {
+                                "ticket_id": "TKT-BK-3366",
+                                "attendee_name": "Andrew Ogola",
+                                "email": "aogola@centralbank.go.ke",
+                                "phone": "0726103890",
+                                "organization": "Banki Kuu Staff SACCO (IT & Digital Services — Ref:SACCO-3366 / Chess Captain)",
+                                "ticket_tier": "Principal Voting Shareholder",
+                                "amount_paid": 0.0,
+                                "mpesa_trans_id": "BK3366",
+                                "gate_status": "REGISTERED"
+                            }
+                            st.session_state["pub_active_event"] = selected_event
+                            st.rerun()
                 else:
-                    backend.log_audit_event(
-                        staff_id="PUBLIC_AUDITORIUM",
-                        officer_name="Auditorium Display / Member",
-                        role="Public Delegate",
-                        action_type="PII_CSV_EXPORT_MASKED",
-                        resource_name=selected_event['event_id'],
-                        notes=f"Exported Kenya DPA 2019 MASKED live accredited member roster CSV ({len(df_show)} records)"
-                    )
-
-            st.download_button(
-                label="📥 Download Official Accredited Member Roster (.csv)" if is_unmasked_tab1 else "📥 Download Kenya DPA 2019 Masked Roster (.csv)",
-                data=csv_roster,
-                file_name=f"Accredited_Roster_{selected_event['event_id']}{'_UNMASKED' if is_unmasked_tab1 else '_MASKED'}.csv",
-                mime="text/csv",
-                use_container_width=True,
-                on_click=_log_roster_csv_export,
-                key=f"dl_roster_csv_{selected_event['event_id']}"
-            )
-
-# ==============================================================================
-# TAB 2: EVENT CREATOR WIZARD (FOR ORGANIZERS & CORPORATES)
+                    st.markdown("#### 🎟️ Digital Mobile Pass")
+                    t_tx = cur_ticket["mpesa_trans_id"]
+                    t_id = cur_ticket["ticket_id"]
+                    t_name = cur_ticket["attendee_name"]
+                    t_org = cur_ticket["organization"]
+                    t_tier = cur_ticket["ticket_tier"]
+                    t_amt = cur_ticket["amount_paid"]
+    
+                    # Generate dynamic scannable QR Code pointing to instant verification URL
+                    verify_qr_data = f"https://cbk-stride.streamlit.app/EVENTS?verify_tkt={t_id}"
+                    qr_code_url = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={verify_qr_data}"
+    
+                    clean_event_title = cur_evt['title'].replace("🏦", "").strip()
+                    clean_org = t_org.replace("â€\"", "-").replace("—", "-").replace("–", "-")
+    
+                    if is_agm:
+                        pass_clearance_html = f"""<div style="margin-top: 12px; padding: 8px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; font-size: 0.78rem; color: #34D399; font-weight: 800;">
+                            ✓ STATUTORY ACCREDITATION CONFIRMED • SACCO PRE-PAID • CLEARANCE REF: {t_tx}
+                        </div>"""
+                    else:
+                        pass_clearance_html = f"""<div style="margin-top: 12px; padding: 8px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 8px; font-size: 0.78rem; color: #34D399; font-weight: 800;">
+                            ✓ PAYMENT CONFIRMED • KES {t_amt:,.0f} • REF: {t_tx}
+                        </div>"""
+    
+                    st.markdown(textwrap.dedent(f"""
+                    <div style="background: linear-gradient(135deg, #091F3D 0%, #030F21 100%); border: 2.5px solid #F5C542; border-radius: 16px; padding: 20px; box-shadow: 0 12px 36px rgba(0,0,0,0.65); text-align: center;">
+                        <div style="font-size: 0.72rem; color: #F5C542; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;">STRIDE™ ENTERPRISE DIGITAL PASS</div>
+                        <h3 style="margin: 6px 0 2px 0; color: #FFFFFF; font-size: 1.15rem; font-weight: 800;">{cur_evt['title']}</h3>
+                        <div style="margin: 4px 0 10px 0;">
+                            <span style="background: rgba(0, 242, 254, 0.2); color: #00F2FE; border: 1px solid rgba(0,242,254,0.4); padding: 3px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">
+                                {t_tier}
+                            </span>
+                        </div>
+                        <div style="background: #FFFFFF; border-radius: 12px; padding: 10px; display: inline-block; margin: 10px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                            <img src="{qr_code_url}" alt="Ticket QR" style="display: block; width: 160px; height: 160px;" />
+                        </div>
+                        <h3 style="margin: 4px 0 1px 0; color: #FFFFFF; font-size: 1.2rem; font-weight: 800;">{t_name}</h3>
+                        <div style="font-size: 0.82rem; color: #94A3B8;">{clean_org}</div>
+                        {pass_clearance_html}
+                        <div style="margin-top: 6px; font-size: 0.7rem; color: #64748B;">
+                            Ticket Serial: <code>{t_id}</code> • Status: <strong>{cur_ticket.get('gate_status', 'REGISTERED')}</strong>
+                        </div>
+                    </div>
+                    """), unsafe_allow_html=True)
+    
+                    if is_agm:
+                        download_text = f"""BANKI KUU SACCO — 58TH AGM OFFICIAL DELEGATE PASS
+    =============================================================
+    Event: {clean_event_title}
+    Delegate Name: {t_name}
+    Organization / Division: {clean_org}
+    Accreditation Tier: {t_tier}
+    Ticket Serial ID: {t_id}
+    Secretariat Clearance Ref: {t_tx}
+    Clearance Type: Statutory Shareholder (Complimentary / SACCO Pre-Paid)
+    Accreditation Status: {cur_ticket.get('gate_status', 'REGISTERED')}
+    Verification & Voting URL: {verify_qr_data}
+    =============================================================
+    Present this digital pass at the auditorium entrance for gate scan.
+    """
+                        download_filename = f"Banki_Kuu_SACCO_Pass_{t_id}.txt"
+                    else:
+                        download_text = f"""STRIDE DIGITAL PASS
+    Event: {cur_evt['title']}
+    Attendee: {t_name}
+    Org: {clean_org}
+    Tier: {t_tier}
+    Ticket ID: {t_id}
+    Receipt: {t_tx}
+    Amount: KES {t_amt:,.0f}
+    Scan URL: {verify_qr_data}"""
+                        download_filename = f"STRIDE_Ticket_{t_id}.txt"
+    
+                    c_p1, c_p2 = st.columns(2)
+                    with c_p1:
+                        st.download_button(
+                            label="📥 Download Pass (.txt)",
+                            data=download_text.encode('utf-8'),
+                            file_name=download_filename,
+                            mime="text/plain",
+                            use_container_width=True
+                        )
+                    with c_p2:
+                        if st.button("🔄 Register Another Person", use_container_width=True):
+                            st.session_state["pub_active_ticket"] = None
+                            st.rerun()
+    
+            # Accredited Member Roster Feed (Un-categorized for SACCO)
+            sacco_tickets = backend.get_tickets_by_event(selected_event['event_id'])
+            if sacco_tickets:
+                st.markdown("---")
+                st.markdown(f"### 📜 Live Accredited Member Roster & SASRA Quorum Feed ({len(sacco_tickets)} Members Recorded)")
+                st.caption("Live statutory shareholder accreditation feed. Shows all confirmed Banki Kuu SACCO members, proxy holders, board directors, and independent auditors:")
+    
+                df_display = pd.DataFrame(sacco_tickets)
+                
+                show_cols = ["ticket_id", "attendee_name", "organization", "ticket_tier", "email", "phone", "gate_status", "mpesa_trans_id"]
+                avail_cols = [c for c in show_cols if c in df_display.columns]
+                df_show = df_display[avail_cols].copy()
+                
+                rename_map = {
+                    "ticket_id": "Ticket Serial ID",
+                    "attendee_name": "Delegate Full Name",
+                    "organization": "Department / SACCO Branch Ref",
+                    "ticket_tier": "Accreditation Role",
+                    "email": "Email Address",
+                    "phone": "Phone Number",
+                    "gate_status": "Check-in Status",
+                    "mpesa_trans_id": "Secretariat Clearance Ref" if is_agm else "Payment Ref"
+                }
+                df_show.rename(columns=rename_map, inplace=True)
+    
+                # Institutional PII Enforcement (Kenya Data Protection Act 2019)
+                render_agm_pii_compliance_bar(tab_context="tab_reg")
+    
+                if not st.session_state.get("agm_pii_unlocked", False):
+                    if "Phone Number" in df_show.columns:
+                        df_show["Phone Number"] = df_show["Phone Number"].apply(mask_phone)
+                    if "Email Address" in df_show.columns:
+                        df_show["Email Address"] = df_show["Email Address"].apply(mask_email)
+    
+                search_query = st.text_input("🔍 Search Live Roster (by Name, Account Ref, or Role):", placeholder="e.g. Samuel Gathigi / SACCO-3428 / Board Director", key=f"srch_roster_{selected_event['event_id']}")
+                if search_query.strip():
+                    q = search_query.strip().lower()
+                    df_show = df_show[
+                        df_show.apply(lambda r: any(q in str(v).lower() for v in r.values), axis=1)
+                    ]
+    
+                st.dataframe(df_show, use_container_width=True, height=380)
+    
+                total_members = len(sacco_tickets)
+                quorum_needed = 50  # SASRA Statutory Quorum Floor
+                quorum_pct = min(100.0, (total_members / quorum_needed) * 100)
+                status_badge = "✅ STATUTORY AGM QUORUM ACHIEVED" if total_members >= quorum_needed else "⚠️ PENDING QUORUM ACCREDITATION"
+                
+                st.markdown(f"""
+                <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: 10px; padding: 14px 18px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <span style="color: #34D399; font-weight: 800; font-size: 0.9rem;">{status_badge}</span>
+                        <div style="font-size: 0.8rem; color: #CBD5E1; margin-top: 2px;">
+                            Total Accredited Delegates: <strong>{total_members}</strong> • SASRA Statutory Quorum Floor: <strong>{quorum_needed} Members</strong> ({quorum_pct:.1f}% Reached)
+                        </div>
+                    </div>
+                    <div>
+                        <span style="background: #10B981; color: #020712; font-weight: 900; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem;">
+                            {total_members} / {quorum_needed} DELEGATES RECORDED
+                        </span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+    
+                # Export live accredited member roster with ODPC § 25 Compliance
+                csv_roster = df_show.to_csv(index=False).encode('utf-8')
+                is_unmasked_tab1 = st.session_state.get("agm_pii_unlocked", False)
+                def _log_roster_csv_export():
+                    if st.session_state.get("agm_pii_unlocked", False):
+                        off = st.session_state.get("agm_pii_officer", {})
+                        backend.log_audit_event(
+                            staff_id=off.get("staff_id", "CBK-3428"),
+                            officer_name=off.get("full_name", "Secretariat Officer"),
+                            role=off.get("role", "Secretariat"),
+                            action_type="PII_CSV_EXPORT_UNMASKED",
+                            resource_name=selected_event['event_id'],
+                            notes=f"Exported UNMASKED live accredited member roster CSV ({len(df_show)} records)"
+                        )
+                    else:
+                        backend.log_audit_event(
+                            staff_id="PUBLIC_AUDITORIUM",
+                            officer_name="Auditorium Display / Member",
+                            role="Public Delegate",
+                            action_type="PII_CSV_EXPORT_MASKED",
+                            resource_name=selected_event['event_id'],
+                            notes=f"Exported Kenya DPA 2019 MASKED live accredited member roster CSV ({len(df_show)} records)"
+                        )
+    
+                st.download_button(
+                    label="📥 Download Official Accredited Member Roster (.csv)" if is_unmasked_tab1 else "📥 Download Kenya DPA 2019 Masked Roster (.csv)",
+                    data=csv_roster,
+                    file_name=f"Accredited_Roster_{selected_event['event_id']}{'_UNMASKED' if is_unmasked_tab1 else '_MASKED'}.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                    on_click=_log_roster_csv_export,
+                    key=f"dl_roster_csv_{selected_event['event_id']}"
+                )
+    
+    # ==============================================================================
+    # TAB 2: EVENT CREATOR WIZARD (FOR ORGANIZERS & CORPORATES)
 # ==============================================================================
 CLUSTER_CONFIGS = {
     "👔 Corporate AGM & Shareholder Assembly": {
@@ -2351,7 +2380,7 @@ with tab_ballot:
 
                 if not sel_tkt:
                     st.error(f"❌ Ticket Serial ID '{v_input_tkt}' not found in accredited roster.")
-                    st.info("💡 Try entering your Ticket Serial ID (e.g. `TKT-BK-342805`) or check 'Evaluator Shortcut' above.")
+                    st.info("💡 Try entering your Ticket Serial ID (e.g. `TKT-BK-342801`, `3428`, `3366`) or check 'Evaluator Shortcut' above.")
                 else:
                     # Compute voting weight based on ticket tier
                     v_weight = 1
@@ -2381,89 +2410,89 @@ with tab_ballot:
                     </div>
                     """, unsafe_allow_html=True)
 
-                existing_ballots = backend.get_event_ballots(v_eid)
-                has_voted = any(b["ticket_id"] == sel_tkt["ticket_id"] for b in existing_ballots)
+                    existing_ballots = backend.get_event_ballots(v_eid)
+                    has_voted = any(b["ticket_id"] == sel_tkt["ticket_id"] for b in existing_ballots)
 
-                if has_voted:
-                    voted_ballot = next(b for b in existing_ballots if b["ticket_id"] == sel_tkt["ticket_id"])
-                    st.success(f"✓ Ballot Cast & Certified! Vote was recorded on {voted_ballot['cast_time']}.")
-                    st.code(f"Cryptographic Proof: {voted_ballot['ballot_hash']}")
-                else:
-                    db_ballot_cfg = backend.get_ballot_config(v_eid) or backend.get_ballot_config("EVT-BANKI-KUU-SACCO")
-                    b_config = db_ballot_cfg if db_ballot_cfg else st.session_state.get("sacco_ballot_config", {
-                        "res1_title": "Ordinary Resolution 1: Approval of Audited Financial Statements for FY2025 and Declaration of a 14% First & Final Dividend",
-                        "res1_options": ["FOR (Approve Accounts & 14% Dividend)", "AGAINST (Reject Accounts)", "ABSTAIN"],
-                        "res2_title": "Item 2: Election of Supervisory Board Member (Nairobi East & Central Region)",
-                        "res2_candidates": [
-                            "Sarah Wanjiru CPA(K) (Independent, Audit & Finance)",
-                            "Eng. David Ndung'u (Incumbent, Risk & Governance)",
-                            "Dr. Peter Otieno (Institutional Nominee)"
-                        ],
-                        "res3_title": "Ordinary Resolution 2: Appointment of External Statutory Auditors for FY2026",
-                        "res3_auditors": ["Re-appoint KPMG Kenya", "Appoint PKF Kenya", "Appoint Deloitte East Africa", "ABSTAIN"]
-                    })
+                    if has_voted:
+                        voted_ballot = next(b for b in existing_ballots if b["ticket_id"] == sel_tkt["ticket_id"])
+                        st.success(f"✓ Ballot Cast & Certified! Vote was recorded on {voted_ballot['cast_time']}.")
+                        st.code(f"Cryptographic Proof: {voted_ballot['ballot_hash']}")
+                    else:
+                        db_ballot_cfg = backend.get_ballot_config(v_eid) or backend.get_ballot_config("EVT-BANKI-KUU-SACCO")
+                        b_config = db_ballot_cfg if db_ballot_cfg else st.session_state.get("sacco_ballot_config", {
+                            "res1_title": "Ordinary Resolution 1: Approval of Audited Financial Statements for FY2025 and Declaration of a 14% First & Final Dividend",
+                            "res1_options": ["FOR (Approve Accounts & 14% Dividend)", "AGAINST (Reject Accounts)", "ABSTAIN"],
+                            "res2_title": "Item 2: Election of Supervisory Board Member (Nairobi East & Central Region)",
+                            "res2_candidates": [
+                                "Sarah Wanjiru CPA(K) (Independent, Audit & Finance)",
+                                "Eng. David Ndung'u (Incumbent, Risk & Governance)",
+                                "Dr. Peter Otieno (Institutional Nominee)"
+                            ],
+                            "res3_title": "Ordinary Resolution 2: Appointment of External Statutory Auditors for FY2026",
+                            "res3_auditors": ["Re-appoint KPMG Kenya", "Appoint PKF Kenya", "Appoint Deloitte East Africa", "ABSTAIN"]
+                        })
 
-                    with st.form(key=f"form_ballot_{sel_tkt['ticket_id']}"):
-                        st.markdown(f"##### 📜 {b_config['res1_title']}")
-                        st.caption("Cast your vote on Item 1 Ordinary Resolution:")
-                        v_res1 = st.radio(
-                            "Your Vote on Resolution 1:*",
-                            b_config["res1_options"],
-                            index=None,
-                            key=f"v_res1_radio_{sel_tkt['ticket_id']}"
-                        )
+                        with st.form(key=f"form_ballot_{sel_tkt['ticket_id']}"):
+                            st.markdown(f"##### 📜 {b_config['res1_title']}")
+                            st.caption("Cast your vote on Item 1 Ordinary Resolution:")
+                            v_res1 = st.radio(
+                                "Your Vote on Resolution 1:*",
+                                b_config["res1_options"],
+                                index=None,
+                                key=f"v_res1_radio_{sel_tkt['ticket_id']}"
+                            )
 
-                        st.markdown(f"##### 🗳️ {b_config['res2_title']}")
-                        st.caption("Select one nominated candidate for Item 2:")
-                        v_res2 = st.radio(
-                            "Candidate Selection:*",
-                            b_config["res2_candidates"],
-                            index=None,
-                            key=f"v_res2_radio_{sel_tkt['ticket_id']}"
-                        )
+                            st.markdown(f"##### 🗳️ {b_config['res2_title']}")
+                            st.caption("Select one nominated candidate for Item 2:")
+                            v_res2 = st.radio(
+                                "Candidate Selection:*",
+                                b_config["res2_candidates"],
+                                index=None,
+                                key=f"v_res2_radio_{sel_tkt['ticket_id']}"
+                            )
 
-                        st.markdown(f"##### 🏛️ {b_config['res3_title']}")
-                        st.caption("Select statutory auditor for Item 3:")
-                        aud_options = ["Select Statutory Auditor..."] + [a for a in b_config["res3_auditors"] if a != "Select Statutory Auditor..."]
-                        v_res3 = st.selectbox(
-                            "Statutory Auditor Appointment:*",
-                            aud_options,
-                            index=0,
-                            key=f"v_res3_sel_{sel_tkt['ticket_id']}"
-                        )
+                            st.markdown(f"##### 🏛️ {b_config['res3_title']}")
+                            st.caption("Select statutory auditor for Item 3:")
+                            aud_options = ["Select Statutory Auditor..."] + [a for a in b_config["res3_auditors"] if a != "Select Statutory Auditor..."]
+                            v_res3 = st.selectbox(
+                                "Statutory Auditor Appointment:*",
+                                aud_options,
+                                index=0,
+                                key=f"v_res3_sel_{sel_tkt['ticket_id']}"
+                            )
 
-                        btn_submit_ballot = st.form_submit_button(
-                            f"🔒 Cast Confidential Ballot ({v_weight:,} Votes)",
-                            type="primary",
-                            use_container_width=True
-                        )
+                            btn_submit_ballot = st.form_submit_button(
+                                f"🔒 Cast Confidential Ballot ({v_weight:,} Votes)",
+                                type="primary",
+                                use_container_width=True
+                            )
 
-                        if btn_submit_ballot:
-                            if not v_res1:
-                                st.error("❌ Please cast your vote on Item 1 (Ordinary Resolution 1).")
-                            elif not v_res2:
-                                st.error("❌ Please select a candidate for Item 2 (Supervisory Board Member).")
-                            elif not v_res3 or v_res3.startswith("Select"):
-                                st.error("❌ Please select an option for Item 3 (Statutory Auditor Appointment).")
-                            else:
-                                ok_b, msg_b, b_rec = backend.cast_event_ballot(
-                                    event_id=v_eid,
-                                    ticket_id=sel_tkt["ticket_id"],
-                                    voter_name=sel_tkt["attendee_name"],
-                                    voter_organization=sel_tkt["organization"],
-                                    voting_weight=v_weight,
-                                    res1_vote=v_res1,
-                                    res2_candidate=v_res2,
-                                    res3_auditor=v_res3
-                                )
-                                if ok_b:
-                                    if sel_tkt.get("gate_status") != "ADMITTED":
-                                        backend.verify_and_admit_ticket(sel_tkt["ticket_id"])
-                                    st.session_state["last_cast_ballot"] = b_rec
-                                    st.balloons()
-                                    st.rerun()
+                            if btn_submit_ballot:
+                                if not v_res1:
+                                    st.error("❌ Please cast your vote on Item 1 (Ordinary Resolution 1).")
+                                elif not v_res2:
+                                    st.error("❌ Please select a candidate for Item 2 (Supervisory Board Member).")
+                                elif not v_res3 or v_res3.startswith("Select"):
+                                    st.error("❌ Please select an option for Item 3 (Statutory Auditor Appointment).")
                                 else:
-                                    st.error(msg_b)
+                                    ok_b, msg_b, b_rec = backend.cast_event_ballot(
+                                        event_id=v_eid,
+                                        ticket_id=sel_tkt["ticket_id"],
+                                        voter_name=sel_tkt["attendee_name"],
+                                        voter_organization=sel_tkt["organization"],
+                                        voting_weight=v_weight,
+                                        res1_vote=v_res1,
+                                        res2_candidate=v_res2,
+                                        res3_auditor=v_res3
+                                    )
+                                    if ok_b:
+                                        if sel_tkt.get("gate_status") != "ADMITTED":
+                                            backend.verify_and_admit_ticket(sel_tkt["ticket_id"])
+                                        st.session_state["last_cast_ballot"] = b_rec
+                                        st.balloons()
+                                        st.rerun()
+                                    else:
+                                        st.error(msg_b)
 
         with col_ballot_scrut:
             st.markdown("#### 📊 Returning Officer Live Telemetry Screen")
@@ -2681,11 +2710,11 @@ with tab_nlp:
         if tot_fb == 0:
             st.info("No feedback submitted yet for this assembly. Be the first to submit above!")
         else:
-            avg_rating = sum(f["rating"] for f in feedbacks) / tot_fb
-            avg_polarity = sum(f["sentiment_score"] for f in feedbacks) / tot_fb
+            avg_rating = sum(float(f.get("rating") or 5.0) for f in feedbacks) / tot_fb
+            avg_polarity = sum(float(f.get("sentiment_score") or 0.0) for f in feedbacks) / tot_fb
 
-            promoters = sum(1 for f in feedbacks if f["rating"] == 5)
-            detractors = sum(1 for f in feedbacks if f["rating"] <= 3)
+            promoters = sum(1 for f in feedbacks if int(f.get("rating") or 5) == 5)
+            detractors = sum(1 for f in feedbacks if int(f.get("rating") or 5) <= 3)
             nps_score = round(((promoters - detractors) / tot_fb) * 100)
 
             m1, m2, m3, m4 = st.columns(4)
@@ -2726,30 +2755,34 @@ with tab_nlp:
             # Live Feed of Feedback with Sentiment Badges
             st.markdown("##### 📢 Recent Attendee Feedback Stream")
             for fb in feedbacks[:6]:
-                sc_col = "#10B981" if fb["sentiment_label"] == "POSITIVE" else ("#EF4444" if fb["sentiment_label"] == "NEGATIVE" else "#F5C542")
-                stars = "⭐" * fb["rating"]
+                s_label = fb.get("sentiment_label") or "NEUTRAL"
+                sc_col = "#10B981" if s_label == "POSITIVE" else ("#EF4444" if s_label == "NEGATIVE" else "#F5C542")
+                r_val = int(fb.get("rating") or 5)
+                stars = "⭐" * max(1, min(5, r_val))
+                s_score = float(fb.get("sentiment_score") or 0.0)
                 st.markdown(f"""
                 <div style="background: rgba(8, 24, 48, 0.7); border-left: 4px solid {sc_col}; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 800; font-size: 0.85rem; color: #FFFFFF;">{fb['attendee_name']}</span>
+                        <span style="font-weight: 800; font-size: 0.85rem; color: #FFFFFF;">{fb.get('attendee_name', 'Delegate')}</span>
                         <span style="background: rgba(255,255,255,0.1); padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; color: #F5C542;">{stars}</span>
                     </div>
                     <div style="font-size: 0.8rem; color: #CBD5E1; margin: 4px 0 6px 0; font-style: italic;">
-                        "{fb['feedback_text']}"
+                        "{fb.get('feedback_text', '')}"
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.68rem; color: #64748B;">
                         <span>Aspects: {', '.join(fb.get('aspects', []))}</span>
-                        <span style="color: {sc_col}; font-weight: 800;">{fb['sentiment_label']} ({fb['sentiment_score']:+.2f})</span>
+                        <span style="color: {sc_col}; font-weight: 800;">{s_label} ({s_score:+.2f})</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# TAB 6: MOMBASA RETREAT BADGES & DIGITAL PASSES
+# TAB 6: MOMBASA RETREAT BADGES & DIGITAL PASSES (MULTI-TENANT MODE ONLY)
 # ==============================================================================
-with tab_retreat:
-    import retreat_badges_ui
-    retreat_badges_ui.render_retreat_badges_ui()
+if tab_retreat is not None:
+    with tab_retreat:
+        import retreat_badges_ui
+        retreat_badges_ui.render_retreat_badges_ui()
 
 # ------------------------------------------------------------------------------
 # FOOTER
@@ -2757,8 +2790,8 @@ with tab_retreat:
 if is_bks_mode:
     st.markdown("""
     <div style="text-align: center; margin-top: 3rem; padding: 1.4rem; border-top: 1.5px solid rgba(245, 197, 66, 0.35); color: #94A3B8; font-size: 0.82rem; background: rgba(4, 16, 33, 0.8); border-radius: 12px;">
-        <strong style="color: #F5C542;">Banki Kuu Staff SACCO Society Ltd.</strong> • 58th AGM & Board Elections Governance Portal<br>
-        <span style="font-size: 0.75rem; color: #64748B;">Powered by STRIDE™ Enterprise Telemetry & E-Voting Platform • SASRA Statutory Compliance Certified • <a href="/DEMO" style="color: #00F2FE; text-decoration: none;">🧪 Evaluator Sandbox</a></span>
+        <strong style="color: #F5C542;">Banki Kuu Staff SACCO Society Ltd.</strong> • 58th AGM & Mombasa Strategic Retreat Portal<br>
+        <span style="font-size: 0.75rem; color: #64748B;">Central Bank of Kenya Staff SACCO Society Ltd. • PrideInn Paradise Beach Resort, Shanzu, Mombasa • 95 Accredited Delegates</span>
     </div>
     """, unsafe_allow_html=True)
 else:
