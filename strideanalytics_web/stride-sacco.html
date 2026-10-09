@@ -408,12 +408,17 @@
                         Download the sample general ledger file or select from catalog:
                     </p>
                     <div class="space-y-2">
-                        <a href="GL_TRIAL_BALANCE_2025_EXPORT.csv" download class="block text-center py-1.5 px-3 rounded-lg bg-navy-900 border border-cyan-500/30 text-cyan-300 text-[11px] font-mono hover:bg-cyan-500/20">
-                            📥 Download Sample Core Banking GL Trial Balance (.csv)
-                        </a>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <a href="GL_TRIAL_BALANCE_2025_EXPORT.csv" download class="block text-center py-2 px-3 rounded-lg bg-navy-900 border border-cyan-500/30 text-cyan-300 text-[11px] font-mono hover:bg-cyan-500/20">
+                                📥 GL Trial Balance (.csv)
+                            </a>
+                            <a href="CoreBanking_MemberLoanLedger_Q4_2025.csv" download class="block text-center py-2 px-3 rounded-lg bg-navy-900 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono hover:bg-emerald-500/20 font-bold" title="68,400 Member Loan Ledger Export">
+                                📥 68k Member Ledger (.csv)
+                            </a>
+                        </div>
                         <select id="sim-file" class="w-full bg-navy-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none" disabled>
+                            <option>CoreBanking_MemberLoanLedger_Q4_2025.csv (68,400 Accounts • KES 14.8B)</option>
                             <option>GL_TRIAL_BALANCE_2025_EXPORT.csv (16 GL Lines • KES 14.8B)</option>
-                            <option>CoreBanking_MemberLoanLedger_Q4_2025.csv (48.1 MB • 68k Accounts)</option>
                         </select>
                         <button onclick="runIngestionSim()" id="btn-run-ingest" class="w-full py-2.5 rounded-xl bg-emerald-600/40 text-emerald-200 font-bold text-xs font-mono border border-emerald-500/50 hover:bg-emerald-600/60" disabled>
                             🚀 Tokenize &amp; Ingest to Live Dashboard
@@ -669,7 +674,12 @@
                 </div>
 
                 <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono space-y-2">
-                    <div class="text-cyan-300 font-bold">Audit Cryptographic Proof:</div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-cyan-300 font-bold">Audit Cryptographic Proof:</div>
+                        <a href="CoreBanking_MemberLoanLedger_Q4_2025.csv" download class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 font-bold text-[10px] flex items-center gap-1">
+                            <span>📥</span> <span>Download 68k Ledger (.csv)</span>
+                        </a>
+                    </div>
                     <div class="text-[10px] text-slate-400 break-all font-mono">
                         MERKLE-ROOT: 8f4e2c09931b72a6aef91204cda3810167d49e1a8bbfa32b
                     </div>
