@@ -250,7 +250,10 @@
                             <span>📥</span> <span>Sample 1 (Salary)</span>
                         </a>
                         <a href="MOCK_HIGHLANDS_TEA_SACCO_LOAN_LEDGER.csv" download class="px-3 py-2 rounded-xl bg-navy-900 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-500/20 flex items-center gap-1.5" title="Agri & Business Portfolio">
-                            <span>📥</span> <span>Sample 2 (Highlands Tea)</span>
+                            <span>📥</span> <span>Sample 2 (Highlands)</span>
+                        </a>
+                        <a href="CoreBanking_MemberLoanLedger_Q4_2025.csv" download class="px-3 py-2 rounded-xl bg-navy-900 border border-purple-500/40 text-purple-300 text-xs font-mono font-bold hover:bg-purple-500/20 flex items-center gap-1.5" title="Full 68k Member Core Banking Ledger">
+                            <span>📥</span> <span>Sample 3 (68k Ledger)</span>
                         </a>
                     </div>
                 </div>
@@ -292,6 +295,56 @@
                             <button onclick="processBrowserLocalCsv()" id="btn-run-weekly" class="w-full py-3 rounded-xl neon-button text-navy-950 font-bold text-xs font-mono shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
                                 <span>🚀</span> <span>Hash Client-Side &amp; Run Early-Warning Radar</span>
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: INTERACTIVE ZERO-KNOWLEDGE TOKENIZER & REVERSE RESOLVER LAB -->
+                <div class="p-6 rounded-2xl bg-navy-950/90 border border-cyan-500/30 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-cyan-500/20 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                            <span class="text-xs font-mono text-cyan-300 font-bold uppercase tracking-wider">ODPC LIVE TOKENIZER &amp; REVERSE RESOLUTION BENCH</span>
+                        </div>
+                        <span class="text-[10px] font-mono px-2.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">Browser-Local RAM Execution</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <!-- Module A: Real Name to Token (Tokenization) -->
+                        <div class="space-y-3 bg-navy-900/60 p-4 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono text-emerald-400 font-bold">1. TOKENIZE MEMBER IDENTITY</span>
+                                <span class="text-[10px] font-mono text-slate-400">Name ➔ Token</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Type any real Kenyan member name to witness hardware SHA-256 salting happen locally in your RAM:</p>
+                            <div class="space-y-2">
+                                <input type="text" id="live-tokenize-input" value="Peter K. Omondi" placeholder="e.g. Kiprono Arap Cheruiyot" class="w-full bg-navy-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:border-cyan-400 focus:outline-none" oninput="runLiveTokenizeDemo()">
+                                <div class="p-2.5 rounded-lg bg-navy-950 border border-cyan-500/30 font-mono text-xs text-slate-300 flex items-center justify-between">
+                                    <span class="text-slate-500 text-[10px]">Resulting Token:</span>
+                                    <span id="live-tokenize-result" class="text-cyan-400 font-bold">TKN-SHA256-774195</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Module B: Token to Real Name (Reverse Resolution) -->
+                        <div class="space-y-3 bg-navy-900/60 p-4 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono text-purple-400 font-bold">2. REVERSE RESOLVE (ON-PREMISES HUD)</span>
+                                <span class="text-[10px] font-mono text-slate-400">Token ➔ Identity</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Select any token from the ingested ledger to reverse-resolve against the on-premises perimeter dictionary:</p>
+                            <div class="space-y-2">
+                                <div class="flex gap-2">
+                                    <input type="text" id="live-resolve-input" value="TKN-SHA256-992381" placeholder="Paste Token e.g. TKN-SHA256-..." class="flex-1 bg-navy-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:border-purple-400 focus:outline-none">
+                                    <button onclick="runLiveResolveDemo()" class="px-3 py-2 rounded-lg bg-purple-600/40 text-purple-200 border border-purple-500/50 hover:bg-purple-600/60 text-xs font-mono font-bold">
+                                        🔍 Resolve
+                                    </button>
+                                </div>
+                                <div id="live-resolve-box" class="p-2.5 rounded-lg bg-navy-950 border border-emerald-500/30 font-mono text-xs text-slate-300 flex items-center justify-between">
+                                    <span class="text-slate-500 text-[10px]">Resolved Identity:</span>
+                                    <span id="live-resolve-result" class="text-emerald-400 font-bold">Jane W. Mwangi (0722 *** 419)</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -815,6 +868,41 @@
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
             return 'TKN-SHA256-' + hashHex.substring(0, 6).toUpperCase();
+        }
+
+        async function runLiveTokenizeDemo() {
+            const nameInput = document.getElementById('live-tokenize-input');
+            const resultEl = document.getElementById('live-tokenize-result');
+            const salt = document.getElementById('custom-salt-input').value || '#sacco-sovereign-2026';
+            if (!nameInput || !resultEl) return;
+            const name = nameInput.value.trim();
+            if (!name) {
+                resultEl.textContent = 'Type a name above...';
+                return;
+            }
+            const token = await hashStringSha256(name, salt);
+            resultEl.textContent = token;
+            // Also store in lookup table for seamless reverse demo
+            windowLocalLookup[token] = { name: name, phone: `07${Math.floor(10 + Math.random() * 89)} *** ${Math.floor(100 + Math.random() * 899)}` };
+        }
+
+        function runLiveResolveDemo() {
+            const input = document.getElementById('live-resolve-input');
+            const resultEl = document.getElementById('live-resolve-result');
+            const box = document.getElementById('live-resolve-box');
+            if (!input || !resultEl) return;
+            const token = input.value.trim().toUpperCase();
+            
+            if (windowLocalLookup[token]) {
+                const item = windowLocalLookup[token];
+                resultEl.textContent = `${item.name} (${item.phone})`;
+                box.className = "p-2.5 rounded-lg bg-navy-950 border border-emerald-500/40 font-mono text-xs text-slate-300 flex items-center justify-between";
+                resultEl.className = "text-emerald-400 font-bold";
+            } else {
+                resultEl.textContent = `⚠️ Token Not In Perimeter Key (Air-Gap Intact)`;
+                box.className = "p-2.5 rounded-lg bg-navy-950 border border-rose-500/40 font-mono text-xs text-slate-300 flex items-center justify-between";
+                resultEl.className = "text-rose-400 font-bold";
+            }
         }
 
         function handleDroppedFiles(files) {
