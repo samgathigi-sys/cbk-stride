@@ -120,6 +120,125 @@
             }
         }
 
+    
+        // Multi-tab Simulation Stream Updater
+        function updateAllTabsOnTick(wire) {
+            const timeStr = new Date().toLocaleTimeString();
+
+            // 1. Update Protocols Tab
+            const protoList = document.getElementById("protoStreamList");
+            if (protoList) {
+                const row = document.createElement("div");
+                row.className = "stream-row";
+                row.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #f59e0b; font-weight: 700;">ISO 20022 ENGINE:</span>
+                        <span style="color: #f8fafc;">Parsed ${wire.proto} | ${wire.from}</span>
+                    </div>
+                    <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 10px; padding: 1px 5px; border-radius: 3px;">VALIDATED 200 OK</span>
+                `;
+                protoList.insertBefore(row, protoList.firstChild);
+                if (protoList.children.length > 5) protoList.removeChild(protoList.lastChild);
+
+                // Increment protocol counters
+                const pVal = document.getElementById("protoTotalValidatedVal");
+                if (pVal) {
+                    let cur = parseInt(pVal.innerText.replace(/,/g, '')) || 14890;
+                    pVal.innerText = (cur + 1).toLocaleString();
+                }
+            }
+
+            // 2. Update Commercial Banks Tab
+            const bankWireStanbic = document.getElementById("bank-wire-stanbic");
+            if (bankWireStanbic && (wire.from.includes("Stanbic") || wire.to.includes("Stanbic"))) {
+                let cur = parseInt(bankWireStanbic.innerText.replace(/,/g, '')) || 3190;
+                bankWireStanbic.innerText = (cur + 1).toLocaleString();
+                flashElement("bank-wire-stanbic");
+            }
+            const bankWireCent = document.getElementById("bank-wire-centenary");
+            if (bankWireCent && (wire.from.includes("Centenary") || wire.to.includes("Centenary"))) {
+                let cur = parseInt(bankWireCent.innerText.replace(/,/g, '')) || 1380;
+                bankWireCent.innerText = (cur + 1).toLocaleString();
+                flashElement("bank-wire-centenary");
+            }
+
+            // 3. Update EAPS Corridor Tab
+            const eapsList = document.getElementById("eapsStreamList");
+            if (eapsList && Math.random() > 0.3) {
+                const eapsRow = document.createElement("div");
+                eapsRow.className = "stream-row";
+                const koridor = Math.random() > 0.5 ? "CBK Nairobi (KES)" : "BOT Dar-es-Salaam (TZS)";
+                const amt = Math.random() > 0.5 ? "KES 14,200,000" : "TZS 45,000,000";
+                eapsRow.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #38bdf8; font-weight: 700;">EAPS-CORRIDOR:</span>
+                        <span style="color: #f8fafc;">Bilateral Net Settle &rarr; ${koridor}</span>
+                    </div>
+                    <span style="color: #34d399; font-weight: 600;">${amt} [DISPATCHED]</span>
+                `;
+                eapsList.insertBefore(eapsRow, eapsList.firstChild);
+                if (eapsList.children.length > 5) eapsList.removeChild(eapsList.lastChild);
+
+                const cbkBatches = document.getElementById("eaps-batches-cbk");
+                if (cbkBatches) {
+                    let cur = parseInt(cbkBatches.innerText) || 170;
+                    cbkBatches.innerText = cur + 1;
+                }
+            }
+
+            // 4. Update Mobile Money Switch Tab
+            const mobileList = document.getElementById("mobileStreamList");
+            if (mobileList && Math.random() > 0.2) {
+                const mRow = document.createElement("div");
+                mRow.className = "stream-row";
+                const telco = Math.random() > 0.5 ? "MTN Uganda (Stanbic Escrow)" : "Airtel Money (Absa Escrow)";
+                const mAmount = "UGX " + Math.floor(10 + Math.random() * 80) + ",000,000";
+                mRow.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #f59e0b; font-weight: 700;">TELCO ESCROW SWEEP:</span>
+                        <span style="color: #f8fafc;">${telco} &rarr; RTGS Core</span>
+                    </div>
+                    <span class="wire-tag-success">${mAmount}</span>
+                `;
+                mobileList.insertBefore(mRow, mobileList.firstChild);
+                if (mobileList.children.length > 5) mobileList.removeChild(mobileList.lastChild);
+
+                const mmTransfers = document.getElementById("mmTotalTransfersVal");
+                if (mmTransfers) {
+                    let cur = parseInt(mmTransfers.innerText.replace(/,/g, '')) || 218650;
+                    mmTransfers.innerText = (cur + 5).toLocaleString();
+                }
+            }
+
+            // 5. Update Evidence Vault Tab
+            const auditList = document.getElementById("auditStreamList");
+            if (auditList && Math.random() > 0.4) {
+                const aRow = document.createElement("div");
+                aRow.className = "stream-row";
+                const blockNum = Math.floor(99285 + Math.random() * 500);
+                const hashPrefix = Math.random().toString(16).substring(2, 10) + "..." + Math.random().toString(16).substring(2, 6);
+                aRow.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #a855f7; font-weight: 700;">BLOCK #${blockNum}:</span>
+                        <span style="color: #f8fafc;">Hardware HSM Digest: <code>${hashPrefix}</code></span>
+                    </div>
+                    <span style="color: #10b981; font-weight: 600;">SEC 8 CERTIFIED</span>
+                `;
+                auditList.insertBefore(aRow, auditList.firstChild);
+                if (auditList.children.length > 5) auditList.removeChild(auditList.lastChild);
+
+                const auditBlocks = document.getElementById("auditTotalBlocksVal");
+                if (auditBlocks) {
+                    let cur = parseInt(auditBlocks.innerText.replace(/,/g, '')) || 99284;
+                    auditBlocks.innerText = (cur + 1).toLocaleString();
+                }
+            }
+        }
+
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -1398,34 +1517,49 @@
             </div>
 
             <!-- VIEW 3: Payment Protocols -->
+            <!-- VIEW 3: Payment Protocols (ISO 20022 Engine & Schemas) -->
             <div id="view-protocols" class="dashboard-view">
                 <div class="metric-grid-4">
                     <div class="metric-box">
-                        <div class="metric-label">ISO 20022 Share</div>
-                        <div class="metric-val" style="color: #f59e0b;">56.3%</div>
-                        <div class="metric-sub">pacs.008 & camt.053 dominant</div>
+                        <div class="metric-label">ISO 20022 Live Volume</div>
+                        <div class="metric-val" id="protoIsoVal" style="color: #f59e0b;">UGX 8.920T</div>
+                        <div class="metric-sub"><i class="fa-solid fa-arrow-trend-up"></i> pacs.008 & camt.053 Active</div>
                     </div>
                     <div class="metric-box">
-                        <div class="metric-label">SWIFT MT / FIN Share</div>
-                        <div class="metric-val" style="color: #06b6d4;">34.8%</div>
-                        <div class="metric-sub">Legacy Cross-Border Wires</div>
+                        <div class="metric-label">SWIFT FIN Ingress</div>
+                        <div class="metric-val" id="protoSwiftVal" style="color: #06b6d4;">$420.4M</div>
+                        <div class="metric-sub"><i class="fa-solid fa-globe"></i> Cross-Border Alliance Wires</div>
                     </div>
                     <div class="metric-box">
-                        <div class="metric-label">EAPS Netting Engine</div>
-                        <div class="metric-val" style="color: #8b5cf6;">5.9%</div>
-                        <div class="metric-sub">Regional Bilateral Settle</div>
+                        <div class="metric-label">Messages Validated Today</div>
+                        <div class="metric-val" id="protoTotalValidatedVal">14,890</div>
+                        <div class="metric-sub"><i class="fa-solid fa-circle-check" style="color: #059669;"></i> 100% Schema Conformance</div>
                     </div>
                     <div class="metric-box">
-                        <div class="metric-label">OpenAPI / JSON Escrow</div>
-                        <div class="metric-val" style="color: #ec4899;">3.0%</div>
-                        <div class="metric-sub">MTN & Airtel Trust Rails</div>
+                        <div class="metric-label">Schema Rejections / Drops</div>
+                        <div class="metric-val" id="protoRejectsVal" style="color: #dc2626;">196</div>
+                        <div class="metric-sub"><i class="fa-solid fa-shield"></i> Coraza WAF Filtered</div>
+                    </div>
+                </div>
+
+                <!-- LIVE SCHEMA VALIDATOR ENGINE TERMINAL -->
+                <div class="wire-stream-card" style="margin-bottom: 20px;">
+                    <div class="wire-stream-header">
+                        <div class="wire-stream-title">
+                            <span class="live-dot"></span>
+                            <span>LIVE ISO 20022 SCHEMA PARSING & VALIDATION ENGINE</span>
+                        </div>
+                        <span style="font-size: 11px; color: #94a3b8;">X.509 PKI Signature Validator Active</span>
+                    </div>
+                    <div class="wire-stream-list" id="protoStreamList">
+                        <!-- Live schema validation logs injected dynamically -->
                     </div>
                 </div>
 
                 <div class="chart-card">
                     <div class="card-header">
                         <h3 class="card-title">Sovereign Financial Message Schema Roster</h3>
-                        <span class="sec-badge sec-badge-cleared">All Schemas Validated</span>
+                        <span class="sec-badge sec-badge-cleared">All Schemas Enforced in Enclave</span>
                     </div>
                     <table class="sec-table">
                         <thead>
@@ -1433,7 +1567,7 @@
                                 <th>Protocol Family</th>
                                 <th>Standard ID</th>
                                 <th>Operational Purpose</th>
-                                <th>Daily Volume (UGX)</th>
+                                <th>Total Wires (Live)</th>
                                 <th>Crypto Verification</th>
                                 <th>Action</th>
                             </tr>
@@ -1443,7 +1577,7 @@
                                 <td><strong>ISO 20022</strong></td>
                                 <td><code>pacs.008.001.08</code></td>
                                 <td>Financial Institutional Customer Credit Transfer</td>
-                                <td>UGX 8.92 Trillion</td>
+                                <td id="pacs008Count" style="font-weight: 700; color: #1e293b;">8,450 wires</td>
                                 <td><span class="sec-badge sec-badge-cleared">BOU PKI X.509</span></td>
                                 <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('RTGS-STANBIC-03')">View Schema</button></td>
                             </tr>
@@ -1451,7 +1585,7 @@
                                 <td><strong>ISO 20022</strong></td>
                                 <td><code>camt.053.001.08</code></td>
                                 <td>Bank-to-Customer End-of-Day Statement</td>
-                                <td>UGX 1.45 Trillion</td>
+                                <td id="camt053Count" style="font-weight: 700; color: #1e293b;">1,450 wires</td>
                                 <td><span class="sec-badge sec-badge-cleared">SHA-256 Digest</span></td>
                                 <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('CAMT053-STATEMENT')">View Schema</button></td>
                             </tr>
@@ -1459,7 +1593,7 @@
                                 <td><strong>SWIFT FIN</strong></td>
                                 <td><code>MT103 / MT202 COV</code></td>
                                 <td>International Single Customer Transfer</td>
-                                <td>$420 Million USD</td>
+                                <td id="swiftCount" style="font-weight: 700; color: #1e293b;">3,210 wires</td>
                                 <td><span class="sec-badge sec-badge-cleared">SWIFT Alliance RMA</span></td>
                                 <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('SWIFT-HEIST-01')">View Schema</button></td>
                             </tr>
@@ -1467,7 +1601,7 @@
                                 <td><strong>EAPS Regional</strong></td>
                                 <td><code>EAPS-ISO-NET</code></td>
                                 <td>East African Payment System Net Multilateral Settle</td>
-                                <td>KES 1.8B / UGX 52B</td>
+                                <td id="eapsCount" style="font-weight: 700; color: #1e293b;">1,780 wires</td>
                                 <td><span class="sec-badge sec-badge-cleared">EAC Central Bank VPN</span></td>
                                 <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="switchView('eaps')">Inspect Corridor</button></td>
                             </tr>
@@ -1477,20 +1611,52 @@
             </div>
 
             <!-- VIEW 4: Commercial Banks Roster -->
+            <!-- VIEW 4: Commercial Banks Roster -->
             <div id="view-banks" class="dashboard-view">
+                <div class="metric-grid-4">
+                    <div class="metric-box">
+                        <div class="metric-label">Active Supervised Banks</div>
+                        <div class="metric-val" style="color: #2563eb;">25 Banks</div>
+                        <div class="metric-sub"><i class="fa-solid fa-building-columns"></i> 100% Ingress Synced</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Total RTGS Liquidity Buffer</div>
+                        <div class="metric-val" id="banksTotalLiquidityVal" style="color: #059669;">UGX 12.85T</div>
+                        <div class="metric-sub"><i class="fa-solid fa-vault"></i> Central Bank Statutory Reserves</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Fastest Settlement Latency</div>
+                        <div class="metric-val">12ms</div>
+                        <div class="metric-sub"><i class="fa-solid fa-bolt"></i> Stanbic Direct Fiber Link</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Anomaly BIC Alerts</div>
+                        <div class="metric-val" style="color: #047857;">0 Active</div>
+                        <div class="metric-sub"><i class="fa-solid fa-circle-check"></i> All BICs Clear</div>
+                    </div>
+                </div>
+
                 <div class="chart-card">
                     <div class="card-header">
-                        <h3 class="card-title">Commercial Banks & Financial Institutions Directory (Bank of Uganda Supervised)</h3>
-                        <span class="sec-badge sec-badge-cleared">25 Licensed Institutions Active</span>
+                        <div>
+                            <h3 class="card-title">Commercial Banks Real-Time Ingress Directory (Bank of Uganda Supervised)</h3>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">
+                                Live clearing volume increments automatically with every processed payment wire:
+                            </div>
+                        </div>
+                        <span class="sec-badge sec-badge-cleared">
+                            <span class="live-dot" style="display: inline-block; width: 6px; height: 6px; margin-right: 4px;"></span>
+                            Live Wires Streaming
+                        </span>
                     </div>
                     <table class="sec-table">
                         <thead>
                             <tr>
                                 <th>Institution Name</th>
                                 <th>SWIFT BIC</th>
-                                <th>Clearing Volume (Today)</th>
+                                <th>Clearing Volume (Live)</th>
                                 <th>Settlement Value (UGX)</th>
-                                <th>Liquidity Buffer Status</th>
+                                <th>Liquidity Buffer (LCR)</th>
                                 <th>WAF Security Status</th>
                             </tr>
                         </thead>
@@ -1498,56 +1664,56 @@
                             <tr>
                                 <td><strong>Stanbic Bank Uganda Limited</strong></td>
                                 <td><code>SBICUGKX</code></td>
-                                <td>3,190 wires</td>
-                                <td>UGX 4.85 Trillion</td>
+                                <td><span id="bank-wire-stanbic" style="font-weight: 700; color: #2563eb;">3,190</span> wires</td>
+                                <td><span id="bank-val-stanbic" style="font-weight: 700;">UGX 4.85 Trillion</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Optimal (142% LCR)</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Centenary Rural Development Bank</strong></td>
                                 <td><code>CERBUGKA</code></td>
-                                <td>1,380 wires</td>
-                                <td>UGX 1.92 Trillion</td>
+                                <td><span id="bank-wire-centenary" style="font-weight: 700; color: #2563eb;">1,380</span> wires</td>
+                                <td><span id="bank-val-centenary" style="font-weight: 700;">UGX 1.92 Trillion</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Optimal (128% LCR)</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Standard Chartered Bank Uganda</strong></td>
                                 <td><code>SCBLUGKA</code></td>
-                                <td>1,150 wires</td>
-                                <td>UGX 1.60 Trillion</td>
+                                <td><span id="bank-wire-scb" style="font-weight: 700; color: #2563eb;">1,150</span> wires</td>
+                                <td><span id="bank-val-scb" style="font-weight: 700;">UGX 1.60 Trillion</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Optimal (155% LCR)</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Bank of Baroda Uganda</strong></td>
                                 <td><code>BARBUGKA</code></td>
-                                <td>800 wires</td>
-                                <td>UGX 890 Billion</td>
+                                <td><span id="bank-wire-baroda" style="font-weight: 700; color: #2563eb;">800</span> wires</td>
+                                <td><span id="bank-val-baroda" style="font-weight: 700;">UGX 890 Billion</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Optimal (118% LCR)</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Absa Bank Uganda Limited</strong></td>
                                 <td><code>BARCUGKX</code></td>
-                                <td>740 wires</td>
-                                <td>UGX 780 Billion</td>
+                                <td><span id="bank-wire-absa" style="font-weight: 700; color: #2563eb;">740</span> wires</td>
+                                <td><span id="bank-val-absa" style="font-weight: 700;">UGX 780 Billion</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Optimal (134% LCR)</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
                             </tr>
                             <tr>
                                 <td><strong>dfcu Bank Limited</strong></td>
                                 <td><code>DFCUUGKX</code></td>
-                                <td>620 wires</td>
-                                <td>UGX 610 Billion</td>
+                                <td><span id="bank-wire-dfcu" style="font-weight: 700; color: #2563eb;">620</span> wires</td>
+                                <td><span id="bank-val-dfcu" style="font-weight: 700;">UGX 610 Billion</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Optimal (112% LCR)</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Equity Bank Uganda</strong></td>
                                 <td><code>EQBLUGKA</code></td>
-                                <td>590 wires</td>
-                                <td>UGX 540 Billion</td>
+                                <td><span id="bank-wire-equity" style="font-weight: 700; color: #2563eb;">590</span> wires</td>
+                                <td><span id="bank-val-equity" style="font-weight: 700;">UGX 540 Billion</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Optimal (122% LCR)</span></td>
                                 <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
                             </tr>
@@ -1557,34 +1723,49 @@
             </div>
 
             <!-- VIEW 5: EAPS Cross-Border Corridor -->
+            <!-- VIEW 5: EAPS Cross-Border Corridor -->
             <div id="view-eaps" class="dashboard-view">
                 <div class="metric-grid-4">
                     <div class="metric-box">
                         <div class="metric-label">Cross-Border Settlement Cycle</div>
                         <div class="metric-val" style="color: #059669;">T+0 Instant</div>
-                        <div class="metric-sub">Bilateral Clearing Protocol</div>
+                        <div class="metric-sub"><i class="fa-solid fa-arrows-spin"></i> Real-Time Gross Netting</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">BOU - CBK Netting Volume</div>
-                        <div class="metric-val" style="color: #2563eb;">KES 840M</div>
+                        <div class="metric-val" id="eapsCbkVal" style="color: #2563eb;">KES 840.5M</div>
                         <div class="metric-sub">UGX Equiv: ~24.3 Billion</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">BOU - BOT Netting Volume</div>
-                        <div class="metric-val" style="color: #f59e0b;">TZS 1.2B</div>
+                        <div class="metric-val" id="eapsBotVal" style="color: #f59e0b;">TZS 1.205B</div>
                         <div class="metric-sub">UGX Equiv: ~1.8 Billion</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">BOU - BNR Netting Volume</div>
-                        <div class="metric-val" style="color: #8b5cf6;">RWF 450M</div>
+                        <div class="metric-val" id="eapsBnrVal" style="color: #8b5cf6;">RWF 450.2M</div>
                         <div class="metric-sub">UGX Equiv: ~1.2 Billion</div>
+                    </div>
+                </div>
+
+                <!-- LIVE REGIONAL BATCH DISPATCH FEED -->
+                <div class="wire-stream-card" style="margin-bottom: 20px;">
+                    <div class="wire-stream-header">
+                        <div class="wire-stream-title">
+                            <span class="live-dot"></span>
+                            <span>EAST AFRICAN PAYMENT SYSTEM (EAPS) REAL-TIME DISPATCH TRUNK</span>
+                        </div>
+                        <span style="font-size: 11px; color: #94a3b8;">Bilateral Fiber Link Active</span>
+                    </div>
+                    <div class="wire-stream-list" id="eapsStreamList">
+                        <!-- Live cross-border batches injected dynamically -->
                     </div>
                 </div>
 
                 <div class="chart-card">
                     <div class="card-header">
-                        <h3 class="card-title">East African Payment System (EAPS) Real-Time Bilateral Clearing</h3>
-                        <span class="sec-badge sec-badge-cleared">All Central Bank Gateways Synced</span>
+                        <h3 class="card-title">EAPS Central Bank Bilateral Gateways</h3>
+                        <span class="sec-badge sec-badge-cleared">All Gateways Synced (200 OK)</span>
                     </div>
                     <table class="sec-table">
                         <thead>
@@ -1592,8 +1773,8 @@
                                 <th>Central Bank Counterparty</th>
                                 <th>Corridor Identifier</th>
                                 <th>Settlement Currency</th>
-                                <th>Daily Bilateral Batch</th>
-                                <th>Forensic Telemetry</th>
+                                <th>Settled Batches (Live)</th>
+                                <th>Network Latency</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -1602,24 +1783,24 @@
                                 <td><strong>Central Bank of Kenya (CBK)</strong></td>
                                 <td><code>EAPS-KE-UG-NET</code></td>
                                 <td>KES / UGX Real-Time Conversion</td>
-                                <td>170 settlement bundles</td>
-                                <td>Zero packet loss via Dedicated EAC Fiber</td>
+                                <td><span id="eaps-batches-cbk" style="font-weight: 700; color: #2563eb;">170</span> bundles</td>
+                                <td>12ms via Mombasa-Kampala Trunk</td>
                                 <td><span class="sec-badge sec-badge-cleared">Active (200 OK)</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Bank of Tanzania (BOT)</strong></td>
                                 <td><code>EAPS-TZ-UG-NET</code></td>
                                 <td>TZS / UGX Multilateral Net</td>
-                                <td>120 settlement bundles</td>
-                                <td>Latency: 18ms over Dar-es-Salaam Trunk</td>
+                                <td><span id="eaps-batches-bot" style="font-weight: 700; color: #2563eb;">120</span> bundles</td>
+                                <td>18ms via Dar-es-Salaam Trunk</td>
                                 <td><span class="sec-badge sec-badge-cleared">Active (200 OK)</span></td>
                             </tr>
                             <tr>
                                 <td><strong>National Bank of Rwanda (BNR)</strong></td>
                                 <td><code>EAPS-RW-UG-NET</code></td>
                                 <td>RWF / UGX Bilateral Net</td>
-                                <td>100 settlement bundles</td>
-                                <td>Latency: 14ms over Kigali Enclave</td>
+                                <td><span id="eaps-batches-bnr" style="font-weight: 700; color: #2563eb;">100</span> bundles</td>
+                                <td>14ms via Kigali Enclave</td>
                                 <td><span class="sec-badge sec-badge-cleared">Active (200 OK)</span></td>
                             </tr>
                         </tbody>
@@ -1628,34 +1809,49 @@
             </div>
 
             <!-- VIEW 6: Mobile Money Switch -->
+            <!-- VIEW 6: Mobile Money Switch -->
             <div id="view-mobile" class="dashboard-view">
                 <div class="metric-grid-4">
                     <div class="metric-box">
                         <div class="metric-label">MTN Mobile Money Escrow</div>
-                        <div class="metric-val" style="color: #f59e0b;">UGX 8.4B</div>
+                        <div class="metric-val" id="mmMtnEscrowVal" style="color: #f59e0b;">UGX 8.420B</div>
                         <div class="metric-sub">Guaranteed by Stanbic Escrow</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">Airtel Money Escrow</div>
-                        <div class="metric-val" style="color: #dc2626;">UGX 5.6B</div>
+                        <div class="metric-val" id="mmAirtelEscrowVal" style="color: #dc2626;">UGX 5.615B</div>
                         <div class="metric-sub">Guaranteed by Absa Escrow</div>
                     </div>
                     <div class="metric-box">
-                        <div class="metric-label">Daily Interop Sweeps</div>
-                        <div class="metric-val">12 Sweeps</div>
-                        <div class="metric-sub">2-Hour RTGS Netting Intervals</div>
+                        <div class="metric-label">Live Micro-Transfers (Today)</div>
+                        <div class="metric-val" id="mmTotalTransfersVal">218,650</div>
+                        <div class="metric-sub"><i class="fa-solid fa-arrow-trend-up" style="color: #059669;"></i> Real-Time Interoperability</div>
                     </div>
                     <div class="metric-box">
-                        <div class="metric-label">Fraud Infiltration Detected</div>
-                        <div class="metric-val" style="color: #059669;">0 Breaches</div>
-                        <div class="metric-sub">Rate-limited by Coraza CRS</div>
+                        <div class="metric-label">Replay Fraud Intercepted</div>
+                        <div class="metric-val" id="mmReplayInterceptedVal" style="color: #059669;">25 Attacks</div>
+                        <div class="metric-sub">Rate-limited by Coraza CRS 912120</div>
+                    </div>
+                </div>
+
+                <!-- LIVE MOBILE MONEY ESCROW SWEEP STREAM -->
+                <div class="wire-stream-card" style="margin-bottom: 20px;">
+                    <div class="wire-stream-header">
+                        <div class="wire-stream-title">
+                            <span class="live-dot"></span>
+                            <span>NATIONAL MOBILE MONEY TRUST ESCROW & RTGS SWEEP ENGINE</span>
+                        </div>
+                        <span style="font-size: 11px; color: #94a3b8;">National Payment Systems Act 2020 Compliant</span>
+                    </div>
+                    <div class="wire-stream-list" id="mobileStreamList">
+                        <!-- Live micro-transfers & RTGS escrow sweeps injected dynamically -->
                     </div>
                 </div>
 
                 <div class="chart-card">
                     <div class="card-header">
-                        <h3 class="card-title">National Mobile Money Trust Escrow Interoperability Switch</h3>
-                        <span class="sec-badge sec-badge-cleared">National Payment Systems Act 2020 Compliant</span>
+                        <h3 class="card-title">Mobile Telco Trust Escrow Gateways</h3>
+                        <span class="sec-badge sec-badge-cleared">NPS Act 2020 Trust Accounts Active</span>
                     </div>
                     <table class="sec-table">
                         <thead>
@@ -1663,7 +1859,7 @@
                                 <th>Telecom Provider</th>
                                 <th>Trust Escrow Bank</th>
                                 <th>API Gateway Endpoint</th>
-                                <th>Hourly Transaction Volume</th>
+                                <th>Hourly Ingress Volume (Live)</th>
                                 <th>WAF Anomaly Throttling</th>
                                 <th>Status</th>
                             </tr>
@@ -1673,7 +1869,7 @@
                                 <td><strong>MTN Uganda Mobile Money</strong></td>
                                 <td>Stanbic Bank Uganda</td>
                                 <td><code>/mobile-money/mtn-ug/escrow</code></td>
-                                <td>120,400 micro-transfers/hr</td>
+                                <td><span id="mmMtnRate" style="font-weight: 700; color: #2563eb;">120,400</span> micro-transfers/hr</td>
                                 <td>CRS 912120 Active (18 Bot Spikes Mitigated)</td>
                                 <td><span class="sec-badge sec-badge-cleared">Operational</span></td>
                             </tr>
@@ -1681,7 +1877,7 @@
                                 <td><strong>Airtel Money Uganda</strong></td>
                                 <td>Absa Bank Uganda</td>
                                 <td><code>/mobile-money/airtel/callback</code></td>
-                                <td>98,200 micro-transfers/hr</td>
+                                <td><span id="mmAirtelRate" style="font-weight: 700; color: #2563eb;">98,200</span> micro-transfers/hr</td>
                                 <td>CRS 912120 Active (7 Replay Attacks Blocked)</td>
                                 <td><span class="sec-badge sec-badge-cleared">Operational</span></td>
                             </tr>
@@ -1857,7 +2053,45 @@
             </div>
 
             <!-- VIEW 8: Forensic Evidence & Law -->
+            <!-- VIEW 8: Forensic Evidence & Law -->
             <div id="view-audit" class="dashboard-view">
+                <div class="metric-grid-4">
+                    <div class="metric-box">
+                        <div class="metric-label">Evidence Standard</div>
+                        <div class="metric-val" style="font-size: 16px; color: #b45309;">ETA 2011 Sec 8</div>
+                        <div class="metric-sub">Admissible in High Court of Uganda</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Total Evidence Blocks</div>
+                        <div class="metric-val" id="auditTotalBlocksVal" style="color: #2563eb;">99,284</div>
+                        <div class="metric-sub"><i class="fa-solid fa-cube"></i> Chronological Append-Only</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Cryptographic Integrity</div>
+                        <div class="metric-val" style="color: #059669;">100% SHA-256</div>
+                        <div class="metric-sub"><i class="fa-solid fa-check"></i> Zero Chain Breaks</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Hardware HSM Root Status</div>
+                        <div class="metric-val" style="color: #047857;">FIPS 140-2 L3</div>
+                        <div class="metric-sub">BOU Enclave Master Key Locked</div>
+                    </div>
+                </div>
+
+                <!-- LIVE CRYPTOGRAPHIC EVIDENCE LOG STREAM -->
+                <div class="wire-stream-card" style="margin-bottom: 20px;">
+                    <div class="wire-stream-header">
+                        <div class="wire-stream-title">
+                            <span class="live-dot"></span>
+                            <span>IMMUTABLE EVIDENCE LEDGER (LIVE APPEND STREAM)</span>
+                        </div>
+                        <span style="font-size: 11px; color: #94a3b8;">SHA-256 Chain of Custody</span>
+                    </div>
+                    <div class="wire-stream-list" id="auditStreamList">
+                        <!-- Live cryptographic evidence blocks injected dynamically -->
+                    </div>
+                </div>
+
                 <div class="chart-card">
                     <div class="card-header">
                         <h3 class="card-title">Chain of Custody & Legal Evidence Vault</h3>
@@ -1877,7 +2111,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="auditTableBody">
                             <tr>
                                 <td><code>EVID-2026-001</code></td>
                                 <td>SWIFT-HEIST-01 (Lazarus Tamper)</td>
@@ -1899,7 +2133,7 @@
                 </div>
             </div>
 
-        </main>
+            </main>
     </div>
 
     <!-- EXPORT SUITE MODAL (Fully Functional) -->
@@ -2196,6 +2430,7 @@
 
                     // Add to visible stream
                     addWireToStream(wire, false);
+                    updateAllTabsOnTick(wire);
 
                     // Increment counters
                     bankState.statusCodes.c2xx += 15;
@@ -2677,6 +2912,125 @@
                 let cur = parseInt(runsEl.innerText.replace(/,/g, '')) || 1964;
                 runsEl.innerText = (cur + 1).toLocaleString();
                 flashElement("soarTotalRunsVal");
+            }
+        }
+
+    
+        // Multi-tab Simulation Stream Updater
+        function updateAllTabsOnTick(wire) {
+            const timeStr = new Date().toLocaleTimeString();
+
+            // 1. Update Protocols Tab
+            const protoList = document.getElementById("protoStreamList");
+            if (protoList) {
+                const row = document.createElement("div");
+                row.className = "stream-row";
+                row.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #f59e0b; font-weight: 700;">ISO 20022 ENGINE:</span>
+                        <span style="color: #f8fafc;">Parsed ${wire.proto} | ${wire.from}</span>
+                    </div>
+                    <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 10px; padding: 1px 5px; border-radius: 3px;">VALIDATED 200 OK</span>
+                `;
+                protoList.insertBefore(row, protoList.firstChild);
+                if (protoList.children.length > 5) protoList.removeChild(protoList.lastChild);
+
+                // Increment protocol counters
+                const pVal = document.getElementById("protoTotalValidatedVal");
+                if (pVal) {
+                    let cur = parseInt(pVal.innerText.replace(/,/g, '')) || 14890;
+                    pVal.innerText = (cur + 1).toLocaleString();
+                }
+            }
+
+            // 2. Update Commercial Banks Tab
+            const bankWireStanbic = document.getElementById("bank-wire-stanbic");
+            if (bankWireStanbic && (wire.from.includes("Stanbic") || wire.to.includes("Stanbic"))) {
+                let cur = parseInt(bankWireStanbic.innerText.replace(/,/g, '')) || 3190;
+                bankWireStanbic.innerText = (cur + 1).toLocaleString();
+                flashElement("bank-wire-stanbic");
+            }
+            const bankWireCent = document.getElementById("bank-wire-centenary");
+            if (bankWireCent && (wire.from.includes("Centenary") || wire.to.includes("Centenary"))) {
+                let cur = parseInt(bankWireCent.innerText.replace(/,/g, '')) || 1380;
+                bankWireCent.innerText = (cur + 1).toLocaleString();
+                flashElement("bank-wire-centenary");
+            }
+
+            // 3. Update EAPS Corridor Tab
+            const eapsList = document.getElementById("eapsStreamList");
+            if (eapsList && Math.random() > 0.3) {
+                const eapsRow = document.createElement("div");
+                eapsRow.className = "stream-row";
+                const koridor = Math.random() > 0.5 ? "CBK Nairobi (KES)" : "BOT Dar-es-Salaam (TZS)";
+                const amt = Math.random() > 0.5 ? "KES 14,200,000" : "TZS 45,000,000";
+                eapsRow.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #38bdf8; font-weight: 700;">EAPS-CORRIDOR:</span>
+                        <span style="color: #f8fafc;">Bilateral Net Settle &rarr; ${koridor}</span>
+                    </div>
+                    <span style="color: #34d399; font-weight: 600;">${amt} [DISPATCHED]</span>
+                `;
+                eapsList.insertBefore(eapsRow, eapsList.firstChild);
+                if (eapsList.children.length > 5) eapsList.removeChild(eapsList.lastChild);
+
+                const cbkBatches = document.getElementById("eaps-batches-cbk");
+                if (cbkBatches) {
+                    let cur = parseInt(cbkBatches.innerText) || 170;
+                    cbkBatches.innerText = cur + 1;
+                }
+            }
+
+            // 4. Update Mobile Money Switch Tab
+            const mobileList = document.getElementById("mobileStreamList");
+            if (mobileList && Math.random() > 0.2) {
+                const mRow = document.createElement("div");
+                mRow.className = "stream-row";
+                const telco = Math.random() > 0.5 ? "MTN Uganda (Stanbic Escrow)" : "Airtel Money (Absa Escrow)";
+                const mAmount = "UGX " + Math.floor(10 + Math.random() * 80) + ",000,000";
+                mRow.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #f59e0b; font-weight: 700;">TELCO ESCROW SWEEP:</span>
+                        <span style="color: #f8fafc;">${telco} &rarr; RTGS Core</span>
+                    </div>
+                    <span class="wire-tag-success">${mAmount}</span>
+                `;
+                mobileList.insertBefore(mRow, mobileList.firstChild);
+                if (mobileList.children.length > 5) mobileList.removeChild(mobileList.lastChild);
+
+                const mmTransfers = document.getElementById("mmTotalTransfersVal");
+                if (mmTransfers) {
+                    let cur = parseInt(mmTransfers.innerText.replace(/,/g, '')) || 218650;
+                    mmTransfers.innerText = (cur + 5).toLocaleString();
+                }
+            }
+
+            // 5. Update Evidence Vault Tab
+            const auditList = document.getElementById("auditStreamList");
+            if (auditList && Math.random() > 0.4) {
+                const aRow = document.createElement("div");
+                aRow.className = "stream-row";
+                const blockNum = Math.floor(99285 + Math.random() * 500);
+                const hashPrefix = Math.random().toString(16).substring(2, 10) + "..." + Math.random().toString(16).substring(2, 6);
+                aRow.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #a855f7; font-weight: 700;">BLOCK #${blockNum}:</span>
+                        <span style="color: #f8fafc;">Hardware HSM Digest: <code>${hashPrefix}</code></span>
+                    </div>
+                    <span style="color: #10b981; font-weight: 600;">SEC 8 CERTIFIED</span>
+                `;
+                auditList.insertBefore(aRow, auditList.firstChild);
+                if (auditList.children.length > 5) auditList.removeChild(auditList.lastChild);
+
+                const auditBlocks = document.getElementById("auditTotalBlocksVal");
+                if (auditBlocks) {
+                    let cur = parseInt(auditBlocks.innerText.replace(/,/g, '')) || 99284;
+                    auditBlocks.innerText = (cur + 1).toLocaleString();
+                }
             }
         }
 
