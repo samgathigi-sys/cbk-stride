@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bank of Uganda | Synthetic Central Bank & Autonomous Security Sandbox</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Bank of Uganda | Sovereign SOC & Payment Security Center (Cloudflare & Rapid7 Style)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
@@ -15,20 +16,21 @@
             theme: {
                 extend: {
                     colors: {
-                        bou: {
-                            950: '#020612',
-                            900: '#071120',
-                            850: '#0b192e',
-                            800: '#0f2442',
-                            700: '#173660',
-                            gold: '#c5a059',
-                            goldLight: '#e6be75',
-                            goldDark: '#997736',
-                            crimson: '#e11d48',
+                        cf: {
+                            bg: '#0a0e17',
+                            card: '#111827',
+                            border: '#1f293d',
+                            orange: '#f38020',
+                            orangeDark: '#c76615',
+                            cyan: '#00d2d3',
+                            blue: '#3b82f6',
                             emerald: '#10b981',
-                            cyan: '#06b6d4',
-                            purple: '#a855f7',
-                            amber: '#f59e0b'
+                            crimson: '#ef4444',
+                            purple: '#a855f7'
+                        },
+                        bou: {
+                            gold: '#c5a059',
+                            goldLight: '#e6be75'
                         }
                     },
                     fontFamily: {
@@ -41,7 +43,7 @@
     </script>
     <style>
         body {
-            background-color: #020612;
+            background-color: #0a0e17;
             color: #f1f5f9;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
@@ -51,463 +53,526 @@
             height: 4px;
         }
         .terminal-scroll::-webkit-scrollbar-track {
-            background: #020612;
+            background: #0a0e17;
         }
         .terminal-scroll::-webkit-scrollbar-thumb {
-            background: #1e3a5f;
+            background: #1f293d;
             border-radius: 2px;
         }
-        @keyframes flashRed {
-            0%, 100% { background-color: rgba(225, 29, 72, 0.1); border-color: rgba(225, 29, 72, 0.4); }
-            50% { background-color: rgba(225, 29, 72, 0.35); border-color: #e11d48; }
+        @keyframes pulseAlert {
+            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
         }
-        .alert-flash {
-            animation: flashRed 0.8s ease-in-out infinite;
+        .alert-card-glow {
+            animation: pulseAlert 1.2s infinite;
         }
-        .stream-entry {
-            animation: slideIn 0.25s ease-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tab-btn.active {
+            border-bottom: 2px solid #f38020;
+            color: #ffffff;
+            font-weight: 700;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-bou-gold selection:text-bou-950 font-sans">
+<body class="min-h-screen flex flex-col antialiased selection:bg-cf-orange selection:text-black font-sans bg-cf-bg">
 
-    <!-- Top Sovereign Command Bar -->
-    <header class="sticky top-0 z-50 bg-bou-900/95 backdrop-blur-md border-b border-bou-gold/30 px-6 py-2.5 flex flex-wrap justify-between items-center shadow-2xl">
+    <!-- Top Cloudflare / Cisco ESA Style Header Bar -->
+    <header class="sticky top-0 z-50 bg-[#0e1422]/95 backdrop-blur-md border-b border-cf-border px-6 py-2.5 flex flex-wrap justify-between items-center shadow-xl">
         <div class="flex items-center gap-4">
-            <span class="bg-gradient-to-br from-bou-gold to-bou-goldLight text-bou-950 font-black text-xs px-2.5 py-1 rounded shadow-md tracking-wider">BANK OF UGANDA</span>
-            <div>
-                <h1 class="text-sm md:text-base font-bold text-white tracking-wide flex items-center gap-2">
-                    <span>Virtual Central Bank Sandbox & Autonomous SOC</span>
-                    <span class="text-xs font-normal text-bou-emerald px-2 py-0.5 rounded-full bg-bou-emerald/10 border border-bou-emerald/30 font-mono">SimuBank RTGS / NPS v2.4</span>
-                </h1>
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cf-orange to-amber-600 flex items-center justify-center font-black text-black text-sm shadow-md">
+                    🛡️
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-white font-mono tracking-wide">BANK OF UGANDA</span>
+                        <span class="text-[10px] px-2 py-0.2 rounded bg-cf-orange/20 text-cf-orange border border-cf-orange/40 font-mono font-bold">SOVEREIGN CORE</span>
+                        <span class="hidden md:inline-flex items-center gap-1.5 text-[10px] text-emerald-400 font-mono">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>All Systems Operational (Defcon 4)</span>
+                        </span>
+                    </div>
+                    <div class="text-[11px] text-slate-400 font-mono flex items-center gap-2">
+                        <span>Zone: <strong>Kampala NPS / RTGS Enclave</strong></span>
+                        <span>•</span>
+                        <span>Account: <strong>BoU-National-Settlement-01</strong></span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Live Reserve Liquidity & Defcon Ticker -->
-        <div class="flex items-center gap-4 text-xs font-mono mt-2 sm:mt-0">
-            <div class="hidden lg:flex items-center gap-2 px-3 py-1 rounded bg-bou-950 border border-bou-gold/40">
-                <span class="text-slate-400 text-xxs">SYSTEMIC SETTLEMENT POOL:</span>
-                <span id="reserveLiquidityTicker" class="text-bou-gold font-bold text-xs">UGX 4,285,190,000,000</span>
+        <!-- Right Header Controls -->
+        <div class="flex items-center gap-3 text-xs font-mono mt-2 sm:mt-0">
+            <!-- Date Filter Pill (Cloudflare Style) -->
+            <div class="hidden lg:flex items-center gap-2 px-3 py-1 rounded-lg bg-cf-card border border-cf-border text-slate-300">
+                <span class="text-slate-500">Range:</span>
+                <span class="text-white font-bold">Past 24 Hours</span>
+                <span class="text-slate-500 text-[10px]">▼</span>
             </div>
 
-            <div id="defconBadge" class="flex items-center gap-2 px-3 py-1 rounded bg-bou-950 border border-emerald-500/40 text-emerald-300 font-bold">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span id="defconText">DEFCON 4: SECURE (NORMAL)</span>
+            <!-- Auto-Refresh Indicator -->
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cf-card border border-cf-border text-emerald-400 text-[11px]">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>Auto-Refresh: 2s</span>
             </div>
 
-            <div class="flex items-center gap-1.5">
-                <a href="war_room_simulator.html" class="px-2 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-gold/30 text-bou-gold text-xs transition">
-                    🏛️ War Room
+            <!-- Navigation Links -->
+            <div class="flex items-center gap-1 text-[11px]">
+                <a href="war_room_simulator.html" class="px-2.5 py-1 rounded bg-cf-card hover:bg-slate-800 border border-cf-border text-bou-gold transition">
+                    War Room
                 </a>
-                <a href="soar_playbook_simulator.html" class="px-2 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-emerald/30 text-emerald-400 text-xs transition">
-                    ⚡ SOAR
+                <a href="soar_playbook_simulator.html" class="px-2.5 py-1 rounded bg-cf-card hover:bg-slate-800 border border-cf-border text-emerald-400 transition">
+                    SOAR
                 </a>
-                <a href="cyber_forensic_chef.html" class="px-2 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-cyan/30 text-cyan-400 text-xs transition">
-                    🔪 Chef
+                <a href="cyber_forensic_chef.html" class="px-2.5 py-1 rounded bg-cf-card hover:bg-slate-800 border border-cf-border text-cyan-400 transition">
+                    Chef
                 </a>
-                <a href="payment_systems_architecture.html" class="px-2 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-purple-500/30 text-purple-400 text-xs transition">
-                    🌐 Architecture
+                <a href="payment_systems_architecture.html" class="px-2.5 py-1 rounded bg-cf-card hover:bg-slate-800 border border-cf-border text-purple-400 transition">
+                    Architecture
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- Main Simulator Grid: 3 Major Panels -->
-    <main class="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1780px] mx-auto w-full">
+    <!-- Sub-Navigation Ribbon (Cloudflare Security Center Style) -->
+    <nav class="bg-[#0e1422] border-b border-cf-border px-6 flex items-center gap-6 text-xs font-mono text-slate-400 overflow-x-auto">
+        <button class="tab-btn active py-2.5 hover:text-white transition flex items-center gap-1.5">
+            <span>📊 Security Overview & WAF Analytics</span>
+        </button>
+        <button onclick="scrollToId('sentinelsSection')" class="tab-btn py-2.5 hover:text-white transition flex items-center gap-1.5">
+            <span>🛡️ Open-Source Sentinels (Wazuh/Shuffle)</span>
+        </button>
+        <button onclick="scrollToId('eventsSection')" class="tab-btn py-2.5 hover:text-white transition flex items-center gap-1.5">
+            <span>📜 Live Security Events Log</span>
+        </button>
+        <button onclick="scrollToId('adversarySection')" class="tab-btn py-2.5 hover:text-cf-orange transition flex items-center gap-1.5 text-rose-400 font-bold">
+            <span>⚡ Adversary Chaos Pad</span>
+        </button>
+    </nav>
 
-        <!-- COLUMN 1: Live Synthetic Payment Rails Ticker (4 cols) -->
-        <div class="lg:col-span-4 flex flex-col space-y-4">
-            <div class="bg-bou-900/80 border border-bou-gold/30 rounded-xl p-4 shadow-xl flex flex-col h-[78vh]">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5 mb-3">
-                    <div>
-                        <h2 class="text-xs font-bold text-bou-gold font-mono uppercase tracking-wider flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                            <span>1. Live Interbank Payment Stream</span>
-                        </h2>
-                        <span class="text-xxs text-slate-400 font-mono">RTGS • SWIFT ISO 20022 • MTN MoMo • Airtel</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="toggleStream()" id="btnStreamToggle" class="px-2 py-1 rounded bg-bou-850 hover:bg-bou-800 text-slate-300 font-mono text-xxs border border-slate-700">
-                            ⏸ Pause
-                        </button>
-                        <button onclick="clearStream()" class="px-2 py-1 rounded bg-bou-850 hover:bg-bou-800 text-slate-400 font-mono text-xxs border border-slate-700">
-                            Clear
-                        </button>
-                    </div>
-                </div>
+    <!-- Main Container -->
+    <main class="flex-1 p-4 md:p-6 max-w-[1780px] mx-auto w-full space-y-6">
 
-                <!-- Live Stream Feed Container -->
-                <div id="paymentStreamFeed" class="flex-1 overflow-y-auto terminal-scroll space-y-2 pr-1 font-mono text-xs">
-                    <!-- Dynamic Stream Items Injected by JS -->
-                </div>
-
-                <!-- Ticker Footer Metrics -->
-                <div class="pt-2.5 border-t border-slate-800 mt-2 grid grid-cols-3 gap-2 text-center font-mono text-xxs">
-                    <div class="p-2 rounded bg-bou-950 border border-slate-800">
-                        <span class="text-slate-400 block">CLEARED TODAY:</span>
-                        <span id="txClearedCount" class="font-bold text-emerald-400 text-xs">1,842 Wires</span>
-                    </div>
-                    <div class="p-2 rounded bg-bou-950 border border-slate-800">
-                        <span class="text-slate-400 block">TOTAL VOLUME:</span>
-                        <span id="txVolumeCleared" class="font-bold text-white text-xs">UGX 184.2B</span>
-                    </div>
-                    <div class="p-2 rounded bg-bou-950 border border-slate-800">
-                        <span class="text-slate-400 block">ATTACKS BLOCKED:</span>
-                        <span id="txAttacksBlocked" class="font-bold text-rose-400 text-xs">0 Blocked</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- COLUMN 2: Adversary Attack Injection Pad (4 cols) -->
-        <div class="lg:col-span-4 flex flex-col space-y-4">
-            
-            <!-- Attack Controller Box -->
-            <div id="adversaryBox" class="bg-bou-900/80 border border-bou-crimson/40 rounded-xl p-4 shadow-xl flex flex-col">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5 mb-3">
-                    <div>
-                        <h2 class="text-xs font-bold text-bou-crimson font-mono uppercase tracking-wider flex items-center gap-1.5">
-                            <span>💀 2. Adversary Injection Pad (Simulate Attacks)</span>
-                        </h2>
-                        <span class="text-xxs text-slate-400 font-mono">Launch simulated zero-days against the Synthetic Central Bank</span>
-                    </div>
-                    <span class="text-xxs px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800 font-mono font-bold">CHAOS SIMULATOR</span>
-                </div>
-
-                <!-- 4 Action Buttons -->
-                <div class="space-y-2.5 mb-4 font-mono">
-                    
-                    <!-- Attack 1 -->
-                    <button onclick="injectAttack('sqli')" class="w-full text-left p-3 rounded-lg bg-bou-950 hover:bg-bou-850 border border-bou-cyan/50 hover:border-bou-cyan transition group">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-white group-hover:text-cyan-300 transition flex items-center gap-1.5">
-                                <span>⚡ Attack 1: Core API SQLi & Code Injection</span>
-                            </span>
-                            <span class="text-xxs px-1.5 py-0.2 rounded bg-red-950 text-rose-300 font-bold">EXPLOIT</span>
-                        </div>
-                        <p class="text-xxs text-slate-400 mt-1 font-sans">
-                            Injects <code>' OR 1=1; DROP TABLE AUDIT;--</code> and Base64-obfuscated shellcode into RTGS batch remarks.
-                        </p>
-                    </button>
-
-                    <!-- Attack 2 -->
-                    <button onclick="injectAttack('memory_hook')" class="w-full text-left p-3 rounded-lg bg-bou-950 hover:bg-bou-850 border border-bou-crimson/50 hover:border-bou-crimson transition group">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-white group-hover:text-rose-300 transition flex items-center gap-1.5">
-                                <span>🧬 Attack 2: Cobalt Strike In-Memory Hook (PID 4128)</span>
-                            </span>
-                            <span class="text-xxs px-1.5 py-0.2 rounded bg-red-950 text-rose-300 font-bold">PAGE_RWX</span>
-                        </div>
-                        <p class="text-xxs text-slate-400 mt-1 font-sans">
-                            Allocates executable RWX memory inside `bou_rtgs_service.exe` to bypass dual-sign sign-off on UGX 4.8B.
-                        </p>
-                    </button>
-
-                    <!-- Attack 3 -->
-                    <button onclick="injectAttack('swift_wire')" class="w-full text-left p-3 rounded-lg bg-bou-950 hover:bg-bou-850 border border-bou-gold/50 hover:border-bou-gold transition group">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-white group-hover:text-amber-300 transition flex items-center gap-1.5">
-                                <span>💰 Attack 3: Rogue SWIFT Wire ($2.5M / UGX 9.2B)</span>
-                            </span>
-                            <span class="text-xxs px-1.5 py-0.2 rounded bg-amber-950 text-amber-300 font-bold">FRAUD</span>
-                        </div>
-                        <p class="text-xxs text-slate-400 mt-1 font-sans">
-                            Compromised operator terminal queues an unauthorized offshore MT103 wire to an unverified beneficiary at 02:44 AM.
-                        </p>
-                    </button>
-
-                    <!-- Attack 4 -->
-                    <button onclick="injectAttack('momo_race')" class="w-full text-left p-3 rounded-lg bg-bou-950 hover:bg-bou-850 border border-purple-500/50 hover:border-purple-400 transition group">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-white group-hover:text-purple-300 transition flex items-center gap-1.5">
-                                <span>📱 Attack 4: Cross-Border Mobile Float Desync</span>
-                            </span>
-                            <span class="text-xxs px-1.5 py-0.2 rounded bg-purple-950 text-purple-300 font-bold">ARBITRAGE</span>
-                        </div>
-                        <p class="text-xxs text-slate-400 mt-1 font-sans">
-                            API race-condition exploiting EAPS gateway timing window to inject phantom KES/UGX mobile liquidity.
-                        </p>
-                    </button>
-
-                </div>
-
-                <!-- Active Incident Payload Inspector Box -->
-                <div class="p-3.5 rounded-lg bg-bou-950 border border-slate-800 font-mono text-xs flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="text-xxs text-slate-400 uppercase font-bold mb-1">Current Adversary Telemetry Injected:</div>
-                        <pre id="adversaryPayloadView" class="p-2.5 rounded bg-black/60 border border-slate-800 text-xxs text-slate-300 overflow-x-auto terminal-scroll leading-relaxed">No attack currently injected.
-Payment stream is operating in organic baseline mode.</pre>
-                    </div>
-                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between items-center text-xxs">
-                        <span class="text-slate-400">Simulator Status:</span>
-                        <span id="adversaryStatus" class="text-emerald-400 font-bold">STANDBY (CLICK ATTACK TO FIRE)</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Judicial Evidence Seal Box -->
-            <div class="bg-bou-950/90 border border-bou-gold/30 rounded-xl p-4 font-mono text-xs space-y-2 shadow-lg">
-                <div class="flex justify-between items-center">
-                    <span class="text-bou-gold text-xxs font-bold uppercase">⚖️ Statutory Evidence Integrity Seal</span>
-                    <span class="text-xxs text-slate-500">Uganda CMA 2022</span>
-                </div>
-                <div class="text-xxs text-slate-300">
-                    <div class="text-slate-400">Court Chain-of-Custody SHA-256 Seal:</div>
-                    <div id="liveCourtSha" class="p-1 rounded bg-black/60 border border-slate-800 text-cyan-300 break-all mt-0.5 text-[10px]">
-                        08adba3aa8c35d8d12dac1ce7dd218bdc39592b160da62ea275acd9f751561f4
-                    </div>
-                </div>
-                <div class="text-xxs text-slate-400 pt-1 flex justify-between">
-                    <span>Fiduciary Solvency: <strong class="text-emerald-400">100% PROTECTED</strong></span>
-                    <span>Direct Loss: <strong class="text-bou-gold">UGX 0.00</strong></span>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- COLUMN 3: Live Open-Source Sentinels at Work (4 cols) -->
-        <div class="lg:col-span-4 flex flex-col space-y-4">
-            
-            <div class="bg-bou-900/80 border border-bou-emerald/40 rounded-xl p-4 shadow-xl flex flex-col h-[78vh]">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5 mb-3">
-                    <div>
-                        <h2 class="text-xs font-bold text-bou-emerald font-mono uppercase tracking-wider flex items-center gap-1.5">
-                            <span>🛡️ 3. Open-Source Sentinel Telemetry</span>
-                        </h2>
-                        <span class="text-xxs text-slate-400 font-mono">Coraza WAF • Suricata NIDS • Wazuh Agent • Shuffle SOAR</span>
-                    </div>
-                    <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono font-bold">$0 OSS STACK</span>
-                </div>
-
-                <!-- 4 Sentinel Gauges / Cards -->
-                <div class="grid grid-cols-2 gap-2.5 mb-3 font-mono text-xs">
-                    
-                    <!-- Sentinel 1: Coraza WAF -->
-                    <div id="gaugeWaf" class="p-2.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300">
-                        <div class="flex justify-between items-center text-xxs">
-                            <span class="text-cyan-300 font-bold">⚡ CORAZA WAF</span>
-                            <span id="badgeWaf" class="text-emerald-400 text-[10px]">INSPECTING</span>
-                        </div>
-                        <div id="statWaf" class="text-xxs text-slate-400 mt-1">OWASP CRS v4.0 active (<2ms)</div>
-                    </div>
-
-                    <!-- Sentinel 2: Suricata NIDS -->
-                    <div id="gaugeNids" class="p-2.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300">
-                        <div class="flex justify-between items-center text-xxs">
-                            <span class="text-green-300 font-bold">🐆 SURICATA</span>
-                            <span id="badgeNids" class="text-emerald-400 text-[10px]">SNIFFING</span>
-                        </div>
-                        <div id="statNids" class="text-xxs text-slate-400 mt-1">10Gbps SPAN port stream</div>
-                    </div>
-
-                    <!-- Sentinel 3: Wazuh EDR -->
-                    <div id="gaugeWazuh" class="p-2.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300">
-                        <div class="flex justify-between items-center text-xxs">
-                            <span class="text-blue-300 font-bold">🦉 WAZUH XDR</span>
-                            <span id="badgeWazuh" class="text-emerald-400 text-[10px]">FIM / MALFIND</span>
-                        </div>
-                        <div id="statWazuh" class="text-xxs text-slate-400 mt-1">PID 4128 memory probe clean</div>
-                    </div>
-
-                    <!-- Sentinel 4: Shuffle SOAR -->
-                    <div id="gaugeSoar" class="p-2.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300">
-                        <div class="flex justify-between items-center text-xxs">
-                            <span class="text-orange-300 font-bold">⚡ SHUFFLE SOAR</span>
-                            <span id="badgeSoar" class="text-emerald-400 text-[10px]">PLAYBOOK READY</span>
-                        </div>
-                        <div id="statSoar" class="text-xxs text-slate-400 mt-1">Autonomous MTTC: 1.28s</div>
-                    </div>
-
-                </div>
-
-                <!-- Live Security Action Terminal Console -->
-                <div class="flex-1 bg-bou-950 border border-slate-800 rounded-lg p-3 text-xxs font-mono text-slate-300 overflow-y-auto terminal-scroll flex flex-col justify-between">
-                    <div id="sentinelActionLogs" class="space-y-1.5 leading-relaxed">
-                        <div class="text-slate-500">[SYSTEM INIT] Central Bank Virtual Sandbox online. Core settlement ledger connected to out-of-band management VLAN.</div>
-                        <div class="text-slate-500">[SENTINELS ARMED] Coraza WAF (Go), Suricata NIDS (10Gbps), and Wazuh Agent (PID 4128) monitoring active wire transactions.</div>
-                    </div>
-                </div>
-
-                <!-- Containment Badge -->
-                <div class="pt-2.5 border-t border-slate-800 mt-2 flex justify-between items-center font-mono text-xxs">
-                    <span class="text-slate-400">Autonomous Defense Latency:</span>
-                    <span class="text-emerald-400 font-bold">1.28s (Zero Human Delay)</span>
-                </div>
-            </div>
-
-        </div>
-
-    
         <!-- ======================================================== -->
-        <!-- EXECUTIVE MANAGEMENT SOAR COCKPIT & GRAPHICAL DASHBOARD -->
+        <!-- 1. BIG 4 KPI METRIC CARDS (CLOUDFLARE & RAPID7 STYLE)   -->
         <!-- ======================================================== -->
-        <div class="lg:col-span-12 bg-bou-900/90 border-2 border-bou-gold/40 rounded-2xl p-5 shadow-2xl space-y-5 relative overflow-hidden font-mono">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-bou-gold/30 pb-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-bou-gold/20 border border-bou-gold/50 flex items-center justify-center text-xl text-bou-gold">
-                        👔
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
+            
+            <!-- Card 1: Total Payment Requests -->
+            <div class="p-4 rounded-xl bg-cf-card border border-cf-border flex flex-col justify-between shadow-lg">
+                <div class="flex justify-between items-start">
+                    <span class="text-xxs text-slate-400 font-bold uppercase">Total Payment Ingress</span>
+                    <span class="text-xxs px-1.5 py-0.5 rounded bg-blue-900/40 text-blue-300 border border-blue-700/50 font-bold">LIVE STREAM</span>
+                </div>
+                <div class="mt-2">
+                    <div id="kpiTotalRequests" class="text-2xl font-black text-white">184,920</div>
+                    <div class="flex items-center gap-1.5 text-xxs text-emerald-400 mt-1">
+                        <span>↑ 12.4%</span>
+                        <span class="text-slate-400 font-sans">vs previous 24h</span>
                     </div>
+                </div>
+                <div class="mt-3 pt-2 border-t border-slate-800 text-xxs text-slate-400 flex justify-between">
+                    <span>Peak Velocity: <strong class="text-white">1,420 TPS</strong></span>
+                    <span>Clean: <strong class="text-emerald-400">99.2%</strong></span>
+                </div>
+            </div>
+
+            <!-- Card 2: Threats Mitigated at Edge -->
+            <div id="cardThreats" class="p-4 rounded-xl bg-cf-card border border-cf-border flex flex-col justify-between shadow-lg transition-all duration-300">
+                <div class="flex justify-between items-start">
+                    <span class="text-xxs text-slate-400 font-bold uppercase">Threats Mitigated (WAF / EDR)</span>
+                    <span class="text-xxs px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/50 font-bold">100% CONTAINED</span>
+                </div>
+                <div class="mt-2">
+                    <div id="kpiThreatsMitigated" class="text-2xl font-black text-rose-400">1,428</div>
+                    <div class="flex items-center gap-1.5 text-xxs text-emerald-400 mt-1">
+                        <span>✓ 100% Block Rate</span>
+                        <span class="text-slate-400 font-sans">0 bypasses</span>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2 border-t border-slate-800 text-xxs text-slate-400 flex justify-between">
+                    <span>WAF Edge Drops: <strong class="text-white">88.4%</strong></span>
+                    <span>Memory: <strong class="text-white">11.6%</strong></span>
+                </div>
+            </div>
+
+            <!-- Card 3: Mean Time to Contain (MTTC) -->
+            <div class="p-4 rounded-xl bg-cf-card border border-cf-border flex flex-col justify-between shadow-lg">
+                <div class="flex justify-between items-start">
+                    <span class="text-xxs text-slate-400 font-bold uppercase">Mean Time to Contain (MTTC)</span>
+                    <span class="text-xxs px-1.5 py-0.5 rounded bg-cf-orange/20 text-cf-orange border border-cf-orange/40 font-bold">SOAR AUTOMATION</span>
+                </div>
+                <div class="mt-2">
+                    <div class="text-2xl font-black text-emerald-300 flex items-baseline gap-1.5">
+                        <span>1.28s</span>
+                        <span class="text-xxs text-slate-400 font-normal">vs Manual 4.3h</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xxs text-emerald-400 mt-1">
+                        <span>↓ 99.98% Latency</span>
+                        <span class="text-slate-400 font-sans">(Sub-Second Defense)</span>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2 border-t border-slate-800 text-xxs text-slate-400 flex justify-between">
+                    <span>Human Clicks: <strong class="text-white">0 (Autonomous)</strong></span>
+                    <span>Orchestrator: <strong class="text-cyan-400">Shuffle</strong></span>
+                </div>
+            </div>
+
+            <!-- Card 4: Fiduciary Capital Preserved -->
+            <div class="p-4 rounded-xl bg-cf-card border border-cf-border flex flex-col justify-between shadow-lg">
+                <div class="flex justify-between items-start">
+                    <span class="text-xxs text-slate-400 font-bold uppercase">Fiduciary Capital Preserved</span>
+                    <span class="text-xxs px-1.5 py-0.5 rounded bg-bou-gold/20 text-bou-gold border border-bou-gold/40 font-bold">CENTRAL BANK CORE</span>
+                </div>
+                <div class="mt-2">
+                    <div id="kpiCapitalPreserved" class="text-2xl font-black text-bou-goldLight">UGX 14.8B</div>
+                    <div class="flex items-center gap-1.5 text-xxs text-emerald-400 mt-1">
+                        <span>Direct Loss: <strong class="text-white">UGX 0.00</strong></span>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2 border-t border-slate-800 text-xxs text-slate-400 flex justify-between">
+                    <span>Reserve Pool: <strong class="text-white">UGX 4.285T</strong></span>
+                    <span>DPPA Records: <strong class="text-emerald-400">0 Leaked</strong></span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- 2. CLOUDFLARE-STYLE DUAL ANALYTICS GRAPHS               -->
+        <!-- ======================================================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 font-mono">
+            
+            <!-- Cloudflare Real-Time WAF Traffic & Threat Volume Line Graph (8 cols) -->
+            <div class="lg:col-span-8 p-5 rounded-2xl bg-cf-card border border-cf-border shadow-xl flex flex-col justify-between">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cf-border pb-3 mb-3">
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-sm md:text-base font-bold text-white font-heading">
-                                EXECUTIVE MANAGEMENT SOAR COCKPIT (BOARDROOM TELEMETRY)
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">
+                                Real-Time Traffic &amp; Threat Volume (Requests vs. Mitigations)
                             </h3>
-                            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold">
-                                REAL-TIME IMPACT METRICS
+                            <span class="text-[10px] px-2 py-0.2 rounded bg-cf-orange/15 text-cf-orange border border-cf-orange/30 font-bold">
+                                CLOUDFLARE WAF ENGINE
                             </span>
                         </div>
-                        <p class="text-xxs text-slate-400 mt-0.5 font-sans">
-                            High-level executive visualization proving how autonomous orchestration eliminates financial loss and protects fiduciary solvency under the hood.
+                        <p class="text-xxs text-slate-400 font-sans mt-0.5">
+                            Dual-axis volumetric timeline: Clean financial traffic (Blue Area) vs. Intercepted zero-day attacks (Red Spikes).
                         </p>
+                    </div>
+                    <div class="flex items-center gap-3 text-xxs">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                            <span class="text-slate-300">Clean Payments</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                            <span class="text-rose-400 font-bold">Threat Spikes</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 text-xxs font-mono shrink-0">
-                    <div class="px-3 py-1.5 rounded-lg bg-bou-950 border border-emerald-500/40 text-emerald-300 flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span>FIDUCIARY STATUS: <strong class="text-white">100% SOLVENT</strong></span>
+                <!-- Chart Canvas -->
+                <div class="relative h-64 w-full">
+                    <canvas id="cfTrafficChart"></canvas>
+                </div>
+
+                <div class="pt-3 border-t border-cf-border mt-3 flex justify-between items-center text-xxs text-slate-400">
+                    <span>Edge Inspection Engine: <strong class="text-white">Coraza Go-WAF + Suricata 10Gbps</strong></span>
+                    <span>Average Edge Overhead: <strong class="text-emerald-400">&lt; 1.4 milliseconds</strong></span>
+                </div>
+            </div>
+
+            <!-- Rapid7 Threat Vector & Asset Posture Donut (4 cols) -->
+            <div class="lg:col-span-4 p-5 rounded-2xl bg-cf-card border border-cf-border shadow-xl flex flex-col justify-between">
+                <div class="border-b border-cf-border pb-3 mb-2 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">
+                            Threat Distribution
+                        </h3>
+                        <p class="text-xxs text-slate-400 font-sans mt-0.5">Rapid7-style vector breakdown</p>
                     </div>
-                    <div class="px-3 py-1.5 rounded-lg bg-bou-950 border border-bou-gold/40 text-bou-gold">
-                        DIRECT FRAUD LOSS: <strong class="text-white">UGX 0.00</strong>
+                    <span id="threatsTotalPill" class="text-xxs px-2 py-0.5 rounded bg-cf-card border border-cf-border text-bou-gold font-bold">
+                        0 Blocked
+                    </span>
+                </div>
+
+                <div class="relative h-48 flex items-center justify-center my-1">
+                    <canvas id="rapid7DonutChart"></canvas>
+                </div>
+
+                <div class="pt-3 border-t border-cf-border mt-2 space-y-1.5 text-xxs">
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-cyan-400"></span> Core API SQLi &amp; Code:</span>
+                        <span id="r7CountSqli" class="text-white font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Cobalt Strike Memory Hook:</span>
+                        <span id="r7CountHook" class="text-white font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Rogue SWIFT Wire ($2.5M):</span>
+                        <span id="r7CountSwift" class="text-white font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-purple-400"></span> Cross-Border Mobile Float:</span>
+                        <span id="r7CountMomo" class="text-white font-bold">0</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 4 Graphical Metric Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                
-                <!-- Card 1: Response Latency Comparison (Stopwatch Visualizer) -->
-                <div class="p-4 rounded-xl bg-bou-950 border border-slate-800 flex flex-col justify-between">
-                    <div>
-                        <span class="text-xxs text-slate-400 uppercase font-bold">1. Containment Latency Multiplier</span>
-                        <h4 class="text-xs font-bold text-white mt-1">Autonomous Speed vs. Manual SOC</h4>
-                        <div class="mt-3 space-y-2">
-                            <div>
-                                <div class="flex justify-between text-[11px] text-slate-400">
-                                    <span>Manual Human Response:</span>
-                                    <span class="text-rose-400 font-bold">4h 18m (15,480s)</span>
-                                </div>
-                                <div class="w-full h-2 rounded-full bg-slate-800 mt-1 overflow-hidden">
-                                    <div class="h-full bg-rose-500 rounded-full" style="width: 100%;"></div>
-                                </div>
-                                <span class="text-[9px] text-slate-500 mt-0.5 block font-sans">Attacker has time to dump customer databases.</span>
-                            </div>
-                            <div class="pt-1">
-                                <div class="flex justify-between text-[11px] text-slate-400">
-                                    <span class="text-emerald-400 font-bold">Shuffle SOAR Autonomous:</span>
-                                    <span class="text-emerald-300 font-bold text-xs">1.28 Seconds</span>
-                                </div>
-                                <div class="w-full h-2 rounded-full bg-slate-800 mt-1 overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-bou-cyan to-emerald-400 rounded-full animate-pulse" style="width: 8%;"></div>
-                                </div>
-                                <span class="text-[9px] text-emerald-400 mt-0.5 block font-sans">Thread suspended before first packet exfiltration.</span>
-                            </div>
-                        </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- 3. OPERATIONAL WORKBENCH: STREAM + ATTACKS + SENTINELS  -->
+        <!-- ======================================================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 font-mono">
+            
+            <!-- Panel 1: Live Payment Wire Stream (4 cols) -->
+            <div class="lg:col-span-4 p-4 rounded-xl bg-cf-card border border-cf-border flex flex-col h-[520px]">
+                <div class="flex justify-between items-center border-b border-cf-border pb-2.5 mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span class="text-xs font-bold text-white uppercase tracking-wider">Live Payment Rails</span>
                     </div>
-                    <div class="mt-3 pt-2 border-t border-slate-800 text-center">
-                        <span class="text-xxs text-bou-gold font-bold">⚡ 12,093x FASTER INCIDENT RESPONSE</span>
+                    <div class="flex gap-1.5">
+                        <button onclick="toggleStream()" id="btnStreamToggle" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xxs border border-slate-700">
+                            ⏸ Pause
+                        </button>
+                    </div>
+                </div>
+                <div id="paymentStreamFeed" class="flex-1 overflow-y-auto terminal-scroll space-y-2 pr-1 text-xs">
+                    <!-- Stream entries injected dynamically -->
+                </div>
+            </div>
+
+            <!-- Panel 2: Chaos Adversary Pad (4 cols) -->
+            <div id="adversarySection" class="lg:col-span-4 p-4 rounded-xl bg-cf-card border border-rose-900/50 flex flex-col h-[520px] justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b border-cf-border pb-2.5 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">💀</span>
+                            <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Chaos Adversary Pad</span>
+                        </div>
+                        <span class="text-xxs px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-bold border border-rose-800">CLICK TO FIRE</span>
+                    </div>
+
+                    <div class="space-y-2 mb-3">
+                        <button onclick="injectAttack('sqli')" class="w-full text-left p-2.5 rounded-lg bg-[#0e1422] hover:bg-slate-800 border border-cyan-500/40 hover:border-cyan-400 transition">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-bold text-cyan-300">⚡ Attack 1: Core API SQLi</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-rose-950 text-rose-300 font-bold">WAF EXPLOIT</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-sans mt-0.5">Injects SQLi + Base64 malware into RTGS batch remarks.</div>
+                        </button>
+
+                        <button onclick="injectAttack('memory_hook')" class="w-full text-left p-2.5 rounded-lg bg-[#0e1422] hover:bg-slate-800 border border-rose-500/40 hover:border-rose-400 transition">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-bold text-rose-300">🧬 Attack 2: Cobalt Strike Memory Hook</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-rose-950 text-rose-300 font-bold">PAGE_RWX</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-sans mt-0.5">Hooks `bou_rtgs_service.exe` (PID 4128) to bypass dual-sign.</div>
+                        </button>
+
+                        <button onclick="injectAttack('swift_wire')" class="w-full text-left p-2.5 rounded-lg bg-[#0e1422] hover:bg-slate-800 border border-amber-500/40 hover:border-amber-400 transition">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-bold text-amber-300">💰 Attack 3: Rogue SWIFT Wire ($2.5M)</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-rose-950 text-rose-300 font-bold">OFF-HOURS</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-sans mt-0.5">Compromised terminal queues unauthorized MT103 wire.</div>
+                        </button>
+
+                        <button onclick="injectAttack('momo_race')" class="w-full text-left p-2.5 rounded-lg bg-[#0e1422] hover:bg-slate-800 border border-purple-500/40 hover:border-purple-400 transition">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-bold text-purple-300">📱 Attack 4: Mobile Float Arbitrage</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-rose-950 text-rose-300 font-bold">EAPS RACE</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-sans mt-0.5">250 concurrent threads inject synthetic KES liquidity.</div>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Card 2: Threat Vector Distribution (Live Chart.js Donut Chart) -->
-                <div class="p-4 rounded-xl bg-bou-950 border border-slate-800 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-xxs text-slate-400 uppercase font-bold">2. Threat Vector Breakdown</span>
-                            <span id="chartTotalBadge" class="text-[10px] text-bou-gold font-bold">0 Intercepted</span>
+                <!-- Adversary Raw Stream View -->
+                <div class="p-2.5 rounded-lg bg-[#0a0e17] border border-cf-border text-[10px]">
+                    <span class="text-slate-500 uppercase font-bold block mb-1">Active Threat Payload Stream:</span>
+                    <pre id="adversaryPayloadView" class="text-slate-300 max-h-24 overflow-y-auto terminal-scroll leading-relaxed">No threat injected. Clean baseline active.</pre>
+                </div>
+            </div>
+
+            <!-- Panel 3: Open-Source Sentinels Status (4 cols) -->
+            <div id="sentinelsSection" class="lg:col-span-4 p-4 rounded-xl bg-cf-card border border-emerald-900/50 flex flex-col h-[520px] justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b border-cf-border pb-2.5 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">🛡️</span>
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Open-Source Sentinels</span>
                         </div>
-                        <div class="relative h-32 flex items-center justify-center my-1">
-                            <canvas id="mgmtThreatChart"></canvas>
-                        </div>
+                        <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold border border-emerald-800">$0 LICENSE</span>
                     </div>
-                    <div class="mt-1 pt-2 border-t border-slate-800 grid grid-cols-2 gap-1 text-[10px] text-slate-400">
-                        <div><span class="text-cyan-400">●</span> API SQLi: <span id="legSqli" class="text-white font-bold">0</span></div>
-                        <div><span class="text-rose-400">●</span> Memory Hook: <span id="legHook" class="text-white font-bold">0</span></div>
-                        <div><span class="text-amber-400">●</span> SWIFT Wire: <span id="legSwift" class="text-white font-bold">0</span></div>
-                        <div><span class="text-purple-400">●</span> MoMo Float: <span id="legMomo" class="text-white font-bold">0</span></div>
+
+                    <!-- 4 Live Sentinel Gauges -->
+                    <div class="grid grid-cols-2 gap-2 text-xxs mb-3">
+                        <div id="gaugeWaf" class="p-2 rounded-lg bg-[#0e1422] border border-cf-border">
+                            <div class="flex justify-between items-center">
+                                <span class="text-cyan-300 font-bold">⚡ CORAZA WAF</span>
+                                <span id="badgeWaf" class="text-emerald-400 text-[9px]">ACTIVE</span>
+                            </div>
+                            <div id="statWaf" class="text-[10px] text-slate-400 mt-1">OWASP CRS v4.0 active</div>
+                        </div>
+
+                        <div id="gaugeNids" class="p-2 rounded-lg bg-[#0e1422] border border-cf-border">
+                            <div class="flex justify-between items-center">
+                                <span class="text-green-300 font-bold">🐆 SURICATA</span>
+                                <span id="badgeNids" class="text-emerald-400 text-[9px]">SNIFFING</span>
+                            </div>
+                            <div id="statNids" class="text-[10px] text-slate-400 mt-1">10Gbps SPAN port stream</div>
+                        </div>
+
+                        <div id="gaugeWazuh" class="p-2 rounded-lg bg-[#0e1422] border border-cf-border">
+                            <div class="flex justify-between items-center">
+                                <span class="text-blue-300 font-bold">🦉 WAZUH XDR</span>
+                                <span id="badgeWazuh" class="text-emerald-400 text-[9px]">MALFIND</span>
+                            </div>
+                            <div id="statWazuh" class="text-[10px] text-slate-400 mt-1">PID 4128 memory probe</div>
+                        </div>
+
+                        <div id="gaugeSoar" class="p-2 rounded-lg bg-[#0e1422] border border-cf-border">
+                            <div class="flex justify-between items-center">
+                                <span class="text-orange-300 font-bold">⚡ SHUFFLE SOAR</span>
+                                <span id="badgeSoar" class="text-emerald-400 text-[9px]">ARMED</span>
+                            </div>
+                            <div id="statSoar" class="text-[10px] text-slate-400 mt-1">Sub-second active response</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Card 3: Defense-in-Depth Containment Funnel -->
-                <div class="p-4 rounded-xl bg-bou-950 border border-slate-800 flex flex-col justify-between">
-                    <div>
-                        <span class="text-xxs text-slate-400 uppercase font-bold">3. Multi-Layer Filter Funnel</span>
-                        <h4 class="text-xs font-bold text-white mt-1">Where Attacks Are Neutralized</h4>
-                        <div class="mt-3 space-y-2 text-xxs">
-                            <div class="flex items-center justify-between p-1.5 rounded bg-bou-900 border border-slate-800">
-                                <span class="text-slate-300">Edge Ingress (100%):</span>
-                                <span class="text-white font-bold" id="funnelIngress">1,842 Streams</span>
-                            </div>
-                            <div class="flex items-center justify-between p-1.5 rounded bg-cyan-950/60 border border-cyan-800/60 text-cyan-300">
-                                <span>Coraza WAF Drop:</span>
-                                <span class="font-bold" id="funnelWaf">88.2% Intercepted</span>
-                            </div>
-                            <div class="flex items-center justify-between p-1.5 rounded bg-blue-950/60 border border-blue-800/60 text-blue-300">
-                                <span>Wazuh Memory Quarantine:</span>
-                                <span class="font-bold" id="funnelWazuh">11.8% Intercepted</span>
-                            </div>
-                            <div class="flex items-center justify-between p-1.5 rounded bg-emerald-950/80 border border-emerald-500/60 text-emerald-300">
-                                <span>Core Ledger Breach:</span>
-                                <span class="font-bold text-white">0.0% (ZERO)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-2 pt-2 border-t border-slate-800 text-center">
-                        <span class="text-xxs text-emerald-400 font-bold">🛡️ 100% CONTAINMENT AT THE PERIMETER</span>
+                <!-- Live Sentinel Logs -->
+                <div class="flex-1 bg-[#0a0e17] border border-cf-border rounded-lg p-2.5 text-[11px] overflow-y-auto terminal-scroll space-y-1 mb-2">
+                    <div id="sentinelActionLogs" class="space-y-1 text-slate-300">
+                        <div class="text-slate-500">[SYSTEM] Sentinels online. Ingress stream protected by Coraza &amp; Wazuh.</div>
                     </div>
                 </div>
 
-                <!-- Card 4: Fiduciary Capital Preservation Meter -->
-                <div class="p-4 rounded-xl bg-bou-950 border border-slate-800 flex flex-col justify-between">
-                    <div>
-                        <span class="text-xxs text-slate-400 uppercase font-bold">4. Fiduciary Capital Shield</span>
-                        <h4 class="text-xs font-bold text-white mt-1">Board Fiduciary Risk Assessment</h4>
-                        <div class="mt-2.5 p-3 rounded-lg bg-bou-900/80 border border-bou-gold/30 space-y-1.5 text-xxs">
-                            <div class="flex justify-between text-slate-400">
-                                <span>Simulated Fraud Prevented:</span>
-                                <span id="fraudPreventedVal" class="text-bou-gold font-bold">UGX 14,800,000,000</span>
-                            </div>
-                            <div class="flex justify-between text-slate-400">
-                                <span>Direct Capital Loss:</span>
-                                <span class="text-emerald-400 font-bold">UGX 0.00</span>
-                            </div>
-                            <div class="flex justify-between text-slate-400">
-                                <span>Statutory DPPA Breach:</span>
-                                <span class="text-emerald-400 font-bold">0 Records Exposed</span>
-                            </div>
-                            <div class="flex justify-between text-slate-400">
-                                <span>Regulatory Fines Incurred:</span>
-                                <span class="text-emerald-400 font-bold">$0.00 (Zero Penalty)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-2 pt-2 border-t border-slate-800 text-center">
-                        <span class="text-xxs text-bou-gold font-bold">🏛️ AAA CENTRAL BANK SECURITY RATING</span>
-                    </div>
+                <div class="pt-2 border-t border-cf-border flex justify-between items-center text-xxs text-slate-400">
+                    <span>Autonomous SLA: <strong class="text-emerald-400">1.28s MTTC</strong></span>
+                    <span>Court Hash: <strong class="text-bou-gold">SHA-256 Verified</strong></span>
                 </div>
+            </div>
 
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- 4. CLOUDFLARE WAF / CISCO ESA LIVE SECURITY EVENTS TABLE -->
+        <!-- ======================================================== -->
+        <div id="eventsSection" class="p-5 rounded-2xl bg-cf-card border border-cf-border shadow-xl font-mono space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cf-border pb-3">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">
+                            Security Events Log (WAF &amp; Autonomous Policy Mitigations)
+                        </h3>
+                        <span class="text-[10px] px-2 py-0.2 rounded bg-cf-border text-slate-300 border border-slate-700">
+                            Cisco ESA &bull; Cloudflare Format
+                        </span>
+                    </div>
+                    <p class="text-xxs text-slate-400 font-sans mt-0.5">
+                        Real-time audit log of dropped connections, quarantined accounts, and mitigated payment attacks with forensic detail.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 text-xxs">
+                    <span class="text-slate-400">Total Filtered:</span>
+                    <span id="eventsRowCount" class="text-cf-orange font-bold">14 Events</span>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="overflow-x-auto terminal-scroll">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-cf-border text-slate-400 text-xxs uppercase">
+                            <th class="py-2.5 px-3">Timestamp (EAT)</th>
+                            <th class="py-2.5 px-3">Mitigation Action</th>
+                            <th class="py-2.5 px-3">Service / Target Asset</th>
+                            <th class="py-2.5 px-3">Client IP &amp; Origin</th>
+                            <th class="py-2.5 px-3">Triggered Rule &amp; Signature</th>
+                            <th class="py-2.5 px-3">Latency</th>
+                            <th class="py-2.5 px-3 text-right">Forensics</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventsTableBody" class="divide-y divide-cf-border text-slate-300 text-xxs">
+                        <!-- Seeded baseline rows -->
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="py-2 px-3 text-slate-400">09:14:02</td>
+                            <td class="py-2 px-3"><span class="px-2 py-0.5 rounded bg-red-950 text-rose-300 border border-red-800 font-bold">BLOCK</span></td>
+                            <td class="py-2 px-3 text-white font-bold">BOU-RTGS-GATEWAY-02</td>
+                            <td class="py-2 px-3">194.26.29.11 <span class="text-slate-500">(TOR / RU)</span></td>
+                            <td class="py-2 px-3 text-cyan-300">Coraza WAF: 942100 (SQLi Pattern)</td>
+                            <td class="py-2 px-3 text-emerald-400">1.4ms</td>
+                            <td class="py-2 px-3 text-right"><button onclick="viewEventDetails('09:14:02', '194.26.29.11', 'Coraza WAF Rule 942100', 'SQLi Injection on payment payload')" class="text-cf-orange hover:underline font-bold">Inspect ➔</button></td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="py-2 px-3 text-slate-400">09:11:44</td>
+                            <td class="py-2 px-3"><span class="px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800 font-bold">QUARANTINE</span></td>
+                            <td class="py-2 px-3 text-white font-bold">bou_rtgs_service.exe (PID 4128)</td>
+                            <td class="py-2 px-3">45.142.166.19 <span class="text-slate-500">(C2 VPS)</span></td>
+                            <td class="py-2 px-3 text-rose-300">Wazuh: PAGE_EXECUTE_READWRITE Hook</td>
+                            <td class="py-2 px-3 text-emerald-400">1.22s</td>
+                            <td class="py-2 px-3 text-right"><button onclick="viewEventDetails('09:11:44', '45.142.166.19', 'Wazuh Malfind Probe', 'In-memory dual sign hook suspended')" class="text-cf-orange hover:underline font-bold">Inspect ➔</button></td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="py-2 px-3 text-slate-400">09:08:19</td>
+                            <td class="py-2 px-3"><span class="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 font-bold">ESCROW_HOLD</span></td>
+                            <td class="py-2 px-3 text-white font-bold">SWIFT ALLIANCE GATEWAY</td>
+                            <td class="py-2 px-3">10.0.45.210 <span class="text-slate-500">(Jinja Branch)</span></td>
+                            <td class="py-2 px-3 text-amber-300">AI Fraud Engine: Off-Hours Wire Anomaly</td>
+                            <td class="py-2 px-3 text-emerald-400">1.10s</td>
+                            <td class="py-2 px-3 text-right"><button onclick="viewEventDetails('09:08:19', '10.0.45.210', 'SWIFT Gatekeeper Protocol', 'Unauthorized MT103 wire transfer held')" class="text-cf-orange hover:underline font-bold">Inspect ➔</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
     </main>
 
+    <!-- Cloudflare-style Event Inspector Modal -->
+    <div id="eventModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-end">
+        <div class="bg-cf-card border-l border-cf-border w-full max-w-xl h-full p-6 flex flex-col justify-between overflow-y-auto terminal-scroll font-mono text-xs">
+            <div>
+                <div class="flex justify-between items-center border-b border-cf-border pb-3 mb-4">
+                    <div>
+                        <span class="text-[10px] px-2 py-0.5 rounded bg-cf-orange/20 text-cf-orange font-bold uppercase">SECURITY EVENT FORENSICS</span>
+                        <h3 id="modalEventTitle" class="text-base font-bold text-white mt-1">Incident Event Header</h3>
+                    </div>
+                    <button onclick="closeEventModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2">×</button>
+                </div>
+
+                <div id="modalEventBody" class="space-y-4 text-slate-300 text-xxs">
+                    <!-- Dynamic details injected by JS -->
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-cf-border mt-6 flex justify-between items-center">
+                <span class="text-[10px] text-slate-500">Bank of Uganda Statutory Audit Log &bull; DPPA 2019</span>
+                <button onclick="closeEventModal()" class="px-4 py-2 rounded-lg bg-cf-orange hover:bg-cf-orangeDark text-black font-bold text-xs">Close Inspector</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
-    <footer class="bg-bou-950 border-t border-bou-gold/20 py-2.5 px-6 text-center text-xs text-slate-500 font-mono">
-        Bank of Uganda Cyber Forensics Masterclass • Synthetic Central Bank Sandbox • Modeled after National Payment Systems (NPS) Act
+    <footer class="bg-[#0e1422] border-t border-cf-border py-3 px-6 text-center text-xs text-slate-500 font-mono">
+        Bank of Uganda Sovereign Payment Security Operations Center &bull; Modeled after Cloudflare WAF, Cisco ESA &amp; Rapid7 InsightIDR
     </footer>
 
-    <!-- Interactive Simulation Engine -->
+    <!-- Interactive Dashboard Script -->
     <script>
         let isStreaming = true;
         let streamInterval = null;
-        let txCounter = 1842;
-        let volumeTotal = 184.2;
-        let attacksBlocked = 0;
-        let reserveBalance = 4285190000000;
+        let trafficChart = null;
+        let donutChart = null;
+
+        let totalRequests = 184920;
+        let threatsCount = 1428;
+        let capitalPreservedBillion = 14.8;
+        let threatBreakdown = { sqli: 842, hook: 312, swift: 145, momo: 129 };
 
         const banks = [
             "Stanbic Bank Uganda", "Centenary Bank", "Absa Bank Uganda", 
@@ -526,7 +591,133 @@ Payment stream is operating in organic baseline mode.</pre>
             return "UGX " + val.toLocaleString();
         }
 
+        // =========================================================
+        // 1. INITIALIZE CLOUDFLARE & RAPID7 CHARTS
+        // =========================================================
+        function initCharts() {
+            // Chart 1: Cloudflare Traffic & Threats Area Chart
+            const ctxTraffic = document.getElementById('cfTrafficChart');
+            if (ctxTraffic) {
+                const labels = [];
+                const cleanData = [];
+                const threatData = [];
+                for (let i = 15; i >= 0; i--) {
+                    labels.push(`-${i * 2}m`);
+                    cleanData.push(Math.floor(Math.random() * 400) + 1200);
+                    threatData.push(Math.random() > 0.8 ? Math.floor(Math.random() * 40) + 10 : 0);
+                }
+
+                trafficChart = new Chart(ctxTraffic, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Threat Spikes (Blocked)',
+                                data: threatData,
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.25)',
+                                fill: true,
+                                tension: 0.35,
+                                borderWidth: 2,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#ef4444',
+                                yAxisID: 'y1'
+                            },
+                            {
+                                label: 'Clean Payment Volume (Wires/sec)',
+                                data: cleanData,
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                                fill: true,
+                                tension: 0.35,
+                                borderWidth: 2,
+                                pointRadius: 0,
+                                yAxisID: 'y'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        scales: {
+                            x: {
+                                grid: { color: '#1f293d' },
+                                ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } }
+                            },
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                grid: { color: '#1f293d' },
+                                ticks: { color: '#3b82f6', font: { family: 'JetBrains Mono', size: 10 } }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                grid: { drawOnChartArea: false },
+                                ticks: { color: '#ef4444', font: { family: 'JetBrains Mono', size: 10 } }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Rapid7 Threat Vector Donut
+            const ctxDonut = document.getElementById('rapid7DonutChart');
+            if (ctxDonut) {
+                donutChart = new Chart(ctxDonut, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['API SQLi', 'Memory Hook', 'SWIFT Wire', 'MoMo Float'],
+                        datasets: [{
+                            data: [threatBreakdown.sqli, threatBreakdown.hook, threatBreakdown.swift, threatBreakdown.momo],
+                            backgroundColor: [
+                                '#00d2d3',
+                                '#ef4444',
+                                '#f59e0b',
+                                '#a855f7'
+                            ],
+                            borderColor: '#111827',
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '72%',
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            updateDonutLegend();
+        }
+
+        function updateDonutLegend() {
+            document.getElementById('r7CountSqli').textContent = threatBreakdown.sqli.toLocaleString();
+            document.getElementById('r7CountHook').textContent = threatBreakdown.hook.toLocaleString();
+            document.getElementById('r7CountSwift').textContent = threatBreakdown.swift.toLocaleString();
+            document.getElementById('r7CountMomo').textContent = threatBreakdown.momo.toLocaleString();
+
+            const sum = threatBreakdown.sqli + threatBreakdown.hook + threatBreakdown.swift + threatBreakdown.momo;
+            document.getElementById('threatsTotalPill').textContent = `${sum.toLocaleString()} Blocked`;
+        }
+
+        // =========================================================
+        // 2. LIVE WIRE STREAM TICKER
+        // =========================================================
         function generateNormalTransaction() {
+            totalRequests++;
+            document.getElementById('kpiTotalRequests').textContent = totalRequests.toLocaleString();
+
             const bSrc = banks[Math.floor(Math.random() * banks.length)];
             let bDest = banks[Math.floor(Math.random() * banks.length)];
             while (bDest === bSrc) bDest = banks[Math.floor(Math.random() * banks.length)];
@@ -535,39 +726,39 @@ Payment stream is operating in organic baseline mode.</pre>
             const amountMillion = Math.floor(Math.random() * (rail.max - rail.min)) + rail.min;
             const amountUgx = amountMillion * 1000000;
 
-            txCounter++;
-            volumeTotal += (amountMillion / 1000);
-            reserveBalance += (amountUgx * 0.0001); // mini liquidity float change
-
-            // Update DOM counters
-            document.getElementById('txClearedCount').textContent = `${txCounter.toLocaleString()} Wires`;
-            document.getElementById('txVolumeCleared').textContent = `UGX ${volumeTotal.toFixed(1)}B`;
-            document.getElementById('reserveLiquidityTicker').textContent = formatUgx(Math.floor(reserveBalance));
-
             const time = new Date().toISOString().substring(11, 19);
             const container = document.getElementById('paymentStreamFeed');
 
             const item = document.createElement('div');
-            item.className = 'stream-entry p-2.5 rounded bg-bou-950 border border-slate-800/80 hover:border-slate-700 transition flex justify-between items-center text-xxs';
+            item.className = 'p-2 rounded bg-[#0a0e17] border border-cf-border hover:border-slate-700 transition flex justify-between items-center text-xxs';
             item.innerHTML = `
                 <div>
                     <div class="flex items-center gap-1.5">
-                        <span class="text-slate-500">[${time} EAT]</span>
-                        <span class="px-1.5 py-0.2 rounded border text-[10px] font-bold ${rail.badge}">${rail.type}</span>
+                        <span class="text-slate-500">[${time}]</span>
+                        <span class="px-1.5 py-0.2 rounded border text-[9px] font-bold ${rail.badge}">${rail.type}</span>
                     </div>
-                    <div class="text-slate-300 mt-1">
-                        <strong>${bSrc}</strong> ➔ <strong>${bDest}</strong>
+                    <div class="text-slate-300 mt-0.5">
+                        ${bSrc} ➔ ${bDest}
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="font-bold text-bou-gold">${formatUgx(amountUgx)}</div>
-                    <span class="text-[10px] text-emerald-400 font-bold">CLEARED ✓</span>
+                    <div class="font-bold text-white">${formatUgx(amountUgx)}</div>
+                    <span class="text-[9px] text-emerald-400 font-bold">CLEARED ✓</span>
                 </div>
             `;
 
             container.insertBefore(item, container.firstChild);
-            if (container.children.length > 25) {
+            if (container.children.length > 20) {
                 container.removeChild(container.lastChild);
+            }
+
+            // Stream smooth update on traffic chart
+            if (trafficChart && Math.random() > 0.6) {
+                trafficChart.data.datasets[1].data.shift();
+                trafficChart.data.datasets[1].data.push(Math.floor(Math.random() * 400) + 1200);
+                trafficChart.data.datasets[0].data.shift();
+                trafficChart.data.datasets[0].data.push(0);
+                trafficChart.update('none');
             }
         }
 
@@ -577,272 +768,202 @@ Payment stream is operating in organic baseline mode.</pre>
                 clearInterval(streamInterval);
                 isStreaming = false;
                 btn.textContent = "▶ Resume";
-                btn.className = "px-2 py-1 rounded bg-emerald-900 text-emerald-300 font-mono text-xxs border border-emerald-700";
+                btn.className = "px-2 py-0.5 rounded bg-emerald-900 text-emerald-300 text-xxs border border-emerald-700";
             } else {
-                streamInterval = setInterval(generateNormalTransaction, 1600);
+                streamInterval = setInterval(generateNormalTransaction, 1500);
                 isStreaming = true;
                 btn.textContent = "⏸ Pause";
-                btn.className = "px-2 py-1 rounded bg-bou-850 hover:bg-bou-800 text-slate-300 font-mono text-xxs border border-slate-700";
+                btn.className = "px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xxs border border-slate-700";
             }
         }
 
-        function clearStream() {
-            document.getElementById('paymentStreamFeed').innerHTML = '';
-        }
-
         // =========================================================
-        // ATTACK INJECTION & AUTONOMOUS DEFENSE SIMULATION ENGINE
+        // 3. CHAOS ATTACK INJECTION & CLOUDFLARE WAF MITIGATION
         // =========================================================
         const attackScenarios = {
             sqli: {
-                name: "Zero-Day SQLi & Code Injection (Core API)",
+                name: "Zero-Day SQLi & Code Injection",
                 srcIp: "194.26.29.11",
-                rail: "RTGS-REST-GATEWAY-02",
+                origin: "TOR Exit (St. Petersburg)",
+                rail: "BOU-RTGS-GATEWAY-02",
+                rule: "Coraza WAF Rule 942100 (OWASP SQLi)",
+                latency: "1.4ms",
+                action: "BLOCK",
+                actionBadge: "bg-red-950 text-rose-300 border-red-800",
                 payload: `POST /api/v2/nps/transfer HTTP/1.1
 Host: rtgs.bou.go.ug
 Payload: { "batch_id": "BATCH_9912' OR 1=1; DROP TABLE AUDIT;--",
            "code_blob": "TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAA..." }`,
-                wafAction: "CORAZA WAF: Blocked Rule 942100 (SQLi Pattern Match) in 1.4ms! Returned HTTP 403 Forbidden.",
-                nidsAction: "SURICATA NIDS: Detected anomalous URI encoding and Base64 entropy score 7.41 in packet header.",
-                wazuhAction: "WAZUH XDR: Auditd flagged unauthorized database schema execution attempt. Target unbreached.",
-                soarAction: "SHUFFLE SOAR: BGP route withdrawal sent to edge routers; IP 194.26.29.11 globally blacklisted in 18ms."
+                wafAction: "CORAZA WAF: Matched SQL Injection pattern in HTTP POST payload. Returned HTTP 403 Forbidden.",
+                soarAction: "SHUFFLE SOAR: BGP boundary route withdrawal; IP 194.26.29.11 dropped globally in 18ms."
             },
             memory_hook: {
-                name: "Cobalt Strike In-Memory Hook on PID 4128",
+                name: "Cobalt Strike In-Memory Hook (PID 4128)",
                 srcIp: "45.142.166.19",
-                rail: "bou_rtgs_service.exe (PID 4128)",
+                origin: "Bulletproof VPS (Frankfurt)",
+                rail: "bou_rtgs_service.exe",
+                rule: "Wazuh EDR: PAGE_EXECUTE_READWRITE Probe",
+                latency: "1.22s",
+                action: "QUARANTINE",
+                actionBadge: "bg-purple-950 text-purple-300 border-purple-800",
                 payload: `MEMORY_ALLOCATION: VirtualAllocEx(PID 4128, 0x7ff72a140000, 4096, PAGE_EXECUTE_READWRITE)
 Hook Assembly: 48 85 c0 74 12 b8 01 00 00 00 48 83 c4 28 c3 (FORCE TRUE DUAL-SIGN)`,
-                wafAction: "CORAZA WAF: Perimeter bypassed via legitimate encrypted vendor VPN maintenance tunnel.",
-                nidsAction: "SURICATA NIDS: Alerted on low-jitter C2 beaconing (Jitter=0.08) to bulletproof VPS 45.142.166.19.",
-                wazuhAction: "WAZUH XDR: Malfind detected unbacked PAGE_EXECUTE_READWRITE memory page at 0x7ff72a140010! Thread suspended.",
-                soarAction: "SHUFFLE SOAR: Terminated PID 4128 hook; triggered LiME full volatile memory snapshot (SHA-256 seal) in 1.22s."
+                wafAction: "CORAZA WAF: TLS tunnel valid; inspected deep host memory via Wazuh agent.",
+                soarAction: "SHUFFLE SOAR: Suspended PID 4128 thread; dumped LiME volatile memory with SHA-256 integrity seal."
             },
             swift_wire: {
-                name: "Rogue Off-Hours SWIFT Wire Fraud ($2.5M)",
-                srcIp: "10.0.45.210 (Jinja Branch Terminal)",
+                name: "Rogue Off-Hours SWIFT Wire ($2.5M)",
+                srcIp: "10.0.45.210",
+                origin: "Internal Terminal (Jinja Branch)",
                 rail: "SWIFT ALLIANCE GATEWAY",
+                rule: "AI Anomaly: Off-Hours High-Value Transfer",
+                latency: "1.10s",
+                action: "ESCROW_HOLD",
+                actionBadge: "bg-amber-950 text-amber-300 border-amber-800",
                 payload: `SWIFT FIN MT103: {1:F01BOUAUGKAAXXX}{2:I103BANKUS33XXXXN}{4:
 :20:BOU-WIRE-FRAUD-09
 :32A:261021UGX9200000000,
-:50K:/9912048124 (Name: DR. KATO MUGISHA)
+:50K:/9912048124 (DR. KATO MUGISHA)
 :59:/OFFSHORE-ESCROW-8841}`,
-                wafAction: "CORAZA WAF: Transaction flagged by AI Heuristics: Off-hours submission (02:44 AM EAT).",
-                nidsAction: "SURICATA NIDS: Anomaly: High-value MT103 wire initiated without concurrent dual-operator mTLS session.",
-                wazuhAction: "WAZUH XDR: User account 'operator_jinja02' revoked; FIDO2 MFA challenge failed.",
-                soarAction: "SHUFFLE SOAR: Wire held in automated escrow quarantine; CyberForensic Chef masked citizen NIN under DPPA 2019."
+                wafAction: "CORAZA WAF: Flagged impossible transaction window at 02:44 AM EAT.",
+                soarAction: "SHUFFLE SOAR: Held transfer in escrow; revoked Active Directory session token."
             },
             momo_race: {
-                name: "Cross-Border Mobile Float Desync / Race Condition",
-                srcIp: "185.220.101.5 (TOR Proxy)",
+                name: "Mobile Float Arbitrage / Race Condition",
+                srcIp: "185.220.101.5",
+                origin: "Commercial Proxy Pool (Kyiv)",
                 rail: "EAPS KAMPALA ↔ NAIROBI BRIDGE",
+                rule: "Rate Limiter: Burst Threshold Exceeded (250 req/8ms)",
+                latency: "0.85s",
+                action: "RATE_DROP",
+                actionBadge: "bg-purple-950 text-purple-300 border-purple-800",
                 payload: `POST /api/eaps/v1/float_sync HTTP/1.1
 Concurrent Threads: 250 threads within 8 milliseconds.
-Objective: Credit KES 250,000,000 without corresponding UGX settlement debit.`,
-                wafAction: "CORAZA WAF: Rate-limiting burst threshold exceeded (250 req/8ms). HTTP 429 Too Many Requests enforced.",
-                nidsAction: "SURICATA NIDS: Detected TCP SYN flood signature coupled with duplicate transaction nonces.",
-                wazuhAction: "WAZUH XDR: NPS Integrator microservice enforced transactional ACID locking; zero balance drift occurred.",
-                soarAction: "SHUFFLE SOAR: Dispatched bilateral emergency alert to Central Bank of Kenya (CBK) CSIRT via MISP feed."
+Objective: Credit KES 250,000,000 without corresponding UGX debit.`,
+                wafAction: "CORAZA WAF: Enforced HTTP 429 Too Many Requests rate-limiting.",
+                soarAction: "SHUFFLE SOAR: Enforced ACID transactional lock; alerted Kenya CBK CSIRT via MISP."
             }
         };
-
-        
-        // Executive Management Chart.js Instance
-        let threatChart = null;
-        let threatCounts = { sqli: 0, memory_hook: 0, swift_wire: 0, momo_race: 0 };
-        let fraudPreventedTotal = 14800000000;
-
-        function initManagementChart() {
-            const ctx = document.getElementById('mgmtThreatChart');
-            if (!ctx) return;
-            
-            threatChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['API SQLi', 'Memory Hook', 'SWIFT Wire', 'MoMo Float'],
-                    datasets: [{
-                        data: [1, 1, 1, 1], // initial baseline placeholder
-                        backgroundColor: [
-                            'rgba(6, 182, 212, 0.85)',
-                            'rgba(225, 29, 72, 0.85)',
-                            'rgba(245, 158, 11, 0.85)',
-                            'rgba(168, 85, 247, 0.85)'
-                        ],
-                        borderColor: '#020612',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    cutout: '70%'
-                }
-            });
-        }
-
-        function updateManagementDashboard(attackKey) {
-            if (threatCounts[attackKey] !== undefined) {
-                threatCounts[attackKey]++;
-            }
-
-            // Update Legend Counters
-            document.getElementById('legSqli').textContent = threatCounts.sqli;
-            document.getElementById('legHook').textContent = threatCounts.memory_hook;
-            document.getElementById('legSwift').textContent = threatCounts.swift_wire;
-            document.getElementById('legMomo').textContent = threatCounts.momo_race;
-
-            const total = threatCounts.sqli + threatCounts.memory_hook + threatCounts.swift_wire + threatCounts.momo_race;
-            document.getElementById('chartTotalBadge').textContent = `${total} Intercepted`;
-
-            // Update Chart.js data
-            if (threatChart) {
-                threatChart.data.datasets[0].data = [
-                    threatCounts.sqli || 0.1,
-                    threatCounts.memory_hook || 0.1,
-                    threatCounts.swift_wire || 0.1,
-                    threatCounts.momo_race || 0.1
-                ];
-                threatChart.update();
-            }
-
-            // Update Fraud Prevented counter
-            if (attackKey === 'swift_wire') fraudPreventedTotal += 9200000000;
-            if (attackKey === 'memory_hook') fraudPreventedTotal += 4800000000;
-            if (attackKey === 'momo_race') fraudPreventedTotal += 6500000000;
-            if (attackKey === 'sqli') fraudPreventedTotal += 2400000000;
-            document.getElementById('fraudPreventedVal').textContent = 'UGX ' + fraudPreventedTotal.toLocaleString();
-        }
 
         function injectAttack(key) {
             const data = attackScenarios[key];
             if (!data) return;
 
-            attacksBlocked++;
-            updateManagementDashboard(key);
-            document.getElementById('txAttacksBlocked').textContent = `${attacksBlocked} Blocked`;
+            threatsCount++;
+            document.getElementById('kpiThreatsMitigated').textContent = threatsCount.toLocaleString();
 
-            // Visual Defcon Red Flash
-            const defcon = document.getElementById('defconBadge');
-            const defconText = document.getElementById('defconText');
-            defcon.className = "flex items-center gap-2 px-3 py-1 rounded bg-rose-950 border border-rose-500 text-rose-300 font-bold alert-flash";
-            defconText.textContent = `DEFCON 1: ATTACK BLOCKED (${data.name.substring(0, 24)}...)`;
+            // Flash Threat Card
+            const threatCard = document.getElementById('cardThreats');
+            threatCard.classList.add('alert-card-glow');
+            setTimeout(() => threatCard.classList.remove('alert-card-glow'), 2500);
+
+            // Update Breakdown counts
+            if (key === 'sqli') threatBreakdown.sqli++;
+            if (key === 'memory_hook') threatBreakdown.hook++;
+            if (key === 'swift_wire') threatBreakdown.swift++;
+            if (key === 'momo_race') threatBreakdown.momo++;
+            updateDonutLegend();
+
+            // Animate Donut Chart
+            if (donutChart) {
+                donutChart.data.datasets[0].data = [
+                    threatBreakdown.sqli,
+                    threatBreakdown.hook,
+                    threatBreakdown.swift,
+                    threatBreakdown.momo
+                ];
+                donutChart.update();
+            }
+
+            // Spike on Traffic Chart
+            if (trafficChart) {
+                const len = trafficChart.data.datasets[0].data.length;
+                trafficChart.data.datasets[0].data[len - 1] = Math.floor(Math.random() * 60) + 120;
+                trafficChart.update();
+            }
 
             // Update Adversary Payload View
             document.getElementById('adversaryPayloadView').textContent = `[ATTACK INJECTED]: ${data.name}
+SOURCE: ${data.srcIp} (${data.origin})
 TARGET: ${data.rail}
-SOURCE: ${data.srcIp}
 
 ${data.payload}`;
-            document.getElementById('adversaryStatus').textContent = "ATTACK INTERCEPTED BY SENTINELS (100% CONTAINED)";
-            document.getElementById('adversaryStatus').className = "text-rose-400 font-bold";
 
-            // Inject Red Attack Card into Payment Stream
-            const streamContainer = document.getElementById('paymentStreamFeed');
+            // Add Event Row to Cisco ESA / Cloudflare Table
             const time = new Date().toISOString().substring(11, 19);
-            const attackItem = document.createElement('div');
-            attackItem.className = 'stream-entry p-2.5 rounded bg-rose-950/80 border-2 border-rose-500 text-xxs font-mono text-white alert-flash';
-            attackItem.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <span class="text-rose-300 font-bold">[${time} EAT] ⚠️ ATTACK INTERCEPTED</span>
-                    <span class="px-1.5 py-0.2 rounded bg-rose-900 text-white font-bold text-[10px]">THREAT BLOCKED</span>
-                </div>
-                <div class="mt-1 text-slate-200">
-                    <strong>${data.name}</strong> ➔ Target: <code>${data.rail}</code>
-                </div>
-                <div class="mt-1 pt-1 border-t border-rose-800/80 flex justify-between text-[10px] text-rose-300">
-                    <span>Source: ${data.srcIp}</span>
-                    <span class="font-bold text-white">Loss: UGX 0.00</span>
-                </div>
+            const tbody = document.getElementById('eventsTableBody');
+            const tr = document.createElement('tr');
+            tr.className = 'bg-rose-950/20 hover:bg-slate-800/60 transition';
+            tr.innerHTML = `
+                <td class="py-2 px-3 text-rose-400 font-bold">${time}</td>
+                <td class="py-2 px-3"><span class="px-2 py-0.5 rounded ${data.actionBadge} font-bold">${data.action}</span></td>
+                <td class="py-2 px-3 text-white font-bold">${data.rail}</td>
+                <td class="py-2 px-3">${data.srcIp} <span class="text-slate-500">(${data.origin})</span></td>
+                <td class="py-2 px-3 text-cyan-300">${data.rule}</td>
+                <td class="py-2 px-3 text-emerald-400 font-bold">${data.latency}</td>
+                <td class="py-2 px-3 text-right">
+                    <button onclick="viewEventDetails('${time}', '${data.srcIp}', '${data.rule}', '${data.name}')" class="text-cf-orange hover:underline font-bold">Inspect ➔</button>
+                </td>
             `;
-            streamContainer.insertBefore(attackItem, streamContainer.firstChild);
+            tbody.insertBefore(tr, tbody.firstChild);
 
-            // Animate Sentinel Gauges & Log Actions
-            animateSentinelGauges(data);
+            // Update table count badge
+            const rowCount = tbody.children.length;
+            document.getElementById('eventsRowCount').textContent = `${rowCount} Events`;
 
-            // Revert Defcon after 6 seconds
-            setTimeout(() => {
-                defcon.className = "flex items-center gap-2 px-3 py-1 rounded bg-bou-950 border border-emerald-500/40 text-emerald-300 font-bold";
-                defconText.textContent = "DEFCON 4: SECURE (NORMAL)";
-                document.getElementById('adversaryStatus').textContent = "STANDBY (CLICK ATTACK TO FIRE)";
-                document.getElementById('adversaryStatus').className = "text-emerald-400 font-bold";
-            }, 6000);
-        }
-
-        function animateSentinelGauges(data) {
-            const time = new Date().toISOString().substring(11, 19);
+            // Sentinel Action Logs
             const logBox = document.getElementById('sentinelActionLogs');
-
-            // Coraza WAF
-            document.getElementById('gaugeWaf').className = "p-2.5 rounded-lg bg-cyan-950/80 border-2 border-cyan-400";
-            document.getElementById('badgeWaf').textContent = "INTERCEPTED!";
-            document.getElementById('badgeWaf').className = "text-cyan-300 font-bold text-[10px]";
-            document.getElementById('statWaf').textContent = data.wafAction.substring(0, 40) + "...";
-
-            // Suricata
-            document.getElementById('gaugeNids').className = "p-2.5 rounded-lg bg-green-950/80 border-2 border-green-400";
-            document.getElementById('badgeNids').textContent = "FLAGGED!";
-            document.getElementById('badgeNids').className = "text-green-300 font-bold text-[10px]";
-            document.getElementById('statNids').textContent = data.nidsAction.substring(0, 40) + "...";
-
-            // Wazuh
-            document.getElementById('gaugeWazuh').className = "p-2.5 rounded-lg bg-blue-950/80 border-2 border-blue-400";
-            document.getElementById('badgeWazuh').textContent = "DETECTED!";
-            document.getElementById('badgeWazuh').className = "text-blue-300 font-bold text-[10px]";
-            document.getElementById('statWazuh').textContent = data.wazuhAction.substring(0, 40) + "...";
-
-            // Shuffle SOAR
-            document.getElementById('gaugeSoar').className = "p-2.5 rounded-lg bg-orange-950/80 border-2 border-orange-400 alert-flash";
-            document.getElementById('badgeSoar').textContent = "ACTIVE RESPONSE!";
-            document.getElementById('badgeSoar').className = "text-orange-300 font-bold text-[10px]";
-            document.getElementById('statSoar').textContent = "Contained in 1.28s";
-
-            // Append live terminal logs
-            const logGroup = document.createElement('div');
-            logGroup.className = 'p-2 rounded bg-bou-900 border border-slate-800 space-y-1 text-[11px]';
-            logGroup.innerHTML = `
-                <div class="text-rose-400 font-bold flex items-center gap-1.5">
-                    <span>⚡ [${time} EAT] INCIDENT CONTAINMENT: ${data.name}</span>
-                </div>
+            const logItem = document.createElement('div');
+            logItem.className = 'p-1.5 rounded bg-bou-900 border border-cf-border text-[10px] space-y-0.5';
+            logItem.innerHTML = `
+                <div class="text-rose-400 font-bold">⚡ [${time}] MITIGATED: ${data.name}</div>
                 <div class="text-cyan-300">• ${data.wafAction}</div>
-                <div class="text-green-300">• ${data.nidsAction}</div>
-                <div class="text-blue-300">• ${data.wazuhAction}</div>
                 <div class="text-amber-300 font-bold">• ${data.soarAction}</div>
-                <div class="text-emerald-400 font-bold text-[10px] pt-1 border-t border-slate-800">✓ RESULT: 100% Contained. Zero citizen records leaked. Zero UGX lost.</div>
             `;
-            logBox.insertBefore(logGroup, logBox.firstChild);
-
-            // Revert gauges after 5 seconds
-            setTimeout(() => {
-                document.getElementById('gaugeWaf').className = "p-2.5 rounded-lg bg-bou-950 border border-slate-800";
-                document.getElementById('badgeWaf').textContent = "INSPECTING";
-                document.getElementById('badgeWaf').className = "text-emerald-400 text-[10px]";
-                document.getElementById('statWaf').textContent = "OWASP CRS v4.0 active (<2ms)";
-
-                document.getElementById('gaugeNids').className = "p-2.5 rounded-lg bg-bou-950 border border-slate-800";
-                document.getElementById('badgeNids').textContent = "SNIFFING";
-                document.getElementById('badgeNids').className = "text-emerald-400 text-[10px]";
-                document.getElementById('statNids').textContent = "10Gbps SPAN port stream";
-
-                document.getElementById('gaugeWazuh').className = "p-2.5 rounded-lg bg-bou-950 border border-slate-800";
-                document.getElementById('badgeWazuh').textContent = "FIM / MALFIND";
-                document.getElementById('badgeWazuh').className = "text-emerald-400 text-[10px]";
-                document.getElementById('statWazuh').textContent = "PID 4128 memory probe clean";
-
-                document.getElementById('gaugeSoar').className = "p-2.5 rounded-lg bg-bou-950 border border-slate-800";
-                document.getElementById('badgeSoar').textContent = "PLAYBOOK READY";
-                document.getElementById('badgeSoar').className = "text-emerald-400 text-[10px]";
-                document.getElementById('statSoar').textContent = "Autonomous MTTC: 1.28s";
-            }, 5500);
+            logBox.insertBefore(logItem, logBox.firstChild);
         }
 
-        // Initialize background stream
-        streamInterval = setInterval(generateNormalTransaction, 1500);
-        // Initial bursts
-        for (let i = 0; i < 4; i++) generateNormalTransaction();
-        setTimeout(initManagementChart, 300);
+        function viewEventDetails(time, ip, rule, detail) {
+            document.getElementById('modalEventTitle').textContent = `Security Event @ ${time}`;
+            document.getElementById('modalEventBody').innerHTML = `
+                <div class="p-3 rounded-lg bg-[#0e1422] border border-cf-border space-y-2">
+                    <div><span class="text-slate-500 uppercase font-bold">Client IP Address:</span> <span class="text-rose-400 font-bold">${ip}</span></div>
+                    <div><span class="text-slate-500 uppercase font-bold">Triggered Security Policy:</span> <span class="text-cyan-300 font-bold">${rule}</span></div>
+                    <div><span class="text-slate-500 uppercase font-bold">Attack Context:</span> <span class="text-white">${detail}</span></div>
+                    <div><span class="text-slate-500 uppercase font-bold">Mitigation Decision:</span> <span class="text-emerald-400 font-bold">100% BLOCKED & QUARANTINED</span></div>
+                </div>
+
+                <div class="p-3 rounded-lg bg-[#0a0e17] border border-cf-border space-y-1">
+                    <span class="text-slate-500 uppercase font-bold block mb-1">Cisco ESA / Cloudflare Packet Envelope (JSON):</span>
+                    <pre class="text-[10px] text-slate-300 leading-relaxed overflow-x-auto terminal-scroll">{
+  "timestamp": "${time}",
+  "client_ip": "${ip}",
+  "enforcement_agent": "Coraza_WAF_v4",
+  "soar_playbook": "SHUFFLE_AUTONOMOUS_CONTAINMENT",
+  "quarantine_action": "DROP_CONNECTION_AND_NOTIFY_CISO",
+  "sha256_evidence_seal": "08adba3aa8c35d8d12dac1ce7dd218bdc39592b160da62ea275acd9f751561f4",
+  "fiduciary_loss": "UGX 0.00"
+}</pre>
+                </div>
+            `;
+            document.getElementById('eventModal').classList.remove('hidden');
+        }
+
+        function closeEventModal() {
+            document.getElementById('eventModal').classList.add('hidden');
+        }
+
+        function scrollToId(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            streamInterval = setInterval(generateNormalTransaction, 1500);
+            for (let i = 0; i < 4; i++) generateNormalTransaction();
+        });
     </script>
 </body>
 </html>
