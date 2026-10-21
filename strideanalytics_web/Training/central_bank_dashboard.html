@@ -5,7 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bank of Uganda | Sovereign Payment Systems Telemetry & Cyber Security</title>
     <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js">
+        // Simulated SOAR Playbook Runner with Step-by-Step Node Animation
+        function runSimulatedPlaybook(type) {
+            const nodes = [
+                document.getElementById("node-1"),
+                document.getElementById("node-2"),
+                document.getElementById("node-3"),
+                document.getElementById("node-4"),
+                document.getElementById("node-5")
+            ];
+
+            const statusText = document.getElementById("soarPipelineStatusText");
+            const pipelineTitle = document.getElementById("activePipelineName");
+
+            if (type === 'PB-08') {
+                pipelineTitle.innerText = "SOAR-PB-08 (SWIFT MT103 Heist Containment)";
+                document.getElementById("node1-title").innerText = "Lazarus Tamper Ingest";
+                document.getElementById("node2-title").innerText = "Coraza CRS Drop";
+                document.getElementById("node3-title").innerText = "BIC Session Revoke";
+                document.getElementById("node4-title").innerText = "Escrow Ledger Freeze";
+                document.getElementById("node5-title").innerText = "SHA-256 Legal Vault";
+            } else {
+                pipelineTitle.innerText = "SOAR-PB-14 (Mobile Money DDoS & Replay Throttling)";
+                document.getElementById("node1-title").innerText = "Telco API Rate Spike";
+                document.getElementById("node2-title").innerText = "Dynamic Token Challenge";
+                document.getElementById("node3-title").innerText = "BGP FlowSpec Throttle";
+                document.getElementById("node4-title").innerText = "Telco NOC Auto-Alert";
+                document.getElementById("node5-title").innerText = "Audit Ledger Signed";
+            }
+
+            // Reset nodes
+            nodes.forEach(n => {
+                n.style.borderColor = "#e2e8f0";
+                n.style.background = "#f8fafc";
+                n.style.transform = "scale(1)";
+            });
+
+            statusText.innerHTML = "<strong>Executing Autonomous Workflow:</strong> Running multi-stage containment pipeline...";
+
+            // Step 1
+            setTimeout(() => {
+                nodes[0].style.borderColor = "#2563eb";
+                nodes[0].style.background = "#eff6ff";
+                nodes[0].style.transform = "scale(1.03)";
+            }, 100);
+
+            // Step 2
+            setTimeout(() => {
+                nodes[1].style.borderColor = "#2563eb";
+                nodes[1].style.background = "#eff6ff";
+                nodes[1].style.transform = "scale(1.03)";
+            }, 350);
+
+            // Step 3
+            setTimeout(() => {
+                nodes[2].style.borderColor = "#2563eb";
+                nodes[2].style.background = "#eff6ff";
+                nodes[2].style.transform = "scale(1.03)";
+            }, 650);
+
+            // Step 4
+            setTimeout(() => {
+                nodes[3].style.borderColor = "#2563eb";
+                nodes[3].style.background = "#eff6ff";
+                nodes[3].style.transform = "scale(1.03)";
+            }, 950);
+
+            // Step 5 (Finished)
+            setTimeout(() => {
+                nodes[4].style.borderColor = "#10b981";
+                nodes[4].style.background = "#ecfdf5";
+                nodes[4].style.transform = "scale(1.03)";
+
+                nodes.forEach(n => {
+                    n.style.borderColor = "#10b981";
+                    n.style.background = "#f0fdf4";
+                    n.style.transform = "scale(1)";
+                });
+
+                statusText.innerHTML = "<strong>Autonomous Containment Verified:</strong> Target incident isolated; MTTC clocked at 1.18s with zero capital loss.";
+
+                // Add to SOAR Table
+                addSoarExecutionRow(type === 'PB-08' ? "SOAR-PB-08" : "SOAR-PB-14", type === 'PB-08' ? "SWIFT MT103 Unauthorized Beneficiary Tamper" : "Mobile Money 500 req/sec Spike", "1.18s");
+
+            }, 1280);
+        }
+
+        // Add a row to the SOAR Execution Log
+        function addSoarExecutionRow(pbName, triggerDesc, mttcStr) {
+            const tbody = document.getElementById("soarExecutionTableBody");
+            const newRow = document.createElement("tr");
+            const timeStr = new Date().toLocaleTimeString();
+            const runId = "RUN-" + Math.floor(1000 + Math.random() * 9000) + "-" + pbName.replace("SOAR-", "");
+
+            newRow.innerHTML = `
+                <td style="color: #2563eb; font-weight: 700;"><code>${runId}</code></td>
+                <td>${timeStr} (NEW)</td>
+                <td><strong>${pbName}</strong></td>
+                <td>${triggerDesc}</td>
+                <td>1. Auto-Drop &rarr; 2. Session Revoke &rarr; 3. Escrow Freeze &rarr; 4. Hash Vault</td>
+                <td style="font-weight: 700; color: #059669;">${mttcStr}</td>
+                <td><span class="sec-badge sec-badge-cleared">Fully Contained</span></td>
+            `;
+
+            tbody.insertBefore(newRow, tbody.firstChild);
+
+            // Increment SOAR Runs Counter
+            const runsEl = document.getElementById("soarTotalRunsVal");
+            if (runsEl) {
+                let cur = parseInt(runsEl.innerText.replace(/,/g, '')) || 1964;
+                runsEl.innerText = (cur + 1).toLocaleString();
+                flashElement("soarTotalRunsVal");
+            }
+        }
+
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -1576,66 +1691,165 @@
             </div>
 
             <!-- VIEW 7: Shuffle SOAR Actions -->
+            <!-- VIEW 7: Shuffle SOAR Actions (Interactive Autonomous Orchestration Engine) -->
             <div id="view-soar" class="dashboard-view">
                 <div class="metric-grid-4">
                     <div class="metric-box">
-                        <div class="metric-label">Automated Playbooks</div>
+                        <div class="metric-label">Autonomous Playbooks</div>
                         <div class="metric-val" style="color: #2563eb;">24 Active</div>
-                        <div class="metric-sub">Zero Human Latency</div>
+                        <div class="metric-sub"><i class="fa-solid fa-robot"></i> Zero Human Latency</div>
                     </div>
                     <div class="metric-box">
-                        <div class="metric-label">Fastest Containment</div>
-                        <div class="metric-val" style="color: #059669;">0.84s</div>
-                        <div class="metric-sub">BGP RTBH Null-Route</div>
+                        <div class="metric-label">Live Mean Time to Contain (MTTC)</div>
+                        <div class="metric-val" style="color: #059669;" id="soarMttcVal">1.28s</div>
+                        <div class="metric-sub"><i class="fa-solid fa-stopwatch"></i> Sub-Second Auto-Response</div>
                     </div>
                     <div class="metric-box">
-                        <div class="metric-label">Automated BICs Quarantined</div>
-                        <div class="metric-val">1 Session</div>
-                        <div class="metric-sub">Lazarus Tamper Isolation</div>
+                        <div class="metric-label">Total Playbook Runs Today</div>
+                        <div class="metric-val" id="soarTotalRunsVal">1,964</div>
+                        <div class="metric-sub" id="soarRunStatusSub"><i class="fa-solid fa-bolt" style="color: #10b981;"></i> Engine Ingesting Telemetry</div>
                     </div>
                     <div class="metric-box">
-                        <div class="metric-label">PII Masking Rate</div>
-                        <div class="metric-val">100%</div>
-                        <div class="metric-sub">National ID & Account Salted</div>
+                        <div class="metric-label">Quarantine Success Rate</div>
+                        <div class="metric-val" style="color: #047857;">100%</div>
+                        <div class="metric-sub"><i class="fa-solid fa-shield-halved"></i> 0 Leaked Settlement Wires</div>
                     </div>
                 </div>
 
+                <!-- LIVE SOAR PLAYBOOK EXECUTION PIPELINE (VISUAL NODE GRAPH) -->
+                <div class="chart-card" style="margin-bottom: 20px;">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title" style="font-size: 14px; font-weight: 700; color: #0f172a;">
+                                <i class="fa-solid fa-network-wired" style="color: #2563eb; margin-right: 6px;"></i>
+                                Active SOAR Orchestration Pipeline: <span id="activePipelineName">SOAR-PB-08 (SWIFT MT103 Heist Containment)</span>
+                            </h3>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                                Visual node execution trace showing the autonomous millisecond containment chain:
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="cf-btn-secondary" onclick="runSimulatedPlaybook('PB-08')" style="background: #0f172a; color: #ffffff; border-color: #0f172a; font-weight: 600;">
+                                <i class="fa-solid fa-play" style="color: #38bdf8;"></i> Test Run Playbook 08
+                            </button>
+                            <button class="cf-btn-secondary" onclick="runSimulatedPlaybook('PB-14')" style="font-weight: 600;">
+                                <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Test Run Playbook 14
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Flow Nodes Pipeline Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 16px 0; position: relative;" id="pipelineNodes">
+                        
+                        <!-- Node 1 -->
+                        <div id="node-1" style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; transition: all 0.3s;">
+                            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Node 01: Ingress</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #1e293b; margin: 6px 0;" id="node1-title">Threat Ingestion</div>
+                            <div style="font-size: 11px; color: #059669; font-weight: 600;" id="node1-time"><i class="fa-solid fa-check"></i> Triggered (0ms)</div>
+                        </div>
+
+                        <!-- Node 2 -->
+                        <div id="node-2" style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; transition: all 0.3s;">
+                            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Node 02: WAF Policy</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #1e293b; margin: 6px 0;" id="node2-title">Coraza CRS Drop</div>
+                            <div style="font-size: 11px; color: #059669; font-weight: 600;" id="node2-time"><i class="fa-solid fa-check"></i> Enforced (120ms)</div>
+                        </div>
+
+                        <!-- Node 3 -->
+                        <div id="node-3" style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; transition: all 0.3s;">
+                            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Node 03: Perimeter</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #1e293b; margin: 6px 0;" id="node3-title">BIC Session Revoke</div>
+                            <div style="font-size: 11px; color: #059669; font-weight: 600;" id="node3-time"><i class="fa-solid fa-check"></i> Revoked (340ms)</div>
+                        </div>
+
+                        <!-- Node 4 -->
+                        <div id="node-4" style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; transition: all 0.3s;">
+                            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Node 04: Settlement</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #1e293b; margin: 6px 0;" id="node4-title">Escrow Freeze</div>
+                            <div style="font-size: 11px; color: #059669; font-weight: 600;" id="node4-time"><i class="fa-solid fa-check"></i> Frozen (580ms)</div>
+                        </div>
+
+                        <!-- Node 5 -->
+                        <div id="node-5" style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; transition: all 0.3s;">
+                            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Node 05: Compliance</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #1e293b; margin: 6px 0;" id="node5-title">SHA-256 Legal Vault</div>
+                            <div style="font-size: 11px; color: #059669; font-weight: 600;" id="node5-time"><i class="fa-solid fa-check"></i> Hashed (1.28s)</div>
+                        </div>
+
+                    </div>
+                    
+                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #065f46;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-circle-check" style="color: #059669; font-size: 16px;"></i>
+                            <span id="soarPipelineStatusText"><strong>Autonomous Containment Verified:</strong> Target transaction isolated; MTTC clocked at 1.28s with zero capital leakage.</span>
+                        </div>
+                        <span style="font-weight: 700; font-family: ui-monospace, monospace;">STATUS: SUCCESS 200 OK</span>
+                    </div>
+                </div>
+
+                <!-- LIVE SOAR EXECUTION HISTORY TABLE -->
                 <div class="chart-card">
                     <div class="card-header">
-                        <h3 class="card-title">Shuffle SOAR Autonomous Orchestration Runbook</h3>
-                        <span class="sec-badge sec-badge-cleared">Active Auto-Pilot</span>
+                        <div>
+                            <h3 class="card-title">Live Autonomous Incident Execution Log (Real-Time Ingestion Stream)</h3>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">
+                                Chronological runbook executions dispatched automatically by Shuffle SOAR:
+                            </div>
+                        </div>
+                        <span class="sec-badge sec-badge-cleared" id="soarLivePulseBadge">
+                            <span class="live-dot" style="display: inline-block; width: 6px; height: 6px; margin-right: 4px;"></span>
+                            Listening for Triggers
+                        </span>
                     </div>
+
                     <table class="sec-table">
                         <thead>
                             <tr>
-                                <th>Playbook ID</th>
-                                <th>Trigger Condition</th>
-                                <th>Orchestration Workflow</th>
-                                <th>MTTC Latency</th>
-                                <th>Execution Status</th>
+                                <th>Execution ID</th>
+                                <th>Timestamp</th>
+                                <th>Playbook Name</th>
+                                <th>Incident Trigger</th>
+                                <th>Autonomous Remediation Actions</th>
+                                <th>MTTC</th>
+                                <th>Verdict</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="soarExecutionTableBody">
                             <tr>
+                                <td><code>RUN-8842-PB08</code></td>
+                                <td>10:48:12</td>
                                 <td><strong>SOAR-PB-08</strong></td>
                                 <td>SWIFT MT103 Field 20/32A Checksum Discrepancy</td>
-                                <td>1. Drop ingress packet &rarr; 2. Suspend BIC Alliance Session &rarr; 3. Alert BOU War Room &rarr; 4. Freeze Escrow Ledger</td>
-                                <td>1.28 seconds</td>
-                                <td><span class="sec-badge sec-badge-cleared">Executed (Success)</span></td>
+                                <td>1. Drop packet &rarr; 2. Revoke Alliance BIC &rarr; 3. Escrow Freeze &rarr; 4. Hash Evidence</td>
+                                <td style="font-weight: 700; color: #059669;">1.28s</td>
+                                <td><span class="sec-badge sec-badge-cleared">Fully Contained</span></td>
                             </tr>
                             <tr>
+                                <td><code>RUN-8841-PB14</code></td>
+                                <td>09:22:04</td>
                                 <td><strong>SOAR-PB-14</strong></td>
-                                <td>Mobile Money Callback Rate &gt; 500 req/sec</td>
-                                <td>1. Trigger Coraza CRS Dynamic Token Challenge &rarr; 2. Throttle IP CIDR &rarr; 3. Notify Telco Security NOC</td>
-                                <td>0.92 seconds</td>
-                                <td><span class="sec-badge sec-badge-cleared">Executed (Success)</span></td>
+                                <td>Mobile Money Callback Rate &gt; 500 req/sec (Mirai Bot)</td>
+                                <td>1. Dynamic Token Challenge &rarr; 2. Throttle CIDR &rarr; 3. Notify Telco NOC</td>
+                                <td style="font-weight: 700; color: #059669;">0.92s</td>
+                                <td><span class="sec-badge sec-badge-cleared">Fully Contained</span></td>
                             </tr>
                             <tr>
+                                <td><code>RUN-8840-PB22</code></td>
+                                <td>08:15:40</td>
                                 <td><strong>SOAR-PB-22</strong></td>
-                                <td>High-Value RTGS Transfer &gt; UGX 10 Billion Outlier</td>
-                                <td>1. Hold in Escrow Memory Queue &rarr; 2. Verify Multi-Party PKI Signature &rarr; 3. Release to Core RTGS</td>
-                                <td>1.15 seconds</td>
-                                <td><span class="sec-badge sec-badge-cleared">Executed (Success)</span></td>
+                                <td>Stanbic Outlier Transfer &gt; UGX 10B Threshold</td>
+                                <td>1. Escrow Queue Hold &rarr; 2. Verify Multi-Sig PKI &rarr; 3. Auto-Release</td>
+                                <td style="font-weight: 700; color: #059669;">1.15s</td>
+                                <td><span class="sec-badge sec-badge-cleared">Verified & Released</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>RUN-8839-PB04</code></td>
+                                <td>06:11:52</td>
+                                <td><strong>SOAR-PB-04</strong></td>
+                                <td>Malicious XInclude XML Entity Expansion (APT29)</td>
+                                <td>1. Block XML Resolver &rarr; 2. Blacklist IP CIDR &rarr; 3. Log to OpenSearch</td>
+                                <td style="font-weight: 700; color: #059669;">0.84s</td>
+                                <td><span class="sec-badge sec-badge-cleared">Fully Contained</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -2005,6 +2219,12 @@
                     const lastIdx = timeLabels.length - 1;
                     window.settlementStatusChart.data.datasets[0].data[lastIdx] += 15;
                     window.settlementStatusChart.update('none');
+                    // Increment SOAR runs during simulation
+                    const soarRuns = document.getElementById('soarTotalRunsVal');
+                    if (soarRuns && Math.random() > 0.4) {
+                        let curR = parseInt(soarRuns.innerText.replace(/,/g, '')) || 1964;
+                        soarRuns.innerText = (curR + 1).toLocaleString();
+                    }
 
                 }, 1400);
             } else {
@@ -2061,6 +2281,12 @@
             const lastIdx = timeLabels.length - 1;
             window.settlementStatusChart.data.datasets[2].data[lastIdx] += blockedCount;
             window.settlementStatusChart.update('none');
+                    // Increment SOAR runs during simulation
+                    const soarRuns = document.getElementById('soarTotalRunsVal');
+                    if (soarRuns && Math.random() > 0.4) {
+                        let curR = parseInt(soarRuns.innerText.replace(/,/g, '')) || 1964;
+                        soarRuns.innerText = (curR + 1).toLocaleString();
+                    }
 
             // Add row to Security Table
             const tbody = document.getElementById("secTableBody");
@@ -2078,6 +2304,7 @@
             tbody.insertBefore(newRow, tbody.firstChild);
 
             // Automatically switch directly to Threat Mitigations
+            addSoarExecutionRow(type === 'swift' ? 'SOAR-PB-08' : (type === 'mobile' ? 'SOAR-PB-14' : 'SOAR-PB-22'), desc, '1.28s');
             switchView('threats');
         }
 
@@ -2338,6 +2565,121 @@
 
         // Seed initial wires into stream
         sampleWires.slice(0, 3).forEach(w => addWireToStream(w, false));
+    
+        // Simulated SOAR Playbook Runner with Step-by-Step Node Animation
+        function runSimulatedPlaybook(type) {
+            const nodes = [
+                document.getElementById("node-1"),
+                document.getElementById("node-2"),
+                document.getElementById("node-3"),
+                document.getElementById("node-4"),
+                document.getElementById("node-5")
+            ];
+
+            const statusText = document.getElementById("soarPipelineStatusText");
+            const pipelineTitle = document.getElementById("activePipelineName");
+
+            if (type === 'PB-08') {
+                pipelineTitle.innerText = "SOAR-PB-08 (SWIFT MT103 Heist Containment)";
+                document.getElementById("node1-title").innerText = "Lazarus Tamper Ingest";
+                document.getElementById("node2-title").innerText = "Coraza CRS Drop";
+                document.getElementById("node3-title").innerText = "BIC Session Revoke";
+                document.getElementById("node4-title").innerText = "Escrow Ledger Freeze";
+                document.getElementById("node5-title").innerText = "SHA-256 Legal Vault";
+            } else {
+                pipelineTitle.innerText = "SOAR-PB-14 (Mobile Money DDoS & Replay Throttling)";
+                document.getElementById("node1-title").innerText = "Telco API Rate Spike";
+                document.getElementById("node2-title").innerText = "Dynamic Token Challenge";
+                document.getElementById("node3-title").innerText = "BGP FlowSpec Throttle";
+                document.getElementById("node4-title").innerText = "Telco NOC Auto-Alert";
+                document.getElementById("node5-title").innerText = "Audit Ledger Signed";
+            }
+
+            // Reset nodes
+            nodes.forEach(n => {
+                n.style.borderColor = "#e2e8f0";
+                n.style.background = "#f8fafc";
+                n.style.transform = "scale(1)";
+            });
+
+            statusText.innerHTML = "<strong>Executing Autonomous Workflow:</strong> Running multi-stage containment pipeline...";
+
+            // Step 1
+            setTimeout(() => {
+                nodes[0].style.borderColor = "#2563eb";
+                nodes[0].style.background = "#eff6ff";
+                nodes[0].style.transform = "scale(1.03)";
+            }, 100);
+
+            // Step 2
+            setTimeout(() => {
+                nodes[1].style.borderColor = "#2563eb";
+                nodes[1].style.background = "#eff6ff";
+                nodes[1].style.transform = "scale(1.03)";
+            }, 350);
+
+            // Step 3
+            setTimeout(() => {
+                nodes[2].style.borderColor = "#2563eb";
+                nodes[2].style.background = "#eff6ff";
+                nodes[2].style.transform = "scale(1.03)";
+            }, 650);
+
+            // Step 4
+            setTimeout(() => {
+                nodes[3].style.borderColor = "#2563eb";
+                nodes[3].style.background = "#eff6ff";
+                nodes[3].style.transform = "scale(1.03)";
+            }, 950);
+
+            // Step 5 (Finished)
+            setTimeout(() => {
+                nodes[4].style.borderColor = "#10b981";
+                nodes[4].style.background = "#ecfdf5";
+                nodes[4].style.transform = "scale(1.03)";
+
+                nodes.forEach(n => {
+                    n.style.borderColor = "#10b981";
+                    n.style.background = "#f0fdf4";
+                    n.style.transform = "scale(1)";
+                });
+
+                statusText.innerHTML = "<strong>Autonomous Containment Verified:</strong> Target incident isolated; MTTC clocked at 1.18s with zero capital loss.";
+
+                // Add to SOAR Table
+                addSoarExecutionRow(type === 'PB-08' ? "SOAR-PB-08" : "SOAR-PB-14", type === 'PB-08' ? "SWIFT MT103 Unauthorized Beneficiary Tamper" : "Mobile Money 500 req/sec Spike", "1.18s");
+
+            }, 1280);
+        }
+
+        // Add a row to the SOAR Execution Log
+        function addSoarExecutionRow(pbName, triggerDesc, mttcStr) {
+            const tbody = document.getElementById("soarExecutionTableBody");
+            const newRow = document.createElement("tr");
+            const timeStr = new Date().toLocaleTimeString();
+            const runId = "RUN-" + Math.floor(1000 + Math.random() * 9000) + "-" + pbName.replace("SOAR-", "");
+
+            newRow.innerHTML = `
+                <td style="color: #2563eb; font-weight: 700;"><code>${runId}</code></td>
+                <td>${timeStr} (NEW)</td>
+                <td><strong>${pbName}</strong></td>
+                <td>${triggerDesc}</td>
+                <td>1. Auto-Drop &rarr; 2. Session Revoke &rarr; 3. Escrow Freeze &rarr; 4. Hash Vault</td>
+                <td style="font-weight: 700; color: #059669;">${mttcStr}</td>
+                <td><span class="sec-badge sec-badge-cleared">Fully Contained</span></td>
+            `;
+
+            tbody.insertBefore(newRow, tbody.firstChild);
+
+            // Increment SOAR Runs Counter
+            const runsEl = document.getElementById("soarTotalRunsVal");
+            if (runsEl) {
+                let cur = parseInt(runsEl.innerText.replace(/,/g, '')) || 1964;
+                runsEl.innerText = (cur + 1).toLocaleString();
+                flashElement("soarTotalRunsVal");
+            }
+        }
+
     </script>
 </body>
 </html>
