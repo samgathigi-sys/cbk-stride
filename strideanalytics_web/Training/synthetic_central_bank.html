@@ -192,13 +192,70 @@
             border-color: #d1d5db;
         }
 
+        /* LIVE TELEMETRY TICKER BAR (Visible immediately) */
+        .live-ticker-bar {
+            background: #0f172a;
+            color: #94a3b8;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 12px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            border-bottom: 1px solid #1e293b;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ticker-badge {
+            background: #1e293b;
+            color: #38bdf8;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            font-size: 11px;
+        }
+
+        .ticker-content {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            white-space: nowrap;
+            transition: opacity 0.3s;
+        }
+
+        .ticker-wire-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wire-tag-success {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .wire-tag-alert {
+            color: #ef4444;
+            font-weight: 700;
+            background: rgba(239, 68, 68, 0.15);
+            padding: 1px 6px;
+            border-radius: 3px;
+            animation: pulse 1s infinite;
+        }
+
         /* App Body Layout */
         .app-body {
             display: flex;
             flex: 1;
         }
 
-        /* Left Sidebar (Cloudflare Navigation Pattern) */
+        /* Left Sidebar */
         .sidebar {
             width: 250px;
             background: var(--cf-sidebar-bg);
@@ -208,7 +265,7 @@
             flex-direction: column;
             gap: 4px;
             flex-shrink: 0;
-            min-height: calc(100vh - 54px);
+            min-height: calc(100vh - 88px);
         }
 
         .back-to-domains {
@@ -347,7 +404,7 @@
             gap: 8px;
         }
 
-        /* Views Container: only the active view is displayed */
+        /* Views Container */
         .dashboard-view {
             display: none;
             animation: fadeIn 0.2s ease-in-out;
@@ -362,7 +419,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 2x2 Analytics Grid (Cloudflare Screenshot Structure) */
+        /* 2x2 Analytics Grid */
         .analytics-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -428,8 +485,18 @@
         }
 
         .legend-val {
-            font-weight: 600;
+            font-weight: 700;
             color: #111827;
+            transition: all 0.2s;
+        }
+
+        /* Flashing animation for updated values */
+        .val-flash {
+            background: #fef08a !important;
+            color: #854d0e !important;
+            padding: 0 4px;
+            border-radius: 4px;
+            transform: scale(1.1);
         }
 
         /* Chart Canvas Container */
@@ -439,7 +506,7 @@
             width: 100%;
         }
 
-        /* Ranked Lists (Top Paths & Top Countries) */
+        /* Ranked Lists */
         .rank-list {
             display: flex;
             flex-direction: column;
@@ -566,6 +633,65 @@
             transform: translateY(-1px);
         }
 
+        /* LIVE WIRE STREAM MONITOR (Visible right on the main screen) */
+        .wire-stream-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            color: #e2e8f0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        .wire-stream-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        .wire-stream-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wire-stream-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+
+        .stream-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 6px 10px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 4px;
+            border-left: 3px solid #10b981;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .stream-row.alert-row {
+            background: rgba(127, 29, 29, 0.4);
+            border-left: 3px solid #ef4444;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
         /* Tables */
         .sec-table {
             width: 100%;
@@ -616,7 +742,7 @@
             border: 1px solid #a7f3d0;
         }
 
-        /* Big Cards & Metric Blocks */
+        /* Metric Grid */
         .metric-grid-4 {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -653,7 +779,35 @@
             gap: 4px;
         }
 
-        /* Modal */
+        /* Export Suite Modal */
+        .export-modal-box {
+            max-width: 680px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid var(--cf-border);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .export-option-card {
+            border: 1px solid var(--cf-border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f9fafb;
+            transition: all 0.15s;
+        }
+
+        .export-option-card:hover {
+            border-color: var(--cf-blue);
+            background: #f0f7ff;
+        }
+
+        /* General Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -729,7 +883,7 @@
 </head>
 <body>
 
-    <!-- Top Navigation Bar (Cloudflare Layout) -->
+    <!-- Top Navigation Bar -->
     <header class="top-navbar">
         <div class="top-left">
             <a href="payment_systems_architecture.html" class="bou-brand-box" title="Bank of Uganda Sovereign Architecture">
@@ -772,10 +926,25 @@
         </div>
     </header>
 
+    <!-- LIVE REAL-TIME TELEMETRY TICKER BAR -->
+    <div class="live-ticker-bar">
+        <div class="ticker-badge">
+            <span class="live-dot" style="width: 6px; height: 6px;"></span>
+            <span>LIVE RTGS DISPATCH</span>
+        </div>
+        <div class="ticker-content" id="liveTickerContent">
+            <div class="ticker-wire-item">
+                <span style="color: #64748b;">[11:42:01]</span>
+                <span style="color: #f8fafc; font-weight: 600;">Stanbic (SBICUGKX) &rarr; Centenary (CERBUGKA)</span>
+                <span class="wire-tag-success">UGX 850,000,000 | pacs.008 SETTLED</span>
+            </div>
+        </div>
+    </div>
+
     <!-- App Body Layout -->
     <div class="app-body">
         
-        <!-- Left Sidebar (Cloudflare Navigation Pattern) -->
+        <!-- Left Sidebar -->
         <aside class="sidebar">
             <a href="payment_systems_architecture.html" class="back-to-domains">
                 <i class="fa-solid fa-arrow-turn-up" style="transform: rotate(-90deg); font-size: 12px;"></i>
@@ -852,7 +1021,7 @@
         <!-- Main Content Area -->
         <main class="main-content">
             
-            <!-- View Header / Tabs & Controls (Matching Cloudflare UI) -->
+            <!-- View Header / Tabs & Controls -->
             <div class="view-header">
                 <div class="view-tabs">
                     <button class="tab-btn active" id="tab-requests" onclick="switchView('requests')">Settlement Traffic</button>
@@ -866,18 +1035,18 @@
                 </div>
 
                 <div class="view-controls">
-                    <button class="cf-btn-secondary" onclick="toggleSimulateWires()" id="simBtn">
-                        <i class="fa-solid fa-play" style="color: var(--cf-orange);"></i>
-                        <span id="simBtnText">Simulate Live Settlements</span>
+                    <button class="cf-btn-secondary" onclick="toggleSimulateWires()" id="simBtn" style="font-weight: 600;">
+                        <i class="fa-solid fa-play" style="color: var(--cf-orange);" id="simPlayIcon"></i>
+                        <span id="simBtnText">Start Live Simulation</span>
                     </button>
-                    <button class="cf-btn-secondary" onclick="exportExecutiveReport()">
-                        <i class="fa-solid fa-file-export"></i>
+                    <button class="cf-btn-secondary" onclick="openExportModal()" style="font-weight: 600; background: #0f172a; color: #ffffff; border-color: #0f172a;">
+                        <i class="fa-solid fa-file-export" style="color: #38bdf8;"></i>
                         <span>Export Report</span>
                     </button>
                 </div>
             </div>
 
-            <!-- VIEW 1: Settlement Traffic (Cloudflare 2x2 Grid) -->
+            <!-- VIEW 1: Settlement Traffic -->
             <div id="view-requests" class="dashboard-view active-view">
                 
                 <!-- Operational Adversary Simulation Tray -->
@@ -886,7 +1055,7 @@
                         <i class="fa-solid fa-biohazard" style="color: #dc2626; font-size: 18px;"></i>
                         <div>
                             <div class="tray-title">Chaos Engineering & Adversary Injection Pad</div>
-                            <div class="tray-desc">Trigger live synthetic cyber attacks to inspect immediate WAF and SOAR containment across payment rails.</div>
+                            <div class="tray-desc">Click any threat to launch a synthetic attack and watch the real-time defense reaction:</div>
                         </div>
                     </div>
                     <div class="chaos-btn-group">
@@ -906,6 +1075,20 @@
                             <i class="fa-solid fa-satellite-dish"></i>
                             <span>M-Pesa API Replay</span>
                         </button>
+                    </div>
+                </div>
+
+                <!-- LIVE INGRESS TRANSACTION STREAM MONITOR -->
+                <div class="wire-stream-card">
+                    <div class="wire-stream-header">
+                        <div class="wire-stream-title">
+                            <span class="live-dot"></span>
+                            <span>REAL-TIME SETTLEMENT WIRE DISPATCH STREAM</span>
+                        </div>
+                        <span style="font-size: 11px; color: #94a3b8;" id="streamStatusBadge">Streaming Active: Auto-Ingest</span>
+                    </div>
+                    <div class="wire-stream-list" id="wireStreamList">
+                        <!-- Real-time wire logs inserted dynamically -->
                     </div>
                 </div>
 
@@ -1099,7 +1282,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: Payment Protocols (ISO 20022 Engine & Schemas) -->
+            <!-- VIEW 3: Payment Protocols -->
             <div id="view-protocols" class="dashboard-view">
                 <div class="metric-grid-4">
                     <div class="metric-box">
@@ -1505,6 +1688,73 @@
         </main>
     </div>
 
+    <!-- EXPORT SUITE MODAL (Fully Functional) -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="export-modal-box">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-file-export" style="color: var(--cf-blue);"></i>
+                    <span>Export Sovereign Executive Report & Data</span>
+                </div>
+                <button class="modal-close-btn" onclick="closeExportModal()">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+                <p style="font-size: 13px; color: #4b5563; margin-bottom: 16px;">
+                    Select an export format for management presentation, executive reporting, or technical compliance auditing:
+                </p>
+
+                <!-- Option 1: Executive PDF Dossier -->
+                <div class="export-option-card">
+                    <div>
+                        <div style="font-weight: 700; font-size: 14px; color: #111827;">
+                            <i class="fa-solid fa-file-pdf" style="color: #dc2626; margin-right: 6px;"></i>
+                            Executive Forensic Summary (Printable PDF Report)
+                        </div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                            Official Bank of Uganda executive letterhead with Big-4 KPIs, threat charts, and signed legal chain of custody.
+                        </div>
+                    </div>
+                    <button class="cf-btn-secondary" onclick="generatePrintableReport()" style="background: #2563eb; color: #ffffff; border-color: #2563eb; font-weight: 600;">
+                        Print / Save PDF
+                    </button>
+                </div>
+
+                <!-- Option 2: Excel / CSV Telemetry -->
+                <div class="export-option-card">
+                    <div>
+                        <div style="font-weight: 700; font-size: 14px; color: #111827;">
+                            <i class="fa-solid fa-file-csv" style="color: #059669; margin-right: 6px;"></i>
+                            Clearing & Liquidity Dataset (Excel / CSV)
+                        </div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                            Complete structured CSV containing all 25 commercial banks, BICs, settlement values, and LCR liquidity buffers.
+                        </div>
+                    </div>
+                    <button class="cf-btn-secondary" onclick="downloadCSVReport()" style="font-weight: 600;">
+                        Download CSV
+                    </button>
+                </div>
+
+                <!-- Option 3: Cryptographic JSON Forensic Vault -->
+                <div class="export-option-card">
+                    <div>
+                        <div style="font-weight: 700; font-size: 14px; color: #111827;">
+                            <i class="fa-solid fa-file-code" style="color: #7c3aed; margin-right: 6px;"></i>
+                            Forensic Evidence Vault (Cryptographic JSON)
+                        </div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                            Raw machine-readable JSON archive with SHA-256 hashes compliant with Uganda Electronic Transactions Act Section 8.
+                        </div>
+                    </div>
+                    <button class="cf-btn-secondary" onclick="downloadJSONReport()" style="font-weight: 600;">
+                        Download JSON
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Raw Packet Inspection Modal -->
     <div class="modal-overlay" id="packetModal">
         <div class="modal-box">
@@ -1554,23 +1804,32 @@
                 { name: "National Bank of Rwanda (BNR-EAPS)", count: 100, share: "1.1%" }
             ],
             simulating: false,
-            simInterval: null
+            simInterval: null,
+            tickerIndex: 0
         };
 
-        // Switch View Function: Transitions entire screen immediately!
+        // Realistic Simulated Ingress Wires
+        const sampleWires = [
+            { from: "Stanbic (SBICUGKX)", to: "Centenary (CERBUGKA)", proto: "pacs.008", amount: "UGX 640,000,000", status: "SETTLED" },
+            { from: "MTN Trust Escrow", to: "Stanbic Reserve", proto: "pacs.008", amount: "UGX 1,250,000,000", status: "SETTLED" },
+            { from: "Standard Chartered (SCBLUGKA)", to: "Bank of Baroda (BARBUGKA)", proto: "pacs.008", amount: "UGX 380,000,000", status: "SETTLED" },
+            { from: "CBK Nairobi Gateway", to: "BOU RTGS Core", proto: "EAPS-ISO-NET", amount: "KES 45,000,000", status: "SETTLED" },
+            { from: "Airtel Escrow", to: "Absa Bank Reserve", proto: "OpenAPI", amount: "UGX 920,000,000", status: "SETTLED" },
+            { from: "dfcu Bank (DFCUUGKX)", to: "Stanbic (SBICUGKX)", proto: "pacs.008", amount: "UGX 510,000,000", status: "SETTLED" },
+            { from: "Equity Bank (EQBLUGKA)", to: "URA Customs Clearing", proto: "pacs.008", amount: "UGX 290,000,000", status: "SETTLED" }
+        ];
+
+        // Switch View Function
         function switchView(viewName) {
-            // 1. Hide all views
             document.querySelectorAll('.dashboard-view').forEach(v => {
                 v.classList.remove('active-view');
             });
 
-            // 2. Show target view
             const target = document.getElementById('view-' + viewName);
             if (target) {
                 target.classList.add('active-view');
             }
 
-            // 3. Update top tabs
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -1579,7 +1838,6 @@
                 activeTab.classList.add('active');
             }
 
-            // 4. Update sidebar active item
             document.querySelectorAll('.sidebar-item').forEach(item => {
                 item.classList.remove('active');
             });
@@ -1588,7 +1846,6 @@
                 activeSide.classList.add('active');
             }
 
-            // If switching to requests, trigger charts resize
             if (viewName === 'requests' && window.settlementStatusChart) {
                 setTimeout(() => {
                     window.settlementStatusChart.resize();
@@ -1635,6 +1892,390 @@
                     </div>
                 `;
             }).join("");
+        }
+
+        // Add a wire to the real-time visual stream
+        function addWireToStream(wire, isAlert = false) {
+            const list = document.getElementById("wireStreamList");
+            const timeStr = new Date().toLocaleTimeString();
+
+            const row = document.createElement("div");
+            row.className = isAlert ? "stream-row alert-row" : "stream-row";
+
+            if (isAlert) {
+                row.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #fca5a5;">[${timeStr}]</span>
+                        <span style="color: #ef4444; font-weight: 700;"><i class="fa-solid fa-biohazard"></i> ${wire.from}</span>
+                    </div>
+                    <div style="color: #f87171; font-weight: 700;">${wire.proto} | ${wire.amount} [${wire.status}]</div>
+                `;
+            } else {
+                row.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #f8fafc; font-weight: 600;">${wire.from} &rarr; ${wire.to}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #38bdf8;">${wire.proto}</span>
+                        <span class="wire-tag-success">${wire.amount}</span>
+                        <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 10px; padding: 1px 5px; border-radius: 3px;">200 OK</span>
+                    </div>
+                `;
+            }
+
+            list.insertBefore(row, list.firstChild);
+            if (list.children.length > 6) {
+                list.removeChild(list.lastChild);
+            }
+
+            // Also update top ticker
+            const ticker = document.getElementById("liveTickerContent");
+            if (isAlert) {
+                ticker.innerHTML = `
+                    <div class="ticker-wire-item">
+                        <span style="color: #fca5a5;">[${timeStr}]</span>
+                        <span class="wire-tag-alert"><i class="fa-solid fa-triangle-exclamation"></i> ATTACK INTERCEPTED: ${wire.from}</span>
+                        <span style="color: #fca5a5;">${wire.proto} | ${wire.amount}</span>
+                    </div>
+                `;
+            } else {
+                ticker.innerHTML = `
+                    <div class="ticker-wire-item">
+                        <span style="color: #64748b;">[${timeStr}]</span>
+                        <span style="color: #f8fafc; font-weight: 600;">${wire.from} &rarr; ${wire.to}</span>
+                        <span class="wire-tag-success">${wire.amount} | ${wire.proto} SETTLED</span>
+                    </div>
+                `;
+            }
+        }
+
+        // Flash helper
+        function flashElement(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.add("val-flash");
+                setTimeout(() => el.classList.remove("val-flash"), 400);
+            }
+        }
+
+        // Live Simulation Toggle
+        function toggleSimulateWires() {
+            bankState.simulating = !bankState.simulating;
+            const btn = document.getElementById("simBtn");
+            const btnText = document.getElementById("simBtnText");
+            const icon = document.getElementById("simPlayIcon");
+            const statusText = document.getElementById("sovereignStatus");
+
+            if (bankState.simulating) {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#fca5a5";
+                btn.style.color = "#dc2626";
+                icon.className = "fa-solid fa-pause";
+                btnText.innerText = "Pause Simulation";
+                statusText.innerText = "Live Settlements Streaming...";
+
+                bankState.simInterval = setInterval(() => {
+                    // Pick next wire
+                    const wire = sampleWires[bankState.tickerIndex % sampleWires.length];
+                    bankState.tickerIndex++;
+
+                    // Add to visible stream
+                    addWireToStream(wire, false);
+
+                    // Increment counters
+                    bankState.statusCodes.c2xx += 15;
+                    document.getElementById("val-2xx").innerText = bankState.statusCodes.c2xx.toLocaleString();
+                    flashElement("val-2xx");
+
+                    bankState.protocolChannels.iso += 12;
+                    document.getElementById("val-iso").innerText = bankState.protocolChannels.iso.toLocaleString();
+                    flashElement("val-iso");
+
+                    // Increment random bank & endpoint
+                    const randBank = bankState.banks[Math.floor(Math.random() * 3)];
+                    randBank.count += 8;
+                    renderBanks();
+
+                    const randEp = bankState.endpoints[Math.floor(Math.random() * 3)];
+                    randEp.count += 8;
+                    renderEndpoints();
+
+                    // Update chart
+                    const lastIdx = timeLabels.length - 1;
+                    window.settlementStatusChart.data.datasets[0].data[lastIdx] += 15;
+                    window.settlementStatusChart.update('none');
+
+                }, 1400);
+            } else {
+                clearInterval(bankState.simInterval);
+                btn.style.background = "#ffffff";
+                btn.style.borderColor = "#e5e7eb";
+                btn.style.color = "#374151";
+                icon.className = "fa-solid fa-play";
+                btnText.innerText = "Start Live Simulation";
+                statusText.innerText = "RTGS Core Active (UGX)";
+            }
+        }
+
+        // Chaos Adversary Trigger
+        function triggerAttack(type) {
+            let desc = "";
+            let packetId = "";
+            let blockedCount = 50;
+
+            if (type === 'swift') {
+                desc = "SWIFT MT103 Unauthorized Beneficiary Tamper ($12.5M Outlier)";
+                packetId = "SWIFT-HEIST-01";
+                blockedCount = 120;
+            } else if (type === 'drain') {
+                desc = "ISO 20022 High-Value Drain Exploit on Stanbic Escrow";
+                packetId = "RTGS-DRAIN-02";
+                blockedCount = 90;
+            } else if (type === 'ransomware') {
+                desc = "BlackCat Enclave Cryptor Infiltration on Treasury Gateway";
+                packetId = "ENCLAVE-CRYPT-03";
+                blockedCount = 350;
+            } else if (type === 'mobile') {
+                desc = "Mobile Money MTN API Signature Replay Anomaly";
+                packetId = "MM-REPLAY-02";
+                blockedCount = 80;
+            }
+
+            // Immediately post red wire alert in stream!
+            addWireToStream({
+                from: "ADVERSARY ATTACK: " + desc,
+                to: "BOU Subsystem",
+                proto: "EXPLOIT",
+                amount: "BLOCKED BY WAF",
+                status: "DROPPED"
+            }, true);
+
+            bankState.statusCodes.c4xx += blockedCount;
+            document.getElementById("val-4xx").innerText = bankState.statusCodes.c4xx.toLocaleString();
+            flashElement("val-4xx");
+
+            document.getElementById("threatBlockedVal").innerText = bankState.statusCodes.c4xx.toLocaleString();
+            flashElement("threatBlockedVal");
+
+            const lastIdx = timeLabels.length - 1;
+            window.settlementStatusChart.data.datasets[2].data[lastIdx] += blockedCount;
+            window.settlementStatusChart.update('none');
+
+            // Add row to Security Table
+            const tbody = document.getElementById("secTableBody");
+            const newRow = document.createElement("tr");
+            const timeStr = new Date().toLocaleTimeString();
+            newRow.innerHTML = `
+                <td style="color: #dc2626; font-weight: 700;">${timeStr} (NEW)</td>
+                <td><code>197.234.12.9</code> (Adversary Pivot)</td>
+                <td><code>/rtgs/settle/pacs.008</code></td>
+                <td>${desc}</td>
+                <td>CRS 942100 (Cryptographic Discrepancy)</td>
+                <td><span class="sec-badge sec-badge-block">Mitigated (Coraza WAF)</span></td>
+                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('${packetId}')">Inspect</button></td>
+            `;
+            tbody.insertBefore(newRow, tbody.firstChild);
+
+            // Automatically switch directly to Threat Mitigations
+            switchView('threats');
+        }
+
+        // Export Modal Controls
+        function openExportModal() {
+            document.getElementById("exportModal").style.display = "flex";
+        }
+
+        function closeExportModal() {
+            document.getElementById("exportModal").style.display = "none";
+        }
+
+        // 1. Generate Printable / PDF Executive Dossier
+        function generatePrintableReport() {
+            closeExportModal();
+            const reportWindow = window.open('', '_blank');
+            const now = new Date().toLocaleString();
+            reportWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Bank of Uganda | Executive Forensic Audit Dossier</title>
+                    <style>
+                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 40px; color: #111827; }
+                        .header { border-bottom: 2px solid #b45309; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+                        .title { font-size: 24px; font-weight: 800; color: #b45309; }
+                        .badge { background: #ecfdf5; color: #047857; padding: 4px 10px; border-radius: 4px; font-weight: 700; font-size: 12px; }
+                        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+                        .kpi-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; background: #f9fafb; }
+                        .kpi-title { font-size: 12px; color: #6b7280; font-weight: 600; text-transform: uppercase; }
+                        .kpi-value { font-size: 22px; font-weight: 800; color: #111827; margin-top: 6px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 12px; }
+                        th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; }
+                        th { background: #f3f4f6; font-weight: 700; }
+                        .legal-box { border-left: 4px solid #b45309; padding: 12px 16px; background: #fffbeb; margin-top: 30px; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div>
+                            <div class="title">BANK OF UGANDA</div>
+                            <div style="font-size: 13px; color: #4b5563;">National Payment Systems & Sovereign Cyber Forensics Directorate</div>
+                            <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Audit Window: ${now} | Classification: CONFIDENTIAL / SOVEREIGN</div>
+                        </div>
+                        <div class="badge">SEC. 8 ADMISSIBLE</div>
+                    </div>
+
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-title">Settled Gross Wires</div>
+                            <div class="kpi-value" style="color: #2563eb;">${bankState.statusCodes.c2xx.toLocaleString()}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">Coraza WAF Blocks</div>
+                            <div class="kpi-value" style="color: #dc2626;">${bankState.statusCodes.c4xx.toLocaleString()}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">MTTC Containment</div>
+                            <div class="kpi-value" style="color: #059669;">1.28 Seconds</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">Capital Protected</div>
+                            <div class="kpi-value" style="color: #b45309;">UGX 14.8 Billion</div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 16px; margin-top: 24px;">Commercial Bank Clearing & Liquidity Summary</h3>
+                    <table>
+                        <tr><th>Institution</th><th>SWIFT BIC</th><th>Wires Cleared</th><th>Settlement Value</th><th>Liquidity Status</th></tr>
+                        <tr><td>Stanbic Bank Uganda Limited</td><td>SBICUGKX</td><td>3,190</td><td>UGX 4.85 Trillion</td><td>Optimal (142% LCR)</td></tr>
+                        <tr><td>Centenary Rural Development Bank</td><td>CERBUGKA</td><td>1,380</td><td>UGX 1.92 Trillion</td><td>Optimal (128% LCR)</td></tr>
+                        <tr><td>Standard Chartered Bank Uganda</td><td>SCBLUGKA</td><td>1,150</td><td>UGX 1.60 Trillion</td><td>Optimal (155% LCR)</td></tr>
+                        <tr><td>Bank of Baroda Uganda</td><td>BARBUGKA</td><td>800</td><td>UGX 890 Billion</td><td>Optimal (118% LCR)</td></tr>
+                    </table>
+
+                    <div class="legal-box">
+                        <strong>LEGAL CHAIN OF CUSTODY CERTIFICATE:</strong><br>
+                        This audit artifact is certified under <strong>Section 8 of the Uganda Electronic Transactions Act 2011</strong>. Cryptographic integrity is verified via SHA-256 hash digests with zero chain-of-custody discrepancies.
+                    </div>
+
+                    <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                        <div>
+                            <div style="border-bottom: 1px solid #111827; width: 220px; margin-bottom: 4px;"></div>
+                            <div style="font-size: 11px; font-weight: 700;">Sam Gathigi</div>
+                            <div style="font-size: 10px; color: #6b7280;">Director, National Payment Systems</div>
+                        </div>
+                        <div>
+                            <div style="border-bottom: 1px solid #111827; width: 220px; margin-bottom: 4px;"></div>
+                            <div style="font-size: 11px; font-weight: 700;">Hardware HSM Root Authority</div>
+                            <div style="font-size: 10px; color: #6b7280;">Bank of Uganda Cryptographic Enclave</div>
+                        </div>
+                    </div>
+
+                    <script>
+                        window.onload = function() { window.print(); }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            reportWindow.document.close();
+        }
+
+        // 2. Download Structured CSV Report
+        function downloadCSVReport() {
+            closeExportModal();
+            let csv = "Institution_Name,SWIFT_BIC,Clearing_Volume,Settlement_Value_UGX,Liquidity_LCR,Security_Status\n";
+            csv += "Stanbic Bank Uganda Limited,SBICUGKX,3190,4850000000000,142%,CLEAN\n";
+            csv += "Centenary Rural Development Bank,CERBUGKA,1380,1920000000000,128%,CLEAN\n";
+            csv += "Standard Chartered Bank Uganda,SCBLUGKA,1150,1600000000000,155%,CLEAN\n";
+            csv += "Bank of Baroda Uganda,BARBUGKA,800,890000000000,118%,CLEAN\n";
+            csv += "Absa Bank Uganda Limited,BARCUGKX,740,780000000000,134%,CLEAN\n";
+            csv += "dfcu Bank Limited,DFCUUGKX,620,610000000000,112%,CLEAN\n";
+            csv += "Equity Bank Uganda,EQBLUGKA,590,540000000000,122%,CLEAN\n";
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `BOU_Settlement_Telemetry_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 3. Download Cryptographic JSON Evidence
+        function downloadJSONReport() {
+            closeExportModal();
+            const dump = {
+                "organization": "Bank of Uganda",
+                "department": "National Payment Systems & Cyber Security Directorate",
+                "export_timestamp": new Date().toISOString(),
+                "legal_authority": "Uganda Electronic Transactions Act 2011 Section 8",
+                "sha256_root_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "telemetry_state": bankState,
+                "mitigated_threats": [
+                    {
+                        "id": "SWIFT-HEIST-01",
+                        "threat": "Lazarus SWIFT MT103 Field 20/32A Tamper",
+                        "amount": "$12,500,000.00",
+                        "action": "Coraza WAF Drop + SOAR Alliance BIC Quarantine",
+                        "latency_seconds": 1.28
+                    },
+                    {
+                        "id": "MM-REPLAY-02",
+                        "threat": "MTN Mobile Money API Signature Replay Anomaly",
+                        "amount": "Rate limit exceeded (500 req/sec)",
+                        "action": "Coraza CRS 912120 Auto-Throttled",
+                        "latency_seconds": 0.92
+                    }
+                ]
+            };
+
+            const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `BOU_Forensic_Evidence_Vault_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Modal Packet Inspector
+        function viewPacket(id) {
+            const modal = document.getElementById("packetModal");
+            const title = document.getElementById("modalPacketId");
+            const content = document.getElementById("modalPacketContent");
+
+            title.innerText = `Forensic Trace: ${id}`;
+
+            let sample = {};
+            if (id.includes('SWIFT')) {
+                sample = {
+                    "header": "{1:F01BOUUGKAAXXXX0000000000}{2:I103CERBUGKXXXXN}{3:{108:MT103-ADVERSARY-09}}",
+                    "tag_20_tx_reference": "UGX-RTGS-20261021-99882",
+                    "tag_32A_value": "UGX 12,500,000,000.00",
+                    "tag_59_beneficiary": "/UG/998877665544/Lazarus-Syndicate-Mule",
+                    "pki_signature": "INVALID_CHECKSUM_DETECTED",
+                    "coraza_verdict": "RULE_942100_TRIGGERED",
+                    "soar_remediation": "BIC CERBUGKXXXX session suspended; MTTC 1.28s",
+                    "law_admissibility": "Uganda Electronic Transactions Act 2011 Sec 8 Verified"
+                };
+            } else {
+                sample = {
+                    "protocol": "ISO 20022 pacs.008.001.08",
+                    "message_id": "BOU-PAC008-20261021-7711",
+                    "instructing_agent": "Stanbic Bank Uganda (SBICUGKX)",
+                    "settlement_amount": "UGX 4,200,000,000.00",
+                    "status": "SETTLED_200_OK",
+                    "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "chain_of_custody": "Evidence stored under Uganda Electronic Transactions Act Section 8"
+                };
+            }
+
+            content.innerHTML = `<pre>${JSON.stringify(sample, null, 2)}</pre>`;
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("packetModal").style.display = "none";
         }
 
         // Chart Setup
@@ -1691,143 +2332,12 @@
             }
         });
 
-        // Live Simulation Toggle
-        function toggleSimulateWires() {
-            bankState.simulating = !bankState.simulating;
-            const btn = document.getElementById("simBtn");
-            const btnText = document.getElementById("simBtnText");
-            const statusText = document.getElementById("sovereignStatus");
-
-            if (bankState.simulating) {
-                btn.style.background = "#fee2e2";
-                btn.style.borderColor = "#fca5a5";
-                btnText.innerText = "Pause Simulation";
-                statusText.innerText = "Streaming Settlements...";
-
-                bankState.simInterval = setInterval(() => {
-                    bankState.statusCodes.c2xx += 10;
-                    document.getElementById("val-2xx").innerText = bankState.statusCodes.c2xx.toLocaleString();
-                    bankState.protocolChannels.iso += 8;
-                    document.getElementById("val-iso").innerText = bankState.protocolChannels.iso.toLocaleString();
-
-                    const randBank = bankState.banks[Math.floor(Math.random() * 3)];
-                    randBank.count += 5;
-                    renderBanks();
-
-                    const randEp = bankState.endpoints[Math.floor(Math.random() * 3)];
-                    randEp.count += 5;
-                    renderEndpoints();
-
-                    const lastIdx = timeLabels.length - 1;
-                    window.settlementStatusChart.data.datasets[0].data[lastIdx] += 10;
-                    window.settlementStatusChart.update('none');
-                }, 1600);
-            } else {
-                clearInterval(bankState.simInterval);
-                btn.style.background = "#ffffff";
-                btn.style.borderColor = "#e5e7eb";
-                btnText.innerText = "Simulate Live Settlements";
-                statusText.innerText = "RTGS Core Active (UGX)";
-            }
-        }
-
-        // Chaos Adversary Trigger
-        function triggerAttack(type) {
-            let desc = "";
-            let packetId = "";
-            let blockedCount = 50;
-
-            if (type === 'swift') {
-                desc = "SWIFT MT103 Unauthorized Beneficiary Injection (Lazarus Simulation)";
-                packetId = "SWIFT-HEIST-01";
-                blockedCount = 120;
-            } else if (type === 'drain') {
-                desc = "ISO 20022 High-Value Drain Exploit on Stanbic Escrow";
-                packetId = "RTGS-DRAIN-02";
-                blockedCount = 90;
-            } else if (type === 'ransomware') {
-                desc = "BlackCat Enclave Cryptor Infiltration on Treasury Gateway";
-                packetId = "ENCLAVE-CRYPT-03";
-                blockedCount = 350;
-            } else if (type === 'mobile') {
-                desc = "Mobile Money MTN API Signature Replay Anomaly";
-                packetId = "MM-REPLAY-02";
-                blockedCount = 80;
-            }
-
-            bankState.statusCodes.c4xx += blockedCount;
-            document.getElementById("val-4xx").innerText = bankState.statusCodes.c4xx.toLocaleString();
-            document.getElementById("threatBlockedVal").innerText = bankState.statusCodes.c4xx.toLocaleString();
-
-            const lastIdx = timeLabels.length - 1;
-            window.settlementStatusChart.data.datasets[2].data[lastIdx] += blockedCount;
-            window.settlementStatusChart.update('none');
-
-            const tbody = document.getElementById("secTableBody");
-            const newRow = document.createElement("tr");
-            const timeStr = new Date().toLocaleTimeString();
-            newRow.innerHTML = `
-                <td style="color: #dc2626; font-weight: 700;">${timeStr} (NEW)</td>
-                <td><code>197.234.12.9</code> (Adversary Pivot)</td>
-                <td><code>/rtgs/settle/pacs.008</code></td>
-                <td>${desc}</td>
-                <td>CRS 942100 (Cryptographic Discrepancy)</td>
-                <td><span class="sec-badge sec-badge-block">Mitigated (Coraza WAF)</span></td>
-                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('${packetId}')">Inspect</button></td>
-            `;
-            tbody.insertBefore(newRow, tbody.firstChild);
-
-            // Automatically switch directly to the Threat Mitigations view so the user immediately sees the change!
-            switchView('threats');
-        }
-
-        // Modal Packet Inspector
-        function viewPacket(id) {
-            const modal = document.getElementById("packetModal");
-            const title = document.getElementById("modalPacketId");
-            const content = document.getElementById("modalPacketContent");
-
-            title.innerText = `Forensic Trace: ${id}`;
-
-            let sample = {};
-            if (id.includes('SWIFT')) {
-                sample = {
-                    "header": "{1:F01BOUUGKAAXXXX0000000000}{2:I103CERBUGKXXXXN}{3:{108:MT103-ADVERSARY-09}}",
-                    "tag_20_tx_reference": "UGX-RTGS-20261021-99882",
-                    "tag_32A_value": "UGX 12,500,000,000.00",
-                    "tag_59_beneficiary": "/UG/998877665544/Lazarus-Syndicate-Mule",
-                    "pki_signature": "INVALID_CHECKSUM_DETECTED",
-                    "coraza_verdict": "RULE_942100_TRIGGERED",
-                    "soar_remediation": "BIC CERBUGKXXXX session suspended; MTTC 1.28s",
-                    "law_admissibility": "Uganda Electronic Transactions Act 2011 Sec 8 Verified"
-                };
-            } else {
-                sample = {
-                    "protocol": "ISO 20022 pacs.008.001.08",
-                    "message_id": "BOU-PAC008-20261021-7711",
-                    "instructing_agent": "Stanbic Bank Uganda (SBICUGKX)",
-                    "settlement_amount": "UGX 4,200,000,000.00",
-                    "status": "SETTLED_200_OK",
-                    "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                    "chain_of_custody": "Evidence stored under Uganda Electronic Transactions Act Section 8"
-                };
-            }
-
-            content.innerHTML = `<pre>${JSON.stringify(sample, null, 2)}</pre>`;
-            modal.style.display = "flex";
-        }
-
-        function closeModal() {
-            document.getElementById("packetModal").style.display = "none";
-        }
-
-        function exportExecutiveReport() {
-            alert("Exporting Sovereign Executive Forensic Report...\nFormat: PDF / Cryptographic Audit Package\nStandard: Bank of Uganda NPS & ISO 20022");
-        }
-
-        // Initialize lists
+        // Initialize lists and stream on load
         renderEndpoints();
         renderBanks();
+
+        // Seed initial wires into stream
+        sampleWires.slice(0, 3).forEach(w => addWireToStream(w, false));
     </script>
 </body>
 </html>
