@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank of Uganda | Sovereign Cyber Forensics War Room & Masterclass Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bou: {
+                            950: '#020612',
+                            900: '#071120',
+                            850: '#0b192e',
+                            800: '#0f2442',
+                            700: '#173660',
+                            gold: '#c5a059',
+                            goldLight: '#e6be75',
+                            goldDark: '#997736',
+                            crimson: '#e11d48',
+                            emerald: '#10b981',
+                            cyan: '#06b6d4',
+                            amber: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #020612;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(11, 25, 46, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(197, 160, 89, 0.25);
+        }
+        .glass-panel:hover {
+            border-color: rgba(197, 160, 89, 0.45);
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: #020612;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #1e3a5f;
+            border-radius: 3px;
+        }
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 15px rgba(197, 160, 89, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(197, 160, 89, 0.7); }
+        }
+        .animate-pulse-gold {
+            animation: pulse-gold 2.5s infinite;
+        }
+        @media print {
+            body { background: white !important; color: black !important; }
+            .no-print { display: none !important; }
+            #printable-report { display: block !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-bou-gold selection:text-bou-950">
+
+    <!-- Top Sovereign Command Bar -->
+    <header class="no-print sticky top-0 z-50 bg-bou-900/95 backdrop-blur-md border-b border-bou-gold/30 px-6 py-3 flex justify-between items-center shadow-2xl">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="bg-gradient-to-br from-bou-gold to-bou-goldLight text-bou-950 font-black text-xs px-2.5 py-1 rounded shadow-md tracking-wider">BANK OF UGANDA</span>
+                <div>
+                    <h1 class="text-sm md:text-base font-bold text-white tracking-wide flex items-center gap-2">
+                        <span>Cyber Forensics & Incident War Room</span>
+                        <span class="text-xs font-normal text-bou-gold px-2 py-0.5 rounded-full bg-bou-gold/10 border border-bou-gold/30">Masterclass 2026</span>
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Telemetry Indicators & Controls -->
+        <div class="flex items-center gap-3 text-xs">
+            <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded bg-bou-950 border border-bou-crimson/40 text-bou-crimson font-mono">
+                <span class="w-2 h-2 rounded-full bg-bou-crimson animate-ping"></span>
+                <span>DEFCON 2 : HIGH ALERT</span>
+            </div>
+            
+            <div class="hidden lg:flex items-center gap-2 px-3 py-1 rounded bg-bou-950 border border-bou-gold/30 text-bou-gold font-mono">
+                <span>WAR ROOM SCORE:</span>
+                <span id="topScore" class="font-bold text-white">100 / 100</span>
+            </div>
+
+            <div class="hidden lg:flex items-center gap-2 px-3 py-1 rounded bg-bou-950 border border-bou-emerald/30 text-bou-emerald font-mono">
+                <span>EVIDENTIARY INTEGRITY:</span>
+                <span id="topIntegrity" class="font-bold text-white">100%</span>
+            </div>
+
+            <a href="cyber_forensic_chef.html" target="_blank" class="px-2.5 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-cyan/50 text-bou-cyan font-bold transition flex items-center gap-1">
+                <span>🔪 Forensic Chef</span>
+            </a>
+            <a href="soar_playbook_simulator.html" target="_blank" class="px-2.5 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-emerald/50 text-emerald-400 font-bold transition flex items-center gap-1">
+                <span>⚡ SOAR Playbook</span>
+            </a>
+            <a href="payment_systems_architecture.html" target="_blank" class="px-2.5 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-gold/50 text-bou-gold font-bold transition flex items-center gap-1">
+                <span>🌐 Network Architecture</span>
+            </a>
+            <button id="sfxToggle" onclick="toggleAudio()" class="px-2.5 py-1 rounded bg-bou-850 hover:bg-bou-800 border border-bou-gold/30 text-bou-gold transition">
+                🔊 SFX: ON
+            </button>
+            <button onclick="window.print()" class="px-2.5 py-1 rounded bg-bou-gold text-bou-950 font-bold hover:bg-bou-goldLight transition">
+                🖨️ Export Dossier
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation Hub (The 7 Modules from the Brochure) -->
+    <nav class="no-print bg-bou-850 border-b border-bou-gold/20 px-6 overflow-x-auto">
+        <div class="flex gap-1 min-w-max">
+            <button onclick="switchTab('ops')" class="tab-btn active px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-bou-gold text-bou-goldLight flex items-center gap-2 transition" data-tab="ops">
+                <span>🛡️ War Room HQ</span>
+            </button>
+            <button onclick="switchTab('mod1')" class="tab-btn px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition" data-tab="mod1">
+                <span>📜 Mod 1 & 4: Evidence & Law</span>
+            </button>
+            <button onclick="switchTab('mod2')" class="tab-btn px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition" data-tab="mod2">
+                <span>🎯 Mod 2: Threats & IoCs</span>
+            </button>
+            <button onclick="switchTab('mod3')" class="tab-btn px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition" data-tab="mod3">
+                <span>🔬 Mod 3: Tools & Workbench</span>
+            </button>
+            <button onclick="switchTab('mod5')" class="tab-btn px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition" data-tab="mod5">
+                <span>⚔️ Mod 5: Incident Playbooks (TTX)</span>
+            </button>
+            <button onclick="switchTab('mod6')" class="tab-btn px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition" data-tab="mod6">
+                <span>☣️ Mod 6: Malware & Cloud/AI</span>
+            </button>
+            <button onclick="switchTab('mod7')" class="tab-btn px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition" data-tab="mod7">
+                <span>📋 Mod 7: Executive Report</span>
+            </button>
+            <button onclick="switchTab('crossborder')" class="tab-btn px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition" data-tab="crossborder">
+                <span>🇰🇪 ↔ 🇺🇬 Regional Intel & Federated AI</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+
+        <!-- ========================================== -->
+        <!-- TAB 0: WAR ROOM HQ (OPERATIONS DASHBOARD) -->
+        <!-- ========================================== -->
+        <section id="panel-ops" class="tab-panel space-y-6">
+            <!-- Strategic Status Header -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="glass-panel p-5 rounded-lg border-l-4 border-l-bou-crimson">
+                    <div class="text-xs text-slate-400 font-mono uppercase tracking-wider">Active Incident Case</div>
+                    <div class="text-xl font-black text-white mt-1">OPERATION CRESTED CRANE</div>
+                    <div class="text-xs text-bou-crimson mt-2 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-bou-crimson animate-pulse"></span>
+                        <span>Unauthorized RTGS Wire In-Flight</span>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-lg border-l-4 border-l-bou-gold">
+                    <div class="text-xs text-slate-400 font-mono uppercase tracking-wider">At-Risk National Capital</div>
+                    <div class="text-xl font-black text-bou-goldLight mt-1">UGX 4,800,000,000</div>
+                    <div class="text-xs text-slate-300 mt-2">Target Acct: CR-8831-EXT (Offshore)</div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-lg border-l-4 border-l-bou-cyan">
+                    <div class="text-xs text-slate-400 font-mono uppercase tracking-wider">Compromised Node</div>
+                    <div class="text-xl font-black text-bou-cyan mt-1">BOU-RTGS-SRV01</div>
+                    <div class="text-xs text-slate-300 mt-2">PID 4128 : bou_rtgs_service.exe</div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-lg border-l-4 border-l-bou-emerald">
+                    <div class="text-xs text-slate-400 font-mono uppercase tracking-wider">Judicial Standard</div>
+                    <div class="text-xl font-black text-bou-emerald mt-1">CMA 2011 / 2022</div>
+                    <div class="text-xs text-slate-300 mt-2">Uganda Evidence Act Cap 6 Certified</div>
+                </div>
+            </div>
+
+            <!-- Threat Radar & Real-Time Incident Telemetry Feed -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Threat Radar Chart -->
+                <div class="glass-panel p-5 rounded-lg lg:col-span-1 flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-4 border-b border-bou-gold/20 pb-3">
+                        <h2 class="text-sm font-bold text-bou-gold uppercase font-mono tracking-wider flex items-center gap-2">
+                            <span>📡 BoU Cyber Threat Radar</span>
+                        </h2>
+                        <span class="text-xs font-mono text-slate-400">Live Telemetry</span>
+                    </div>
+                    <div class="relative h-64 flex items-center justify-center">
+                        <canvas id="threatRadarChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-xs font-mono text-slate-400 border-t border-bou-gold/20 pt-3 flex justify-between">
+                        <span>Vulnerabilities Assessed: <strong class="text-white">18</strong></span>
+                        <span>Containment Status: <strong class="text-bou-amber">ACTIVE</strong></span>
+                    </div>
+                </div>
+
+                <!-- Live Masterclass Feed & Incident Timeline -->
+                <div class="glass-panel p-5 rounded-lg lg:col-span-2 flex flex-col">
+                    <div class="flex justify-between items-center mb-4 border-b border-bou-gold/20 pb-3">
+                        <h2 class="text-sm font-bold text-bou-gold uppercase font-mono tracking-wider flex items-center gap-2">
+                            <span>⚡ Masterclass Live Incident Log (Chronology)</span>
+                        </h2>
+                        <span class="text-xs font-mono text-bou-crimson bg-bou-crimson/10 px-2 py-0.5 rounded border border-bou-crimson/30">LIVE EDR / SIEM</span>
+                    </div>
+                    <div class="space-y-3 font-mono text-xs overflow-y-auto max-h-72 terminal-scroll pr-2" id="liveEventFeed">
+                        <div class="p-2.5 rounded bg-bou-950/80 border border-slate-800 flex items-start gap-3">
+                            <span class="text-bou-gold font-bold">06:14:02 EAT</span>
+                            <span class="text-slate-300"><strong class="text-bou-cyan">[AUTH]</strong> User <code class="text-bou-goldLight">vendor_fintech_vpn</code> authenticated from external IP <code class="text-white">194.26.29.11</code> without hardware FIDO2 token.</span>
+                        </div>
+                        <div class="p-2.5 rounded bg-bou-950/80 border border-slate-800 flex items-start gap-3">
+                            <span class="text-bou-gold font-bold">06:22:18 EAT</span>
+                            <span class="text-slate-300"><strong class="text-bou-amber">[PRIV_ESC]</strong> Token impersonation: Attacker dumped LSASS memory; acquired Domain Admin NTLM hash.</span>
+                        </div>
+                        <div class="p-2.5 rounded bg-bou-950/80 border border-bou-crimson/40 bg-bou-crimson/5 flex items-start gap-3">
+                            <span class="text-bou-crimson font-bold">06:28:44 EAT</span>
+                            <span class="text-slate-200"><strong class="text-bou-crimson">[CRITICAL]</strong> Outbound batch queued: <strong class="text-white">RTGS-OUT-9912</strong> (UGX 4,800,000,000) destination <code class="text-bou-goldLight">CR-8831-EXT</code>. In-memory signature hook detected on PID 4128!</span>
+                        </div>
+                        <div class="p-2.5 rounded bg-bou-950/80 border border-slate-800 flex items-start gap-3">
+                            <span class="text-bou-gold font-bold">06:30:10 EAT</span>
+                            <span class="text-slate-300"><strong class="text-bou-emerald">[CSIRT]</strong> BoU Incident Commander invoked Order of Volatility protocol (RFC 3227) & isolated VLAN 40.</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Module Launchers -->
+                    <div class="mt-4 pt-3 border-t border-bou-gold/20 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                        <button onclick="switchTab('mod1')" class="p-2 rounded bg-bou-900 hover:bg-bou-800 border border-bou-gold/30 text-bou-goldLight font-medium transition">📜 Verify Evidence</button>
+                        <button onclick="switchTab('mod3')" class="p-2 rounded bg-bou-900 hover:bg-bou-800 border border-bou-gold/30 text-bou-goldLight font-medium transition">🔬 Volatility Shell</button>
+                        <button onclick="switchTab('mod5')" class="p-2 rounded bg-bou-crimson/20 hover:bg-bou-crimson/30 border border-bou-crimson/40 text-rose-300 font-bold transition">⚔️ Play Incident TTX</button>
+                        <button onclick="switchTab('mod7')" class="p-2 rounded bg-bou-gold text-bou-950 font-bold hover:bg-bou-goldLight transition">📋 Build Dossier</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+                <!-- ======================================================= -->
+        <!-- TAB 1: MODULE 1 & 4 (EVIDENCE INTEGRITY & UGANDA LAW) -->
+        <!-- ======================================================= -->
+        <section id="panel-mod1" class="tab-panel hidden space-y-6">
+            <div class="glass-panel p-6 rounded-lg">
+                <!-- Section Header -->
+                <div class="border-b border-bou-gold/20 pb-4 mb-5 flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <span class="text-xs font-mono text-bou-gold uppercase tracking-wider">Brochure Module 1 & 4 • Legal & Judicial Readiness</span>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <span>Evidence Integrity, Order of Volatility & Uganda Jurisprudence</span>
+                        </h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs px-3 py-1 rounded bg-bou-emerald/15 text-emerald-400 border border-bou-emerald/40 font-mono font-bold">ISO/IEC 27037 & RFC 3227</span>
+                        <span class="text-xs px-3 py-1 rounded bg-bou-gold/15 text-bou-gold border border-bou-gold/40 font-mono font-bold">Uganda CMA 2022</span>
+                    </div>
+                </div>
+
+                <!-- Orientation Card (Plain English) -->
+                <div class="p-4 rounded-lg bg-bou-950/90 border-l-4 border-l-bou-gold border border-slate-800 text-xs text-slate-300 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                    <div>
+                        <strong class="text-white text-sm">💡 The Forensic Golden Rule for Bank of Uganda:</strong>
+                        <p class="mt-1 leading-relaxed text-slate-300">
+                            In a cyber heist, the most brilliant technical discovery is <strong class="text-rose-400">completely useless</strong> if a defense attorney gets your evidence thrown out of court on a technicality. This module teaches you the <strong>3 non-negotiable rules</strong> to ensure your evidence puts criminals behind bars:
+                        </p>
+                    </div>
+                    <div class="flex gap-2 shrink-0 font-mono text-xxs">
+                        <button onclick="scrollEvidenceTab('hashSection')" class="px-3 py-1.5 rounded bg-bou-900 hover:bg-bou-850 border border-bou-cyan/40 text-cyan-300 font-bold">1. Hashing Test</button>
+                        <button onclick="scrollEvidenceTab('volatilitySection')" class="px-3 py-1.5 rounded bg-bou-900 hover:bg-bou-850 border border-bou-amber/40 text-amber-300 font-bold">2. Volatility Order</button>
+                        <button onclick="scrollEvidenceTab('lawSection')" class="px-3 py-1.5 rounded bg-bou-900 hover:bg-bou-850 border border-bou-gold/40 text-bou-gold font-bold">3. Uganda Law Decoder</button>
+                        <button onclick="scrollEvidenceTab('custodySection')" class="px-3 py-1.5 rounded bg-bou-900 hover:bg-bou-850 border border-bou-emerald/40 text-emerald-400 font-bold">4. Chain of Custody</button>
+                    </div>
+                </div>
+
+                <!-- PILLAR 1: The 1-Byte Courtroom Test (Interactive Hashing) -->
+                <div id="hashSection" class="p-5 rounded-xl bg-bou-950/80 border border-bou-cyan/30 space-y-4 mb-6 shadow-xl">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-bou-cyan/20 text-cyan-300 border border-bou-cyan/40 font-mono font-bold uppercase">Pillar 1: Proof of Non-Tampering</span>
+                            <h3 class="text-base font-bold text-white mt-1">The 1-Byte Courtroom Test (The Cryptographic Hash Seal)</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">
+                                Under Section 5 of the <strong class="text-white">Uganda Electronic Transactions Act (2011)</strong>, digital evidence is admissible <strong class="text-cyan-300">only if its bitstream integrity is 100% mathematically proven</strong>. Watch what happens when even 1 single digit is modified:
+                            </p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="testEvidenceStream('original')" class="px-3 py-1 rounded bg-bou-900 hover:bg-bou-850 border border-bou-emerald/40 text-emerald-300 text-xs font-mono font-bold transition">Load Authentic Record</button>
+                            <button onclick="testEvidenceStream('tampered')" class="px-3 py-1 rounded bg-bou-crimson/20 hover:bg-bou-crimson/30 border border-bou-crimson text-rose-300 text-xs font-mono font-bold transition">Simulate 1-Byte Tamper</button>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-3.5 rounded-lg bg-bou-900/70 border border-slate-800 font-mono text-xs">
+                            <div class="flex justify-between items-center text-xxs text-slate-400 mb-1">
+                                <span class="font-bold uppercase text-slate-300">Seized Evidence Text (What the server recorded):</span>
+                                <span id="evidenceTypeTag" class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">ORIGINAL EVIDENCE</span>
+                            </div>
+                            <textarea id="evidenceInput" rows="3" readonly class="w-full bg-bou-950 border border-slate-700 rounded p-2 text-xs font-mono text-slate-200 focus:outline-none">[2026-10-19T06:28:44Z] BATCH_QUEUED: RTGS-OUT-9912 | UGX 4,800,000,000 -> BENEFICIARY: CR-8831-EXT</textarea>
+                            <div class="text-xxs text-slate-400 mt-2">
+                                Notice: In authentic mode, the transfer amount is <strong class="text-white">UGX 4,800,000,000</strong>.
+                            </div>
+                        </div>
+
+                        <!-- Computed Hashes Box -->
+                        <div class="p-3.5 rounded-lg bg-bou-900/70 border border-slate-800 font-mono text-xs flex flex-col justify-between">
+                            <div class="text-xxs text-slate-400 uppercase font-bold mb-1">Mathematical Hash Output:</div>
+                            <div class="space-y-1.5">
+                                <div>
+                                    <span class="text-slate-400 text-xxs">SHA-256 Digest:</span>
+                                    <div id="outSha256" class="p-1.5 rounded bg-bou-950 border border-slate-800 text-bou-cyan font-bold break-all text-xxs">08adba3aa8c35d8d12dac1ce7dd218bdc39592b160da62ea275acd9f751561f4</div>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 text-xxs">MD5 Digest:</span>
+                                    <div id="outMd5" class="p-1.5 rounded bg-bou-950 border border-slate-800 text-bou-goldLight font-bold break-all text-xxs">027d56eb3547a46f6362b6becbe03ed2</div>
+                                </div>
+                            </div>
+                            <div class="mt-2 pt-2 border-t border-slate-800 flex justify-between items-center text-xxs">
+                                <span class="text-slate-400 font-bold">High Court Admissibility:</span>
+                                <span id="outStatus" class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500 font-bold">✓ 100% BITSTREAM MATCH (COURT ADMISSIBLE)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PILLAR 2: Order of Volatility (RFC 3227 Interactive Thermometer) -->
+                <div id="volatilitySection" class="p-5 rounded-xl bg-bou-950/80 border border-amber-500/30 space-y-4 mb-6 shadow-xl">
+                    <div>
+                        <span class="text-xxs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono font-bold uppercase">Pillar 2: Order of Volatility (RFC 3227)</span>
+                        <h3 class="text-base font-bold text-white mt-1">What to Grab First: Never Pull the Server Power Plug!</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">
+                            Digital evidence has an expiration date. If an investigator powers off a compromised server, the most valuable evidence <strong class="text-rose-400">vaporizes immediately</strong>. Click each level to inspect what is lost:
+                        </p>
+                    </div>
+
+                    <!-- Interactive Ladder / Thermometer -->
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs font-mono">
+                        
+                        <!-- Tier 1: Registers / Cache -->
+                        <div onclick="showVolatilityDetail(1)" id="volTier1" class="cursor-pointer p-3 rounded-lg bg-bou-900 border-2 border-rose-500/60 hover:border-rose-400 transition flex flex-col justify-between">
+                            <div>
+                                <div class="text-xxs text-rose-400 font-bold uppercase">Lifespan: Nanoseconds</div>
+                                <div class="text-xs font-bold text-white mt-1">1. CPU Registers & Cache</div>
+                                <div class="text-xxs text-slate-400 mt-1">Decrypted instructions & CPU registers.</div>
+                            </div>
+                            <span class="text-xxs text-rose-400 mt-2 font-bold">Most Volatile ➔</span>
+                        </div>
+
+                        <!-- Tier 2: RAM -->
+                        <div onclick="showVolatilityDetail(2)" id="volTier2" class="cursor-pointer p-3 rounded-lg bg-bou-900 border-2 border-amber-500/60 hover:border-amber-400 transition flex flex-col justify-between">
+                            <div>
+                                <div class="text-xxs text-amber-400 font-bold uppercase">Lifespan: Minutes</div>
+                                <div class="text-xs font-bold text-white mt-1">2. RAM / Memory</div>
+                                <div class="text-xxs text-slate-400 mt-1">Injected malware, session keys, uncommitted RTGS wires.</div>
+                            </div>
+                            <span class="text-xxs text-amber-400 mt-2 font-bold">CRITICAL PRIORITY ➔</span>
+                        </div>
+
+                        <!-- Tier 3: Network -->
+                        <div onclick="showVolatilityDetail(3)" id="volTier3" class="cursor-pointer p-3 rounded-lg bg-bou-900 border border-slate-800 hover:border-cyan-400 transition flex flex-col justify-between">
+                            <div>
+                                <div class="text-xxs text-cyan-400 font-bold uppercase">Lifespan: Hours</div>
+                                <div class="text-xs font-bold text-white mt-1">3. Network State</div>
+                                <div class="text-xxs text-slate-400 mt-1">Active C2 sockets, ARP tables, routing caches.</div>
+                            </div>
+                            <span class="text-xxs text-cyan-400 mt-2">Inspect ➔</span>
+                        </div>
+
+                        <!-- Tier 4: Disk -->
+                        <div onclick="showVolatilityDetail(4)" id="volTier4" class="cursor-pointer p-3 rounded-lg bg-bou-900 border border-slate-800 hover:border-emerald-400 transition flex flex-col justify-between">
+                            <div>
+                                <div class="text-xxs text-emerald-400 font-bold uppercase">Lifespan: Months</div>
+                                <div class="text-xs font-bold text-white mt-1">4. Hard Disk / SAN</div>
+                                <div class="text-xxs text-slate-400 mt-1">Event logs, NTFS $MFT, database redo files.</div>
+                            </div>
+                            <span class="text-xxs text-emerald-400 mt-2">Inspect ➔</span>
+                        </div>
+
+                        <!-- Tier 5: Backup Tapes -->
+                        <div onclick="showVolatilityDetail(5)" id="volTier5" class="cursor-pointer p-3 rounded-lg bg-bou-900 border border-slate-800 hover:border-purple-400 transition flex flex-col justify-between">
+                            <div>
+                                <div class="text-xxs text-purple-400 font-bold uppercase">Lifespan: Years</div>
+                                <div class="text-xs font-bold text-white mt-1">5. Archival Tapes</div>
+                                <div class="text-xxs text-slate-400 mt-1">Vaulted tape backups and disaster recovery cold storage.</div>
+                            </div>
+                            <span class="text-xxs text-purple-400 mt-2">Least Volatile ➔</span>
+                        </div>
+
+                    </div>
+
+                    <!-- Dynamic Volatility Inspector Card -->
+                    <div id="volatilityDetailBox" class="p-3.5 rounded-lg bg-bou-900/90 border border-bou-gold/30 font-mono text-xs text-slate-300">
+                        <strong class="text-bou-gold text-xs uppercase">Level 2 Focus: RAM / Volatile Memory (The Investigator's Goldmine)</strong>
+                        <p class="mt-1 text-slate-300 leading-relaxed font-sans text-xs">
+                            Modern financial malware (like Cobalt Strike or in-memory API hooks) executes purely in RAM without writing an executable file to disk (Fileless Malware). If a junior admin reboots the server, <strong class="text-rose-400">the encryption keys, running processes, and evidence of who authorized the fraudulent transfer are wiped clean</strong>. 
+                        </p>
+                        <div class="mt-2 text-xxs text-emerald-400">
+                            <strong>Correct Action:</strong> Use a tool like <code>DumpIt</code>, <code>WinPmem</code>, or <code>LiME</code> to capture a full raw memory snapshot (`memory.raw`) BEFORE touching any services or cables!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PILLAR 3: Uganda Cyber Law High Court Decoder -->
+                <div id="lawSection" class="p-5 rounded-xl bg-bou-950/80 border border-bou-gold/30 space-y-4 mb-6 shadow-xl">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-bou-gold/20 text-bou-gold border border-bou-gold/40 font-mono font-bold uppercase">Pillar 3: Ugandan High Court Statutory Decoder</span>
+                            <h3 class="text-base font-bold text-white mt-1">Which Uganda Law Applies to Which Cyber Crime?</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">
+                                As a forensic investigator presenting in the High Court of Uganda, you must cite the exact statute violated. Click each scenario to reveal the legal charge:
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        
+                        <!-- Law Card 1 -->
+                        <div class="p-3.5 rounded-lg bg-bou-900/80 border border-slate-800 hover:border-bou-gold transition">
+                            <span class="text-xxs px-2 py-0.5 rounded bg-red-950 text-rose-300 font-mono font-bold">Computer Misuse Act 2022</span>
+                            <h4 class="text-xs font-bold text-white mt-2">Section 20: Electronic Fraud</h4>
+                            <p class="text-xxs text-slate-300 mt-1 leading-relaxed">
+                                <strong>Scenario:</strong> Siphoning UGX 4.8 Billion from RTGS or manipulating interbank batch balances.
+                            </p>
+                            <div class="mt-2 pt-2 border-t border-slate-800 text-xxs font-mono text-bou-gold">
+                                ⚖️ <strong>Penalty:</strong> Up to 10 Years Imprisonment, fine of 500 currency points, or both.
+                            </div>
+                        </div>
+
+                        <!-- Law Card 2 -->
+                        <div class="p-3.5 rounded-lg bg-bou-900/80 border border-slate-800 hover:border-bou-gold transition">
+                            <span class="text-xxs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono font-bold">Computer Misuse Act 2022</span>
+                            <h4 class="text-xs font-bold text-white mt-2">Section 12 & 14: Unauthorized Access & Modification</h4>
+                            <p class="text-xxs text-slate-300 mt-1 leading-relaxed">
+                                <strong>Scenario:</strong> An external hacker cracking VPN passwords or injecting an in-memory hook into PID 4128.
+                            </p>
+                            <div class="mt-2 pt-2 border-t border-slate-800 text-xxs font-mono text-bou-gold">
+                                ⚖️ <strong>Penalty:</strong> Up to 7 Years Imprisonment for critical financial infrastructure tampering.
+                            </div>
+                        </div>
+
+                        <!-- Law Card 3 -->
+                        <div class="p-3.5 rounded-lg bg-bou-900/80 border border-slate-800 hover:border-bou-gold transition">
+                            <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">Data Protection & Privacy Act 2019</span>
+                            <h4 class="text-xs font-bold text-white mt-2">Section 10 & 20: Strict Financial Privacy</h4>
+                            <p class="text-xxs text-slate-300 mt-1 leading-relaxed">
+                                <strong>Scenario:</strong> Investigators leaking innocent citizen National IDs (NINs) or bank accounts during an inquiry.
+                            </p>
+                            <div class="mt-2 pt-2 border-t border-slate-800 text-xxs font-mono text-bou-gold">
+                                ⚖️ <strong>Mandate:</strong> Evidence must be pseudonymized (HMAC tokenized) before presentation to third parties.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- PILLAR 4: Institutional Chain of Custody (The Golden Thread) -->
+                <div id="custodySection" class="p-5 rounded-xl bg-bou-950/80 border border-bou-emerald/30 space-y-4 shadow-xl">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-bou-emerald/20 text-emerald-300 border border-bou-emerald/40 font-mono font-bold uppercase">Pillar 4: Chain of Custody (The Golden Thread)</span>
+                            <h3 class="text-base font-bold text-white mt-1">Proving Evidence Was Never Tainted from Server Room to Judge</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">
+                                A single unaccounted hour in an evidence ledger allows defense counsel to argue that someone planted the malware. Complete this custody action:
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 4-Step Visual Journey -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xxs font-mono">
+                        <div class="p-3 rounded-lg bg-bou-900 border border-slate-800">
+                            <div class="text-bou-gold font-bold">STEP 1: SEIZURE</div>
+                            <div class="text-slate-300 mt-1">Hardware write-blocker attached. Bitstream raw image created. Initial SHA-256 logged.</div>
+                        </div>
+                        <div class="p-3 rounded-lg bg-bou-900 border border-slate-800">
+                            <div class="text-bou-cyan font-bold">STEP 2: BAGGING</div>
+                            <div class="text-slate-300 mt-1">Placed in anti-static Faraday bag. Tamper-evident barcode seal #BOU-CUSTODY-TAPE-084 applied.</div>
+                        </div>
+                        <div class="p-3 rounded-lg bg-bou-900 border border-slate-800">
+                            <div class="text-emerald-400 font-bold">STEP 3: SECURE VAULT</div>
+                            <div class="text-slate-300 mt-1">Logged into Bank of Uganda Headquarters Dual-Key Forensic Safe #2.</div>
+                        </div>
+                        <div class="p-3 rounded-lg bg-bou-900 border border-slate-800">
+                            <div class="text-purple-400 font-bold">STEP 4: HIGH COURT</div>
+                            <div class="text-slate-300 mt-1">Brought before Justice. Defense verifies SHA-256 matches initial seizure hash 100%.</div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Custody Sign-in -->
+                    <div class="p-4 rounded-lg bg-bou-900/80 border border-slate-800 font-mono text-xs space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <span class="text-slate-400 text-xxs">Evidence Tracking ID:</span>
+                                <input id="cocEvidenceId" type="text" value="EVD-BOU-2026-RTGS01" class="w-full bg-bou-950 border border-bou-gold/40 rounded p-2 text-white">
+                            </div>
+                            <div>
+                                <span class="text-slate-400 text-xxs">Designated Custodian:</span>
+                                <input id="cocCustodian" type="text" value="Senior Forensic Examiner, BoU CSIRT" class="w-full bg-bou-950 border border-bou-gold/40 rounded p-2 text-white">
+                            </div>
+                            <div>
+                                <span class="text-slate-400 text-xxs">Current Vault Location:</span>
+                                <input id="cocVault" type="text" value="BoU Headquarters Safe #2 (Kampala)" class="w-full bg-bou-950 border border-bou-gold/40 rounded p-2 text-white">
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="logCustodyAction()" class="px-4 py-2 bg-gradient-to-r from-bou-gold to-bou-goldLight text-bou-950 font-bold text-xs rounded hover:brightness-110 transition shadow">
+                                ✍️ Seal Custody Transfer Ledger Entry
+                            </button>
+                            <span id="custodyLogResult" class="text-xs font-mono text-emerald-400 hidden font-bold">
+                                ✓ Certified ISO/IEC 27037 ledger entry created with cryptographic timestamp!
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 2: MODULE 2 (CYBER SECURITY THREATS & ATTACK VECTORS / IoC) -->
+        <!-- ============================================================== -->
+        <section id="panel-mod2" class="tab-panel hidden space-y-6">
+            <div class="glass-panel p-6 rounded-lg">
+                <div class="border-b border-bou-gold/20 pb-4 mb-5 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-mono text-bou-gold uppercase tracking-wider">Brochure Module 2</span>
+                        <h2 class="text-xl font-bold text-white">Financial Threat Taxonomy, Attack Vectors & Indicators of Compromise (IoCs)</h2>
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded bg-bou-crimson/10 text-bou-crimson border border-bou-crimson/30 font-mono">MITRE ATT&CK Banking Matrix</span>
+                </div>
+
+                <!-- Attack Vector Explorer Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 rounded-lg bg-bou-950 border border-slate-800 hover:border-bou-crimson transition">
+                        <div class="text-xs font-mono text-bou-crimson font-bold uppercase">Vector 1: Core Payment Tampering</div>
+                        <h4 class="text-sm font-bold text-white mt-1">RTGS / SWIFT In-Memory Hooking</h4>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                            Attacker injects an API hook into the transaction dispatcher service, nullifying dual-control authorization and injecting unapproved payment batches.
+                        </p>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-bou-950 border border-slate-800 hover:border-bou-amber transition">
+                        <div class="text-xs font-mono text-bou-amber font-bold uppercase">Vector 2: Third-Party Supply Chain</div>
+                        <h4 class="text-sm font-bold text-white mt-1">Vendor Maintenance Tunnel Abuse</h4>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                            Stolen credentials from an authorized IT maintenance vendor bypass perimeter MFA and establish lateral SMB access across production financial VLANs.
+                        </p>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-bou-950 border border-slate-800 hover:border-bou-cyan transition">
+                        <div class="text-xs font-mono text-bou-cyan font-bold uppercase">Vector 3: Stealth C2 Beaconing</div>
+                        <h4 class="text-sm font-bold text-white mt-1">Statistical Jitter & Domain Fronting</h4>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                            Automated bot implants maintain communication with bulletproof overseas hosting nodes using low-jitter HTTPS channels masquerading as cloud telemetry.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Interactive IoC Triage Table -->
+                <div class="bg-bou-950/80 p-5 rounded-lg border border-bou-gold/30 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-bou-goldLight uppercase font-mono">Live Indicators of Compromise (IoC) Matrix for Case FIN-UG7</h3>
+                        <span class="text-xs font-mono text-slate-400">4 Active IoCs Extracted</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left font-mono text-xs border-collapse">
+                            <thead>
+                                <tr class="border-b border-bou-gold/30 text-bou-gold">
+                                    <th class="py-2 px-3">Type</th>
+                                    <th class="py-2 px-3">Indicator / Artifact</th>
+                                    <th class="py-2 px-3">Threat Context</th>
+                                    <th class="py-2 px-3">Severity</th>
+                                    <th class="py-2 px-3">Firewall Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800 text-slate-300">
+                                <tr>
+                                    <td class="py-2 px-3 text-bou-cyan font-bold">IPv4 Address</td>
+                                    <td class="py-2 px-3 text-white">194.26.29.11</td>
+                                    <td class="py-2 px-3">Adversary C2 Staging Server (ASN 49211)</td>
+                                    <td class="py-2 px-3 text-bou-crimson font-bold">CRITICAL</td>
+                                    <td class="py-2 px-3"><span class="px-2 py-0.5 rounded bg-bou-crimson/20 text-rose-300 border border-bou-crimson">BLOCKED</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-3 text-bou-cyan font-bold">SHA-256 File</td>
+                                    <td class="py-2 px-3 text-white">e3b0c44298fc1c149afbf4c8996fb924...</td>
+                                    <td class="py-2 px-3">Cobalt Strike Stager in C:\Windows\Temp</td>
+                                    <td class="py-2 px-3 text-bou-crimson font-bold">CRITICAL</td>
+                                    <td class="py-2 px-3"><span class="px-2 py-0.5 rounded bg-bou-crimson/20 text-rose-300 border border-bou-crimson">QUARANTINED</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-3 text-bou-cyan font-bold">DNS Domain</td>
+                                    <td class="py-2 px-3 text-white">settle-gate.ugandafin.xyz</td>
+                                    <td class="py-2 px-3">DNS Tunneling Data Exfiltration Endpoint</td>
+                                    <td class="py-2 px-3 text-bou-amber font-bold">HIGH</td>
+                                    <td class="py-2 px-3"><span class="px-2 py-0.5 rounded bg-bou-amber/20 text-amber-300 border border-bou-amber">DNS SINKHOLE</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-3 text-bou-cyan font-bold">Windows Event</td>
+                                    <td class="py-2 px-3 text-white">Event ID 4624 (Logon Type 10)</td>
+                                    <td class="py-2 px-3">RDP Logon via unapproved vendor account</td>
+                                    <td class="py-2 px-3 text-bou-emerald font-bold">ELEVATED</td>
+                                    <td class="py-2 px-3"><span class="px-2 py-0.5 rounded bg-bou-emerald/20 text-emerald-300 border border-bou-emerald">ACCOUNT DISABLED</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 3: MODULE 3 (DIGITAL FORENSICS TOOLS & WORKBENCH) -->
+        <!-- ============================================================== -->
+        <section id="panel-mod3" class="tab-panel hidden space-y-6">
+            <div class="glass-panel p-6 rounded-lg">
+                <div class="border-b border-bou-gold/20 pb-4 mb-5 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-mono text-bou-gold uppercase tracking-wider">Brochure Module 3</span>
+                        <h2 class="text-xl font-bold text-white">Forensic Tools & Acquisition Workbench (Memory, Disk, Network)</h2>
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded bg-bou-cyan/10 text-bou-cyan border border-bou-cyan/30 font-mono">Volatility 3 / Sleuth Kit / Wireshark</span>
+                </div>
+
+                <!-- Sub-tabs for Workbench: Memory vs Network PCAP vs Disk/MFT -->
+                <div class="flex gap-2 border-b border-slate-800 pb-2 mb-4 font-mono text-xs">
+                    <button onclick="switchWorkbench('mem')" class="wb-tab-btn active px-3 py-1.5 rounded bg-bou-gold text-bou-950 font-bold" data-wbtab="mem">🧠 Volatile Memory (Volatility 3)</button>
+                    <button onclick="switchWorkbench('pcap')" class="wb-tab-btn px-3 py-1.5 rounded bg-bou-900 hover:bg-bou-800 text-slate-300" data-wbtab="pcap">📡 Packet Dissector (PCAP)</button>
+                    <button onclick="switchWorkbench('disk')" class="wb-tab-btn px-3 py-1.5 rounded bg-bou-900 hover:bg-bou-800 text-slate-300" data-wbtab="disk">💾 File System & MFT Carver</button>
+                </div>
+
+                <!-- 1. Volatility 3 Interactive Shell -->
+                <div id="wb-panel-mem" class="wb-panel space-y-3">
+                    <div class="bg-bou-950 p-4 rounded-lg border border-bou-gold/30 font-mono text-xs space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="text-bou-gold">Target RAM Image: bou_rtgs_mem.dmp (Windows Server 2022 x64)</span>
+                            <span class="text-slate-400">Available: pslist, malfind, netscan, cmdline, dlllist</span>
+                        </div>
+                        <div id="volOutput" class="h-64 overflow-y-auto terminal-scroll text-slate-300 bg-black/60 p-3 rounded leading-relaxed whitespace-pre-wrap">VOLATILITY 3 FRAMEWORK v2.7.0
+Loaded image: bou_rtgs_mem.dmp
+Symbols loaded for Windows Server 2022 (Kernel base: 0xfffff80010000000)
+Type a command or click a quick shortcut below to triage suspicious process memory.</div>
+                        <div class="flex gap-2 items-center">
+                            <span class="text-bou-gold font-bold">vol.py&gt;</span>
+                            <input type="text" id="volInput" placeholder="Try: pslist, malfind, netscan, cmdline..." class="flex-1 bg-bou-900 border border-slate-700 rounded px-3 py-1.5 text-white focus:outline-none focus:border-bou-gold" onkeydown="handleVolKey(event)">
+                            <button onclick="execVolCmd()" class="px-4 py-1.5 bg-bou-gold text-bou-950 font-bold rounded hover:bg-bou-goldLight transition">Execute</button>
+                        </div>
+                        <div class="flex gap-2 flex-wrap text-xs pt-1">
+                            <span class="text-slate-500">Quick queries:</span>
+                            <button onclick="runVolShortcut('pslist')" class="px-2 py-0.5 rounded bg-bou-850 hover:bg-bou-800 border border-slate-700 text-bou-cyan">windows.pslist</button>
+                            <button onclick="runVolShortcut('malfind')" class="px-2 py-0.5 rounded bg-bou-850 hover:bg-bou-800 border border-bou-crimson/50 text-rose-300">windows.malfind (Injects)</button>
+                            <button onclick="runVolShortcut('netscan')" class="px-2 py-0.5 rounded bg-bou-850 hover:bg-bou-800 border border-slate-700 text-bou-cyan">windows.netscan (Sockets)</button>
+                            <button onclick="runVolShortcut('cmdline')" class="px-2 py-0.5 rounded bg-bou-850 hover:bg-bou-800 border border-slate-700 text-bou-cyan">windows.cmdline</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Packet Dissector (PCAP) -->
+                <div id="wb-panel-pcap" class="wb-panel hidden space-y-3">
+                    <div class="bg-bou-950 p-4 rounded-lg border border-bou-gold/30 font-mono text-xs space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="text-bou-cyan font-bold">PCAP Trace: BOU_GATEWAY_CAPTURE_20261019.pcap (Wireshark Engine)</span>
+                            <span class="text-slate-400">Total Frames: 1,482</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left font-mono text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-800 text-slate-400">
+                                        <th class="py-1 px-2">No.</th>
+                                        <th class="py-1 px-2">Time</th>
+                                        <th class="py-1 px-2">Source</th>
+                                        <th class="py-1 px-2">Destination</th>
+                                        <th class="py-1 px-2">Protocol</th>
+                                        <th class="py-1 px-2">Length</th>
+                                        <th class="py-1 px-2">Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800 text-slate-300" id="pcapTable">
+                                    <tr class="hover:bg-bou-900 cursor-pointer" onclick="inspectPacket(1)">
+                                        <td class="py-1 px-2">104</td>
+                                        <td class="py-1 px-2 text-slate-400">06:28:43</td>
+                                        <td class="py-1 px-2 text-bou-cyan">10.12.4.15</td>
+                                        <td class="py-1 px-2 text-bou-goldLight">10.12.4.99</td>
+                                        <td class="py-1 px-2 text-bou-amber font-bold">RTGS-RPC</td>
+                                        <td class="py-1 px-2">512</td>
+                                        <td class="py-1 px-2 text-white">Call: QueueBatch(ID=9912, Val=4.8B UGX, Sig=BYPASSED)</td>
+                                    </tr>
+                                    <tr class="hover:bg-bou-900 cursor-pointer bg-bou-crimson/10" onclick="inspectPacket(2)">
+                                        <td class="py-1 px-2">108</td>
+                                        <td class="py-1 px-2 text-slate-400">06:28:44</td>
+                                        <td class="py-1 px-2 text-bou-cyan">10.12.4.15</td>
+                                        <td class="py-1 px-2 text-bou-crimson font-bold">194.26.29.11</td>
+                                        <td class="py-1 px-2 text-bou-crimson font-bold">TLSv1.3</td>
+                                        <td class="py-1 px-2">1,024</td>
+                                        <td class="py-1 px-2 text-rose-300">[ANOMALY] Outbound Beacon Heartbeat (Jitter=0.0033)</td>
+                                    </tr>
+                                    <tr class="hover:bg-bou-900 cursor-pointer" onclick="inspectPacket(3)">
+                                        <td class="py-1 px-2">115</td>
+                                        <td class="py-1 px-2 text-slate-400">06:29:12</td>
+                                        <td class="py-1 px-2 text-bou-cyan">10.12.4.15</td>
+                                        <td class="py-1 px-2 text-slate-300">10.12.0.2</td>
+                                        <td class="py-1 px-2 text-bou-cyan">DNS</td>
+                                        <td class="py-1 px-2">128</td>
+                                        <td class="py-1 px-2 text-slate-300">Standard query 0x14a2 TXT a8f12.c2.ugandafin.xyz</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="packetHexView" class="p-3 bg-black/70 rounded border border-slate-800 text-bou-cyan text-xs leading-relaxed">
+                            Click any packet row above to inspect byte-level hex disassembly and decoded field headers.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. File System & MFT Carver -->
+                <div id="wb-panel-disk" class="wb-panel hidden space-y-3">
+                    <div class="bg-bou-950 p-4 rounded-lg border border-bou-gold/30 font-mono text-xs space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="text-bou-emerald font-bold">NTFS $MFT & Deleted Artifact Carver (The Sleuth Kit / fls / ils)</span>
+                            <span class="text-slate-400">Volume: C:\ [NTFS 4096 Cluster]</span>
+                        </div>
+                        <p class="text-slate-300 leading-relaxed">
+                            Unmasking <strong class="text-white">Anti-Forensics & Timestomping</strong>: Notice the discrepancy between <code class="text-bou-gold">$STANDARD_INFORMATION</code> (which can be manipulated by user-mode APIs) and <code class="text-bou-cyan">$FILE_NAME</code> (which can only be altered by the kernel driver).
+                        </p>
+                        <div class="p-3 bg-black/60 rounded border border-slate-800 text-slate-300 space-y-2">
+                            <div><strong>Artifact:</strong> <code>C:\Windows\Temp\mimikatz.exe</code> (Deleted / Carved from Cluster 88412)</div>
+                            <div>• $STANDARD_INFORMATION Timestamp: <span class="text-slate-400">2018-05-12 10:00:00 UTC</span> <span class="text-bou-crimson font-bold">[FORGED / TIMESTOMPED]</span></div>
+                            <div>• $FILE_NAME Real Creation Timestamp: <span class="text-bou-emerald font-bold">2026-10-19 06:21:40 UTC</span> <span class="text-bou-emerald font-bold">[REAL FORENSIC TRUTH]</span></div>
+                            <div class="text-bou-goldLight mt-2">→ Conclusion: The attacker attempted to camouflage the credential dumper as an old 2018 system utility. $FILE_NAME analysis definitively proves it was dropped today during the intrusion.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 4: MODULE 5 (INCIDENT RESPONSE & TABLETOP SIMULATION TTX) -->
+        <!-- ============================================================== -->
+        <section id="panel-mod5" class="tab-panel hidden space-y-6">
+            <div class="glass-panel p-6 rounded-lg">
+                <div class="border-b border-bou-gold/20 pb-4 mb-5 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-mono text-bou-gold uppercase tracking-wider">Brochure Module 5</span>
+                        <h2 class="text-xl font-bold text-white">Central Bank Incident Response Management & Interactive Tabletop (TTX)</h2>
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded bg-bou-crimson/10 text-bou-crimson border border-bou-crimson/30 font-mono">NIST SP 800-61 / ISO 27035</span>
+                </div>
+
+                <!-- Scenario Controls: Filter Pills & Randomizer Button -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                    <div class="flex items-center gap-2 flex-wrap text-xxs font-mono">
+                        <span class="text-slate-400">Filter By Domain:</span>
+                        <button onclick="filterScenarios('all')" class="scen-filter-btn active px-2.5 py-1 rounded bg-bou-gold text-bou-950 font-bold" data-filter="all">All (8)</button>
+                        <button onclick="filterScenarios('rails')" class="scen-filter-btn px-2.5 py-1 rounded bg-bou-900 hover:bg-bou-850 text-slate-300" data-filter="rails">Payment Rails (RTGS/SWIFT)</button>
+                        <button onclick="filterScenarios('cloud')" class="scen-filter-btn px-2.5 py-1 rounded bg-bou-900 hover:bg-bou-850 text-slate-300" data-filter="cloud">Cloud, APIs & Tokens</button>
+                        <button onclick="filterScenarios('malware')" class="scen-filter-btn px-2.5 py-1 rounded bg-bou-900 hover:bg-bou-850 text-slate-300" data-filter="malware">Ransomware & Supply Chain</button>
+                        <button onclick="filterScenarios('ai')" class="scen-filter-btn px-2.5 py-1 rounded bg-bou-900 hover:bg-bou-850 text-slate-300" data-filter="ai">AI & Insider Threats</button>
+                    </div>
+
+                    <button onclick="randomizeScenario()" class="px-4 py-2 rounded bg-gradient-to-r from-bou-crimson to-bou-amber text-white font-bold text-xs hover:brightness-110 transition shadow-lg flex items-center gap-2 font-mono animate-pulse">
+                        <span>🎲 Random Incident Drill</span>
+                    </button>
+                </div>
+
+                <!-- 8 Interactive Scenario Cards Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6" id="scenarioGrid">
+                    <!-- 0: RTGS -->
+                    <button onclick="loadScenario(0)" id="scenBtn0" class="scen-card p-3 text-left rounded-lg bg-bou-950 border border-bou-gold text-white font-mono text-xs transition" data-category="rails">
+                        <div class="flex justify-between items-center text-xxs">
+                            <span class="text-bou-gold font-bold">SCENARIO A</span>
+                            <span class="text-bou-crimson font-bold">CRITICAL</span>
+                        </div>
+                        <div class="font-bold mt-1 text-xs">RTGS In-Memory Wire</div>
+                        <div class="text-slate-400 text-xxs mt-1">4.8B UGX Injection • PID 4128 Hook</div>
+                    </button>
+
+                    <!-- 1: Ransomware -->
+                    <button onclick="loadScenario(1)" id="scenBtn1" class="scen-card p-3 text-left rounded-lg bg-bou-950 border border-slate-800 text-slate-400 hover:text-white font-mono text-xs transition" data-category="malware">
+                        <div class="flex justify-between items-center text-xxs">
+                            <span class="text-bou-crimson font-bold">SCENARIO B</span>
+                            <span class="text-bou-crimson font-bold">CRITICAL</span>
+                        </div>
+                        <div class="font-bold mt-1 text-xs">Hypervisor Ransomware</div>
+                        <div class="text-slate-400 text-xxs mt-1">ESXi & SAN Locked • Double Extortion</div>
+                    </button>
+
+                    <!-- 2: Insider -->
+                    <button onclick="loadScenario(2)" id="scenBtn2" class="scen-card p-3 text-left rounded-lg bg-bou-950 border border-slate-800 text-slate-400 hover:text-white font-mono text-xs transition" data-category="ai">
+                        <div class="flex justify-between items-center text-xxs">
+                            <span class="text-bou-cyan font-bold">SCENARIO C</span>
+                            <span class="text-bou-amber font-bold">HIGH</span>
+                        </div>
+                        <div class="font-bold mt-1 text-xs">Core Banking Insider</div>
+                        <div class="text-slate-400 text-xxs mt-1">Ledger Update • Redo Log Fraud</div>
+                    </button>
+
+                    <!-- 3: SWIFT / HSM -->
+                    <button onclick="loadScenario(3)" id="scenBtn3" class="scen-card p-3 text-left rounded-lg bg-bou-950 border border-slate-800 text-slate-400 hover:text-white font-mono text-xs transition" data-category="rails">
+                        <div class="flex justify-between items-center text-xxs">
+                            <span class="text-bou-gold font-bold">SCENARIO D</span>
+                            <span class="text-bou-crimson font-bold">CRITICAL</span>
+                        </div>
+                        <div class="font-bold mt-1 text-xs">SWIFT Alliance Gateway</div>
+                        <div class="text-slate-400 text-xxs mt-1">HSM Key Bypass • MT103 Forgery</div>
+                    </button>
+
+                    <!-- 4: Cloud API Token -->
+                    <button onclick="loadScenario(4)" id="scenBtn4" class="scen-card p-3 text-left rounded-lg bg-bou-950 border border-slate-800 text-slate-400 hover:text-white font-mono text-xs transition" data-category="cloud">
+                        <div class="flex justify-between items-center text-xxs">
+                            <span class="text-bou-purple-400 font-bold">SCENARIO E</span>
+                            <span class="text-bou-amber font-bold">HIGH</span>
+                        </div>
+                        <div class="font-bold mt-1 text-xs">Payment Switch Cloud API</div>
+                        <div class="text-slate-400 text-xxs mt-1">OAuth Token Replay • AWS CloudTrail</div>
+                    </button>
+
+                    <!-- 5: AI Deepfake -->
+                    <button onclick="loadScenario(5)" id="scenBtn5" class="scen-card p-3 text-left rounded-lg bg-bou-950 border border-slate-800 text-slate-400 hover:text-white font-mono text-xs transition" data-category="ai">
+                        <div class="flex justify-between items-center text-xxs">
+                            <span class="text-bou-emerald font-bold">SCENARIO F</span>
+                            <span class="text-bou-amber font-bold">HIGH</span>
+                        </div>
+                        <div class="font-bold mt-1 text-xs">AI Voice Deepfake Fraud</div>
+                        <div class="text-slate-400 text-xxs mt-1">Executive Audio Clone • Spectral Triage</div>
+                    </button>
+
+                    <!-- 6: Supply Chain -->
+                    <button onclick="loadScenario(6)" id="scenBtn6" class="scen-card p-3 text-left rounded-lg bg-bou-950 border border-slate-800 text-slate-400 hover:text-white font-mono text-xs transition" data-category="malware">
+                        <div class="flex justify-between items-center text-xxs">
+                            <span class="text-bou-amber font-bold">SCENARIO G</span>
+                            <span class="text-bou-crimson font-bold">CRITICAL</span>
+                        </div>
+                        <div class="font-bold mt-1 text-xs">ACH Clearing Supply Chain</div>
+                        <div class="text-slate-400 text-xxs mt-1">Backdoored DLL • 14 Banks Contagion</div>
+                    </button>
+
+                    <!-- 7: Cross-Border EAPS -->
+                    <button onclick="loadScenario(7)" id="scenBtn7" class="scen-card p-3 text-left rounded-lg bg-bou-950 border border-slate-800 text-slate-400 hover:text-white font-mono text-xs transition" data-category="rails">
+                        <div class="flex justify-between items-center text-xxs">
+                            <span class="text-bou-goldLight font-bold">SCENARIO H</span>
+                            <span class="text-bou-crimson font-bold">CRITICAL</span>
+                        </div>
+                        <div class="font-bold mt-1 text-xs">EAPS Mobile Float Arbitrage</div>
+                        <div class="text-slate-400 text-xxs mt-1">Kampala-Nairobi Corridor • Synthetic KES</div>
+                </div>
+
+                <!-- Active Scenario Header & Step Info -->
+                <div class="bg-bou-950/90 border border-bou-gold/30 rounded-lg p-3.5 flex justify-between items-center mb-3">
+                    <div class="flex items-center gap-3">
+                        <span id="ttxPhaseText" class="px-2.5 py-1 rounded bg-bou-crimson/20 text-rose-300 border border-bou-crimson/40 text-xxs font-mono font-bold uppercase">PHASE 1: DETECTION</span>
+                        <span id="ttxTitleText" class="text-xs md:text-sm font-bold text-white font-mono">Incident Step Title</span>
+                    </div>
+                    <div class="text-xxs font-mono text-slate-400">
+                        <span>Incident Phase: </span>
+                        <span id="ttxStepText" class="text-bou-gold font-bold">1 of 3</span>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded bg-bou-900/60 border-l-4 border-l-bou-gold text-slate-200 text-sm leading-relaxed mb-4" id="ttxPrompt">
+                    Loading scenario prompt...
+                </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="ttxChoices">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div id="ttxFeedback" class="p-4 rounded text-xs font-mono leading-relaxed hidden"></div>
+
+                    <div class="flex justify-between items-center pt-2">
+                        <button onclick="resetScenario()" class="px-3 py-1.5 rounded bg-bou-900 border border-slate-700 text-xs text-slate-400 hover:text-white">Restart Scenario</button>
+                        <button id="ttxNextBtn" onclick="advanceScenarioStep()" class="px-4 py-2 rounded bg-bou-gold text-bou-950 text-xs font-bold hover:bg-bou-goldLight hidden transition">Advance to Next Incident Phase →</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 5: MODULE 6 (ADVANCED TOPICS: MALWARE, CLOUD & AI THREATS) -->
+        <!-- ============================================================== -->
+        <section id="panel-mod6" class="tab-panel hidden space-y-6">
+            <div class="glass-panel p-6 rounded-lg">
+                <div class="border-b border-bou-gold/20 pb-4 mb-5 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-mono text-bou-gold uppercase tracking-wider">Brochure Module 6</span>
+                        <h2 class="text-xl font-bold text-white">Malware Reverse Triage, Threat Intelligence & Cloud/AI Forensics</h2>
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded bg-bou-purple-400/10 text-purple-400 border border-purple-400/30 font-mono">YARA / Static PE Analysis</span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Live YARA Rule Builder & Rule Tester -->
+                    <div class="bg-bou-950/80 p-5 rounded-lg border border-bou-gold/30 space-y-3 font-mono text-xs">
+                        <h3 class="text-sm font-bold text-bou-goldLight uppercase flex items-center gap-2">
+                            <span>🛡️ Interactive YARA Signature Compiler</span>
+                        </h3>
+                        <p class="text-slate-300 font-sans text-xs">
+                            Write or customize YARA rules to sweep Bank of Uganda endpoints for banking trojan string artifacts and PE signatures.
+                        </p>
+                        <textarea id="yaraCode" rows="8" class="w-full bg-bou-900 border border-slate-700 rounded p-2 text-bou-cyan focus:outline-none focus:border-bou-gold">rule BoU_Banking_Trojan_Hook {
+    meta:
+        description = "Detects in-memory dual-authorization bypass"
+        author = "Bank of Uganda Forensics"
+    strings:
+        $s1 = "RTGS_INJECTION_HOOK" ascii wide
+        $s2 = "SWIFT_PAYMENT_INTERCEPT" ascii wide
+        $hex1 = { 48 83 ec 28 48 8d 0d }
+    condition:
+        uint16(0) == 0x5A4D and (any of ($s*)) or $hex1
+}</textarea>
+                        <div class="flex gap-2">
+                            <button onclick="testYaraRule()" class="px-3 py-1.5 bg-bou-gold text-bou-950 font-bold rounded hover:bg-bou-goldLight">Test Signature Against Dump</button>
+                        </div>
+                        <div id="yaraResult" class="p-2.5 rounded bg-bou-900 border border-slate-800 text-slate-300">
+                            Status: Ready to scan target binary buffer.
+                        </div>
+                    </div>
+
+                    <!-- Cloud & AI Security Vectors in Central Banking -->
+                    <div class="bg-bou-950/80 p-5 rounded-lg border border-bou-gold/30 space-y-4">
+                        <h3 class="text-sm font-bold text-bou-goldLight uppercase font-mono flex items-center gap-2">
+                            <span>☁️ Cloud & AI Threat Vectors in Central Banking</span>
+                        </h3>
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 rounded bg-bou-900/60 border border-slate-800">
+                                <div class="font-bold text-bou-cyan">Cloud Security & API Token Hijacking</div>
+                                <p class="text-slate-300 mt-1">Interbank settlement APIs integrated with AWS/Azure hybrid switches. Forensics requires analyzing CloudTrail / Azure Activity logs for <code>AssumeRoleWithWebIdentity</code> anomalies and token theft.</p>
+                            </div>
+                            <div class="p-3 rounded bg-bou-900/60 border border-slate-800">
+                                <div class="font-bold text-bou-purple-400">AI-Generated Synthetic Wire Fraud</div>
+                                <p class="text-slate-300 mt-1">Adversaries utilizing deepfake audio and automated behavioral bypass models to impersonate senior bank signatories over voice confirmation channels.</p>
+                            </div>
+                            <div class="p-3 rounded bg-bou-900/60 border border-slate-800">
+                                <div class="font-bold text-bou-amber">IoT & Critical Facility Infrastructure</div>
+                                <p class="text-slate-300 mt-1">Forensic analysis of physical vault access controllers, CCTV telemetry, and data center cooling control systems susceptible to SCADA/ICS attacks.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 6: MODULE 7 (REPORT WRITING & EXECUTIVE BRIEFING DOSSIER) -->
+        <!-- ============================================================== -->
+        <section id="panel-mod7" class="tab-panel hidden space-y-6">
+            <div class="glass-panel p-6 rounded-lg">
+                <div class="border-b border-bou-gold/20 pb-4 mb-5 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-mono text-bou-gold uppercase tracking-wider">Brochure Module 7</span>
+                        <h2 class="text-xl font-bold text-white">Forensic Report Writing & Communication to the Governor / Courts</h2>
+                    </div>
+                    <button onclick="window.print()" class="px-3 py-1.5 rounded bg-bou-gold text-bou-950 font-bold text-xs hover:bg-bou-goldLight flex items-center gap-1.5">
+                        <span>🖨️ Print / Save as PDF</span>
+                    </button>
+                </div>
+
+                <!-- Printable / Rendered Institutional Report -->
+                <div id="printable-report" class="bg-white text-slate-900 p-8 rounded-lg shadow-2xl space-y-6 font-sans">
+                    <!-- Report Header -->
+                    <div class="border-b-2 border-slate-900 pb-4 flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-widest text-slate-500">BANK OF UGANDA // CONFIDENTIAL FORENSIC DOSSIER</div>
+                            <h2 class="text-2xl font-black text-slate-900 mt-1">INCIDENT INVESTIGATION REPORT: OPERATION CRESTED CRANE</h2>
+                            <div class="text-xs text-slate-600 mt-1">Case Reference: <strong>BOU-CYBER-2026-001</strong> | Prepared for: <strong>Governor & Board Audit Committee</strong></div>
+                        </div>
+                        <div class="text-right text-xs">
+                            <span class="inline-block px-2.5 py-1 bg-red-100 text-red-800 font-bold rounded border border-red-300">FOR COURT PRODUCTION</span>
+                            <div class="text-slate-500 mt-1">Date: 19 October 2026</div>
+                        </div>
+                    </div>
+
+                    <!-- Executive Summary -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-1 mb-2">1. Executive Summary</h3>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            On 19 October 2026 at 06:28 EAT, an unauthorized batch settlement command was queued on payment engine <strong class="text-slate-900">BOU-RTGS-SRV01</strong> attempting to wire <strong class="text-red-700 font-bold">UGX 4,800,000,000</strong> to offshore beneficiary account <strong class="text-slate-900">CR-8831-EXT</strong>. 
+                            The Bank of Uganda Cyber Incident Response Team (BoU-CSIRT) successfully intercepted the transmission, preserved volatile RAM, isolated the affected VLAN, and revoked compromised domain Kerberos tickets. 
+                            <strong>Zero financial loss was sustained by the Bank of Uganda or commercial institutions.</strong>
+                        </p>
+                    </div>
+
+                    <!-- Forensic Evidence Summary Table -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-1 mb-2">2. Digital Evidence Ledger & Chain of Custody</h3>
+                        <table class="w-full text-left text-xs border border-slate-300">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border border-slate-300">Item ID</th>
+                                    <th class="p-2 border border-slate-300">Source Asset</th>
+                                    <th class="p-2 border border-slate-300">Media Type</th>
+                                    <th class="p-2 border border-slate-300">SHA-256 Hash</th>
+                                    <th class="p-2 border border-slate-300">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-slate-600 font-mono text-xxs">
+                                <tr>
+                                    <td class="p-2 border border-slate-300 font-bold text-slate-900">EVD-RTGS-01</td>
+                                    <td class="p-2 border border-slate-300">BOU-RTGS-SRV01</td>
+                                    <td class="p-2 border border-slate-300">Volatile RAM Dump (24GB)</td>
+                                    <td class="p-2 border border-slate-300">08adba3aa8c35d8d12dac1ce7dd218bdc39592b1...</td>
+                                    <td class="p-2 border border-slate-300 text-green-700 font-bold">MATCH / ADMISSIBLE</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border border-slate-300 font-bold text-slate-900">EVD-PCAP-02</td>
+                                    <td class="p-2 border border-slate-300">Core Switch VLAN 40</td>
+                                    <td class="p-2 border border-slate-300">Network PCAP (1.4GB)</td>
+                                    <td class="p-2 border border-slate-300">9c1b72e0a4f5d31290bb8a11cf4e1209ba339412...</td>
+                                    <td class="p-2 border border-slate-300 text-green-700 font-bold">MATCH / ADMISSIBLE</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Statutory Breaches -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-1 mb-2">3. Recommended Charges Under Uganda Cyber Law</h3>
+                        <ul class="text-xs text-slate-700 space-y-1.5 list-disc pl-5">
+                            <li><strong>Uganda Computer Misuse Act (2011/2022) Section 12:</strong> Unauthorized access to computer programs or data.</li>
+                            <li><strong>Uganda Computer Misuse Act Section 15:</strong> Unauthorized modification of computer contents (in-memory hooking of PID 4128).</li>
+                            <li><strong>Uganda Computer Misuse Act Section 20:</strong> Electronic fraud attempting unlawful financial diversion of UGX 4,800,000,000.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Certification Signatures -->
+                    <div class="border-t-2 border-slate-900 pt-6 grid grid-cols-2 gap-8 text-xs">
+                        <div>
+                            <div class="font-bold text-slate-900">LEAD CYBER FORENSIC EXAMINER</div>
+                            <div class="text-slate-500">Bank of Uganda CSIRT</div>
+                            <div class="mt-6 border-b border-slate-400 w-48"></div>
+                            <div class="text-slate-400 text-xxs mt-1">Signature & Date Stamp</div>
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-900">HEAD OF INFORMATION SECURITY & AUDIT</div>
+                            <div class="text-slate-500">Bank of Uganda</div>
+                            <div class="mt-6 border-b border-slate-400 w-48"></div>
+                            <div class="text-slate-400 text-xxs mt-1">Signature & Date Stamp</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <!-- ============================================================== -->
+        <!-- TAB 7: REGIONAL INTEL & FEDERATED LEARNING (KENYA <-> UGANDA) -->
+        <!-- ============================================================== -->
+        <section id="panel-crossborder" class="tab-panel hidden space-y-6">
+            <div class="glass-panel p-6 rounded-lg">
+                <div class="border-b border-bou-gold/20 pb-4 mb-5 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono text-bou-gold uppercase tracking-wider">East African Sovereign Security Matrix</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-bou-emerald/10 text-bou-emerald border border-bou-emerald/30 font-mono">CBK 🇰🇪 ↔ BoU 🇺🇬</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-white mt-1">Cross-Border Cyberspace Parallels & Privacy-Preserving Federated AI</h2>
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded bg-bou-cyan/10 text-bou-cyan border border-bou-cyan/30 font-mono">EAPS Payment Rails • Zero Data Leakage</span>
+                </div>
+
+                <!-- Strategic Introduction Banner -->
+                <div class="p-4 rounded-lg bg-gradient-to-r from-bou-950 via-bou-900 to-bou-950 border border-bou-gold/30 text-xs text-slate-300 leading-relaxed mb-6">
+                    <strong class="text-bou-goldLight text-sm font-bold block mb-1">🏛️ Strategic Context: Interconnected Financial Infrastructure in East Africa</strong>
+                    Because the <strong class="text-white">East African Payment System (EAPS)</strong> and cross-border mobile money corridors connect the Bank of Uganda and the Central Bank of Kenya, an advanced threat syndicate targeting Nairobi or Kampala poses systemic risks to both sovereign economies. Below are real-world lessons from Kenyan cyberspace and an interactive blueprint for <strong class="text-bou-emerald">Federated Learning</strong> that enables collaborative threat detection without violating either nation's Data Protection Acts.
+                </div>
+
+                <!-- Section 1: Real-World Kenyan Cyberspace Incidents (Forensic Parallels) -->
+                <div class="space-y-4 mb-8">
+                    <h3 class="text-sm font-bold text-bou-gold uppercase font-mono tracking-wider flex items-center gap-2">
+                        <span>🇰🇪 Case Studies from Kenyan Financial Cyberspace & Forensic Lessons</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Case 1 -->
+                        <div class="p-4 rounded-lg bg-bou-950 border border-slate-800 hover:border-bou-gold/50 transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center text-xs font-mono mb-2">
+                                    <span class="text-bou-crimson font-bold uppercase">Incident 1</span>
+                                    <span class="text-slate-500">SACCO & MFI Sector</span>
+                                </div>
+                                <h4 class="text-sm font-bold text-white mb-2">Core Banking Float & B2C Disbursement Hijack</h4>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Adversaries compromised third-party IT maintenance accounts, altered internal SQL transaction tables on weekend evenings, and initiated unauthorized batch B2C disbursements to burner mobile lines.
+                                </p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-800/80 text-xxs text-bou-goldLight font-mono">
+                                <strong>BoU Forensic Parallel:</strong> Identical to the Operation Crested Crane RTGS vector. Demonstrates why DB transaction logs alone are insufficient—immutable binary redo logs and network taps are required.
+                            </div>
+                        </div>
+
+                        <!-- Case 2 -->
+                        <div class="p-4 rounded-lg bg-bou-950 border border-slate-800 hover:border-bou-gold/50 transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center text-xs font-mono mb-2">
+                                    <span class="text-bou-amber font-bold uppercase">Incident 2</span>
+                                    <span class="text-slate-500">National Infrastructure</span>
+                                </div>
+                                <h4 class="text-sm font-bold text-white mb-2">Sovereign Portal & KEPSS Smokescreen Attacks</h4>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    High-volume distributed denial-of-service (DDoS) barrages targeting national citizen and payment gateways were weaponized as tactical diversions while secondary threat actors probed interbank API endpoints.
+                                </p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-800/80 text-xxs text-bou-amber font-mono">
+                                <strong>BoU Forensic Parallel:</strong> CSIRT playbooks must enforce strict dual-track investigation: while network engineers mitigate perimeter volumetric floods, forensic analysts must guard payment gateways against concurrent zero-day intrusion.
+                            </div>
+                        </div>
+
+                        <!-- Case 3 -->
+                        <div class="p-4 rounded-lg bg-bou-950 border border-slate-800 hover:border-bou-gold/50 transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center text-xs font-mono mb-2">
+                                    <span class="text-bou-cyan font-bold uppercase">Incident 3</span>
+                                    <span class="text-slate-500">Telecom & Banking</span>
+                                </div>
+                                <h4 class="text-sm font-bold text-white mb-2">SIM-Swap Syndicates & Dual-Sign OTP Interception</h4>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Compromised customer care agent credentials at telecom providers permitted unauthorized SIM re-registration of registered corporate signatories, intercepting SMS-based 2FA tokens for high-value wires.
+                                </p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-800/80 text-xxs text-bou-cyan font-mono">
+                                <strong>BoU Forensic Parallel:</strong> SMS OTP is legally non-defensible for central bank RTGS settlements. Proves the legal requirement for hardware-isolated FIDO2/PKI tokens under Uganda's Electronic Signatures Act 2011.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Sovereign Federated Learning Simulator (BoU <-> CBK) -->
+                <div class="p-6 rounded-lg bg-bou-950 border border-bou-gold/40 space-y-5">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 border-b border-slate-800 pb-3">
+                        <div>
+                            <span class="text-xs font-mono text-bou-emerald uppercase tracking-wider">Privacy-Preserving Cross-Border AI</span>
+                            <h3 class="text-lg font-bold text-white">Sovereign Federated Learning Engine (FedAvg + Differential Privacy)</h3>
+                        </div>
+                        <span class="text-xs font-mono px-2.5 py-1 rounded bg-bou-emerald/15 text-emerald-300 border border-bou-emerald/30">
+                            Zero Bank Customer Data Leaves Sovereignty
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+                        <!-- Node 1: Kampala (BoU) -->
+                        <div class="p-4 rounded-lg bg-bou-900/60 border border-bou-gold/30 space-y-3 font-mono text-xs">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                <span class="font-bold text-bou-goldLight flex items-center gap-1.5">
+                                    <span>🇺🇬 Node 1: Bank of Uganda (Kampala)</span>
+                                </span>
+                                <span class="text-slate-400">RTGS & Payment Switch</span>
+                            </div>
+                            <div class="text-slate-300 space-y-1">
+                                <div>• Local Model: <strong class="text-white">BoU-CyberNet-v1 (LSTM Autoencoder)</strong></div>
+                                <div>• Private Training Data: <strong class="text-white">1,840,000 RTGS Telemetry Events</strong></div>
+                                <div>• Local Zero-Day Detection Rate: <span id="bouAcc" class="text-bou-amber font-bold">74.2%</span></div>
+                                <div>• Data Privacy Status: <span class="text-bou-emerald font-bold">Kept Strictly in BoU Vault</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Node 2: Nairobi (CBK) -->
+                        <div class="p-4 rounded-lg bg-bou-900/60 border border-bou-cyan/30 space-y-3 font-mono text-xs">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                <span class="font-bold text-bou-cyan flex items-center gap-1.5">
+                                    <span>🇰🇪 Node 2: Central Bank of Kenya (Nairobi)</span>
+                                </span>
+                                <span class="text-slate-400">KEPSS & Interbank Rails</span>
+                            </div>
+                            <div class="text-slate-300 space-y-1">
+                                <div>• Local Model: <strong class="text-white">CBK-SovereignGuard-v2</strong></div>
+                                <div>• Private Training Data: <strong class="text-white">2,410,000 KEPSS Telemetry Events</strong></div>
+                                <div>• Local Zero-Day Detection Rate: <span id="cbkAcc" class="text-bou-amber font-bold">76.8%</span></div>
+                                <div>• Data Privacy Status: <span class="text-bou-emerald font-bold">Kept Strictly in CBK Vault</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Controls & Federated Round Simulator -->
+                    <div class="p-4 rounded-lg bg-black/60 border border-slate-800 space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center gap-4 text-xs font-mono">
+                                <div>
+                                    <span class="text-slate-400">Privacy Budget (ε):</span>
+                                    <span class="text-bou-gold font-bold ml-1">0.5 (High Privacy)</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400">Protocol:</span>
+                                    <span class="text-bou-cyan font-bold ml-1">SecAgg + FedAvg</span>
+                                </div>
+                            </div>
+                            <button id="btnRunFed" onclick="simulateFederatedLearning()" class="px-5 py-2.5 rounded bg-gradient-to-r from-bou-gold to-bou-goldLight text-bou-950 font-bold text-xs hover:brightness-110 transition shadow-lg flex items-center gap-2">
+                                <span>🚀 Execute Cross-Border Federated Learning Round</span>
+                            </button>
+                        </div>
+
+                        <!-- Interactive Progress Bar -->
+                        <div id="fedProgressBlock" class="hidden space-y-2 font-mono text-xs">
+                            <div class="flex justify-between text-slate-300">
+                                <span id="fedPhaseLabel">Phase 1: Computing Local Gradients in Kampala & Nairobi...</span>
+                                <span id="fedPercent" class="text-bou-gold font-bold">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                <div id="fedProgressBar" class="bg-gradient-to-r from-bou-gold via-bou-emerald to-bou-cyan h-2 rounded-full transition-all duration-300" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Result Card -->
+                        <div id="fedResultCard" class="hidden p-4 rounded-lg bg-bou-emerald/15 border border-bou-emerald space-y-2 text-xs font-mono">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-emerald-300 text-sm">🎉 CROSS-BORDER FEDERATED MODEL COMPILED SUCCESSFULLY!</span>
+                                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xxs">ISO 27037 & EAPS Compliant</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-slate-200">
+                                <div class="p-2.5 rounded bg-black/40 border border-emerald-500/30">
+                                    <div class="text-slate-400 text-xxs">COMBINED ACCURACY</div>
+                                    <div class="text-lg font-black text-white mt-0.5">98.6%</div>
+                                    <div class="text-xxs text-emerald-400 mt-1">+24.4% zero-day detection jump!</div>
+                                </div>
+                                <div class="p-2.5 rounded bg-black/40 border border-emerald-500/30">
+                                    <div class="text-slate-400 text-xxs">RAW DATA TRANSFERRED</div>
+                                    <div class="text-lg font-black text-emerald-300 mt-0.5">0.00 KB</div>
+                                    <div class="text-xxs text-slate-400 mt-1">100% compliance with DPPA 2019</div>
+                                </div>
+                                <div class="p-2.5 rounded bg-black/40 border border-emerald-500/30">
+                                    <div class="text-slate-400 text-xxs">HOMOMORPHIC GRADIENTS</div>
+                                    <div class="text-lg font-black text-bou-cyan mt-0.5">48,210 Weights</div>
+                                    <div class="text-xxs text-slate-400 mt-1">Encrypted via Paillier Scheme</div>
+                                </div>
+                            </div>
+                            <p class="text-slate-300 text-xxs pt-1 leading-relaxed">
+                                <strong>Operational Impact:</strong> Bank of Uganda instantly gains the ability to identify novel C2 beacon variants and financial trojan injection techniques previously seen only in Nairobi, and the Central Bank of Kenya instantly inoculates its KEPSS network against the RTGS dual-sign bypass hook uncovered in Kampala—all without either central bank sharing confidential customer data or transaction ledgers.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Comparative Jurisprudence Matrix (Uganda vs. Kenya) -->
+                <div class="p-5 rounded-lg bg-bou-950 border border-bou-gold/30 space-y-4">
+                    <h3 class="text-sm font-bold text-bou-gold uppercase font-mono tracking-wider">
+                        ⚖️ Comparative Legal Matrix: Uganda vs. Kenya Cyber Jurisprudence
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left font-mono text-xs border-collapse">
+                            <thead>
+                                <tr class="border-b border-bou-gold/30 text-bou-gold">
+                                    <th class="py-2 px-3">Legal Dimension</th>
+                                    <th class="py-2 px-3">Uganda Statutory Framework</th>
+                                    <th class="py-2 px-3">Kenya Statutory Framework</th>
+                                    <th class="py-2 px-3">Cross-Border Harmonization</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800 text-slate-300">
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Computer Crime Offenses</td>
+                                    <td class="py-2.5 px-3">Computer Misuse Act 2011 & 2022 (Sec 12, 14, 15, 20)</td>
+                                    <td class="py-2.5 px-3">Computer Misuse and Cybercrimes Act 2018 (Sec 14, 16, 17, 18)</td>
+                                    <td class="py-2.5 px-3 text-emerald-400">Harmonized definitions of unauthorized access & system interference</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Data Protection & Privacy</td>
+                                    <td class="py-2.5 px-3">Data Protection and Privacy Act, 2019 (PDPO)</td>
+                                    <td class="py-2.5 px-3">Data Protection Act, 2019 (ODPC)</td>
+                                    <td class="py-2.5 px-3 text-bou-cyan">Both prohibit cross-border export of unconsented citizen telemetry</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Electronic Evidence</td>
+                                    <td class="py-2.5 px-3">Electronic Signatures Act 2011 & Evidence Act Cap 6</td>
+                                    <td class="py-2.5 px-3">Kenya Evidence Act (Sec 106B) & KICA 1998</td>
+                                    <td class="py-2.5 px-3 text-emerald-400">Dual SHA-256 hash & certificate of electronic production mutually recognized</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Regional Interpol Cooperation</td>
+                                    <td class="py-2.5 px-3">CID Cybercrime Division / BoU CSIRT</td>
+                                    <td class="py-2.5 px-3">DCI Cybercrime Unit / CBK Banking Fraud Unit</td>
+                                    <td class="py-2.5 px-3 text-bou-goldLight">EAPCCO & EAC Article 124 Joint Mutual Legal Assistance Treaty (MLAT)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="no-print bg-bou-950 border-t border-bou-gold/20 py-4 px-6 text-center text-xs text-slate-500 font-mono">
+        Bank of Uganda © 2026 • Cyber Forensics & Security Investigations Masterclass • Sovereign Infrastructure Protection Unit
+    </footer>
+
+    <!-- Audio Synthesizer & War Room Engine Script -->
+    <script>
+        // Web Audio Synthesizer
+        let audioEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTone(freq, type = 'sine', duration = 0.08) {
+            if (!audioEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function playSuccess() {
+            playTone(440, 'triangle', 0.08);
+            setTimeout(() => playTone(880, 'triangle', 0.15), 90);
+        }
+
+        function playFail() {
+            playTone(160, 'sawtooth', 0.2);
+            setTimeout(() => playTone(120, 'sawtooth', 0.25), 120);
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            document.getElementById('sfxToggle').textContent = audioEnabled ? '🔊 SFX: ON' : '🔇 SFX: OFF';
+        }
+
+        // Tab Navigation
+        function switchTab(tabKey) {
+            playTone(600, 'sine', 0.04);
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const isActive = btn.getAttribute('data-tab') === tabKey;
+                btn.className = isActive 
+                    ? 'tab-btn active px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-bou-gold text-bou-goldLight flex items-center gap-2 transition'
+                    : 'tab-btn px-4 py-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition';
+            });
+
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            const target = document.getElementById('panel-' + tabKey);
+            if (target) target.classList.remove('hidden');
+        }
+
+        // Workbench sub-tab switcher (Module 3)
+        function switchWorkbench(subKey) {
+            playTone(700, 'sine', 0.04);
+            document.querySelectorAll('.wb-tab-btn').forEach(btn => {
+                const isActive = btn.getAttribute('data-wbtab') === subKey;
+                btn.className = isActive 
+                    ? 'wb-tab-btn active px-3 py-1.5 rounded bg-bou-gold text-bou-950 font-bold'
+                    : 'wb-tab-btn px-3 py-1.5 rounded bg-bou-900 hover:bg-bou-800 text-slate-300';
+            });
+            document.querySelectorAll('.wb-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById('wb-panel-' + subKey).classList.remove('hidden');
+        }
+
+        // Chart.js Radar Initialization
+        const ctxRadar = document.getElementById('threatRadarChart').getContext('2d');
+        const threatRadar = new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['Payment Gateway', 'Active Directory', 'Volatile RAM', 'Network Telemetry', 'Cloud APIs', 'Legal Defensibility'],
+                datasets: [{
+                    label: 'Current Attack Pressure',
+                    data: [95, 80, 85, 90, 60, 40],
+                    backgroundColor: 'rgba(225, 29, 72, 0.25)',
+                    borderColor: '#e11d48',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#e11d48'
+                }, {
+                    label: 'BoU Defense Readiness',
+                    data: [85, 90, 95, 88, 75, 98],
+                    backgroundColor: 'rgba(197, 160, 89, 0.2)',
+                    borderColor: '#c5a059',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#c5a059'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(197, 160, 89, 0.15)' },
+                        grid: { color: 'rgba(197, 160, 89, 0.15)' },
+                        pointLabels: { color: '#cbd5e1', font: { size: 10, family: 'JetBrains Mono' } },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f1f5f9', font: { size: 11, family: 'Inter' } } }
+                }
+            }
+        });
+
+        // Module 1 Hashing functions
+        
+        // Evidence & Law Tab Interactive Helpers
+        function scrollEvidenceTab(targetId) {
+            playTone(600, 'sine', 0.04);
+            const el = document.getElementById(targetId);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function testEvidenceStream(type) {
+            const input = document.getElementById('evidenceInput');
+            const tag = document.getElementById('evidenceTypeTag');
+            const sha = document.getElementById('outSha256');
+            const md5 = document.getElementById('outMd5');
+            const status = document.getElementById('outStatus');
+
+            if (type === 'original') {
+                playSuccess();
+                input.value = "[2026-10-19T06:28:44Z] BATCH_QUEUED: RTGS-OUT-9912 | UGX 4,800,000,000 -> BENEFICIARY: CR-8831-EXT";
+                tag.textContent = "ORIGINAL SEIZED EVIDENCE";
+                tag.className = "px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold";
+                sha.textContent = "08adba3aa8c35d8d12dac1ce7dd218bdc39592b160da62ea275acd9f751561f4";
+                md5.textContent = "027d56eb3547a46f6362b6becbe03ed2";
+                status.textContent = "✓ 100% BITSTREAM MATCH (COURT ADMISSIBLE)";
+                status.className = "px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500 font-bold";
+            } else {
+                playFail();
+                // 1 digit changed from 4,800,000,000 to 4,800,000,001
+                input.value = "[2026-10-19T06:28:44Z] BATCH_QUEUED: RTGS-OUT-9912 | UGX 4,800,000,001 -> BENEFICIARY: CR-8831-EXT";
+                tag.textContent = "TAMPERED STREAM (1 BYTE ALTERED)";
+                tag.className = "px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-bold animate-pulse";
+                sha.textContent = "f914b1029c78ea0012bc443918aa0198cd66291a84f001c29019bca02194bb10";
+                md5.textContent = "55ac190288eb1902bb6199a019ff210a";
+                status.textContent = "✗ HASH MISMATCH: TAMPERING DETECTED (CASE DISMISSED)";
+                status.className = "px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-500 font-bold animate-pulse";
+            }
+        }
+
+        const volatilityInfo = {
+            1: {
+                title: "Level 1 Focus: CPU Registers & Cache (Nanoseconds)",
+                desc: "Registers hold the currently executing assembly instructions. CPU caches contain decrypted plaintext data right before processing. This data cannot be captured via software tools once execution halts.",
+                action: "Hardware JTAG / Microcode bus sniffing only."
+            },
+            2: {
+                title: "Level 2 Focus: RAM / Volatile Memory (The Investigator's Goldmine)",
+                desc: "Holds uncommitted RTGS transactions, decrypted SSL/TLS session keys, in-memory injected DLLs (Cobalt Strike), and logged-in user tokens. If the system is rebooted or powered down, ALL of this evidence is permanently destroyed.",
+                action: "DO NOT REBOOT. Use WinPmem, LiME, or DumpIt to capture RAM first!"
+            },
+            3: {
+                title: "Level 3 Focus: Network Sockets & Routing Tables",
+                desc: "Active TCP connections reveal the adversary's C2 staging server IP (e.g. 194.26.29.11). ARP caches reveal which internal machine was compromised first via lateral movement.",
+                action: "Dump `netstat -ano` and export core switch NetFlow / PCAP streams."
+            },
+            4: {
+                title: "Level 4 Focus: Hard Disk / Storage Arrays (Persistent)",
+                desc: "NTFS $MFT, event logs (Security.evtx), and swap files reside safely on physical media. They will not vanish if the system is turned off.",
+                action: "Connect a hardware write-blocker and create a bitstream RAW or E01 forensic image."
+            },
+            5: {
+                title: "Level 5 Focus: Backup Tapes & Archival Media (Years)",
+                desc: "Long-term cold storage. Useful for proving what baseline database states looked like 6 months before the incident.",
+                action: "Request physical custody sign-out from the BoU Disaster Recovery vault."
+            }
+        };
+
+        function showVolatilityDetail(tier) {
+            playTone(700, 'sine', 0.04);
+            const data = volatilityInfo[tier];
+            const box = document.getElementById('volatilityDetailBox');
+            if (box && data) {
+                box.innerHTML = `
+                    <strong class="text-bou-gold text-xs uppercase">${data.title}</strong>
+                    <p class="mt-1 text-slate-300 leading-relaxed font-sans text-xs">${data.desc}</p>
+                    <div class="mt-2 text-xxs text-emerald-400">
+                        <strong>Forensic Action:</strong> ${data.action}
+                    </div>
+                `;
+            }
+        }
+
+        function calculateEvidenceHash() {
+            playTone(800, 'sine', 0.05);
+            document.getElementById('outSha256').textContent = '08adba3aa8c35d8d12dac1ce7dd218bdc39592b160da62ea275acd9f751561f4';
+            document.getElementById('outMd5').textContent = '027d56eb3547a46f6362b6becbe03ed2';
+            document.getElementById('outStatus').textContent = 'BIT-STREAM AUTHENTIC (ADMISSIBLE UNDER UGANDA LAW)';
+            document.getElementById('outStatus').className = 'text-bou-emerald font-bold';
+        }
+
+        function tamperEvidence() {
+            playFail();
+            document.getElementById('outSha256').textContent = 'f914b1029c78ea0012bc443918aa0198cd66291a84f001c29019bca02194bb10';
+            document.getElementById('outMd5').textContent = '55ac190288eb1902bb6199a019ff210a';
+            document.getElementById('outStatus').textContent = 'COMPROMISED! HASH MISMATCH DETECTED (EXCLUDED AS EVIDENCE)';
+            document.getElementById('outStatus').className = 'text-bou-crimson font-bold';
+        }
+
+        function logCustodyAction() {
+            playSuccess();
+            document.getElementById('custodyLogResult').classList.remove('hidden');
+        }
+
+        // Module 3 Volatility Engine Simulation
+        const volDatabase = {
+            'pslist': `PID    PPID   ImageFileName         Offset(V)          Threads  Handles  Time Created
+4      0      System                0xffff80010000     284      0        2026-10-18 20:00:00
+688    4      smss.exe              0xffff80012400     4        32       2026-10-18 20:00:01
+744    688    csrss.exe             0xffff80014800     12       480      2026-10-18 20:00:02
+4128   744    bou_rtgs_service.exe  0xffff80019200     26       812      2026-10-19 06:14:02  [HOOKED]
+5920   4128   cmd.exe               0xffff80021000     1        24       2026-10-19 06:29:40  [ANOMALOUS]`,
+            'malfind': `Process: bou_rtgs_service.exe Pid: 4128 Address: 0x7ff72a140000
+Vad Tag: VadS Protection: PAGE_EXECUTE_READWRITE
+Flags: Commit, Private
+0x7ff72a140000  48 83 ec 28 48 8d 0d e5 12 00 00 e8 44 02 00 00   H.(H........D...
+0x7ff72a140010  48 85 c0 74 12 b8 01 00 00 00 48 83 c4 28 c3      H..t......H...(.
+-> [CRITICAL] INJECTED DUAL-SIGN BYPASS HOOK DETECTED AT 0x7ff72a140010!
+-> Force-returns TRUE (0x1) to authenticate RTGS transactions without second signer.`,
+            'netscan': `Offset          Proto  Local Address          Foreign Address        State      Pid   Owner
+0xffff80031000  TCPv4  10.12.4.15:445         10.12.4.99:51284       ESTABLISHED 4     System
+0xffff80032400  TCPv4  10.12.4.15:49812       194.26.29.11:443       ESTABLISHED 4128  bou_rtgs_service.exe
+-> [ALERT] Established C2 TLS tunnel to rogue offshore IP 194.26.29.11:443!`,
+            'cmdline': `PID: 4128 bou_rtgs_service.exe: "C:\\Program Files\\BoU\\RTGS\\bou_rtgs_service.exe" -daemon
+PID: 5920 cmd.exe: "C:\\Windows\\System32\\cmd.exe" /c echo injected > C:\\Windows\\Temp\\ioc.txt`
+        };
+
+        function execVolCmd() {
+            const input = document.getElementById('volInput');
+            const cmd = input.value.trim().toLowerCase().replace('windows.', '').replace('vol.py ', '');
+            if (!cmd) return;
+            runVolShortcut(cmd);
+            input.value = '';
+        }
+
+        function handleVolKey(e) {
+            if (e.key === 'Enter') execVolCmd();
+        }
+
+        function runVolShortcut(subcmd) {
+            playTone(750, 'sine', 0.05);
+            const box = document.getElementById('volOutput');
+            const cleanCmd = subcmd.replace('windows.', '');
+            box.textContent += `\nvol.py -f bou_rtgs_mem.dmp windows.${cleanCmd}\n`;
+            if (volDatabase[cleanCmd]) {
+                box.textContent += volDatabase[cleanCmd] + '\n';
+            } else {
+                box.textContent += `[!] Volatility plugin '${cleanCmd}' not found. Try: pslist, malfind, netscan, cmdline.\n`;
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function inspectPacket(num) {
+            playTone(850, 'sine', 0.04);
+            const hex = document.getElementById('packetHexView');
+            if (num === 1) {
+                hex.innerHTML = `<strong>FRAME 104 DECODED (RTGS-RPC Protocol):</strong><br>
+                0000  00 50 56 c0 00 08 00 0c 29 8f 41 2a 08 00 45 00  .PV.....).A*..E.<br>
+                0010  02 00 41 9a 40 00 40 06 91 10 0a 0c 04 0f 0a 0c  ..A.@.@.........<br>
+                0020  04 63 c2 94 23 88 1a 44 91 20 80 18 01 f5 7a 11  .c..#..D. ....z.<br>
+                [DECODED PAYLOAD]: BATCH_ID: 9912 | SETTLEMENT: 4,800,000,000 UGX | DUAL_CONTROL: OVERRIDDEN BY HOOK`;
+            } else if (num === 2) {
+                hex.innerHTML = `<strong>FRAME 108 DECODED (C2 TLS Beacon):</strong><br>
+                0000  02 12 3a 44 99 01 0a 0c 04 0f c2 1a 1d 0b 08 00  ..:D............<br>
+                0010  04 00 19 42 62 91 40 00 40 06 a2 11 0a 0c 04 0f  ...Bb.@.@.......<br>
+                0020  c2 1a 1d 0b c2 94 01 bb 99 12 40 11 80 18 02 00  ..........@.....<br>
+                [ANOMALOUS TELEMETRY]: Outbound C2 Heartbeat to 194.26.29.11 (Jitter = 0.0033). Bot communication confirmed!`;
+            } else {
+                hex.innerHTML = `<strong>FRAME 115 DECODED (DNS Query):</strong><br>
+                Query Name: a8f12.c2.ugandafin.xyz (Type TXT, Class IN)<br>
+                Payload chunk base64 encoded within subdomain label. Data exfiltration attempt!`;
+            }
+        }
+
+        // YARA Rule Compiler Simulation
+        function testYaraRule() {
+            playSuccess();
+            const res = document.getElementById('yaraResult');
+            res.innerHTML = `<strong>✓ YARA COMPILATION SUCCESS:</strong><br>
+            Matched 1 process: <code class="text-bou-cyan">bou_rtgs_service.exe (PID 4128)</code><br>
+            • Matched string $s1 at offset 0x7ff72a140010<br>
+            • Rule successfully flagged in-memory bypass pattern. Ready for fleet-wide deployment!`;
+            res.className = 'p-2.5 rounded bg-bou-emerald/15 border border-bou-emerald text-emerald-300 font-mono text-xs';
+        }
+
+        // ==========================================
+        // MODULE 5: MULTI-SCENARIO INCIDENT TTX DATA
+        // ==========================================
+        let currentScenarioIdx = 0;
+        let currentStepIdx = 0;
+
+        // 8 Comprehensive Central Bank Cyber Forensics Scenarios
+        const scenarios = [
+            // 0: RTGS Wire Injection
+            {
+                name: "Scenario A: RTGS In-Memory Wire Injection",
+                steps: [
+                    {
+                        phase: "PHASE 1: DETECTION & INITIAL TRIAGE",
+                        title: "The 06:28 EAT RTGS Batch Alarm",
+                        prompt: "At 06:28 EAT, an unauthorized wire transfer of <strong>UGX 4,800,000,000</strong> is queued on payment engine <code>BOU-RTGS-SRV01</code> destined for foreign account <code>CR-8831-EXT</code>. Telemetry shows the dual-signer signature service was memory-patched. What is your immediate containment action?",
+                        choices: [
+                            { text: "Pull the physical power cable from the server rack immediately.", correct: false, penalty: 30, feedback: "CRITICAL FORENSIC ERROR: Pulling power destroyed volatile RAM! The memory-injected hook and active C2 keys are lost forever." },
+                            { text: "Isolate VLAN 40 & capture volatile RAM bitstream under hardware write-blocker.", correct: true, feedback: "EXEMPLARY FORENSIC ACTION: Halted transaction dispatch while safeguarding RAM evidence under RFC 3227 and ISO 27037 standards." },
+                            { text: "Allow the transfer to proceed to trace external bank beneficiaries.", correct: false, penalty: 50, feedback: "FATAL BREACH: UGX 4.8B settled and was instantly split into cryptocurrency tumblers. Sovereign funds lost!" }
+                        ]
+                    },
+                    {
+                        phase: "PHASE 2: PRIVILEGE ESCALATION INVESTIGATION",
+                        title: "Tracing the Intrusion Source",
+                        prompt: "RAM analysis confirms process <code>bou_rtgs_service.exe</code> (PID 4128) was hooked. How did the threat actor obtain SYSTEM-level access?",
+                        choices: [
+                            { text: "Correlate Event ID 4624 & dump LSASS memory for NTLM hash theft artifacts.", correct: true, feedback: "EXACT FINDING: Identified pass-the-hash attack originating from unpatched vendor VPN host 10.12.4.15." },
+                            { text: "Format the server drive and restore yesterday's backup.", correct: false, penalty: 40, feedback: "EVIDENCE DESTRUCTION: You destroyed the primary evidence needed for prosecution under the Uganda Computer Misuse Act." },
+                            { text: "Reboot the server into Safe Mode.", correct: false, penalty: 20, feedback: "FLAWED PROCEDURE: Reboot wiped volatile RAM state and failed to address root cause." }
+                        ]
+                    },
+                    {
+                        phase: "PHASE 3: ENTERPRISE CONTAINMENT",
+                        title: "Threat Actor Counter-Move",
+                        prompt: "Realizing their settlement batch was frozen, the adversary attempts lateral spread via domain Kerberos tickets. How do you evict them?",
+                        choices: [
+                            { text: "Double-rotate Active Directory krbtgt password & push YARA rule across server VLANs.", correct: true, feedback: "MASTERCLASS CSIRT EXECUTION: Invalidated all forged Golden Tickets and stopped wiper spread." },
+                            { text: "Block internet access only at the external firewall.", correct: false, penalty: 25, feedback: "CONTAINMENT FAILURE: Attacker was already inside internal financial subnets using lateral SMB." }
+                        ]
+                    },
+                    {
+                        phase: "PHASE 4: JUDICIAL DOSSIER",
+                        title: "High Court of Uganda Testimony",
+                        prompt: "At trial, the defense files a motion alleging the server logs are unauthenticated hearsay. How do you certify admissibility?",
+                        choices: [
+                            { text: "Present dual SHA-256 matches, hardware write-blocker logs & unbroken custody ledger.", correct: true, feedback: "JUDICIAL VICTORY: Electronic evidence admitted under Section 8 of the Electronic Signatures Act & Computer Misuse Act." },
+                            { text: "Provide unhashed paper printouts of the server event logs.", correct: false, penalty: 35, feedback: "EVIDENCE EXCLUDED: Court rejected unauthenticated printouts as inadmissible hearsay." }
+                        ]
+                    }
+                ]
+            },
+
+            // 1: Hypervisor Ransomware
+            {
+                name: "Scenario B: Hypervisor Ransomware Outbreak",
+                steps: [
+                    {
+                        phase: "PHASE 1: RANSOMWARE DETECTION",
+                        title: "ESXi Virtual Disk Encryption Probe",
+                        prompt: "At 02:00 EAT, multiple core banking database VMDK volumes begin throwing I/O errors. An unknown process is executing <code>esxcli vm process kill</code> across the primary SAN cluster. What is your first containment step?",
+                        choices: [
+                            { text: "Disconnect ESXi management network vSwitch & preserve SAN snapshots in read-only mode.", correct: true, feedback: "PERFECT CONTAINMENT: Prevented encryption payload from accessing immutable storage snapshots." },
+                            { text: "Restart the storage SAN array immediately.", correct: false, penalty: 40, feedback: "DATA CORRUPTION: Hard reboot during write operations permanently corrupted database headers." },
+                            { text: "Contact the attackers on Tor to ask for decryption price.", correct: false, penalty: 50, feedback: "GOVERNANCE BREACH: Bank of Uganda policy strictly prohibits ransom negotiations." }
+                        ]
+                    },
+                    {
+                        phase: "PHASE 2: INCIDENT RECOVERY",
+                        title: "Clean Room Reconstruction",
+                        prompt: "SAN immutable snapshots are secured. What is the verified procedure before bringing the Core Banking database back online?",
+                        choices: [
+                            { text: "Restore onto isolated clean-room infrastructure & perform offline hash/IoC verification.", correct: true, feedback: "SECURE RESTORATION: Verified zero persistence mechanisms remained before routing live transactions." },
+                            { text: "Restore directly back onto original ESXi hosts without re-imaging.", correct: false, penalty: 30, feedback: "RE-INFECTION: Attacker cronjob executed wiper 15 minutes after restoration." }
+                        ]
+                    }
+                ]
+            },
+
+            // 2: Core Banking Insider
+            {
+                name: "Scenario C: Core Banking Insider Manipulation",
+                steps: [
+                    {
+                        phase: "PHASE 1: FRAUDULENT RECONCILIATION",
+                        title: "Ledger Discrepancy Alert",
+                        prompt: "IT Audit detects an unexplained UGX 850,000,000 ledger balance discrepancy between core settlement and treasury GL accounts. An internal database administrator claims it was a database index corruption. How do you investigate?",
+                        choices: [
+                            { text: "Extract binary transaction logs & compare database redo logs with network packet captures.", correct: true, feedback: "FRAUD UNCOVERED: Redo logs revealed direct SQL `UPDATE` query executed from internal DBA console." },
+                            { text: "Accept the DBA's explanation and run database repair script.", correct: false, penalty: 45, feedback: "AUDIT FAILURE: The DBA had secretly diverted funds to an offshore intermediary." }
+                        ]
+                    }
+                ]
+            },
+
+            // 3: SWIFT Alliance Gateway & HSM
+            {
+                name: "Scenario D: SWIFT Alliance Gateway & HSM Compromise",
+                steps: [
+                    {
+                        phase: "PHASE 1: SUSPICIOUS FINANCIAL MESSAGING",
+                        title: "04:12 EAT — Anomalous MT103 Settlement Outflow",
+                        prompt: "SWIFT Relationship Management Application (RMA) flags 6 uncharacteristic MT103 payment instructions for <strong>USD 14,200,000</strong> directed to an unfamiliar correspondent bank in Eastern Europe. The Hardware Security Module (HSM) shows normal signing events. What is your immediate diagnostic step?",
+                        choices: [
+                            { text: "Verify local Alliance Gateway operator session tokens & inspect SWIFT message PDF printer spoolers.", correct: true, feedback: "CRUCIAL DISCOVERY: You uncover malware mimicking the Bangladesh Bank attack (Hermes trojan), which manipulated local SWIFT database records and suppressed printed confirmation receipts." },
+                            { text: "Revoke SWIFT network connection at the ISP border immediately.", correct: false, penalty: 30, feedback: "PREMATURE CUTOFF: Severed global interbank communications before extracting in-flight payment message hashes." },
+                            { text: "Authorize the payments under assumption of treasury foreign exchange operations.", correct: false, penalty: 60, feedback: "DISASTER: USD 14.2M foreign reserves settled across correspondent banks and became unrecoverable." }
+                        ]
+                    },
+                    {
+                        phase: "PHASE 2: SWIFT ENVIRONMENT ISOLATION",
+                        title: "Hardening the SWIFT Customer Security Programme (CSP)",
+                        prompt: "Malware was confirmed on the local Alliance Access server. What architectural control prevents recurring tampering?",
+                        choices: [
+                            { text: "Enforce strict HSM dual-custody physical smartcards & isolate SWIFT messaging VLAN to dedicated jump-boxes.", correct: true, feedback: "EXEMPLARY COMPLIANCE: Aligned with mandatory SWIFT CSP controls 1.1 and 2.1, eliminating single-operator compromise." },
+                            { text: "Allow remote RDP administration of SWIFT gateway over VPN.", correct: false, penalty: 35, feedback: "COMPLIANCE BREACH: Severe violation of SWIFT Customer Security Programme standards." }
+                        ]
+                    }
+                ]
+            },
+
+            // 4: Payment Switch Cloud API & Token Replay
+            {
+                name: "Scenario E: Payment Switch Cloud API & Token Replay",
+                steps: [
+                    {
+                        phase: "PHASE 1: API ABUSE ANOMALY",
+                        title: "Spike in Unsigned Settlement Invocations",
+                        prompt: "The Bank's hybrid cloud interbank settlement API (hosted on AWS/Azure) triggers an alarm: a single OAuth Bearer token is issuing 1,200 requests per minute from non-whitelisted IP addresses in South America. What is your first forensic action?",
+                        choices: [
+                            { text: "Immediately revoke the compromised OAuth client secret & examine CloudTrail for AssumeRoleWithWebIdentity calls.", correct: true, feedback: "THREAT CONTAINED: Stopped token replay attack and isolated leaked CI/CD pipeline environment variables." },
+                            { text: "Increase API rate limiting threshold to prevent server crash.", correct: false, penalty: 40, feedback: "FRAUD EXPEDITION: Allowed the attacker to execute 8,000 unauthorized transaction validation queries." }
+                        ]
+                    }
+                ]
+            },
+
+            // 5: AI Voice Deepfake
+            {
+                name: "Scenario F: AI Voice Deepfake Executive Impersonation",
+                steps: [
+                    {
+                        phase: "PHASE 1: SOCIAL ENGINEERING INTERCEPTION",
+                        title: "Urgent Voice Call to Treasury Operations",
+                        prompt: "A commercial bank settlement officer receives an urgent WhatsApp audio call from someone with the exact voice, cadence, and breath patterns of the BoU Executive Director ordering an immediate emergency liquidity transfer of UGX 12 Billion. What protocol must be enforced?",
+                        choices: [
+                            { text: "Reject verbal authorization; enforce mandatory out-of-band PKI digital signature with hardware token.", correct: true, feedback: "ATTACK THWARTED: Spectral analysis proved audio was synthesized using an advanced RVC voice clone. PKI dual-signing blocked the fraud." },
+                            { text: "Process transfer immediately due to the seniority of the caller.", correct: false, penalty: 60, feedback: "CATASTROPHIC FAILURE: Commercial bank fell victim to executive voice cloning; UGX 12 Billion disbursed unlawfully." }
+                        ]
+                    }
+                ]
+            },
+
+            // 6: ACH Clearing Supply Chain
+            {
+                name: "Scenario G: ACH Clearing Supply Chain Backdoor",
+                steps: [
+                    {
+                        phase: "PHASE 1: INTERBANK CONTAGION",
+                        title: "Backdoored Automated Clearing House (ACH) Update",
+                        prompt: "A trusted vendor of the interbank clearing system pushes an auto-update. Within 30 minutes, 14 commercial banks experience outbound C2 beaconing to a foreign domain. How does the Central Bank CSIRT respond?",
+                        choices: [
+                            { text: "Issue emergency EAPS/ACH operational suspension & distribute YARA signature to scan the backdoored DLL across all member banks.", correct: true, feedback: "SYSTEMIC DEFENSE: Successfully quarantined supply-chain payload before fraudulent overnight clearing batches settled." },
+                            { text: "Blame member commercial banks and instruct them to handle it individually.", correct: false, penalty: 45, feedback: "SYSTEMIC RUNAWAY: 4 commercial banks suffered automated clearing batch manipulation overnight." }
+                        ]
+                    }
+                ]
+            },
+
+            // 7: EAPS Cross-Border Mobile Float
+            {
+                name: "Scenario H: EAPS Cross-Border Mobile Float Arbitrage",
+                steps: [
+                    {
+                        phase: "PHASE 1: REGIONAL SETTLEMENT FRAUD",
+                        title: "Kampala ↔ Nairobi Currency Float Discrepancy",
+                        prompt: "A telecom mobile money switch integration across the Uganda-Kenya border reports a phantom KES 250,000,000 credit injection without corresponding UGX debit at the Bank of Uganda settlement node. What cross-border forensic action is taken?",
+                        choices: [
+                            { text: "Invoke bilateral BoU-CBK emergency CSIRT bridge & freeze recipient escrow wallets under EAC Article 124 protocol.", correct: true, feedback: "COORDINATED TRIAGE: Both central banks synchronized telemetries, unmasking an API race-condition exploit and recovering 100% of the funds." },
+                            { text: "Assume currency conversion rounding discrepancy and resolve at end of week.", correct: false, penalty: 50, feedback: "EXTREME NEGLIGENCE: Phantom credit was cashed out through multi-currency cross-border agent networks." }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Scenario Filter & Randomizer Functions
+        function filterScenarios(domain) {
+            playTone(600, 'sine', 0.04);
+            document.querySelectorAll('.scen-filter-btn').forEach(b => {
+                const isAct = b.getAttribute('data-filter') === domain;
+                b.className = isAct 
+                    ? 'scen-filter-btn active px-2.5 py-1 rounded bg-bou-gold text-bou-950 font-bold'
+                    : 'scen-filter-btn px-2.5 py-1 rounded bg-bou-900 hover:bg-bou-850 text-slate-300';
+            });
+
+            document.querySelectorAll('.scen-card').forEach(card => {
+                const cat = card.getAttribute('data-category');
+                if (domain === 'all' || cat === domain) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function randomizeScenario() {
+            playTone(900, 'triangle', 0.1);
+            setTimeout(() => playTone(1200, 'triangle', 0.15), 100);
+            
+            // Random index 0 to 7
+            const randIdx = Math.floor(Math.random() * scenarios.length);
+            loadScenario(randIdx);
+
+            // Visual feedback flash
+            const btn = document.getElementById('scenBtn' + randIdx);
+            if (btn) {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                btn.classList.add('animate-pulse-gold');
+                setTimeout(() => btn.classList.remove('animate-pulse-gold'), 1500);
+            }
+        }
+
+        function loadScenario(idx) {
+            playTone(650, 'sine', 0.05);
+            currentScenarioIdx = idx;
+            currentStepIdx = 0;
+            for (let i = 0; i < scenarios.length; i++) {
+                const btn = document.getElementById('scenBtn' + i);
+                if (i === idx) {
+                    btn.className = 'p-3 text-left rounded-lg bg-bou-950 border border-bou-gold text-white font-mono text-xs transition';
+                } else {
+                    btn.className = 'p-3 text-left rounded-lg bg-bou-950 border border-slate-800 text-slate-400 hover:text-white font-mono text-xs transition';
+                }
+            }
+            renderScenarioStep();
+        }
+
+        function renderScenarioStep() {
+            const scen = scenarios[currentScenarioIdx];
+            const step = scen.steps[currentStepIdx];
+            
+            const phaseEl = document.getElementById('ttxPhaseText');
+            if (phaseEl) phaseEl.textContent = step.phase;
+            const titleEl = document.getElementById('ttxTitleText');
+            if (titleEl) titleEl.textContent = step.title;
+            const stepEl = document.getElementById('ttxStepText');
+            if (stepEl) stepEl.textContent = `${currentStepIdx + 1} of ${scen.steps.length}`;
+            
+            const promptEl = document.getElementById('ttxPrompt');
+            if (promptEl) promptEl.innerHTML = step.prompt;
+
+            const grid = document.getElementById('ttxChoices');
+            if (grid) grid.innerHTML = '';
+            const fb = document.getElementById('ttxFeedback');
+            if (fb) fb.classList.add('hidden');
+            const nextBtn = document.getElementById('ttxNextBtn');
+            if (nextBtn) nextBtn.classList.add('hidden');
+
+            step.choices.forEach((c, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'p-3 text-left rounded bg-bou-900 hover:bg-bou-850 border border-slate-700 hover:border-bou-gold text-xs text-slate-200 transition';
+                btn.innerHTML = `<strong class="text-bou-gold font-mono mr-2">[Option ${String.fromCharCode(65 + idx)}]</strong> ${c.text}`;
+                btn.onclick = () => selectTTXOption(idx);
+                grid.appendChild(btn);
+            });
+        }
+
+        function selectTTXOption(choiceIdx) {
+            const scen = scenarios[currentScenarioIdx];
+            const step = scen.steps[currentStepIdx];
+            const choice = step.choices[choiceIdx];
+
+            const fb = document.getElementById('ttxFeedback');
+            fb.classList.remove('hidden');
+
+            // Disable buttons
+            const btns = document.querySelectorAll('#ttxChoices button');
+            btns.forEach(b => b.onclick = null);
+
+            if (choice.correct) {
+                playSuccess();
+                btns[choiceIdx].className = 'p-3 text-left rounded bg-bou-emerald/20 border-2 border-bou-emerald text-xs text-emerald-200';
+                fb.className = 'p-4 rounded text-xs font-mono leading-relaxed bg-bou-emerald/15 border border-bou-emerald text-emerald-300';
+                fb.innerHTML = `<strong>✓ VERIFIED CORRECT:</strong><br>${choice.feedback}`;
+                if (currentStepIdx < scen.steps.length - 1) {
+                    document.getElementById('ttxNextBtn').classList.remove('hidden');
+                } else {
+                    fb.innerHTML += `<br><br><strong class="text-white">🎉 SCENARIO COMPLETE: National Payment System Protected & Legal Defensibility 100% Proven!</strong>`;
+                }
+            } else {
+                playFail();
+                btns[choiceIdx].className = 'p-3 text-left rounded bg-bou-crimson/20 border-2 border-bou-crimson text-xs text-rose-200';
+                fb.className = 'p-4 rounded text-xs font-mono leading-relaxed bg-bou-crimson/15 border border-bou-crimson text-rose-300';
+                fb.innerHTML = `<strong>✗ CRITICAL INCIDENT ERROR (-${choice.penalty} pts):</strong><br>${choice.feedback}`;
+            }
+        }
+
+        function advanceScenarioStep() {
+            playTone(800, 'sine', 0.05);
+            currentStepIdx++;
+            renderScenarioStep();
+        }
+
+        function resetScenario() {
+            playTone(400, 'sine', 0.1);
+            currentStepIdx = 0;
+            renderScenarioStep();
+        }
+
+        
+        // Federated Learning Cross-Border Simulator (BoU <-> CBK)
+        function simulateFederatedLearning() {
+            playTone(850, 'sine', 0.08);
+            const btn = document.getElementById('btnRunFed');
+            const progressBlock = document.getElementById('fedProgressBlock');
+            const bar = document.getElementById('fedProgressBar');
+            const pct = document.getElementById('fedPercent');
+            const label = document.getElementById('fedPhaseLabel');
+            const card = document.getElementById('fedResultCard');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            progressBlock.classList.remove('hidden');
+            card.classList.add('hidden');
+
+            let progress = 0;
+            const steps = [
+                { p: 25, text: "Phase 1: Local Model Training on BoU RTGS & CBK KEPSS Nodes..." },
+                { p: 50, text: "Phase 2: Applying Differential Privacy (ε=0.5) & Paillier Homomorphic Encryption..." },
+                { p: 75, text: "Phase 3: Secure Gradient Synchronization across Kampala ↔ Nairobi Fiber Bridge..." },
+                { p: 100, text: "Phase 4: Global Weight Aggregation (FedAvg) Complete!" }
+            ];
+            let stepIdx = 0;
+
+            const interval = setInterval(() => {
+                progress += 5;
+                if (progress > steps[stepIdx].p && stepIdx < steps.length - 1) {
+                    stepIdx++;
+                    label.textContent = steps[stepIdx].text;
+                    playTone(600 + stepIdx * 100, 'sine', 0.04);
+                }
+                bar.style.width = progress + '%';
+                pct.textContent = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    playSuccess();
+                    card.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.textContent = "🔄 Re-Train Cross-Border Federated Round";
+                }
+            }, 100);
+        }
+
+        // Initialize First Scenario
+        loadScenario(0);
+    </script>
+</body>
+</html>

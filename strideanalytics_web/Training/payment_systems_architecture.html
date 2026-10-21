@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank of Uganda | Sovereign Payment Systems & Open-Source SOC Architecture</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bou: {
+                            950: '#020612',
+                            900: '#071120',
+                            850: '#0b192e',
+                            800: '#0f2442',
+                            700: '#173660',
+                            gold: '#c5a059',
+                            goldLight: '#e6be75',
+                            goldDark: '#997736',
+                            crimson: '#e11d48',
+                            emerald: '#10b981',
+                            cyan: '#06b6d4',
+                            purple: '#a855f7',
+                            amber: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #020612;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: #020612;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #1e3a5f;
+            border-radius: 3px;
+        }
+        .vendor-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .vendor-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(197, 160, 89, 0.3);
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s infinite;
+        }
+        @media print {
+            body { background: white !important; color: black !important; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-bou-gold selection:text-bou-950 font-sans">
+
+    <!-- Top Sovereign Command Bar -->
+    <header class="no-print sticky top-0 z-50 bg-bou-900/95 backdrop-blur-md border-b border-bou-gold/30 px-6 py-3 flex flex-wrap justify-between items-center shadow-2xl">
+        <div class="flex items-center gap-4">
+            <span class="bg-gradient-to-br from-bou-gold to-bou-goldLight text-bou-950 font-black text-xs px-2.5 py-1 rounded shadow-md tracking-wider">BANK OF UGANDA</span>
+            <div>
+                <h1 class="text-sm md:text-base font-bold text-white tracking-wide flex items-center gap-2">
+                    <span>Payment Systems & Open-Source Security Architecture</span>
+                    <span class="text-xs font-normal text-bou-gold px-2 py-0.5 rounded-full bg-bou-gold/10 border border-bou-gold/30 font-mono">Masterclass Reference Proposal</span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 text-xs font-mono mt-2 sm:mt-0">
+            <a href="war_room_simulator.html" class="px-2.5 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-gold/40 text-bou-gold transition">
+                🏛️ War Room
+            </a>
+            <a href="soar_playbook_simulator.html" class="px-2.5 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-emerald/40 text-emerald-400 transition">
+                ⚡ SOAR Playbook
+            </a>
+            <a href="cyber_forensic_chef.html" class="px-2.5 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-cyan/40 text-bou-cyan transition">
+                🔪 Forensic Chef
+            </a>
+            <button onclick="window.print()" class="px-2.5 py-1 rounded bg-bou-gold text-bou-950 font-bold hover:bg-bou-goldLight transition">
+                🖨️ Export Proposal
+            </button>
+        </div>
+    </header>
+
+    <!-- Executive Summary Banner -->
+    <section class="bg-gradient-to-r from-bou-950 via-bou-900 to-bou-950 border-b border-bou-gold/20 px-6 py-4">
+        <div class="max-w-[1700px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <span class="text-xxs font-mono text-bou-gold uppercase tracking-widest font-bold">Proposal Document • REF: BOU/NPS/SEC-ARCH/2026/04</span>
+                <h2 class="text-lg md:text-xl font-bold text-white mt-0.5">Sovereign Interconnection of National Payment Systems with Free & Open-Source SOC Stack</h2>
+                <p class="text-xs text-slate-400 mt-1 max-w-4xl">
+                    Demonstrating zero-recurring software licensing defense for RTGS, SWIFT, and Mobile Money switches using battle-tested open-source platforms (Wazuh, Shuffle, Coraza, Suricata, TheHive, and MISP) compliant with the <span class="text-bou-gold">Uganda Data Protection and Privacy Act (2019)</span> and <span class="text-bou-gold">Computer Misuse Act (2022)</span>.
+                </p>
+            </div>
+            <div class="flex items-center gap-3 font-mono text-xs">
+                <div class="p-2.5 rounded bg-bou-950 border border-bou-emerald/40 text-center">
+                    <div class="text-xxs text-slate-400 uppercase">Software License Cost</div>
+                    <div class="text-base font-bold text-emerald-300 mt-0.5">$0.00 / yr</div>
+                    <div class="text-xxs text-emerald-400">100% Free Open Source</div>
+                </div>
+                <div class="p-2.5 rounded bg-bou-950 border border-bou-gold/40 text-center">
+                    <div class="text-xxs text-slate-400 uppercase">Data Sovereignty</div>
+                    <div class="text-base font-bold text-bou-gold mt-0.5">100% On-Prem</div>
+                    <div class="text-xxs text-slate-400">Zero Cloud Exfiltration</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Visual Architecture Grid -->
+    <main class="flex-1 p-4 md:p-6 max-w-[1700px] mx-auto w-full space-y-8">
+
+        <!-- ZONE 0: External Payment Switches & Cross-Border -->
+        <div class="border-2 border-amber-500/40 bg-amber-950/10 rounded-2xl p-5 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-amber-400 animate-ping"></span>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 bg-amber-500/20 px-2.5 py-1 rounded border border-amber-500/40">ZONE 0: External Payment Ingestion & Partners</span>
+                </div>
+                <span class="text-xxs font-mono text-slate-400">Protocol Standards: ISO 8583 • ISO 20022 • SWIFT FIN • IPSec VPN</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Card 1: Commercial Banks -->
+                <div onclick="inspectNode('comm_banks')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-amber-500/30 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="w-10 h-10 rounded-lg bg-blue-600/20 border border-blue-500/50 flex items-center justify-center text-xl">
+                                🏦
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-slate-800 text-amber-300 font-mono">Tier-1 Banks</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">Commercial Banking Switches</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Stanbic, Centenary, Absa, Standard Chartered connecting over encrypted IPSec Leased Lines.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Traffic: RTGS Inward/Outward</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Mobile Money Switches (MTN MoMo & Airtel) -->
+                <div onclick="inspectNode('telco_momo')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-yellow-500/40 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-1.5">
+                                <div class="px-2 py-1 rounded bg-[#ffcc00] text-black font-black text-xs font-mono">MTN MoMo</div>
+                                <div class="px-2 py-1 rounded bg-[#e60000] text-white font-black text-xs font-mono">airtel money</div>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-slate-800 text-yellow-300 font-mono">Retail Switches</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">National Mobile Money Gateways</h3>
+                        <p class="text-xxs text-slate-400 mt-1">ISO 8583 transaction streams connecting Uganda's 34M+ mobile money subscriber wallets to National Switch.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Traffic: P2P, P2M, C2B</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: SWIFT Network -->
+                <div onclick="inspectNode('swift_net')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-blue-500/40 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2 py-1 rounded bg-blue-700 text-white font-black text-xs font-mono tracking-wider flex items-center gap-1">
+                                <span>SWIFT</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-slate-800 text-blue-300 font-mono">Global Interbank</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">SWIFT Financial Messaging Net</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Global cross-border messaging (MT103, MT202, MX ISO 20022) with foreign correspondent central banks.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Security: SWIFT CSP v2026</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Regional Settlement EAPS (Kenya CBK) -->
+                <div onclick="inspectNode('eaps_kenya')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-emerald-500/40 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-base">🇰🇪 ↔ 🇺🇬</span>
+                                <span class="px-2 py-1 rounded bg-emerald-900/60 text-emerald-300 font-mono text-xs font-bold">EAPS LINK</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-slate-800 text-emerald-300 font-mono">Cross-Border</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">East African Payment System (EAPS)</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Interconnecting Bank of Uganda RTGS directly with Central Bank of Kenya (CBK) and Bank of Tanzania (BOT).</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Settlement: Multi-Currency EAT</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Flow Connector 0 to 1 -->
+        <div class="flex justify-center items-center -my-3">
+            <div class="px-4 py-1.5 rounded-full bg-bou-900 border border-bou-cyan/40 text-bou-cyan font-mono text-xs flex items-center gap-2 shadow-lg">
+                <span class="animate-bounce">⬇</span>
+                <span>Encrypted Fiber Ingress (mTLS & IPsec 10Gbps Pipes)</span>
+                <span class="animate-bounce">⬇</span>
+            </div>
+        </div>
+
+        <!-- ZONE 1: Border & DMZ Inspection (Open-Source WAF & IDS) -->
+        <div class="border-2 border-cyan-500/40 bg-cyan-950/10 rounded-2xl p-5 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 bg-cyan-500/20 px-2.5 py-1 rounded border border-cyan-500/40">ZONE 1: Perimeter Inspection & Reverse Proxy DMZ</span>
+                </div>
+                <span class="text-xxs font-mono text-slate-400">Open-Source Technologies: Coraza WAF • Suricata NIDS • OPNsense / Linux BGP</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <!-- Card 1: Coraza Open-Source WAF -->
+                <div onclick="inspectNode('coraza_waf')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-cyan-500/30 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2.5 py-1 rounded bg-cyan-600/30 border border-cyan-400 text-cyan-200 font-bold text-xs font-mono flex items-center gap-1.5">
+                                <span>⚡ CORAZA WAF</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">$0 OSS (OWASP)</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">Coraza / ModSecurity WAF + OWASP CRS</h3>
+                        <p class="text-xxs text-slate-400 mt-1">High-performance Go-based Web Application Firewall. Inspects API payloads for SQLi, XSS, and Base64-obfuscated commands in $<2	ext{ms}$.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Rule: OWASP CRS v4.0</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Suricata NIDS -->
+                <div onclick="inspectNode('suricata_ids')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-green-500/40 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2.5 py-1 rounded bg-green-700/30 border border-green-400 text-green-200 font-bold text-xs font-mono flex items-center gap-1.5">
+                                <span>🐆 SURICATA</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">$0 OSS (OISF)</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">Suricata 10Gbps Multi-Threaded NIDS</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Deep packet inspection engine tapping core switch SPAN ports. Detects Cobalt Strike, zero-day C2, and packet anomalies without adding latency.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Telemetry: EVE JSON Stream</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: OPNsense / Linux BGP Edge -->
+                <div onclick="inspectNode('opnsense_fw')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-orange-500/40 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2.5 py-1 rounded bg-orange-700/30 border border-orange-400 text-orange-200 font-bold text-xs font-mono flex items-center gap-1.5">
+                                <span>🛡️ OPNsense / BGP</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">$0 OSS (FreeBSD)</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">OPNsense Border Gateway & API Firewall</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Controls Layer 3/4 perimeter filtering with automated REST API hooks for instantaneous IP blacklisting driven by the SOAR engine.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Latency: Sub-millisecond</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Flow Connector 1 to 2 -->
+        <div class="flex justify-center items-center -my-3">
+            <div class="px-4 py-1.5 rounded-full bg-bou-900 border border-bou-gold/40 text-bou-gold font-mono text-xs flex items-center gap-2 shadow-lg">
+                <span class="animate-bounce">⬇</span>
+                <span>Clean Sanitized Financial Flow (Isolated Payment VLAN 100)</span>
+                <span class="animate-bounce">⬇</span>
+            </div>
+        </div>
+
+        <!-- ZONE 2: Sovereign Core Payment Enclave (Protected by Wazuh) -->
+        <div class="border-2 border-bou-gold/50 bg-bou-900/30 rounded-2xl p-5 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-bou-gold animate-pulse"></span>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-bou-gold bg-bou-gold/20 px-2.5 py-1 rounded border border-bou-gold/40">ZONE 2: Sovereign Core Payment Enclave (PCI-DSS Scoped)</span>
+                </div>
+                <span class="text-xxs font-mono text-emerald-400 font-bold flex items-center gap-1">
+                    <span>🛡️ WAZUH AGENT ACTIVE ON EVERY NODE</span>
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Core 1: BoU RTGS Switch -->
+                <div onclick="inspectNode('bou_rtgs')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-950 border border-bou-gold/40 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2 py-1 rounded bg-bou-gold text-bou-950 font-black text-xs font-mono">
+                                BoU RTGS
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono">Wazuh Protected</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">BoU National RTGS Switch</h3>
+                        <p class="text-xxs text-slate-400 mt-1">High-value real-time gross settlement switch settling billions of UGX daily across commercial bank reserves.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Monitoring: FIM + Syscall Audit</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Core 2: SWIFT Gateway -->
+                <div onclick="inspectNode('swift_gw')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-950 border border-blue-500/40 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2 py-1 rounded bg-blue-600 text-white font-bold text-xs font-mono">
+                                SWIFT Alliance
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono">Wazuh Protected</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">SWIFT Alliance Access Gateway</h3>
+                        <p class="text-xxs text-slate-400 mt-1">HSM hardware-protected messaging server handling international correspondent central bank wire transfers.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Memory: RWX Injection Probe</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Core 3: National Mobile Money Switch Integrator -->
+                <div onclick="inspectNode('momo_integrator')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-950 border border-yellow-500/40 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2 py-1 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 font-bold text-xs font-mono">
+                                NPS Mobile Switch
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono">Wazuh Protected</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">National Payment Switch (NPS) Integrator</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Clears inter-wallet transactions between MTN, Airtel, and commercial microfinance bank accounts.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Integrity: API Token Audit</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Core 4: PostgreSQL Settlement Database -->
+                <div onclick="inspectNode('postgres_db')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-950 border border-blue-400/40 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2.5 py-1 rounded bg-blue-900/60 text-blue-200 border border-blue-400 font-bold text-xs font-mono flex items-center gap-1.5">
+                                <span>🐘 PostgreSQL</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono">Wazuh Protected</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">Core Settlement Database</h3>
+                        <p class="text-xxs text-slate-400 mt-1">High-availability ACID transactional database storing sovereign bank reserves and double-entry general ledgers.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Audit: pgAudit + Prepared Stmts</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Flow Connector 2 to 3 (Out-of-Band Telemetry & SOAR Control) -->
+        <div class="flex justify-center items-center -my-3">
+            <div class="px-4 py-1.5 rounded-full bg-bou-900 border border-purple-500/40 text-purple-300 font-mono text-xs flex items-center gap-2 shadow-lg">
+                <span class="animate-pulse">⚡</span>
+                <span>Encrypted Port 1514 Out-of-Band Management VLAN (Zero Interference with Payments)</span>
+                <span class="animate-pulse">⚡</span>
+            </div>
+        </div>
+
+        <!-- ZONE 3: The Sovereign Open-Source SOC & Automated Forensics Enclave -->
+        <div class="border-2 border-purple-500/50 bg-purple-950/15 rounded-2xl p-5 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-purple-400 animate-ping"></span>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-purple-300 bg-purple-500/20 px-2.5 py-1 rounded border border-purple-500/40">ZONE 3: Sovereign Open-Source SOC & Automated Forensics Enclave</span>
+                </div>
+                <span class="text-xxs font-mono text-emerald-400 font-bold">$0 SOFTWARE LICENSE COST • 100% SOVEREIGN JURISDICTION</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                
+                <!-- Card 1: Wazuh XDR/SIEM -->
+                <div onclick="inspectNode('wazuh_cluster')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-cyan-400/50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2.5 py-1 rounded bg-[#00a4e4]/20 border border-[#00a4e4] text-[#00a4e4] font-bold text-xs font-mono flex items-center gap-1.5">
+                                <span>🦉 WAZUH XDR</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">$0 OSS</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">Wazuh SIEM / XDR Cluster</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Aggregates host telemetry, file integrity events, and memory injection alerts from all payment servers.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Role: Telemetry Aggregator</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Shuffle SOAR -->
+                <div onclick="inspectNode('shuffle_soar')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-orange-500/50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2.5 py-1 rounded bg-[#f26522]/20 border border-[#f26522] text-[#f26522] font-bold text-xs font-mono flex items-center gap-1.5">
+                                <span>⚡ SHUFFLE SOAR</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">$0 OSS</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">Shuffle Autonomous SOAR Engine</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Executes sub-second autonomous containment playbooks: blocks IPs on firewall, isolates compromised endpoints, and dispatches SMS.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Role: Orchestration Master</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: CyberForensic Chef & PII Shield -->
+                <div onclick="inspectNode('chef_microservice')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-bou-cyan/50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2.5 py-1 rounded bg-teal-500/20 border border-teal-400 text-teal-300 font-bold text-xs font-mono flex items-center gap-1.5">
+                                <span>🔪 FORENSIC CHEF</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">DPPA 2019</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">CyberForensic Chef & PII Shield</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Automated microservice for de-obfuscating Base64/XOR malware strings and tokenizing citizen NINs and bank accounts using HMAC.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Role: De-obfuscation & PII Shield</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: TheHive & Cortex -->
+                <div onclick="inspectNode('thehive_cortex')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-yellow-500/50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2.5 py-1 rounded bg-yellow-500/20 border border-yellow-400 text-yellow-300 font-bold text-xs font-mono flex items-center gap-1.5">
+                                <span>🐝 THEHIVE + CORTEX</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">$0 OSS</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">TheHive Incident Response Platform</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Automated judicial evidence chain of custody tracker. Generates court-admissible dossiers under Uganda Computer Misuse Act (2022).</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Role: Court Chain of Custody</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+                <!-- Card 5: MISP Threat Sharing -->
+                <div onclick="inspectNode('misp_intel')" class="vendor-card cursor-pointer p-4 rounded-xl bg-bou-900/90 border border-red-500/50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="px-2.5 py-1 rounded bg-red-500/20 border border-red-400 text-red-300 font-bold text-xs font-mono flex items-center gap-1.5">
+                                <span>🤝 MISP / OpenCTI</span>
+                            </div>
+                            <span class="text-xxs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">Regional Intel</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">MISP Cross-Border Threat Feed</h3>
+                        <p class="text-xxs text-slate-400 mt-1">Bi-directional peer-to-peer threat intelligence sharing with Central Bank of Kenya (CBK) and regional East African CSIRTs.</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between text-xxs font-mono text-slate-400">
+                        <span>Role: BoU ↔ CBK IoC Sync</span>
+                        <span class="text-cyan-400">Inspect ➔</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Cost & Licensing Comparison Table (Proposal Quality) -->
+        <div class="bg-bou-900/80 border border-bou-gold/30 rounded-2xl p-6 shadow-2xl font-mono text-xs">
+            <h3 class="text-sm font-bold text-bou-gold uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span>📊 Economic Analysis: Proprietary Vendor Stack vs. Sovereign Open-Source Stack</span>
+            </h3>
+            
+            <div class="overflow-x-auto terminal-scroll">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-700 text-slate-400 text-xxs">
+                            <th class="p-2.5">Security Domain</th>
+                            <th class="p-2.5">Commercial Proprietary Option</th>
+                            <th class="p-2.5 text-rose-400">Annual License Cost (Est.)</th>
+                            <th class="p-2.5 text-emerald-400">Sovereign Open-Source Alternative</th>
+                            <th class="p-2.5 text-emerald-300 font-bold">BoU Software Cost</th>
+                            <th class="p-2.5">Data Sovereignty Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800 text-slate-200">
+                        <tr>
+                            <td class="p-2.5 font-bold">SIEM / Log Ingestion</td>
+                            <td class="p-2.5 text-slate-400">Splunk Enterprise / Datadog</td>
+                            <td class="p-2.5 text-rose-400">$180,000 / yr</td>
+                            <td class="p-2.5 text-emerald-400 font-bold">Wazuh + OpenSearch</td>
+                            <td class="p-2.5 text-emerald-300 font-bold">$0.00</td>
+                            <td class="p-2.5 text-emerald-400">100% On-Premise BoU Data Center</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2.5 font-bold">SOAR Automation</td>
+                            <td class="p-2.5 text-slate-400">Palo Alto Cortex XSOAR / Splunk SOAR</td>
+                            <td class="p-2.5 text-rose-400">$95,000 / yr</td>
+                            <td class="p-2.5 text-emerald-400 font-bold">Shuffle SOAR</td>
+                            <td class="p-2.5 text-emerald-300 font-bold">$0.00</td>
+                            <td class="p-2.5 text-emerald-400">100% On-Premise BoU Data Center</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2.5 font-bold">Web App Firewall</td>
+                            <td class="p-2.5 text-slate-400">Cloudflare Enterprise / Imperva</td>
+                            <td class="p-2.5 text-rose-400">$60,000 / yr</td>
+                            <td class="p-2.5 text-emerald-400 font-bold">Coraza WAF + OWASP CRS</td>
+                            <td class="p-2.5 text-emerald-300 font-bold">$0.00</td>
+                            <td class="p-2.5 text-emerald-400">Zero Cloud Inspection Bypass</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2.5 font-bold">Incident Management</td>
+                            <td class="p-2.5 text-slate-400">ServiceNow SecOps</td>
+                            <td class="p-2.5 text-rose-400">$75,000 / yr</td>
+                            <td class="p-2.5 text-emerald-400 font-bold">TheHive + Cortex</td>
+                            <td class="p-2.5 text-emerald-300 font-bold">$0.00</td>
+                            <td class="p-2.5 text-emerald-400">Compliant with Uganda DPPA 2019</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2.5 font-bold">Threat Intelligence</td>
+                            <td class="p-2.5 text-slate-400">Recorded Future</td>
+                            <td class="p-2.5 text-rose-400">$50,000 / yr</td>
+                            <td class="p-2.5 text-emerald-400 font-bold">MISP Community Feeds + CBK Feed</td>
+                            <td class="p-2.5 text-emerald-300 font-bold">$0.00</td>
+                            <td class="p-2.5 text-emerald-400">Direct East African Peer-to-Peer</td>
+                        </tr>
+                        <tr class="bg-bou-950 font-bold border-t-2 border-bou-gold">
+                            <td class="p-3 text-white">TOTAL ESTIMATED ANNUAL OUTLAY</td>
+                            <td class="p-3 text-slate-400">Foreign Commercial Licenses</td>
+                            <td class="p-3 text-rose-400 text-sm">$460,000 / year</td>
+                            <td class="p-3 text-emerald-400 text-sm">Sovereign Open-Source Stack</td>
+                            <td class="p-3 text-emerald-300 text-base font-black">$0.00 / year</td>
+                            <td class="p-3 text-bou-gold">Total Capital Reinvested in Local Capacity</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Node Inspector Drawer Modal -->
+    <div id="inspectorModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-end">
+        <div class="bg-bou-900 border-l border-bou-gold/40 w-full max-w-xl h-full p-6 flex flex-col justify-between overflow-y-auto terminal-scroll">
+            <div>
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+                    <div>
+                        <span id="inspectZoneTag" class="text-xxs px-2 py-0.5 rounded bg-bou-cyan/20 text-bou-cyan font-mono font-bold uppercase">ZONE</span>
+                        <h3 id="inspectTitle" class="text-lg font-bold text-white mt-1">Component Name</h3>
+                    </div>
+                    <button onclick="closeInspector()" class="text-slate-400 hover:text-white text-xl font-bold font-mono px-2">×</button>
+                </div>
+
+                <div id="inspectContent" class="space-y-4 font-mono text-xs text-slate-300">
+                    <!-- Dynamic Content Injected by JS -->
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800 mt-6 flex justify-between items-center">
+                <span class="text-xxs text-slate-500 font-mono">Bank of Uganda Cyber Forensics Technical Blueprint</span>
+                <button onclick="closeInspector()" class="px-4 py-2 rounded bg-bou-gold text-bou-950 font-bold text-xs">Close Inspector</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Script -->
+    <script>
+        const nodeData = {
+            comm_banks: {
+                zone: "ZONE 0: External Payment Switches",
+                title: "Commercial Banking Core Switches",
+                desc: "Stanbic, Centenary, Absa, Standard Chartered connecting to BoU RTGS via redundant leased line fiber and IPSec tunnels.",
+                protocols: "ISO 20022 (pacs.008, pacs.009), AS2 over TLS 1.3, IPSec ESP",
+                telemetry: "BGP route flap alerts, TCP SYN floods, abnormal transfer batch sizes",
+                dppa: "Raw account numbers masked before entering analytics pipeline",
+                codeSnippet: "# Example IPSec tunnel configuration (strongSwan)
+conn bou-rtgs-stanbic
+  left=10.0.1.1
+  right=196.201.214.5
+  authby=secret
+  ike=aes256-sha256-modp2048!
+  esp=aes256-sha256!
+  auto=start"
+            },
+            telco_momo: {
+                zone: "ZONE 0: External Payment Switches",
+                title: "MTN MoMo & Airtel Money Gateways",
+                desc: "High-volume retail mobile money gateways processing micro-payments, merchant payments, and government tax receipts.",
+                protocols: "ISO 8583 (0200 Financial Request), REST JSON API, SMPP for USSD notifications",
+                telemetry: "Failed authentication bursts, SIM swap API signals, transaction velocity spikes",
+                dppa: "MSISDN phone numbers (+256...) shielded with HMAC-SHA256 tokens",
+                codeSnippet: "// ISO 8583 Message Structure for MoMo
+{
+  'MTI': '0200',
+  'ProcessingCode': '000000',
+  'Amount': '150000000',
+  'Currency': 'UGX',
+  'Telco': 'MTN_UG_MOMO'
+}"
+            },
+            swift_net: {
+                zone: "ZONE 0: External Payment Switches",
+                title: "SWIFT Financial Messaging Network",
+                desc: "Global financial messaging backbone connecting Bank of Uganda to foreign central banks (Federal Reserve, Bank of England, ECB).",
+                protocols: "SWIFT FIN, InterAct, FileAct, ISO 20022 MX",
+                telemetry: "HSM cryptographic heartbeat, PKI certificate expirations, off-hours MT103 wire transmissions",
+                dppa: "Governed by SWIFT Customer Security Programme (CSP v2026)",
+                codeSnippet: "{1:F01BOUAUGKAAXXX0000000000}{2:I103BANKUS33XXXXN}{3:{108:MT103_UGX_SETTLE}}{4:
+:20:BOU-WIRE-99214
+:32A:261020UGX1500000000,
+:50K:/9912048124
+:59:/4412890192
+-}"
+            },
+            eaps_kenya: {
+                zone: "ZONE 0: External Payment Switches",
+                title: "East African Payment System (EAPS)",
+                desc: "Cross-border multi-currency settlement mechanism connecting Bank of Uganda directly to the Central Bank of Kenya (CBK) and Bank of Tanzania (BOT).",
+                protocols: "ISO 20022 Cross-Border Settlement Protocol, Secure Dedicated Leased Line",
+                telemetry: "Inter-central bank exchange rate feeds, cross-border fraud flags, anomaly detection",
+                dppa: "Governed by East African Community (EAC) Financial Integration Protocols",
+                codeSnippet: "# Federated IoC Sharing with CBK
+curl -X POST https://misp.cbk.go.ke/events/restSearch \
+  -H 'Authorization: Bearer KEY_BOU_SOVEREIGN' \
+  -d '{"category": "Financial Wire Fraud", "since": "24h"}'"
+            },
+            coraza_waf: {
+                zone: "ZONE 1: Perimeter DMZ",
+                title: "Coraza / ModSecurity Open-Source WAF",
+                desc: "Enterprise-grade open-source web application firewall written in Go. Evaluates every HTTP request against the OWASP Core Rule Set (CRS) in <2ms.",
+                protocols: "HTTP/1.1, HTTP/2, gRPC, WebSocket",
+                telemetry: "Blocked SQLi injections, command execution attempts, malicious User-Agents",
+                dppa: "Strips unneeded citizen metadata before forwarding to backend APIs",
+                codeSnippet: "# Coraza OWASP CRS Rule in action
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|REQUEST_HEADERS:Referer|ARGS_NAMES|ARGS|XML:/* "@rx (?:(?:select|insert|update|delete|drop|alter)\b.*\b(from|into|table|database)\b)" \
+  "id:942100,phase:2,block,capture,t:none,t:lowercase,msg:'SQL Injection Attempt Detected'""
+            },
+            suricata_ids: {
+                zone: "ZONE 1: Perimeter DMZ",
+                title: "Suricata 10Gbps Multi-Threaded NIDS",
+                desc: "High-speed network threat detection engine processing mirrored core switch packets without introducing any payment latency.",
+                protocols: "TCP, UDP, TLS, DNS, HTTP, SMB, DCE/RPC",
+                telemetry: "EVE JSON log stream sent directly to Wazuh SIEM",
+                dppa: "Packet payload capture excludes encrypted payload bodies, preserving confidentiality",
+                codeSnippet: "# Suricata Rule for Cobalt Strike C2 Detection
+alert tls any any -> any any (msg:"ET MALWARE Cobalt Strike Malleable C2 Beaconing"; \
+  flow:established,to_server; \
+  tls.cert_issuer; content:"C=US, ST=California"; \
+  classtype:trojan-activity; sid:2030114; rev:1;)"
+            },
+            opnsense_fw: {
+                zone: "ZONE 1: Perimeter DMZ",
+                title: "OPNsense Border Gateway & API Firewall",
+                desc: "Hardened open-source FreeBSD security appliance providing stateful packet inspection, dynamic BGP routing, and REST API automation.",
+                protocols: "BGP4, OSPF, IPSec, WireGuard, REST API",
+                telemetry: "Flow statistics, dropped connection counters, geo-IP block metrics",
+                dppa: "Perimeter blocklists prevent untrusted foreign IPs from ever touching core databases",
+                codeSnippet: "# Automated Python REST API call from SOAR to OPNsense
+import requests
+requests.post('https://firewall.bou.go.ug/api/firewall/alias_util/add/blacklisted_ips',
+  json={'address': '194.26.29.11'},
+  auth=('API_KEY', 'API_SECRET'))"
+            },
+            bou_rtgs: {
+                zone: "ZONE 2: Sovereign Payment Enclave",
+                title: "Bank of Uganda National RTGS Switch",
+                desc: "The heartbeat of Uganda's financial system. Every commercial bank maintains reserve settlement accounts on this node.",
+                protocols: "Internal Financial Protocol, MQ Series, TLS 1.3",
+                telemetry: "Wazuh Agent monitoring /etc/rtgs/, memory segments, and root privilege escalation",
+                dppa: "Subject to Bank of Uganda National Payment Systems (NPS) Act 2020",
+                codeSnippet: "# Wazuh Agent File Integrity Monitoring (FIM) config
+<syscheck>
+  <directories check_all="yes" realtime="yes">/opt/bou_rtgs/bin</directories>
+  <directories check_all="yes" realtime="yes">/etc/rtgs</directories>
+  <ignore>/var/log</ignore>
+</syscheck>"
+            },
+            swift_gw: {
+                zone: "ZONE 2: Sovereign Payment Enclave",
+                title: "SWIFT Alliance Access Gateway",
+                desc: "Protected Linux node connected to SWIFT hardware security modules (HSMs). Holds private cryptographic keys for wire signing.",
+                protocols: "SWIFT Secure IP Network (SIPN), Hardware HSM PKCS#11",
+                telemetry: "Wazuh Agent inspecting memory pages for unauthorized code injection (malfind probe)",
+                dppa: "SWIFT CSP Customer Security Controls Framework Mandatory Verification",
+                codeSnippet: "# Wazuh Rootcheck / Malfind Memory Probe
+<rootcheck>
+  <rootkit_files>/var/ossec/etc/shared/rootkit_files.txt</rootkit_files>
+  <check_trojans>yes</check_trojans>
+  <check_dev>yes</check_dev>
+  <check_sys>yes</check_sys>
+</rootcheck>"
+            },
+            momo_integrator: {
+                zone: "ZONE 2: Sovereign Payment Enclave",
+                title: "NPS Mobile Money Integrator",
+                desc: "Middleware engine bridging telecom mobile wallets to commercial bank RTGS clearing accounts.",
+                protocols: "mTLS REST APIs, Webhooks, RabbitMQ Message Bus",
+                telemetry: "Auditd syscall logs, API access frequency, anomalous credit amounts",
+                dppa: "Uganda DPPA 2019 Section 10: Mandatory pseudonymization of sender/receiver identity",
+                codeSnippet: "# Linux Auditd Rule to monitor payment daemon
+-w /usr/local/bin/momo_switch -p x -k momo_exec
+-w /etc/momo/secrets.env -p rwa -k momo_credentials"
+            },
+            postgres_db: {
+                zone: "ZONE 2: Sovereign Payment Enclave",
+                title: "Core Settlement Database (PostgreSQL)",
+                desc: "High-performance transactional database running on hardened Linux. Executes parameterized double-entry general ledger updates.",
+                protocols: "PostgreSQL Wire Protocol over TLS, pgAudit",
+                telemetry: "Session connection audits, schema modification attempts, query duration spikes",
+                dppa: "Financial balances stored with row-level encryption and differential privacy noise",
+                codeSnippet: "-- Parameterized secure query preventing all SQL injection
+PREPARE TransferUGX (int, int, numeric) AS
+  UPDATE accounts SET balance = balance - $3 WHERE id = $1;
+  UPDATE accounts SET balance = balance + $3 WHERE id = $2;
+EXECUTE TransferUGX(9912048124, 4412890192, 1500000000);"
+            },
+            wazuh_cluster: {
+                zone: "ZONE 3: Sovereign Open-Source SOC Enclave",
+                title: "Wazuh XDR / SIEM Cluster",
+                desc: "The central nervous system of the security architecture. Ingests millions of events daily across all payment servers without software licensing costs.",
+                protocols: "Encrypted Wazuh Protocol (Port 1514), OpenSearch REST API",
+                telemetry: "Real-time correlation of OSSEC alerts, CVE vulnerability detection, regulatory compliance dashboards",
+                dppa: "Role-based access control (RBAC) ensures forensic investigators only see pseudonymized data",
+                codeSnippet: "# Wazuh Active Response configuration
+<active-response>
+  <command>firewall-drop</command>
+  <location>local</location>
+  <rules_id>5710, 5716</rules_id>
+  <timeout>1800</timeout>
+</active-response>"
+            },
+            shuffle_soar: {
+                zone: "ZONE 3: Sovereign Open-Source SOC Enclave",
+                title: "Shuffle Open-Source SOAR",
+                desc: "Visual workflow automation engine. Listens for webhooks from Wazuh and triggers sub-second autonomous playbooks across firewalls, Active Directory, and SMS gateways.",
+                protocols: "OpenAPI, Webhooks, REST JSON, Docker Execution Workers",
+                telemetry: "Mean Time to Contain (MTTC) timers, playbook execution traces, action error rates",
+                dppa: "Automated playbooks enforce statutory notification within 72 hours per DPPA 2019",
+                codeSnippet: "# Shuffle Workflow Node Definition (YAML)
+name: Firewall_Containment
+app_name: OPNsense
+action: add_firewall_block
+parameters:
+  - name: ip
+    value: "{{execution.data.attacker_ip}}"
+  - name: duration
+    value: "86400""
+            },
+            chef_microservice: {
+                zone: "ZONE 3: Sovereign Open-Source SOC Enclave",
+                title: "CyberForensic Chef & PII Shield Microservice",
+                desc: "Containerized forensic decoding and privacy sanitization service. Decodes Base64/XOR payloads and redacts Uganda NINs and bank accounts before archiving.",
+                protocols: "HTTP REST API, JSON in/out",
+                telemetry: "De-obfuscation hit count, Shannon entropy distributions, PII masking compliance scores",
+                dppa: "Guarantees 100% adherence to Uganda DPPA 2019 Section 10 (Pseudonymization)",
+                codeSnippet: "# Forensic Chef Tokenization Call
+curl -X POST http://forensic-chef:8080/bake \
+  -d '{"recipe": ["fromBase64", "extractIocs", "maskNin", "hmacTokenize"], \
+       "input": "...raw dirty banking log..."}'"
+            },
+            thehive_cortex: {
+                zone: "ZONE 3: Sovereign Open-Source SOC Enclave",
+                title: "TheHive & Cortex Incident Management",
+                desc: "Security incident response platform providing collaborative case management, digital evidence storage, and automated observable analysis.",
+                protocols: "Elasticsearch, REST API, MISP integration",
+                telemetry: "Case resolution times, evidence hash seals, investigator notes",
+                dppa: "Generates Chain of Custody forms admissible in the High Court of Uganda under the Electronic Transactions Act",
+                codeSnippet: "# Cortex Analyzer for VirusTotal
+curl -X POST http://cortex:9001/api/analyzer/VirusTotal_GetReport/run \
+  -H 'Authorization: Bearer KEY' \
+  -d '{"data": "08adba3aa8c35d8d12dac1ce7dd218bdc39592b160da62ea275acd9f751561f4", "dataType": "hash"}'"
+            },
+            misp_intel: {
+                zone: "ZONE 3: Sovereign Open-Source SOC Enclave",
+                title: "MISP Regional Threat Intel Hub",
+                desc: "Open-source threat sharing platform. Synchronizes indicators of compromise (IoCs) in real time with the Central Bank of Kenya (CBK), NITA-U, and regional CSIRTs.",
+                protocols: "PyMISP, STIX 2.1, TAXII, REST API",
+                telemetry: "Cross-border financial malware hashes, malicious C2 IP lists, ATM jackpotting signatures",
+                dppa: "Shares purely technical indicators of compromise (IoCs) without transmitting citizen identities",
+                codeSnippet: "# Syncing IoCs with Central Bank of Kenya MISP instance
+from pymisp import PyMISP
+misp = PyMISP('https://misp.bou.go.ug', 'BOU_SECRET_API_KEY')
+event = misp.new_event(info='Cross-Border RTGS Malicious C2 Probe', distribution=2)
+misp.add_attribute(event, {'type': 'ip-dst', 'value': '194.26.29.11'})"
+            }
+        };
+
+        function inspectNode(key) {
+            const data = nodeData[key];
+            if (!data) return;
+
+            document.getElementById('inspectZoneTag').textContent = data.zone;
+            document.getElementById('inspectTitle').textContent = data.title;
+
+            document.getElementById('inspectContent').innerHTML = `
+                <div class="p-3 rounded bg-bou-950 border border-slate-800">
+                    <span class="text-slate-400 font-bold uppercase text-xxs">Architecture Function:</span>
+                    <p class="text-slate-200 mt-1">${data.desc}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xxs">
+                    <div class="p-2.5 rounded bg-bou-950 border border-slate-800">
+                        <span class="text-slate-400 font-bold uppercase">Protocols & Standards:</span>
+                        <div class="text-cyan-300 mt-0.5">${data.protocols}</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-bou-950 border border-slate-800">
+                        <span class="text-slate-400 font-bold uppercase">Telemetry Captured:</span>
+                        <div class="text-amber-300 mt-0.5">${data.telemetry}</div>
+                    </div>
+                </div>
+
+                <div class="p-2.5 rounded bg-bou-950 border border-emerald-500/30 text-xxs">
+                    <span class="text-emerald-400 font-bold uppercase">Statutory Privacy & Legal Compliance:</span>
+                    <p class="text-slate-300 mt-0.5">${data.dppa}</p>
+                </div>
+
+                <div class="p-2.5 rounded bg-bou-950 border border-slate-800">
+                    <span class="text-slate-400 font-bold uppercase text-xxs">Technical Implementation Artifact:</span>
+                    <pre class="bg-black/60 p-2.5 rounded border border-slate-800 text-xxs text-emerald-300 mt-1 overflow-x-auto terminal-scroll">${data.codeSnippet}</pre>
+                </div>
+            `;
+
+            document.getElementById('inspectorModal').classList.remove('hidden');
+        }
+
+        function closeInspector() {
+            document.getElementById('inspectorModal').classList.add('hidden');
+        }
+
+        // Close on background click
+        document.getElementById('inspectorModal').addEventListener('click', function(e) {
+            if (e.target === this) closeInspector();
+        });
+    </script>
+</body>
+</html>

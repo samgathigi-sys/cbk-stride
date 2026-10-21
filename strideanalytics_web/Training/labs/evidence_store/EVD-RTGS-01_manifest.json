@@ -1,0 +1,10 @@
+{
+    "case_id": "BOU-FORENSIC-2026-001",
+    "evidence_id": "EVD-RTGS-01",
+    "custodian": "BoU Cyber Forensics Unit",
+    "seizure_timestamp": "2026-10-19T12:39:27.233218+00:00",
+    "sha256_baseline": "08adba3aa8c35d8d12dac1ce7dd218bdc39592b160da62ea275acd9f751561f4",
+    "md5_baseline": "027d56eb3547a46f6362b6becbe03ed2",
+    "file_size_bytes": 367,
+    "admissibility_standard": "Uganda Evidence Act (Cap 6) & Electronic Signatures Act 2011"
+}

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank of Uganda | Autonomous SOAR Playbook Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bou: {
+                            950: '#020612',
+                            900: '#071120',
+                            850: '#0b192e',
+                            800: '#0f2442',
+                            700: '#173660',
+                            gold: '#c5a059',
+                            goldLight: '#e6be75',
+                            goldDark: '#997736',
+                            crimson: '#e11d48',
+                            emerald: '#10b981',
+                            cyan: '#06b6d4',
+                            purple: '#a855f7',
+                            amber: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #020612;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: #020612;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #1e3a5f;
+            border-radius: 3px;
+        }
+        .node-active {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.75);
+            border-color: #06b6d4 !important;
+            transform: translateY(-2px);
+        }
+        .node-completed {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border-color: #10b981 !important;
+        }
+        .connector-line {
+            transition: all 0.4s ease;
+        }
+        @keyframes flowPulse {
+            0% { stroke-dashoffset: 24; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .flow-animated {
+            stroke-dasharray: 6;
+            animation: flowPulse 0.8s linear infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-bou-gold selection:text-bou-950 font-sans">
+
+    <!-- Top Command Navigation -->
+    <header class="sticky top-0 z-50 bg-bou-900/95 backdrop-blur-md border-b border-bou-gold/30 px-6 py-3 flex flex-wrap justify-between items-center shadow-2xl">
+        <div class="flex items-center gap-4">
+            <span class="bg-gradient-to-br from-bou-gold to-bou-goldLight text-bou-950 font-black text-xs px-2.5 py-1 rounded shadow-md tracking-wider">BANK OF UGANDA</span>
+            <div>
+                <h1 class="text-sm md:text-base font-bold text-white tracking-wide flex items-center gap-2">
+                    <span>Autonomous SOAR Playbook Studio</span>
+                    <span class="text-xs font-normal text-bou-emerald px-2 py-0.5 rounded-full bg-bou-emerald/10 border border-bou-emerald/30 font-mono">24/7 Autonomous Defense</span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 text-xs font-mono mt-2 sm:mt-0">
+            <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded bg-bou-950 border border-bou-cyan/40 text-bou-cyan">
+                <span class="w-2 h-2 rounded-full bg-bou-cyan animate-pulse"></span>
+                <span>ENGINE: SHUFFLE / CORTEX CORE</span>
+            </div>
+            <a href="war_room_simulator.html" class="px-2.5 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-gold/40 text-bou-gold transition flex items-center gap-1">
+                <span>🏛️ War Room TTX</span>
+            </a>
+            <a href="cyber_forensic_chef.html" class="px-2.5 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-cyan/40 text-bou-cyan transition flex items-center gap-1">
+                <span>🔪 Forensic Chef</span>
+            </a>
+            <a href="payment_systems_architecture.html" class="px-2.5 py-1 rounded bg-bou-950 hover:bg-bou-850 border border-bou-gold/40 text-bou-gold transition flex items-center gap-1">
+                <span>🌐 Network Architecture</span>
+            </a>
+            <a href="bou_masterclass_presentation.html" class="px-2.5 py-1 rounded bg-bou-gold text-bou-950 font-bold hover:bg-bou-goldLight transition">
+                <span>📊 Slides Deck</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1700px] mx-auto w-full">
+
+        <!-- Left Column: Scenario Control & Playbook Trigger (4 cols) -->
+        <div class="lg:col-span-4 flex flex-col space-y-5">
+            
+            <!-- Scenario Selector Box -->
+            <div class="bg-bou-900/80 border border-bou-gold/25 rounded-xl p-5 shadow-xl flex flex-col">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-bou-gold font-mono font-bold text-sm">1. TRIGGER ALERT SELECTOR</span>
+                    </div>
+                    <span class="text-xxs px-2 py-0.5 rounded bg-bou-crimson/20 text-rose-300 border border-bou-crimson/40 font-mono">Real-Time Ingestion</span>
+                </div>
+
+                <label class="text-xs text-slate-400 mb-2 font-mono">Select Simulated Security Event:</label>
+                <div class="space-y-2 mb-4">
+                    <button onclick="selectScenario('sqli_code')" id="btn-scenario-sqli_code" class="scenario-btn w-full text-left p-3 rounded-lg bg-bou-950 hover:bg-bou-850 border border-bou-cyan/50 text-xs transition flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-white flex items-center gap-1.5">
+                                <span class="text-bou-cyan">⚡</span> Zero-Day SQLi & Code Injection (RTGS API)
+                            </div>
+                            <div class="text-xxs text-slate-400 mt-0.5">WAF Alert: Base64 packed shellcode in HTTP payload</div>
+                        </div>
+                        <span class="text-xxs px-1.5 py-0.5 rounded bg-red-900/40 text-rose-300 font-mono font-bold">CRITICAL</span>
+                    </button>
+
+                    <button onclick="selectScenario('cobalt_beacon')" id="btn-scenario-cobalt_beacon" class="scenario-btn w-full text-left p-3 rounded-lg bg-bou-950 hover:bg-bou-850 border border-slate-800 text-xs transition flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-white flex items-center gap-1.5">
+                                <span class="text-bou-crimson">💀</span> Cobalt Strike In-Memory RWX Beacon
+                            </div>
+                            <div class="text-xxs text-slate-400 mt-0.5">EDR Malfind: svchost.exe injection detected on Core Bank</div>
+                        </div>
+                        <span class="text-xxs px-1.5 py-0.5 rounded bg-red-900/40 text-rose-300 font-mono font-bold">CRITICAL</span>
+                    </button>
+
+                    <button onclick="selectScenario('swift_fraud')" id="btn-scenario-swift_fraud" class="scenario-btn w-full text-left p-3 rounded-lg bg-bou-950 hover:bg-bou-850 border border-slate-800 text-xs transition flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-white flex items-center gap-1.5">
+                                <span class="text-bou-gold">💰</span> SWIFT / Wire Transfer Anomaly ($1.5M)
+                            </div>
+                            <div class="text-xxs text-slate-400 mt-0.5">AI Fraud Engine: Dual-sign bypassed at 02:44 AM EAT</div>
+                        </div>
+                        <span class="text-xxs px-1.5 py-0.5 rounded bg-amber-900/40 text-amber-300 font-mono font-bold">HIGH</span>
+                    </button>
+
+                    <button onclick="selectScenario('vpn_stuffing')" id="btn-scenario-vpn_stuffing" class="scenario-btn w-full text-left p-3 rounded-lg bg-bou-950 hover:bg-bou-850 border border-slate-800 text-xs transition flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-white flex items-center gap-1.5">
+                                <span class="text-bou-purple">🌐</span> Compromised Admin VPN (Impossible Travel)
+                            </div>
+                            <div class="text-xxs text-slate-400 mt-0.5">Kampala IP at 01:10 AM ➔ Kyiv IP at 01:12 AM</div>
+                        </div>
+                        <span class="text-xxs px-1.5 py-0.5 rounded bg-amber-900/40 text-amber-300 font-mono font-bold">HIGH</span>
+                    </button>
+                </div>
+
+                <!-- Incident Context Card -->
+                <div class="bg-bou-950/90 rounded-lg p-3.5 border border-slate-800 font-mono text-xs mb-4">
+                    <div class="text-xxs text-slate-400 uppercase tracking-wider mb-1 font-bold">Incident Ingestion Metadata</div>
+                    <div id="incidentMetadata" class="text-slate-300 space-y-1 text-xxs">
+                        <div><span class="text-slate-500">Source IP:</span> <span class="text-rose-400 font-bold">194.26.29.11</span> (TOR Exit / ASN 48210)</div>
+                        <div><span class="text-slate-500">Target Asset:</span> <span class="text-cyan-300">BOU-RTGS-GATEWAY-02 (10.0.14.88)</span></div>
+                        <div><span class="text-slate-500">Telemetry:</span> <span class="text-amber-300">WAF Rule 942100 (SQLi) + Shannon 7.41</span></div>
+                        <div><span class="text-slate-500">Legal Jurisdiction:</span> <span class="text-emerald-400">Uganda CMA 2022 Sec 14</span></div>
+                    </div>
+                </div>
+
+                <!-- Execution Controls -->
+                <div class="space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btnAutoPlay" onclick="runPlaybook(false)" class="py-2.5 px-3 rounded-lg bg-gradient-to-r from-bou-cyan to-teal-500 text-bou-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 transition shadow-lg flex items-center justify-center gap-1.5">
+                            <span>▶ Full Auto (1.5s)</span>
+                        </button>
+                        <button id="btnStepPlay" onclick="stepPlaybook()" class="py-2.5 px-3 rounded-lg bg-bou-850 hover:bg-bou-800 border border-bou-gold/40 text-bou-gold font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-1.5">
+                            <span>⏯ Step-by-Step</span>
+                        </button>
+                    </div>
+                    <button onclick="resetPlaybook()" class="w-full py-1.5 rounded bg-bou-950 hover:bg-slate-900 border border-slate-800 text-slate-400 text-xxs font-mono transition">
+                        ↺ Reset Playbook State
+                    </button>
+                </div>
+            </div>
+
+            <!-- Real-World ROI / SLA Comparison -->
+            <div class="bg-bou-900/80 border border-bou-emerald/30 rounded-xl p-5 shadow-xl font-mono text-xs">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+                    <span class="text-bou-emerald font-bold text-xs uppercase">Autonomous Speed Advantage</span>
+                    <span class="text-xxs text-slate-400">SOC Metrics</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 text-center mb-3">
+                    <div class="p-2.5 rounded bg-bou-950 border border-bou-crimson/30">
+                        <div class="text-xxs text-slate-400 uppercase">Manual Analyst Response</div>
+                        <div class="text-lg font-bold text-rose-400 mt-1">4h 18m</div>
+                        <div class="text-xxs text-slate-500 mt-0.5">Attacker exfiltrates ledger</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-bou-950 border border-bou-emerald/40">
+                        <div class="text-xxs text-slate-400 uppercase">Automated SOAR Execution</div>
+                        <div id="soarTimerDisplay" class="text-lg font-bold text-emerald-300 mt-1">1.34s</div>
+                        <div class="text-xxs text-emerald-400 mt-0.5">Zero records compromised</div>
+                    </div>
+                </div>
+                <div class="text-xxs text-slate-400 space-y-1">
+                    <div>• <strong class="text-slate-300">Mean Time to Detect (MTTD):</strong> <span class="text-cyan-400">0.08 seconds</span></div>
+                    <div>• <strong class="text-slate-300">Mean Time to Contain (MTTC):</strong> <span class="text-emerald-400">1.26 seconds</span></div>
+                    <div>• <strong class="text-slate-300">Human Intervention:</strong> <span class="text-bou-gold">0 clicks required at 3:00 AM</span></div>
+                </div>
+            </div>
+
+            <!-- Open Source Spotlight -->
+            <div class="bg-bou-950/70 border border-slate-800 rounded-xl p-4 text-xs font-mono">
+                <div class="text-bou-gold text-xxs font-bold uppercase mb-2 flex items-center gap-1">
+                    <span>💡 Open Source SOAR Tools For Class:</span>
+                </div>
+                <ul class="text-xxs text-slate-300 space-y-1.5 list-disc pl-4">
+                    <li><strong class="text-cyan-300">Shuffle SOAR</strong> (<a href="https://shuffler.io" target="_blank" class="underline text-bou-cyan">shuffler.io</a>) - The leading open-source security orchestration & OpenAPI workflow builder.</li>
+                    <li><strong class="text-cyan-300">TheHive + Cortex</strong> - Open-source security incident response & active observables analyzer.</li>
+                    <li><strong class="text-cyan-300">Wazuh XDR</strong> - Free open-source security monitoring & automated active response.</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Visual Playbook Execution Pipeline & Terminal (8 cols) -->
+        <div class="lg:col-span-8 flex flex-col space-y-5">
+            
+            <!-- Visual Playbook DAG Canvas -->
+            <div class="bg-bou-900/80 border border-bou-gold/25 rounded-xl p-5 shadow-xl flex flex-col">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+                    <div>
+                        <h2 class="text-xs font-bold text-bou-gold font-mono uppercase tracking-wider flex items-center gap-2">
+                            <span>2. Autonomous Incident Containment Pipeline</span>
+                        </h2>
+                        <div class="text-xxs text-slate-400 mt-0.5 font-mono">Interactive DAG Flow: Watch nodes trigger sequentially in real-time</div>
+                    </div>
+                    <div class="flex items-center gap-2 font-mono text-xs">
+                        <span id="playbookStatusBadge" class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 font-bold">READY TO FIRE</span>
+                    </div>
+                </div>
+
+                <!-- 7-Stage Playbook Node Graph -->
+                <div class="space-y-3 font-mono">
+                    
+                    <!-- Node 1: Alert Ingestion -->
+                    <div id="node-1" class="node p-3.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-bold font-mono">1</span>
+                            <div>
+                                <div class="text-xs font-bold text-white flex items-center gap-2">
+                                    <span>Ingest Telemetry Alert & Normalize</span>
+                                    <span class="text-xxs px-1.5 py-0.2 rounded bg-bou-cyan/15 text-bou-cyan">WAF / EDR / SIEM</span>
+                                </div>
+                                <div class="text-xxs text-slate-400 mt-0.5">Parse raw JSON payload, extract IoCs, timestamp, and target asset</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="badge-node-1" class="text-xxs px-2 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800">WAITING</span>
+                            <div id="time-node-1" class="text-xxs text-slate-500 mt-0.5 font-mono">-- ms</div>
+                        </div>
+                    </div>
+
+                    <!-- Node 2: Automated Threat Intel Enrichment -->
+                    <div id="node-2" class="node p-3.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-bold font-mono">2</span>
+                            <div>
+                                <div class="text-xs font-bold text-white flex items-center gap-2">
+                                    <span>Automated Threat Intelligence Enrichment</span>
+                                    <span class="text-xxs px-1.5 py-0.2 rounded bg-bou-purple/15 text-purple-300">VirusTotal • AbuseIPDB • CBK Shared Feed</span>
+                                </div>
+                                <div class="text-xxs text-slate-400 mt-0.5">Query reputation APIs for IP 194.26.29.11 & calculate confidence score</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="badge-node-2" class="text-xxs px-2 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800">WAITING</span>
+                            <div id="time-node-2" class="text-xxs text-slate-500 mt-0.5 font-mono">-- ms</div>
+                        </div>
+                    </div>
+
+                    <!-- Node 3: Automated Risk Scoring & Decision Gateway -->
+                    <div id="node-3" class="node p-3.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-bold font-mono">3</span>
+                            <div>
+                                <div class="text-xs font-bold text-white flex items-center gap-2">
+                                    <span>Automated Decision Logic & Risk Scoring</span>
+                                    <span class="text-xxs px-1.5 py-0.2 rounded bg-bou-gold/15 text-bou-gold">Rule Engine</span>
+                                </div>
+                                <div class="text-xxs text-slate-400 mt-0.5">Evaluate: Is Confidence > 85% AND Asset = Tier-1 Critical Financial Infra?</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="badge-node-3" class="text-xxs px-2 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800">WAITING</span>
+                            <div id="time-node-3" class="text-xxs text-slate-500 mt-0.5 font-mono">-- ms</div>
+                        </div>
+                    </div>
+
+                    <!-- Node 4: Autonomous Perimeter Containment -->
+                    <div id="node-4" class="node p-3.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-bold font-mono">4</span>
+                            <div>
+                                <div class="text-xs font-bold text-white flex items-center gap-2">
+                                    <span>Autonomous Perimeter Firewall Block (BGP / Palo Alto)</span>
+                                    <span class="text-xxs px-1.5 py-0.2 rounded bg-bou-crimson/15 text-rose-300">Active Defense</span>
+                                </div>
+                                <div class="text-xxs text-slate-400 mt-0.5">Push REST API call to BoU Border Gateway: DROP all packets from 194.26.29.11</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="badge-node-4" class="text-xxs px-2 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800">WAITING</span>
+                            <div id="time-node-4" class="text-xxs text-slate-500 mt-0.5 font-mono">-- ms</div>
+                        </div>
+                    </div>
+
+                    <!-- Node 5: Identity & Endpoint Containment -->
+                    <div id="node-5" class="node p-3.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-bold font-mono">5</span>
+                            <div>
+                                <div class="text-xs font-bold text-white flex items-center gap-2">
+                                    <span>Identity Token Revocation & EDR Endpoint Isolation</span>
+                                    <span class="text-xxs px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300">Zero Trust</span>
+                                </div>
+                                <div class="text-xxs text-slate-400 mt-0.5">Revoke Active Directory Kerberos tickets, terminate active sessions & isolate host</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="badge-node-5" class="text-xxs px-2 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800">WAITING</span>
+                            <div id="time-node-5" class="text-xxs text-slate-500 mt-0.5 font-mono">-- ms</div>
+                        </div>
+                    </div>
+
+                    <!-- Node 6: Automated Evidentiary Forensics Snapshot -->
+                    <div id="node-6" class="node p-3.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-bold font-mono">6</span>
+                            <div>
+                                <div class="text-xs font-bold text-white flex items-center gap-2">
+                                    <span>Trigger Volatile Forensic RAM Snapshot & PCAP Dump</span>
+                                    <span class="text-xxs px-1.5 py-0.2 rounded bg-bou-emerald/15 text-emerald-300">Order of Volatility</span>
+                                </div>
+                                <div class="text-xxs text-slate-400 mt-0.5">Live memory snapshot saved to secure S3 bucket with SHA-256 for judicial court integrity</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="badge-node-6" class="text-xxs px-2 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800">WAITING</span>
+                            <div id="time-node-6" class="text-xxs text-slate-500 mt-0.5 font-mono">-- ms</div>
+                        </div>
+                    </div>
+
+                    <!-- Node 7: Judicial Incident Dossier & Statutory Notification -->
+                    <div id="node-7" class="node p-3.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-bold font-mono">7</span>
+                            <div>
+                                <div class="text-xs font-bold text-white flex items-center gap-2">
+                                    <span>Dispatch CISO Alert & Uganda CERT.UG / NITA-U Incident Ticket</span>
+                                    <span class="text-xxs px-1.5 py-0.2 rounded bg-bou-gold/15 text-bou-gold">Statutory Filing</span>
+                                </div>
+                                <div class="text-xxs text-slate-400 mt-0.5">Automated SMS/Email to BoU CISO + DPPA 2019 breach notification draft</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="badge-node-7" class="text-xxs px-2 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800">WAITING</span>
+                            <div id="time-node-7" class="text-xxs text-slate-500 mt-0.5 font-mono">-- ms</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Live REST API & Execution Log Terminal -->
+            <div class="bg-bou-900/80 border border-bou-gold/25 rounded-xl p-5 shadow-xl flex flex-col flex-1">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
+                    <div class="flex items-center gap-2 font-mono text-xs">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span class="text-emerald-400 font-bold uppercase">3. Real-Time SOAR Webhook & API Terminal</span>
+                    </div>
+                    <button onclick="clearTerminal()" class="text-xxs text-slate-400 hover:text-white font-mono">Clear Logs</button>
+                </div>
+                
+                <div id="terminalBody" class="w-full h-56 bg-bou-950 border border-slate-800 rounded-lg p-3 text-xxs font-mono text-slate-300 overflow-y-auto terminal-scroll space-y-1">
+                    <div class="text-slate-500">[SYSTEM READY] Autonomous SOAR Orchestrator initialized. Waiting for trigger event...</div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-bou-950 border-t border-bou-gold/20 py-3 px-6 text-center text-xs text-slate-500 font-mono">
+        Bank of Uganda Cyber Forensics Masterclass • Automated SOAR Laboratory • Compliant with Uganda Computer Misuse Act (2022)
+    </footer>
+
+    <!-- Playbook Logic Script -->
+    <script>
+        const scenarioConfigs = {
+            sqli_code: {
+                title: "Zero-Day SQLi & Code Injection (RTGS API)",
+                severity: "CRITICAL",
+                srcIp: "194.26.29.11",
+                target: "BOU-RTGS-GATEWAY-02 (10.0.14.88)",
+                telemetry: "WAF Rule 942100 (SQLi) + Shannon Entropy 7.41 (Packed Shellcode)",
+                jurisdiction: "Uganda CMA 2022 Sec 14",
+                intelScore: "AbuseIPDB 98% Confidence (TOR Exit Node, St. Petersburg)",
+                firewallRule: "POST /api/v1/firewall/rules { action: 'DROP', cidr: '194.26.29.11/32', zone: 'BOU_DMZ_BORDER' }",
+                identityAction: "Revoked API Session Key: 'rtgs_jwt_88a912f' & forced mTLS re-auth",
+                forensicTarget: "Volatility 3 Dump: PID 4812 (java.exe / RTGS listener) saved to s3://bou-evidence/rtgs_20261020_01.raw",
+                ticketSummary: "CRITICAL INCIDENT: Automated SQLi injection blocked at border gateway. Zero citizen records accessed."
+            },
+            cobalt_beacon: {
+                title: "Cobalt Strike In-Memory RWX Beacon",
+                severity: "CRITICAL",
+                srcIp: "45.142.166.19",
+                target: "BOU-CORE-BANKING-01 (10.0.12.14)",
+                telemetry: "EDR Malfind Alert: svchost.exe PID 1024 has PAGE_EXECUTE_READWRITE memory page",
+                jurisdiction: "Uganda CMA 2022 Sec 12 (Unauthorized System Access)",
+                intelScore: "VirusTotal 64/70 Detections (Cobalt Strike TeamServer C2)",
+                firewallRule: "POST /api/v1/firewall/rules { action: 'REJECT', cidr: '45.142.166.19/32', port: 443 }",
+                identityAction: "Terminated Host Process PID 1024 & Network-isolated BOU-CORE-BANKING-01",
+                forensicTarget: "Full RAM Capture: 64GB DDR5 memory dumped via LiME kernel module with SHA-256 integrity seal",
+                ticketSummary: "CRITICAL CONTAINMENT: Cobalt Strike memory beacon quarantined in 1.4s. Host isolated."
+            },
+            swift_fraud: {
+                title: "SWIFT / RTGS Wire Fraud Anomaly ($1.5M)",
+                severity: "HIGH",
+                srcIp: "10.0.45.210 (Compromised Branch Terminal, Jinja)",
+                target: "BOU-SWIFT-ALLIANCE-GATEWAY",
+                telemetry: "AI Transaction Monitor: Dual-Approval Bypassed outside EAT banking hours",
+                jurisdiction: "Uganda Penal Code Act & DPPA 2019 Sec 20",
+                intelScore: "Behavioral Deviation: 9.8/10 (High Probability Insider Account Takeover)",
+                firewallRule: "POST /api/v1/swift/gatekeeper { action: 'HOLD_TRANSFER', transfer_id: 'RTGS-UGX-998124', state: 'ESCROW_LOCK' }",
+                identityAction: "Locked Active Directory User 'branch_operator_jinja02' & disabled Entra ID tokens",
+                forensicTarget: "Captured SWIFT Alliance Access audit logs & packet capture stream at Jinja VPN endpoint",
+                ticketSummary: "FRAUD PREVENTED: UGX 1.5 Billion unauthorized transaction held in automated escrow quarantine."
+            },
+            vpn_stuffing: {
+                title: "Compromised Admin VPN (Impossible Travel)",
+                severity: "HIGH",
+                srcIp: "185.220.101.5 (Kyiv VPN)",
+                target: "BOU-GLOBALPROTECT-VPN-GATEWAY",
+                telemetry: "Entra ID Identity Protection: User logged in from Kampala and Kyiv within 2 minutes",
+                jurisdiction: "Uganda CMA 2011 Sec 14",
+                intelScore: "Known Commercial Proxy / VPN Anonymizer Pool",
+                firewallRule: "POST /api/v1/vpn/sessions { action: 'KILL_SESSION', user: 'admin.senabulya@bou.go.ug' }",
+                identityAction: "Triggered FIDO2 / Hardware Token Step-Up Authentication & reset password",
+                forensicTarget: "Archived VPN gateway RADIUS authentication logs and client TLS handshake certificates",
+                ticketSummary: "IDENTITY PROTECTION: Impossible travel session purged. Admin password invalidated."
+            }
+        };
+
+        let currentScenarioKey = 'sqli_code';
+        let currentStep = 0;
+        let isRunning = false;
+        let playInterval = null;
+
+        function selectScenario(key) {
+            currentScenarioKey = key;
+            const data = scenarioConfigs[key];
+            
+            // Highlight button
+            document.querySelectorAll('.scenario-btn').forEach(b => {
+                b.classList.remove('border-bou-cyan', 'border-bou-gold', 'border-bou-crimson', 'border-bou-purple');
+                b.classList.add('border-slate-800');
+            });
+            document.getElementById(`btn-scenario-${key}`).classList.add('border-bou-cyan');
+
+            // Update Metadata box
+            document.getElementById('incidentMetadata').innerHTML = `
+                <div><span class="text-slate-500">Source:</span> <span class="text-rose-400 font-bold">${data.srcIp}</span></div>
+                <div><span class="text-slate-500">Target Asset:</span> <span class="text-cyan-300">${data.target}</span></div>
+                <div><span class="text-slate-500">Telemetry:</span> <span class="text-amber-300">${data.telemetry}</span></div>
+                <div><span class="text-slate-500">Legal Jurisdiction:</span> <span class="text-emerald-400">${data.jurisdiction}</span></div>
+            `;
+
+            resetPlaybook();
+            logToTerminal(`[TRIGGER CHANGED] Selected incident: "${data.title}" [SEVERITY: ${data.severity}]`, 'text-bou-gold');
+        }
+
+        function logToTerminal(msg, colorClass = 'text-slate-300') {
+            const body = document.getElementById('terminalBody');
+            const time = new Date().toISOString().substring(11, 23);
+            const line = document.createElement('div');
+            line.className = `${colorClass} leading-relaxed`;
+            line.innerHTML = `<span class="text-slate-500">[${time} EAT]</span> ${msg}`;
+            body.appendChild(line);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function clearTerminal() {
+            document.getElementById('terminalBody').innerHTML = '';
+            logToTerminal('[TERMINAL CLEARED] Ready for SOAR execution events.', 'text-slate-500');
+        }
+
+        function resetPlaybook() {
+            if (playInterval) clearInterval(playInterval);
+            isRunning = false;
+            currentStep = 0;
+
+            for (let i = 1; i <= 7; i++) {
+                const node = document.getElementById(`node-${i}`);
+                node.className = 'node p-3.5 rounded-lg bg-bou-950 border border-slate-800 transition-all duration-300 flex items-center justify-between';
+                const badge = document.getElementById(`badge-node-${i}`);
+                badge.textContent = 'WAITING';
+                badge.className = 'text-xxs px-2 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800';
+                document.getElementById(`time-node-${i}`).textContent = '-- ms';
+            }
+
+            document.getElementById('playbookStatusBadge').textContent = 'READY TO FIRE';
+            document.getElementById('playbookStatusBadge').className = 'px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 font-bold';
+            document.getElementById('btnAutoPlay').innerHTML = '<span>▶ Full Auto (1.5s)</span>';
+        }
+
+        function executeNode(stepIndex) {
+            const data = scenarioConfigs[currentScenarioKey];
+            const node = document.getElementById(`node-${stepIndex}`);
+            const badge = document.getElementById(`badge-node-${stepIndex}`);
+            const timeEl = document.getElementById(`time-node-${stepIndex}`);
+
+            // Mark previous as completed
+            if (stepIndex > 1) {
+                const prevNode = document.getElementById(`node-${stepIndex - 1}`);
+                const prevBadge = document.getElementById(`badge-node-${stepIndex - 1}`);
+                prevNode.classList.remove('node-active');
+                prevNode.classList.add('node-completed');
+                prevBadge.textContent = 'SUCCESS ✓';
+                prevBadge.className = 'text-xxs px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-400 border border-emerald-500/40 font-bold';
+            }
+
+            // Mark current as active
+            node.classList.add('node-active');
+            badge.textContent = 'EXECUTING...';
+            badge.className = 'text-xxs px-2 py-0.5 rounded bg-cyan-950/70 text-cyan-300 border border-cyan-400/50 font-bold animate-pulse';
+
+            const ms = Math.floor(Math.random() * 80) + 120;
+            timeEl.textContent = `${ms} ms`;
+
+            // Node specific logging
+            if (stepIndex === 1) {
+                logToTerminal(`➔ [NODE 1: INGESTION] Webhook received from WAF/EDR sensor. Asset: ${data.target}`, 'text-bou-cyan');
+                logToTerminal(`   Payload: { "event_type": "ALERT", "signature": "${data.telemetry}", "src": "${data.srcIp}" }`, 'text-slate-400');
+            } else if (stepIndex === 2) {
+                logToTerminal(`➔ [NODE 2: ENRICHMENT] Automated query dispatched to Threat Intel APIs...`, 'text-purple-300');
+                logToTerminal(`   Threat Feed Return: ${data.intelScore}`, 'text-slate-400');
+            } else if (stepIndex === 3) {
+                logToTerminal(`➔ [NODE 3: DECISION GATE] Risk Score calculated: 94/100 (Threshold 85 surpassed).`, 'text-bou-gold');
+                logToTerminal(`   Autonomous Rule: High Criticality Asset + Malicious Confidence = TRIGGER IMMEDIATE CONTAINMENT`, 'text-amber-300');
+            } else if (stepIndex === 4) {
+                logToTerminal(`➔ [NODE 4: PERIMETER ACTION] REST API dispatch to Border Firewalls:`, 'text-rose-400 font-bold');
+                logToTerminal(`   ${data.firewallRule}`, 'text-slate-200');
+                logToTerminal(`   HTTP 200 OK: Firewall rule committed globally in 18ms. Traffic DROPPED.`, 'text-emerald-300');
+            } else if (stepIndex === 5) {
+                logToTerminal(`➔ [NODE 5: IDENTITY ACTION] Active Directory / EDR containment:`, 'text-amber-400');
+                logToTerminal(`   ${data.identityAction}`, 'text-slate-300');
+            } else if (stepIndex === 6) {
+                logToTerminal(`➔ [NODE 6: FORENSIC CAPTURE] Order of Volatility automated acquisition triggered:`, 'text-emerald-300 font-bold');
+                logToTerminal(`   ${data.forensicTarget}`, 'text-slate-400');
+                logToTerminal(`   Court Evidence Seal SHA-256: 08adba3aa8c35d8d12dac1ce7dd218bdc39592b160da62ea275acd9f751561f4`, 'text-bou-gold');
+            } else if (stepIndex === 7) {
+                logToTerminal(`➔ [NODE 7: STATUTORY DISPATCH] Judicial Dossier generated & statutory tickets filed:`, 'text-bou-gold font-bold');
+                logToTerminal(`   SMS/Telegram sent to BoU CISO: "${data.ticketSummary}"`, 'text-white');
+                logToTerminal(`   Ticket dispatched to Uganda CERT.UG / NITA-U per Computer Misuse Act 2022 guidelines.`, 'text-emerald-400');
+                
+                // Finalize Node 7
+                setTimeout(() => {
+                    node.classList.remove('node-active');
+                    node.classList.add('node-completed');
+                    badge.textContent = 'SUCCESS ✓';
+                    badge.className = 'text-xxs px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-400 border border-emerald-500/40 font-bold';
+                    
+                    document.getElementById('playbookStatusBadge').textContent = 'THREAT NEUTRALIZED (1.34s) ✓';
+                    document.getElementById('playbookStatusBadge').className = 'px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-400 font-bold';
+                    document.getElementById('btnAutoPlay').innerHTML = '<span>▶ Run Again</span>';
+                    logToTerminal(`[PLAYBOOK COMPLETED] 100% Autonomous Resolution achieved. Zero human latency.`, 'text-emerald-400 font-bold');
+                }, 400);
+            }
+        }
+
+        function stepPlaybook() {
+            if (currentStep >= 7) {
+                resetPlaybook();
+            }
+            currentStep++;
+            document.getElementById('playbookStatusBadge').textContent = `STEPPING (${currentStep}/7)...`;
+            document.getElementById('playbookStatusBadge').className = 'px-2.5 py-1 rounded bg-cyan-950 text-cyan-300 border border-cyan-400 font-bold';
+            executeNode(currentStep);
+        }
+
+        function runPlaybook(slowMode = false) {
+            resetPlaybook();
+            isRunning = true;
+            document.getElementById('playbookStatusBadge').textContent = 'RUNNING AUTONOMOUS PIPELINE...';
+            document.getElementById('playbookStatusBadge').className = 'px-2.5 py-1 rounded bg-cyan-950 text-cyan-300 border border-cyan-400 font-bold animate-pulse';
+            document.getElementById('btnAutoPlay').innerHTML = '<span>Executing...</span>';
+
+            const intervalDelay = slowMode ? 1000 : 250;
+            currentStep = 1;
+            executeNode(currentStep);
+
+            playInterval = setInterval(() => {
+                currentStep++;
+                if (currentStep <= 7) {
+                    executeNode(currentStep);
+                } else {
+                    clearInterval(playInterval);
+                    isRunning = false;
+                }
+            }, intervalDelay);
+        }
+
+        // Initialize with default scenario
+        selectScenario('sqli_code');
+    </script>
+</body>
+</html>

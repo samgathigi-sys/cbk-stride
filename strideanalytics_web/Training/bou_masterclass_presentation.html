@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank of Uganda | Cyber Forensics Masterclass</title>
+    <style>
+        :root {
+            --bou-navy: #0a192f;
+            --bou-dark-blue: #0f2b48;
+            --bou-gold: #c5a059;
+            --bou-gold-bright: #e5b869;
+            --bou-light: #f8fafc;
+            --bou-gray: #94a3b8;
+            --bou-crimson: #e11d48;
+            --bou-emerald: #10b981;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: var(--bou-navy); color: var(--bou-light); min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Header bar */
+        header {
+            background: var(--bou-dark-blue);
+            border-bottom: 2px solid var(--bou-gold);
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        .header-title { display: flex; align-items: center; gap: 15px; }
+        .crest-badge {
+            background: var(--bou-gold);
+            color: var(--bou-navy);
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+        .header-title h1 { font-size: 17px; font-weight: 600; letter-spacing: 0.5px; }
+        .slide-counter { font-size: 14px; color: var(--bou-gold); font-weight: 600; }
+
+        /* Main presentation viewport */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            position: relative;
+        }
+        .slide-container {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--bou-dark-blue);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            border-radius: 12px;
+            padding: 45px 55px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            min-height: 520px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .slide-container.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header { border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 15px; margin-bottom: 25px; }
+        .slide-eyebrow { color: var(--bou-gold); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+        .slide-title { font-size: 28px; font-weight: 700; color: #ffffff; }
+
+        .slide-body { flex: 1; font-size: 16px; line-height: 1.7; color: #cbd5e1; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .card {
+            background: rgba(10, 25, 47, 0.6);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .card h3 { color: var(--bou-gold-bright); font-size: 18px; margin-bottom: 10px; font-weight: 600; }
+        .card ul { padding-left: 20px; }
+        .card li { margin-bottom: 8px; font-size: 14px; }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        .badge-crimson { background: rgba(225, 29, 72, 0.2); color: #fda4af; border: 1px solid #e11d48; }
+        .badge-emerald { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+
+        /* Footer Controls */
+        footer {
+            background: var(--bou-dark-blue);
+            border-top: 1px solid rgba(197, 160, 89, 0.2);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .controls { display: flex; gap: 12px; }
+        button {
+            background: var(--bou-navy);
+            border: 1px solid var(--bou-gold);
+            color: var(--bou-gold);
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover { background: var(--bou-gold); color: var(--bou-navy); }
+        .help-hint { font-size: 13px; color: var(--bou-gray); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <span class="crest-badge">BANK OF UGANDA</span>
+            <h1>Cyber Forensics & Incident Investigation Masterclass</h1>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="payment_systems_architecture.html" target="_blank" style="text-decoration: none;">
+                <button style="background: rgba(6, 182, 212, 0.2); border: 1px solid #06b6d4; color: #67e8f9; font-weight: 700; padding: 6px 14px; border-radius: 4px; cursor: pointer;">🌐 Network Proposal</button>
+            </a>
+            <a href="war_room_simulator.html" target="_blank" style="text-decoration: none;">
+                <button style="background: linear-gradient(135deg, var(--bou-gold), var(--bou-gold-bright)); color: var(--bou-navy); font-weight: 700; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">🎮 War Room Simulator</button>
+            </a>
+            <div class="slide-counter" id="counter">Slide 1 of 7</div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Slide 1 -->
+        <div class="slide-container active" data-slide="1">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Executive Masterclass Series</div>
+                <h2 class="slide-title">Advanced Digital Forensics & Sovereign Financial Threat Triage</h2>
+            </div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Institutional Mandate</h3>
+                        <p style="margin-bottom: 15px;">Guarding Uganda's national financial backbone requires institutional forensic readiness across RTGS, SWIFT, Core Banking, and interbank switches.</p>
+                        <ul>
+                            <li><strong>Defensible Evidence:</strong> Admissibility under Uganda Computer Misuse Act & Evidence Act.</li>
+                            <li><strong>Rapid Triage:</strong> Immediate volatile memory and network containment without service disruption.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>5-Day Trajectory</h3>
+                        <ul>
+                            <li><span class="badge badge-emerald">Day 1</span> Foundations & Central Bank Threat Modeling</li>
+                            <li><span class="badge badge-emerald">Day 2</span> Banking APT Vectors & C2 Beacon Forensics</li>
+                            <li><span class="badge badge-emerald">Day 3</span> Forensic Imaging, Volatile RAM & Artifacts</li>
+                            <li><span class="badge badge-emerald">Day 4</span> CSIRT Containment & Financial Malware Reverse Triage</li>
+                            <li><span class="badge badge-emerald">Day 5</span> Uganda Cyber Jurisprudence & Executive Reporting</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: var(--bou-gray); text-align: right;">Bank of Uganda © 2026 • Confidential & Proprietary</div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide-container" data-slide="2">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Day 1 Deep Dive</div>
+                <h2 class="slide-title">Order of Volatility & Forensic Integrity (RFC 3227 & ISO 27037)</h2>
+            </div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>The Golden Rules of Digital Evidence</h3>
+                        <ul>
+                            <li><strong>Never examine live original media:</strong> Work solely from verified bit-stream duplicates.</li>
+                            <li><strong>Binary Exactness:</strong> Even CRLF conversions alter cryptographic hash validation in court.</li>
+                            <li><strong>Dual Hashing:</strong> Compute both SHA-256 and MD5 simultaneously for redundancy.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Order of Volatility</h3>
+                        <ol style="padding-left: 20px; font-size: 14px; line-height: 1.8;">
+                            <li>CPU Registers, On-Chip Cache</li>
+                            <li>Routing Table, ARP Cache, Process Table, Kernel RAM</li>
+                            <li>Main System Memory (RAM)</li>
+                            <li>Temporary File Systems / Swap Partitions</li>
+                            <li>Non-Volatile Storage (NVMe, SAN, SSDs)</li>
+                            <li>Remote Archival Logs & Physical Media</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: var(--bou-gray); text-align: right;">Day 1 • Foundations & Evidence Integrity</div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide-container" data-slide="3">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Day 2 Deep Dive</div>
+                <h2 class="slide-title">Network Forensics & C2 Beacon Statistical Analysis</h2>
+            </div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Financial Intrusion Signatures</h3>
+                        <ul>
+                            <li><strong>Automated C2 Beacons:</strong> Low jitter ratio (&lt; 0.15) distinguishes automated implants from organic human web browsing.</li>
+                            <li><strong>API Wire Diverter:</strong> Unwhitelisted IP injections triggering out-of-bounds RTGS batches.</li>
+                            <li><strong>DNS Tunneling:</strong> Base64 encoded payload fragments embedded within recursive TXT lookups.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Practical Network Toolset</h3>
+                        <ul>
+                            <li><strong>Wireshark / TShark:</strong> Packet stream dissection and protocol decoding.</li>
+                            <li><strong>Zeek (Bro):</strong> Connection summaries, SSL/TLS JA3 fingerprints, and DNS log extraction.</li>
+                            <li><strong>NetworkMiner:</strong> Automated credential and file extraction from captured PCAP streams.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: var(--bou-gray); text-align: right;">Day 2 • Network & Telemetry Triage</div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide-container" data-slide="4">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Day 3 & 4 Deep Dive</div>
+                <h2 class="slide-title">RAM Volatility Triage & CSIRT Containment Playbooks</h2>
+            </div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Volatile RAM Forensics (Volatility 3)</h3>
+                        <ul>
+                            <li><code>windows.pslist / psscan</code>: Uncovering unlinked stealth processes.</li>
+                            <li><code>windows.malfind</code>: Detecting memory pages with PAGE_EXECUTE_READWRITE permissions and injected shellcode.</li>
+                            <li><code>windows.netscan</code>: Associating active sockets with rogue PIDs.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>CSIRT Containment Strategy</h3>
+                        <ul>
+                            <li><strong>Isolate without Reboot:</strong> Preserves RAM evidence and decrypted session keys.</li>
+                            <li><strong>Golden Ticket Eviction:</strong> Double-reset of Active Directory <code>krbtgt</code> account within 10 hours.</li>
+                            <li><strong>YARA Deployment:</strong> Fleet-wide sweep for injected byte patterns across payment server clusters.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: var(--bou-gray); text-align: right;">Day 3 & 4 • Host Forensics & Incident Response</div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide-container" data-slide="5">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Day 5 Deep Dive</div>
+                <h2 class="slide-title">Uganda Cyber Law & Evidence Admissibility</h2>
+            </div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Uganda Statutory Alignment</h3>
+                        <ul>
+                            <li><strong>Computer Misuse Act 2011 & 2022:</strong> Sec 12 (Unauthorized Access), Sec 15 (System Modification), Sec 20 (Electronic Fraud).</li>
+                            <li><strong>Data Protection & Privacy Act 2019:</strong> Safe custodial isolation of non-relevant financial user records.</li>
+                            <li><strong>Electronic Signatures Act 2011:</strong> Judicial recognition of cryptographic SHA-256 verification hashes.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Courtroom Defensibility Criteria</h3>
+                        <ul>
+                            <li><strong>Continuous Chain of Custody:</strong> Unbroken paper and digital custody ledger from seizure to witness stand.</li>
+                            <li><strong>Tool Provenance:</strong> Utilizing peer-reviewed, industry-standard forensic engines.</li>
+                            <li><strong>Objective Technical Reporting:</strong> Neutral, verifiable findings devoid of unsubstantiated speculation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: var(--bou-gray); text-align: right;">Day 5 • Legal Compliance & Reporting</div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide-container" data-slide="6">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Architecture Proposal & Sovereign Defense</div>
+                <h2 class="slide-title">Interconnecting Payment Systems with Open-Source SOC</h2>
+            </div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Defense-in-Depth Architecture</h3>
+                        <ul>
+                            <li><strong>Zone 0 (External Ingestion):</strong> Commercial banks, MTN MoMo, Airtel Money, and SWIFT over encrypted mTLS / IPSec.</li>
+                            <li><strong>Zone 1 (Perimeter DMZ):</strong> Coraza/ModSecurity WAF ($0 OSS) and Suricata 10Gbps NIDS filtering SQLi and malicious payloads in &lt;2ms.</li>
+                            <li><strong>Zone 2 (Core Payment Enclave):</strong> BoU RTGS Switch and PostgreSQL DB protected by in-guest Wazuh Agents with FIM and memory malfind probes.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Sovereign Open-Source SOC ($0 Licenses)</h3>
+                        <ul>
+                            <li><strong>Wazuh SIEM/XDR:</strong> Central telemetry hub with zero per-gigabyte ingestion fees.</li>
+                            <li><strong>Shuffle SOAR:</strong> Sub-second autonomous containment playbooks (firewall drops, AD lockouts).</li>
+                            <li><strong>CyberForensic Chef & PII Shield:</strong> DPPA 2019 compliant pseudonymization of citizen accounts.</li>
+                        </ul>
+                        <div style="margin-top: 15px;">
+                            <a href="payment_systems_architecture.html" target="_blank" style="text-decoration: none;">
+                                <button style="width: 100%; background: linear-gradient(135deg, #06b6d4, #10b981); color: #020612; font-weight: 800; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">🌐 Open Interactive Colorful Network Architecture</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: var(--bou-gray); text-align: right;">Architecture Blueprint • Sovereign Open-Source SOC</div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide-container" data-slide="7">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Capstone Simulation</div>
+                <h2 class="slide-title">Operation Crested Crane: The 4.8 Billion UGX Case</h2>
+            </div>
+            <div class="slide-body">
+                <div class="card" style="margin-bottom: 20px;">
+                    <h3 style="color: var(--bou-crimson);">The Incident Overview</h3>
+                    <p style="font-size: 14px; line-height: 1.6;">At 06:28 EAT, an unauthorized batch injection queued <strong>UGX 4,800,000,000</strong> to offshore beneficiary account <code>CR-8831-EXT</code> via compromised vendor credentials and an in-memory patch on RTGS service PID 4128.</p>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Investigation Deliverables</h3>
+                        <ul>
+                            <li>Evidence Manifest with SHA-256 Verification.</li>
+                            <li>C2 Beacon Extraction & Flow Telemetry.</li>
+                            <li>Executive Incident Dossier for Governor & Board.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Capstone Defense</h3>
+                        <ul>
+                            <li>Mock Boardroom Briefing to BoU Executive Committee.</li>
+                            <li>Mock Trial Cross-Examination on Chain of Custody.</li>
+                        </ul>
+                        <div style="margin-top: 15px;">
+                            <a href="war_room_simulator.html" target="_blank" style="text-decoration: none;">
+                                <button style="width: 100%; background: var(--bou-gold); color: var(--bou-navy); font-weight: 700; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">⚔️ Play Tabletop Incident Simulation</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: var(--bou-gray); text-align: right;">Capstone Exercise • Operation Crested Crane</div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="help-hint">Navigate with <strong>←</strong> / <strong>→</strong> keys or buttons</div>
+        <div class="controls">
+            <button id="prevBtn">← Previous</button>
+            <button id="nextBtn">Next →</button>
+        </div>
+    </footer>
+
+    <script>
+        const slides = document.querySelectorAll('.slide-container');
+        const counter = document.getElementById('counter');
+        let currentSlide = 0;
+
+        function updateSlide(index) {
+            slides.forEach(s => s.classList.remove('active'));
+            slides[index].classList.add('active');
+            counter.textContent = `Slide ${index + 1} of ${slides.length}`;
+            currentSlide = index;
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentSlide > 0) updateSlide(currentSlide - 1);
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentSlide < slides.length - 1) updateSlide(currentSlide + 1);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+                if (currentSlide < slides.length - 1) updateSlide(currentSlide + 1);
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                if (currentSlide > 0) updateSlide(currentSlide - 1);
+            }
+        });
+    </script>
+</body>
+</html>

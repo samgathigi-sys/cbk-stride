@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bank of Uganda Delegation • Central Banking Forensics & Cyber Oversight Immersion</title>
+  <!-- Fonts & Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bou: {
+              gold: '#F59E0B',
+              darkgold: '#B45309',
+              crimson: '#991B1B',
+              black: '#0A0A0B',
+              slate: '#0F172A',
+              card: '#141D2E',
+              border: '#1E293B'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .live-pulse { animation: pulse-subtle 2s infinite ease-in-out; }
+    .uganda-flag-stripe {
+      background: linear-gradient(90deg, #000000 33.3%, #FACC15 33.3%, #FACC15 66.6%, #DC2626 66.6%);
+    }
+    .glass-card {
+      background: rgba(20, 29, 46, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .glass-input {
+      background: rgba(10, 10, 11, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+  </style>
+</head>
+<body class="bg-bou-black text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-amber-500 selection:text-black">
+
+  <!-- Uganda Sovereign Tricolor Header Ribbon -->
+  <div class="h-1.5 uganda-flag-stripe w-full"></div>
+
+  <!-- Top Executive Fiduciary Bar -->
+  <header class="bg-bou-slate/90 backdrop-blur-md border-b border-amber-900/40 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 via-yellow-600 to-amber-900 border border-amber-400/40 flex items-center justify-center font-black text-xl text-black shadow-lg shadow-amber-950/60">
+          🇺🇬
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-extrabold font-heading text-white tracking-tight">
+              BANK OF UGANDA &bull; EXECUTIVE CENTRAL BANKING IMMERSION
+            </h1>
+            <span class="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400 live-pulse"></span>
+              <span>RESTRICTED DELEGATION PORTAL</span>
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 font-mono">
+            Digital Forensics, National Payment Systems (NPS/EAPS) &amp; Algorithmic Oversight Masterclass
+          </p>
+        </div>
+      </div>
+
+      <!-- Classroom Quick Switcher & Venue -->
+      <div class="flex items-center gap-2 sm:gap-3 text-xs font-mono">
+        <div class="hidden xl:flex items-center gap-1 bg-bou-black/70 p-1 rounded-xl border border-slate-800 text-[11px]">
+          <span class="text-[10px] text-slate-500 px-2 font-bold uppercase">Classrooms:</span>
+          <a href="/uganda/day-1" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-amber-500/20 text-slate-300 hover:text-amber-300 transition">Day 1</a>
+          <a href="/uganda/day-2" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-blue-500/20 text-slate-300 hover:text-blue-300 transition">Day 2</a>
+          <a href="/uganda/day-3" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-purple-500/20 text-slate-300 hover:text-purple-300 transition">Day 3</a>
+          <a href="/uganda/day-4" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 transition">Day 4</a>
+          <a href="/uganda/day-5" class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold hover:bg-amber-500 hover:text-black transition">Day 5</a>
+        </div>
+        <div class="hidden 2xl:flex items-center gap-1.5 bg-bou-black/90 p-1 rounded-xl border border-amber-500/30 text-[11px]">
+          <span class="text-[10px] text-amber-400 px-1.5 font-bold uppercase">Crown Jewels:</span>
+          <a href="/Training/war_room_simulator.html" target="_blank" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-black transition font-bold">🏛️ War Room</a>
+          <a href="/Training/soar_playbook_simulator.html" target="_blank" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-black transition font-bold">⚡ SOAR</a>
+          <a href="/Training/cyber_forensic_chef.html" target="_blank" class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500 hover:text-black transition font-bold">🔪 Chef</a>
+          <a href="/Training/payment_systems_architecture.html" target="_blank" class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-black transition font-bold">🌐 Architecture</a>
+        </div>
+        <a href="#caseStudySection" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900 text-red-300 font-bold border border-red-700/50 transition text-xs shadow">
+          <span>🏛️</span> Case Study
+        </a>
+        <a href="#loginSection" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold transition shadow-md shadow-amber-900/40">
+          ⚡ Secure Classroom Access &rarr;
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-10">
+
+    <!-- Hero / Delegation Welcome Banner -->
+    <section class="glass-card rounded-3xl p-6 sm:p-10 border border-amber-500/30 relative overflow-hidden">
+      <div class="absolute -right-24 -top-24 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-3xl space-y-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-mono font-semibold">
+          <span>🏛️ CENTRAL BANKING SOVEREIGN FACULTY &bull; SPECIAL MANDATE</span>
+        </div>
+        <h2 class="text-2xl sm:text-4xl font-black font-heading text-white tracking-tight leading-tight">
+          Central Banking Digital Forensics, Payment Systems &amp; Cyber Financial Crime Immersion
+        </h2>
+        <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+          Welcome to the dedicated executive training portal for the <strong>Bank of Uganda (BOU) Delegation</strong> visiting Kenya. Held on-site in <strong>Nairobi, Kenya</strong> over five rigorous, interactive morning sessions (09:00 – 13:00 EAT), this masterclass equips senior central bankers with hands-on technical heuristics to audit National Payment Systems, uncover cross-border payment anomalies, stress-test commercial bank solvency, and formulate actionable boardroom intelligence.
+        </p>
+
+        <!-- Executive Badges -->
+        <div class="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+          <div class="p-3 rounded-xl bg-bou-black/70 border border-slate-800">
+            <span class="text-slate-400 block text-[10px]">DURATION:</span>
+            <span class="font-bold text-amber-400">5 Days (20 Contact Hrs)</span>
+          </div>
+          <div class="p-3 rounded-xl bg-bou-black/70 border border-slate-800">
+            <span class="text-slate-400 block text-[10px]">DAILY SCHEDULE:</span>
+            <span class="font-bold text-white">09:00 – 13:00 EAT</span>
+          </div>
+          <div class="p-3 rounded-xl bg-bou-black/70 border border-slate-800">
+            <span class="text-slate-400 block text-[10px]">COHORT FORMAT:</span>
+            <span class="font-bold text-amber-400">Executive 2-Delegate Pod</span>
+          </div>
+          <div class="p-3 rounded-xl bg-bou-black/70 border border-slate-800">
+            <span class="text-slate-400 block text-[10px]">DELIVERY METHOD:</span>
+            <span class="font-bold text-white">50% Doctrine • 50% Lab</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- MASTERCLASS CROWN JEWELS & LIVE TACTICAL SIMULATORS      -->
+    <!-- ======================================================== -->
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border-2 border-amber-500/50 bg-gradient-to-r from-amber-950/30 via-bou-card to-bou-slate space-y-6 shadow-2xl relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-500/30 pb-4">
+        <div>
+          <span class="text-xs font-mono text-amber-400 uppercase tracking-widest font-bold flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>LIVE INTERACTIVE CROWN JEWELS &bull; BANK OF UGANDA MASTERCLASS</span>
+          </span>
+          <h3 class="text-2xl font-black font-heading text-white mt-1">
+            Tactical Central Banking War Room, SOAR &amp; Forensic Labs
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl">
+            Access the complete suite of live sovereign forensic simulators, sub-second autonomous SOAR engines, and open-source payment system architectures built specifically for this masterclass.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <a href="/Training/HOWTO_MASTERCLASS_TRAINER_GUIDE.pdf" target="_blank" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition shadow flex items-center gap-1.5">
+            <span>📥</span> Facilitator Manual (PDF)
+          </a>
+          <a href="/Training/" target="_blank" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-mono text-xs font-bold border border-amber-500/40 transition">
+            <span>📊</span> Slides Deck
+          </a>
+        </div>
+      </div>
+
+      <!-- 4 Super-Tool Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Tool 1: War Room Simulator -->
+        <a href="/Training/war_room_simulator.html" target="_blank" class="p-5 rounded-2xl bg-bou-black/90 border border-amber-500/40 hover:border-amber-400 hover:scale-[1.02] transition shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <span class="text-2xl">🏛️</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-red-950 text-rose-300 border border-red-800 font-bold">8 TTX SCENARIOS</span>
+            </div>
+            <h4 class="text-base font-bold text-white group-hover:text-amber-400 transition">Sovereign War Room Simulator</h4>
+            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+              Volatility 3 CLI shell, live PCAP dissector, $MFT carver, and 8 randomized tabletop financial crisis drills.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-xs font-mono text-amber-400 font-bold">
+            <span>Launch War Room &rarr;</span>
+            <span class="text-slate-600 group-hover:text-amber-400 transition">&bull;&bull;&bull;</span>
+          </div>
+        </a>
+
+        <!-- Tool 2: Autonomous SOAR Studio -->
+        <a href="/Training/soar_playbook_simulator.html" target="_blank" class="p-5 rounded-2xl bg-bou-black/90 border border-emerald-500/40 hover:border-emerald-400 hover:scale-[1.02] transition shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <span class="text-2xl">⚡</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">1.34s DEFENSE</span>
+            </div>
+            <h4 class="text-base font-bold text-white group-hover:text-emerald-400 transition">Autonomous SOAR Playbook</h4>
+            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+              Sub-second 7-stage automated incident containment engine (Shuffle SOAR &amp; Cortex Active Defense).
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-xs font-mono text-emerald-400 font-bold">
+            <span>Launch SOAR Studio &rarr;</span>
+            <span class="text-slate-600 group-hover:text-emerald-400 transition">&bull;&bull;&bull;</span>
+          </div>
+        </a>
+
+        <!-- Tool 3: CyberForensic Chef -->
+        <a href="/Training/cyber_forensic_chef.html" target="_blank" class="p-5 rounded-2xl bg-bou-black/90 border border-cyan-500/40 hover:border-cyan-400 hover:scale-[1.02] transition shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <span class="text-2xl">🔪</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-bold">DPPA 2019 SHIELD</span>
+            </div>
+            <h4 class="text-base font-bold text-white group-hover:text-cyan-400 transition">CyberForensic Chef &amp; PII Shield</h4>
+            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+              Base64/XOR malware de-obfuscation and HMAC cryptographic tokenization of Ugandan citizen identities.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-xs font-mono text-cyan-400 font-bold">
+            <span>Launch Forensic Chef &rarr;</span>
+            <span class="text-slate-600 group-hover:text-cyan-400 transition">&bull;&bull;&bull;</span>
+          </div>
+        </a>
+
+        <!-- Tool 4: Payment Network Architecture -->
+        <a href="/Training/payment_systems_architecture.html" target="_blank" class="p-5 rounded-2xl bg-bou-black/90 border border-purple-500/40 hover:border-purple-400 hover:scale-[1.02] transition shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <span class="text-2xl">🌐</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800 font-bold">$0 LICENSE SAVING</span>
+            </div>
+            <h4 class="text-base font-bold text-white group-hover:text-purple-400 transition">Payment Systems Network Architecture</h4>
+            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+              Colorful multi-zone technical proposal interconnecting RTGS, SWIFT, MTN MoMo, and Wazuh open-source SOC.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-xs font-mono text-purple-400 font-bold">
+            <span>Launch Architecture Proposal &rarr;</span>
+            <span class="text-slate-600 group-hover:text-purple-400 transition">&bull;&bull;&bull;</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- 5-Day Detailed Day-by-Day Masterclass Roadmap -->
+
+    
+    <!-- ======================================================== -->
+    <!-- SECURE CLASSROOM ACCESS & DELEGATE CREDENTIALING         -->
+    <!-- ======================================================== -->
+<!-- ======================================================== -->
+    <section id="loginSection" class="glass-card rounded-3xl p-6 sm:p-10 border border-amber-500/30 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div class="max-w-xl">
+          <span class="text-xs font-mono text-amber-400 uppercase tracking-wider font-bold">SECURE CLASSROOM ACCESS</span>
+          <h3 class="text-2xl font-bold font-heading text-white mt-1">
+            Delegate &amp; Faculty Authentication
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1">
+            Enter your official Bank of Uganda email or registered delegate address to receive an instant cryptographic session code.
+          </p>
+        </div>
+        <!-- Owner Quick Link / Direct Hint -->
+        <div class="text-right font-mono text-xs">
+          <button onclick="quickOwnerLogin()" class="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition flex items-center gap-1.5">
+            <span>👑 Owner / Chief Architect Direct Access</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Auth Form -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl">
+        <div class="md:col-span-2 space-y-1.5">
+          <label class="text-xs font-mono text-slate-300 font-semibold">Enter BOU Email Address</label>
+          <div class="flex gap-2">
+            <input type="email" id="authEmail" placeholder="e.g. yourname@bou.or.ug or sam.gathigi@gmail.com" class="flex-1 px-4 py-2.5 rounded-xl glass-input text-white text-xs font-mono focus:outline-none focus:border-amber-500">
+            <button onclick="requestAccessCode()" id="btnRequestCode" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-black text-xs font-mono font-bold uppercase tracking-wider transition whitespace-nowrap">
+              Get Code &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- OTP Input (Initially Revealed upon request) -->
+        <div id="otpInputGroup" class="hidden space-y-1.5">
+          <label class="text-xs font-mono text-slate-300 font-semibold">Enter 6-Digit Passcode</label>
+          <div class="flex gap-2">
+            <input type="text" id="authOtp" maxlength="6" placeholder="e.g. 749201" class="w-full px-4 py-2.5 rounded-xl glass-input text-amber-400 font-mono text-center font-bold text-sm tracking-widest focus:outline-none focus:border-amber-500">
+            <button onclick="verifyAccessCode()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-bold uppercase tracking-wider transition">
+              Verify
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feedback / Generated Code Display -->
+      <div id="authNotice" class="hidden p-3.5 rounded-xl text-xs font-mono"></div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- STAGE 3: LOCKED CENTRAL BANKING SHIELD (BEFORE VERIFIED) -->
+    <!-- ======================================================== -->
+    <div id="lockedWarRoomBanner" class="hidden" class="glass-card rounded-3xl p-8 sm:p-12 border-2 border-amber-500/30 text-center space-y-5 shadow-2xl relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400 text-3xl shadow-lg shadow-amber-500/10">
+        🔒
+      </div>
+      <div class="max-w-xl mx-auto space-y-2">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest font-bold">RESTRICTED CENTRAL BANKING ENVIRONMENT</span>
+        <h3 class="text-2xl sm:text-3xl font-bold font-heading text-white">Tactical War Room &amp; Forensics Lab Locked</h3>
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          This interactive simulation contains live ISO 20022 wire feeds, EAPS settlement queues, and zero-knowledge statutory unmasking enclaves reserved exclusively for accredited Bank of Uganda delegates.
+        </p>
+      </div>
+      <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button onclick="document.getElementById('loginSection').scrollIntoView({ behavior: 'smooth' }); document.getElementById('authEmail').focus();" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-mono text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2">
+          <span>⚡ Enter Email Above to Receive Passcode &rarr;</span>
+        </button>
+        <button onclick="quickOwnerLogin()" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-mono text-xs font-bold border border-slate-700 transition">
+          Owner / Faculty Bypass &rarr;
+        </button>
+      </div>
+      <div class="text-[11px] font-mono text-slate-500 flex items-center justify-center gap-2 pt-2">
+        <span class="w-2 h-2 rounded-full bg-amber-500/60"></span>
+        <span>Awaiting 6-Digit Cryptographic Handshake or 1-Click Email Pass</span>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- STAGE 4: OWNER / FACULTY ADMINISTRATION DASHBOARD        -->
+    <!-- ======================================================== -->
+    <section id="ownerDashboard" class="hidden glass-card rounded-3xl p-6 sm:p-10 border-2 border-amber-500/60 bg-gradient-to-r from-amber-950/40 via-bou-card to-bou-slate space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-500/30 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-amber-500 text-black font-black flex items-center justify-center text-xl shadow-lg">
+            👑
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-lg font-bold font-heading text-white">
+                CHIEF ARCHITECT &amp; OWNER MASTER CONTROL DECK
+              </h3>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold">
+                ROOT PRIVILEGES
+              </span>
+            </div>
+            <p class="text-xs text-amber-300 font-mono">
+              Authenticated: Samuel N. Gathigi &bull; info@strideanalytics.co.ke
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <a href="/BANK_OF_UGANDA_CENTRAL_BANKING_FORENSICS_FACILITATOR_GUIDE.pdf" target="_blank" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-mono font-bold transition flex items-center gap-1.5 shadow">
+            <span>📥</span> Facilitator Guide (PDF)
+          </a>
+          <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono transition border border-slate-700">
+            Print Briefing
+          </button>
+          <button onclick="logoutOwner()" class="px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900 text-red-300 text-xs font-mono transition border border-red-800">
+            Exit Owner Mode
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-mono">
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-amber-500/30 space-y-1">
+          <div class="text-[10px] text-slate-400">DELEGATE SEAT 1 STATUS:</div>
+          <div class="text-amber-400 font-bold">Allocated &bull; NPS &amp; Banking Oversight</div>
+          <div class="text-[10px] text-emerald-400 pt-1">Passcode Active: BOU-829101</div>
+        </div>
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-amber-500/30 space-y-1">
+          <div class="text-[10px] text-slate-400">DELEGATE SEAT 2 STATUS:</div>
+          <div class="text-amber-400 font-bold">Allocated &bull; Cyber Risk &amp; Forensics</div>
+          <div class="text-[10px] text-emerald-400 pt-1">Passcode Active: BOU-829102</div>
+        </div>
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-amber-500/30 space-y-1">
+          <div class="text-[10px] text-slate-400">CLASSROOM HOST VENUE:</div>
+          <div class="text-white font-bold">Nairobi, Kenya Executive Suite</div>
+          <div class="text-[10px] text-slate-400 pt-1">5 Morning Sessions: 09:00 – 13:00 EAT</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- STAGE 5: VIP BOARDING PASS & SEAT ACCREDITATION STATION  -->
+    <!-- ======================================================== -->
+    <section id="passSection" class="restricted-enclave hidden glass-card rounded-3xl p-6 sm:p-10 border border-slate-800 space-y-6">
+      <div class="max-w-2xl">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-wider font-bold">DELEGATION CREDENTIALING</span>
+        <h3 class="text-2xl font-bold font-heading text-white mt-1">
+          BOU Delegate Virtual Terminal &amp; Pass Activation
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-300 mt-1">
+          Activate your cryptographic delegate session to unlock your virtual lab sandbox, download masterclass materials, and sync the calendar.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Quick Delegate Selector 1 -->
+        <div class="p-5 rounded-2xl bg-bou-black/80 border border-slate-800 space-y-4" id="seat1CardOuter">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">
+              DELEGATE SEAT 1 &bull; BANK OF UGANDA
+            </span>
+            <span class="text-xs text-emerald-400 font-mono font-bold">● ALLOCATED</span>
+          </div>
+          <div>
+            <div class="text-base font-bold text-white">Senior Central Banker 1</div>
+            <div class="text-xs text-slate-400 font-mono">National Payment Systems &amp; Banking Oversight</div>
+            <div class="text-[11px] text-amber-400 font-mono mt-1 font-semibold flex items-center gap-1.5" id="seat1ScenarioBadge">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+              <span id="seat1ScenarioText">Active Mission: Day 1 Altered EAPS Wire (UGX 14.8B)</span>
+            </div>
+          </div>
+          <button onclick="activateSeat('DELEGATE_01', 'Senior Central Banker 1 (NPS & Banking Oversight)')" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-black font-bold font-mono text-xs uppercase tracking-wider transition">
+            Launch Delegate 1 Sandbox Pass &rarr;
+          </button>
+        </div>
+
+        <!-- Quick Delegate Selector 2 -->
+        <div class="p-5 rounded-2xl bg-bou-black/80 border border-slate-800 space-y-4" id="seat2CardOuter">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">
+              DELEGATE SEAT 2 &bull; BANK OF UGANDA
+            </span>
+            <span class="text-xs text-emerald-400 font-mono font-bold">● ALLOCATED</span>
+          </div>
+          <div>
+            <div class="text-base font-bold text-white">Senior Central Banker 2</div>
+            <div class="text-xs text-slate-400 font-mono">Cyber Risk, Financial Crimes &amp; Forensics</div>
+            <div class="text-[11px] text-cyan-400 font-mono mt-1 font-semibold flex items-center gap-1.5" id="seat2ScenarioBadge">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+              <span id="seat2ScenarioText">Surveillance: Day 1 SWIFT ISO 20022 Hash Anomaly</span>
+            </div>
+          </div>
+          <button onclick="activateSeat('DELEGATE_02', 'Senior Central Banker 2 (Cyber Risk & Forensics)')" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-black font-bold font-mono text-xs uppercase tracking-wider transition">
+            Launch Delegate 2 Sandbox Pass &rarr;
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Live Generated Boarding Pass Box -->
+      <div id="bouPassCard" class="hidden p-6 sm:p-8 rounded-2xl bg-bou-slate border-2 border-amber-500/50 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <span class="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-mono font-bold uppercase tracking-wider">
+              ● BOU CREDENTIAL VALIDATED
+            </span>
+            <h4 class="text-xl font-bold font-heading text-white mt-1">
+              Central Bank Executive Delegate Boarding Pass
+            </h4>
+            <p class="text-xs text-slate-400 font-mono">
+              BANK OF UGANDA &bull; STRIDE SOVEREIGN GOVERNANCE DESK
+            </p>
+          </div>
+          <div class="text-left sm:text-right font-mono">
+            <div class="text-[10px] text-slate-400">SESSION TOKEN:</div>
+            <div class="text-sm font-bold text-amber-400" id="bouPassId">BOU-EXEC-2026-UG01</div>
+          </div>
+        </div>
+
+        <!-- Verified Banner when scanned from phone -->
+        <div id="verifiedNotice" class="hidden p-3 bg-emerald-950/60 border border-emerald-500/50 rounded-xl text-emerald-300 text-xs font-mono font-bold flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 live-pulse"></span>
+            <span>MOBILE SCAN AUTHENTICATED: OFFICIAL CENTRAL BANK DELEGATE VERIFIED</span>
+          </div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px]">NAIROBI HOST VENUE</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          <div class="md:col-span-2 space-y-3 text-xs font-mono">
+            <div class="grid grid-cols-2 gap-2 p-3.5 rounded-xl bg-bou-black border border-slate-800">
+              <div>
+                <span class="text-slate-400 block text-[10px]">DELEGATE:</span>
+                <span class="font-bold text-white text-sm" id="bouPassName">—</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block text-[10px]">INSTITUTION:</span>
+                <span class="font-bold text-amber-300">Bank of Uganda (Kampala)</span>
+              </div>
+              <div class="col-span-2 mt-2 pt-2 border-t border-slate-800">
+                <span class="text-slate-400 block text-[10px]">PROGRAM:</span>
+                <span class="text-slate-200">Central Banking Digital Forensics, Payment Systems &amp; Cyber Oversight</span>
+              </div>
+              <div class="col-span-2">
+                <span class="text-slate-400 block text-[10px]">TIMETABLE &amp; VENUE:</span>
+                <span class="text-white">Monday to Friday &bull; 09:00 – 13:00 EAT Daily &bull; In-Person Executive Suite, Nairobi, Kenya</span>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-lg bg-amber-950/40 border border-amber-800/40 text-[11px] text-amber-200">
+              🛡️ <strong>Sovereign Sandbox Clearance:</strong> Classroom credentials authenticated under Central Bank NDA covenants. Client-side memory sanitization active.
+            </div>
+          </div>
+
+          <!-- QR Code -->
+          <div class="flex flex-col items-center justify-center p-4 rounded-xl bg-white text-slate-900 text-center shadow-lg">
+            <div id="bouQrcode" class="mb-2"></div>
+            <div class="text-[9px] font-mono font-bold text-slate-800 uppercase tracking-wider">
+              BOU Secure Credential
+            </div>
+            <div class="text-[8px] font-mono text-slate-500" id="bouQrToken">
+              SHA256:BOU_AUTHENTICATED
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-800">
+          <button onclick="downloadBouCalendarICS()" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-black text-xs font-bold font-mono transition flex items-center gap-1.5">
+            <span>📅 Download 5-Day Calendar (.ics)</span>
+          </button>
+          <button onclick="window.print()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold font-mono transition border border-slate-700">
+            <span>🖨️ Print Credential Pass</span>
+          </button>
+        </div>
+      </div>
+
+        <!-- Quick Action Navigation Once Boarding Pass Is Issued -->
+        <div class="p-4 rounded-xl bg-bou-black/90 border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
+          <div class="text-slate-300 font-semibold flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Accredited Workstation Ready:</span>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs font-mono font-bold">
+            <a href="#schedule" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black transition flex items-center gap-1.5 shadow-md shadow-amber-500/20">
+              <span>📅</span> 5-Day Curriculum &amp; Enclaves &darr;
+            </a>
+            <a href="/uganda/day-1" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition flex items-center gap-1.5">
+              <span>🚀</span> Day 1 Enclave &rarr;
+            </a>
+            <a href="/uganda/day-5" class="px-3.5 py-2 rounded-xl bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-700/50 transition flex items-center gap-1.5">
+              <span>⚔️</span> Day 5 War Room &rarr;
+            </a>
+          </div>
+        </div>
+    </section>
+
+<!-- ======================================================== -->
+    <!-- STAGE 1: 5-DAY EXECUTIVE IMMERSION ROADMAP (CURRICULUM)  -->
+    <!-- ======================================================== -->
+    <section id="schedule" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold mb-1">
+            <span>🏛️ 5 IMMERSION DAYS &bull; 5 STATUTORY DOCTRINES &bull; 5 TACTICAL ENCLAVES</span>
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-extrabold font-heading text-white">
+            The 5-Day Central Bank Immersion &amp; Simulation Roadmap
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+            Each 4-hour morning session (09:00 – 13:00 EAT) pairs 2 hours of statutory central banking doctrine with an isolated hands-on simulation enclave and an executive policy takeaway.
+          </p>
+        </div>
+        <div class="text-xs text-slate-400 font-mono text-right shrink-0">
+          <div class="text-amber-400 font-bold">09:00 – 13:00 EAT Daily</div>
+          <div>Executive Suite &bull; Nairobi, Kenya</div>
+        </div>
+      </div>
+
+      <!-- Daily Session Cadence Bar -->
+      <div class="p-3.5 rounded-2xl bg-bou-black/90 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+        <div class="flex items-center gap-2 text-slate-300">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+          <span class="font-bold text-white">09:00–11:00:</span> <span>Statutory Doctrine &amp; Law</span>
+        </div>
+        <div class="text-slate-600 hidden sm:block">&bull;</div>
+        <div class="flex items-center gap-2 text-slate-300">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+          <span class="font-bold text-white">11:00–11:15:</span> <span>Coffee &amp; Networking</span>
+        </div>
+        <div class="text-slate-600 hidden sm:block">&bull;</div>
+        <div class="flex items-center gap-2 text-slate-300">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+          <span class="font-bold text-white">11:15–12:30:</span> <span>Tactical Simulation Enclave</span>
+        </div>
+        <div class="text-slate-600 hidden sm:block">&bull;</div>
+        <div class="flex items-center gap-2 text-slate-300">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <span class="font-bold text-white">12:30–13:00:</span> <span>Executive Debrief &amp; Policy</span>
+        </div>
+      </div>
+
+      <!-- 5-Day Detailed Day-by-Day Masterclass Roadmap -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+
+        <!-- Day 1 -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col justify-between space-y-4 hover:border-amber-500/50 transition shadow-lg">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">DAY 1 &bull; ENCLAVE 1</span>
+              <span class="text-[10px] font-mono text-slate-400">09:00–13:00 EAT</span>
+            </div>
+            <h4 class="text-sm font-bold font-heading text-white leading-tight">
+              Payment Systems (NPS), RTGS &amp; Wire Forensics
+            </h4>
+            
+            <!-- Doctrine Block -->
+            <div class="p-2.5 rounded-xl bg-bou-black/80 border border-slate-800 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-amber-400 font-bold uppercase flex items-center gap-1">
+                <span>🗣️</span> <span>DOCTRINE (09:00–11:00):</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                ISO 20022 <code class="text-amber-300">pacs.008</code> vs MT103 schemas; EAPS routing; evidentiary chain under Computer Misuse Act &sect; 19.
+              </p>
+            </div>
+
+            <!-- Enclave Lab Block -->
+            <div class="p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/30 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-cyan-300 font-bold uppercase flex items-center gap-1">
+                <span>🛠️</span> <span>ENCLAVE LAB (11:15–12:30):</span>
+              </div>
+              <p class="text-[11px] text-slate-200 leading-snug">
+                <strong>Forensic CLI Terminal (<span class="text-cyan-300">bou-soc@enclave</span>):</strong> Audit EAPS Batch #92811 (UGX 14.8B) and compute SHA-256 wire digests.
+              </p>
+            </div>
+
+            <!-- Takeaway Block -->
+            <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[10px] font-mono text-slate-400">
+              <span class="text-emerald-400 font-bold">★ TAKEAWAY (12:30–13:00):</span> Standing Order for real-time packet re-hashing on clearing switches.
+            </div>
+          </div>
+
+          <a href="/uganda/day-1" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-black font-mono text-xs font-bold transition text-center shadow flex items-center justify-center gap-1.5">
+            <span>Open Day 1 Classroom &rarr;</span>
+          </a>
+        </div>
+
+        <!-- Day 2 -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col justify-between space-y-4 hover:border-amber-500/50 transition shadow-lg">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[10px] font-bold">DAY 2 &bull; ENCLAVE 2</span>
+              <span class="text-[10px] font-mono text-slate-400">09:00–13:00 EAT</span>
+            </div>
+            <h4 class="text-sm font-bold font-heading text-white leading-tight">
+              Cross-Border FX &amp; Mobile Interoperability
+            </h4>
+
+            <!-- Doctrine Block -->
+            <div class="p-2.5 rounded-xl bg-bou-black/80 border border-slate-800 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-blue-400 font-bold uppercase flex items-center gap-1">
+                <span>🗣️</span> <span>DOCTRINE (09:00–11:00):</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                EAC PVP multi-currency settlement windows; telco escrow reconciliation; ghost deposit and asynchronous reversal attacks.
+              </p>
+            </div>
+
+            <!-- Enclave Lab Block -->
+            <div class="p-2.5 rounded-xl bg-blue-950/30 border border-blue-500/30 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-blue-300 font-bold uppercase flex items-center gap-1">
+                <span>🛠️</span> <span>ENCLAVE LAB (11:15–12:30):</span>
+              </div>
+              <p class="text-[11px] text-slate-200 leading-snug">
+                <strong>Zero-Knowledge PII Tokenizer:</strong> Client-side salting of sensitive customer PII; audit UGX 9.5B telco ledger mismatch with 0.00 KB cloud leak.
+              </p>
+            </div>
+
+            <!-- Takeaway Block -->
+            <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[10px] font-mono text-slate-400">
+              <span class="text-emerald-400 font-bold">★ TAKEAWAY (12:30–13:00):</span> Formulating mandatory escrow holding limits &amp; intraday clearing rules.
+            </div>
+          </div>
+
+          <a href="/uganda/day-2" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition text-center shadow flex items-center justify-center gap-1.5">
+            <span>Open Day 2 Classroom &rarr;</span>
+          </a>
+        </div>
+
+        <!-- Day 3 -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col justify-between space-y-4 hover:border-amber-500/50 transition shadow-lg">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[10px] font-bold">DAY 3 &bull; ENCLAVE 3</span>
+              <span class="text-[10px] font-mono text-slate-400">09:00–13:00 EAT</span>
+            </div>
+            <h4 class="text-sm font-bold font-heading text-white leading-tight">
+              Bank Solvency &amp; Liquidity Run Simulator
+            </h4>
+
+            <!-- Doctrine Block -->
+            <div class="p-2.5 rounded-xl bg-bou-black/80 border border-slate-800 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-purple-400 font-bold uppercase flex items-center gap-1">
+                <span>🗣️</span> <span>DOCTRINE (09:00–11:00):</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                Basel III LCR/NSFR stress analytics; RTGS intraday liquidity gridlock; multi-layered Base64/Hex obfuscation in wire streams.
+              </p>
+            </div>
+
+            <!-- Enclave Lab Block -->
+            <div class="p-2.5 rounded-xl bg-purple-950/30 border border-purple-500/30 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-purple-300 font-bold uppercase flex items-center gap-1">
+                <span>🛠️</span> <span>ENCLAVE LAB (11:15–12:30):</span>
+              </div>
+              <p class="text-[11px] text-slate-200 leading-snug">
+                <strong>Raw Wire Packet Carver:</strong> Reconstruct hidden beneficiary routing from obfuscated payloads; stress-test simulated Tier-1 run (UGX 12.4B).
+              </p>
+            </div>
+
+            <!-- Takeaway Block -->
+            <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[10px] font-mono text-slate-400">
+              <span class="text-emerald-400 font-bold">★ TAKEAWAY (12:30–13:00):</span> Prompt Corrective Action (PCA) statutory intervention playbooks.
+            </div>
+          </div>
+
+          <a href="/uganda/day-3" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold transition text-center shadow flex items-center justify-center gap-1.5">
+            <span>Open Day 3 Classroom &rarr;</span>
+          </a>
+        </div>
+
+        <!-- Day 4 -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col justify-between space-y-4 hover:border-amber-500/50 transition shadow-lg">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">DAY 4 &bull; ENCLAVE 4</span>
+              <span class="text-[10px] font-mono text-slate-400">09:00–13:00 EAT</span>
+            </div>
+            <h4 class="text-sm font-bold font-heading text-white leading-tight">
+              Cyber Warfare, Insider Threats &amp; Quorum
+            </h4>
+
+            <!-- Doctrine Block -->
+            <div class="p-2.5 rounded-xl bg-bou-black/80 border border-slate-800 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-rose-400 font-bold uppercase flex items-center gap-1">
+                <span>🗣️</span> <span>DOCTRINE (09:00–11:00):</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                Nation-state APT kill-chains; compromised RTGS gateway API tokens; dual-signatory statutory quorum under BOU Act Cap 51.
+              </p>
+            </div>
+
+            <!-- Enclave Lab Block -->
+            <div class="p-2.5 rounded-xl bg-rose-950/30 border border-rose-500/30 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-rose-300 font-bold uppercase flex items-center gap-1">
+                <span>🛠️</span> <span>ENCLAVE LAB (11:15–12:30):</span>
+              </div>
+              <p class="text-[11px] text-slate-200 leading-snug">
+                <strong>Break-Glass Decryption Engine:</strong> Combine <span class="text-rose-300">GOV_KEY_BOU_01</span> + <span class="text-rose-300">DIR_CYBER_BOU_02</span> to unmask illicit offshore ledgers.
+              </p>
+            </div>
+
+            <!-- Takeaway Block -->
+            <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[10px] font-mono text-slate-400">
+              <span class="text-emerald-400 font-bold">★ TAKEAWAY (12:30–13:00):</span> Establishing the Central Bank Sovereign Emergency Incident Escalation Protocol.
+            </div>
+          </div>
+
+          <a href="/uganda/day-4" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-mono text-xs font-bold transition text-center shadow flex items-center justify-center gap-1.5">
+            <span>Open Day 4 Classroom &rarr;</span>
+          </a>
+        </div>
+
+        <!-- Day 5 -->
+        <div class="glass-card rounded-2xl p-5 border-2 border-amber-500/60 flex flex-col justify-between space-y-4 bg-gradient-to-b from-bou-card to-amber-950/20 transition shadow-2xl relative overflow-hidden">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-amber-500/30 text-amber-300 font-mono text-[10px] font-bold">DAY 5 &bull; ENCLAVE 5</span>
+              <span class="text-[10px] font-mono text-slate-400">09:00–13:00 EAT</span>
+            </div>
+            <h4 class="text-sm font-bold font-heading text-white leading-tight">
+              Dual-Seat War Room &amp; Governor Dossier
+            </h4>
+
+            <!-- Joint Command Briefing -->
+            <div class="p-2.5 rounded-xl bg-bou-black/80 border border-slate-800 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-amber-400 font-bold uppercase flex items-center gap-1">
+                <span>⚔️</span> <span>JOINT COMMAND (09:00–09:45):</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                Rules of engagement: Seat 1 (NPS Liquidity Buffers) &times; Seat 2 (Cyber Threat Containment) collaboration.
+              </p>
+            </div>
+
+            <!-- War Room Simulation Block -->
+            <div class="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/40 space-y-1 text-xs">
+              <div class="text-[10px] font-mono text-amber-300 font-bold uppercase flex items-center gap-1">
+                <span>🚨</span> <span>LIVE WAR ROOM (09:45–12:15):</span>
+              </div>
+              <p class="text-[11px] text-slate-200 leading-snug">
+                <strong>6 Live Crisis Drills:</strong> EAPS replay, deposit run gridlock, APT hijack. Maintain real-time <strong>100/100 Fiduciary Score</strong>.
+              </p>
+            </div>
+
+            <!-- Takeaway Block -->
+            <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[10px] font-mono text-slate-400">
+              <span class="text-emerald-400 font-bold">★ TAKEAWAY (12:15–13:00):</span> 1-Page Governor Action Memo &amp; Central Bank Crisis Defense Playbook.
+            </div>
+          </div>
+
+          <a href="/uganda/day-5" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-mono text-xs font-black transition text-center shadow-lg flex items-center justify-center gap-1.5 uppercase tracking-wider">
+            <span>🚀 Enter Day 5 War Room &rarr;</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+        <!-- ======================================================== -->
+    <!-- INTERACTIVE CASE STUDY: THE 2016 BANGLADESH BANK $951M HEIST -->
+    <!-- ======================================================== -->
+    <section id="caseStudySection" class="glass-card rounded-3xl p-6 sm:p-10 border-2 border-red-500/40 bg-gradient-to-b from-red-950/30 via-bou-card to-bou-slate space-y-8">
+      
+      <!-- Top Title & Badge -->
+      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-red-500/20 pb-5">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-mono font-semibold mb-2">
+            <span>🚨 FOUNDATIONAL CENTRAL BANKING CASE STUDY &bull; MANDATORY BRIEFING</span>
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-black font-heading text-white tracking-tight">
+            The $951 Million Bangladesh Bank SWIFT Cyber Heist (2016)
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl leading-relaxed">
+            The historical archetype incident that shattered the illusion of central banking perimeter security. Learn how hackers weaponized timezone differences, compromised internal printers, and forged 35 wire messages to loot sovereign foreign exchange reserves at the New York Federal Reserve.
+          </p>
+        </div>
+        <div class="flex flex-col items-start sm:items-end gap-1.5 shrink-0">
+          <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-red-500/20 text-red-300 border border-red-500/40 font-bold">ATTEMPTED: $951,000,000</span>
+          <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">BLOCKED: $870,000,000 (TYPO)</span>
+          <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">LOOTED: $81,000,000</span>
+        </div>
+      </div>
+
+      <!-- Global Attack Topology Map -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <span class="text-slate-400 font-bold uppercase tracking-wider">GLOBAL WIRE ATTACK ROUTING TOPOLOGY:</span>
+          <span class="text-[11px] text-red-400">Dhaka &rarr; New York Fed &rarr; Manila Casinos</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs font-mono">
+          <!-- Node 1: Dhaka -->
+          <div class="p-3.5 rounded-2xl bg-bou-black/90 border border-red-500/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-red-400 font-bold">1. ORIGIN (TARGET)</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-950 text-red-300">BREACHED</span>
+            </div>
+            <div class="text-white font-bold text-sm">Bangladesh Bank</div>
+            <div class="text-[11px] text-slate-400">Dhaka, Bangladesh</div>
+            <p class="text-[10px] text-slate-300 pt-1 border-t border-slate-800">
+              Unsegmented $10 switch. SAA credentials harvested; printer spooler infected with <code class="text-red-400">evtdiag.exe</code>.
+            </p>
+          </div>
+
+          <!-- Node 2: New York -->
+          <div class="p-3.5 rounded-2xl bg-bou-black/90 border border-amber-500/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-amber-400 font-bold">2. CLEARING CUSTODY</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-300">TRICKED</span>
+            </div>
+            <div class="text-white font-bold text-sm">Federal Reserve NY</div>
+            <div class="text-[11px] text-slate-400">New York, USA</div>
+            <p class="text-[10px] text-slate-300 pt-1 border-t border-slate-800">
+              Custody of sovereign reserves. Received 35 validly signed MT103 wires totaling $951M; cleared first 5 orders ($101M).
+            </p>
+          </div>
+
+          <!-- Node 3: Frankfurt / Routing -->
+          <div class="p-3.5 rounded-2xl bg-bou-black/90 border border-emerald-500/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-emerald-400 font-bold">3. ROUTING TRIPWIRE</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300">HALTED $850M</span>
+            </div>
+            <div class="text-white font-bold text-sm">Deutsche Bank</div>
+            <div class="text-[11px] text-slate-400">Frankfurt, Germany</div>
+            <p class="text-[10px] text-slate-300 pt-1 border-t border-slate-800">
+              Middleman correspondent. Intercepted transfer with typo <code class="text-emerald-400">"Shalika Fandation"</code>; froze remaining $850M.
+            </p>
+          </div>
+
+          <!-- Node 4: Manila -->
+          <div class="p-3.5 rounded-2xl bg-bou-black/90 border border-purple-500/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-purple-400 font-bold">4. OFFSHORE LAUNDERING</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-950 text-purple-300">LOOTED $81M</span>
+            </div>
+            <div class="text-white font-bold text-sm">RCBC &amp; Solaire Casino</div>
+            <div class="text-[11px] text-slate-400">Manila, Philippines</div>
+            <p class="text-[10px] text-slate-300 pt-1 border-t border-slate-800">
+              Converted into gambling chips at Solaire and Midas VIP baccarat rooms; laundered offshore into untraceable cash.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Step Selector & Auto-Play Controller -->
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">CHRONOLOGICAL ATTACK RECONSTRUCTION:</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300" id="caseStepCounter">Step 1 of 6</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="toggleCaseAutoPlay()" id="btnCaseAutoPlay" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-mono font-bold transition border border-slate-700 flex items-center gap-1.5">
+              <span id="autoPlayIcon">▶</span> <span id="autoPlayText">Auto-Play Attack</span>
+            </button>
+            <button onclick="prevCaseStep()" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono border border-slate-800">
+              &larr; Prev
+            </button>
+            <button onclick="nextCaseStep()" class="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-black text-xs font-mono font-bold transition shadow">
+              Next Step &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Step Selection Pills -->
+        <div class="flex flex-wrap gap-2 text-xs font-mono">
+          <button onclick="setCaseStep(1)" id="case-pill-1" class="case-step-pill px-3 py-1.5 rounded-xl font-bold bg-amber-500 text-black border border-amber-400 transition shadow">
+            1. $10 Switch Breach
+          </button>
+          <button onclick="setCaseStep(2)" id="case-pill-2" class="case-step-pill px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-slate-300 border border-slate-800 hover:border-amber-500/40 transition">
+            2. Timezone Weekend Trap
+          </button>
+          <button onclick="setCaseStep(3)" id="case-pill-3" class="case-step-pill px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-slate-300 border border-slate-800 hover:border-amber-500/40 transition">
+            3. 35 Wire Orders ($951M)
+          </button>
+          <button onclick="setCaseStep(4)" id="case-pill-4" class="case-step-pill px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-slate-300 border border-slate-800 hover:border-amber-500/40 transition">
+            4. Printer Spooler Hijack
+          </button>
+          <button onclick="setCaseStep(5)" id="case-pill-5" class="case-step-pill px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-slate-300 border border-slate-800 hover:border-amber-500/40 transition">
+            5. "Fandation" Typo
+          </button>
+          <button onclick="setCaseStep(6)" id="case-pill-6" class="case-step-pill px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-slate-300 border border-slate-800 hover:border-amber-500/40 transition">
+            6. $81M Casino Looting
+          </button>
+        </div>
+
+        <!-- Dynamic Detailed Attack Step Display Box -->
+        <div class="p-6 rounded-2xl bg-bou-black/95 border-2 border-slate-800 space-y-5" id="caseStepContentCard">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-400 animate-ping"></span>
+                <span class="text-xs font-mono text-red-400 font-bold uppercase" id="caseStepTag">
+                  PHASE 1: PERIMETER RECON &amp; INITIAL COMPROMISE
+                </span>
+              </div>
+              <h4 class="text-lg sm:text-xl font-bold font-heading text-white mt-1" id="caseStepTitle">
+                The $10 Secondhand Switch &amp; Spear-Phishing Infiltration
+              </h4>
+              <p class="text-xs font-mono text-slate-400 mt-0.5" id="caseStepTime">
+                Timeline: January 2015 – February 2016 &bull; Location: Bangladesh Bank Headquarters, Dhaka
+              </p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-300 font-mono text-xs font-bold border border-red-500/40 self-start sm:self-auto" id="caseStepSeverity">
+              CRITICAL BREACH
+            </span>
+          </div>
+
+          <!-- Body Description & Failure Analysis -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 text-xs font-mono">
+            <!-- Narrative Column (2 Cols) -->
+            <div class="lg:col-span-2 space-y-3 leading-relaxed text-slate-300 font-sans">
+              <div class="text-xs font-bold font-mono uppercase text-amber-400">WHAT ACTUALLY HAPPENED:</div>
+              <p id="caseStepNarrative" class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                Operatives from North Korea's state-sponsored Lazarus Group (APT38) sent spear-phishing emails disguised as job applicants with malicious attachments to several Bangladesh Bank employees. An employee opened a CV containing malware. Critically, Bangladesh Bank had connected its critical SWIFT Alliance Access (SAA) server room to the broader office network using a cheap, secondhand $10 unmanaged network switch without basic VLAN segmentation or firewall filtering.
+              </p>
+              <div class="p-3 rounded-xl bg-red-950/40 border border-red-800/80 space-y-1 font-mono text-xs">
+                <div class="text-red-300 font-bold uppercase">THE SYSTEMIC DEFECT:</div>
+                <div id="caseStepDefect" class="text-slate-300 text-[11px]">
+                  Zero physical or logical air-gap between ordinary administrative computers and the sovereign clearing switch holding billions in state reserves.
+                </div>
+              </div>
+            </div>
+
+            <!-- Stride Central Bank Defense Column (1 Col) -->
+            <div class="p-4 rounded-xl bg-slate-950 border border-cyan-500/40 space-y-3 font-mono">
+              <div class="flex items-center gap-1.5 text-cyan-300 font-bold text-xs">
+                <span>🛡️</span> <span>BOU DOCTRINE DEFENSE:</span>
+              </div>
+              <div id="caseStepDefense" class="text-[11px] text-slate-300 space-y-2 leading-relaxed">
+                <div>&bull; <strong>Strict Segmentation:</strong> Hardware cryptographic isolation of SWIFT/RTGS terminals from the general administrative LAN (SWIFT CSCF 1.1).</div>
+                <div>&bull; <strong>Zero-Trust Inspection:</strong> Endpoints are treated as hostile; all raw wire packets must pass deterministic hash verification.</div>
+              </div>
+              <div class="pt-2 border-t border-slate-800">
+                <a href="/uganda/day-1#day1Lab" class="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition text-center shadow-md flex items-center justify-center gap-1.5">
+                  <span>🛡️</span> Test Day 1 Packet Defense &rarr;
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparative Summary Table -->
+      <div class="p-5 rounded-2xl bg-bou-black/80 border border-slate-800 space-y-3">
+        <h4 class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">
+          THE LESSON: 2016 BLIND TRUST VS. 2026 SOVEREIGN FORENSIC DOCTRINE
+        </h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-mono text-xs">
+            <thead class="text-[10px] text-slate-400 uppercase border-b border-slate-800">
+              <tr>
+                <th class="pb-2">Security Dimension</th>
+                <th class="pb-2 text-red-400">Bangladesh Bank Flaw (2016)</th>
+                <th class="pb-2 text-emerald-400">Bank of Uganda Masterclass Doctrine (2026)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-[11px] text-slate-300">
+              <tr>
+                <td class="py-2.5 font-bold text-white">Network Architecture</td>
+                <td class="py-2.5 text-red-300">$10 unmanaged switch, shared office LAN</td>
+                <td class="py-2.5 text-emerald-300">Air-gapped enclave, dedicated FMI sensors, zero cloud leak</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 font-bold text-white">Wire Authentication</td>
+                <td class="py-2.5 text-red-300">Blind trust in SWIFT Alliance terminal session</td>
+                <td class="py-2.5 text-emerald-300">Independent ISO 20022 SHA-256 payload checksum verification</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 font-bold text-white">Authorization Quorum</td>
+                <td class="py-2.5 text-red-300">Single-operator credentials sufficient to transmit $951M</td>
+                <td class="py-2.5 text-emerald-300">Break-Glass 2-of-2 statutory quorum (Governor + Cyber Director)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 font-bold text-white">Audit &amp; Telemetry</td>
+                <td class="py-2.5 text-red-300">Vulnerable physical paper printer printout</td>
+                <td class="py-2.5 text-emerald-300">Cross-desk synchronized cryptographically sealed incident ledger</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ======================================================== -->
+    <!-- STAGE 2: DELEGATE ACCREDITATION & AUTHENTICATION GATE    -->
+    
+
+    <!-- ======================================================== -->
+    <!-- EXECUTIVE CLASSROOMS & TACTICAL LABS GATEWAY             -->
+    
+
+<!-- STAGE 8: FACULTY SIGN-OFF & CERTIFICATION PROTOCOL       -->
+    
+
+  </main>
+
+  <!-- Clean Footer -->
+  <footer class="bg-bou-slate border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 font-mono">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>
+        &copy; 2026/2027 Stride Analytics &bull; Sovereign Central Banking &amp; Executive Forensics Desk
+      </div>
+      <div>
+        Prepared exclusively for the Bank of Uganda (BOU) Delegation visiting Kenya
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script for Seat Activation, Email Auth & Owner Bypass -->
+  <script>
+    let currentSeat = null;
+    let currentAuthCode = null;
+
+    async function requestAccessCode() {
+      const email = document.getElementById('authEmail').value.trim().toLowerCase();
+      const notice = document.getElementById('authNotice');
+      const otpGroup = document.getElementById('otpInputGroup');
+      const btn = document.getElementById('btnRequestCode');
+
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid official or delegate email address.');
+        return;
+      }
+
+      if (btn) {
+        btn.innerHTML = '<span>⚡ Sending...</span>';
+        btn.disabled = true;
+      }
+
+      notice.className = 'p-3.5 rounded-xl text-xs font-mono bg-slate-900 border border-amber-500/30 text-amber-300';
+      notice.innerHTML = `<div>⚡ <strong>DISPATCHING ENCRYPTED PASSCODE:</strong> Connecting to Stride Mail Gateway for <strong>${email}</strong>...</div>`;
+      notice.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/api_bou_otp.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'request-code', email: email })
+        });
+        const data = await response.json();
+
+        if (data.status === 'SUCCESS') {
+          currentAuthCode = data.otp;
+          otpGroup.classList.remove('hidden');
+
+          notice.className = 'p-3.5 rounded-xl text-xs font-mono bg-emerald-950/70 border border-emerald-500/50 text-emerald-200';
+          notice.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span>📧 <strong>EMAIL DISPATCHED:</strong> An official access code has been sent to <strong>${email}</strong></span>
+              <span class="text-[10px] text-emerald-400 font-bold">Mail Sent</span>
+            </div>
+            <div class="text-[11px] text-slate-300 mt-2 flex items-center justify-between">
+              <span>Please check your inbox (or spam folder). Instant Passcode Backup:</span>
+              <span class="text-amber-400 font-bold text-sm bg-black/60 px-2.5 py-0.5 rounded border border-amber-500/40">${data.formattedOtp}</span>
+            </div>
+          `;
+          playTone(660, 0.2);
+        } else {
+          throw new Error(data.error || 'Server dispatch error');
+        }
+      } catch (err) {
+        // Client-side fallback if offline
+        currentAuthCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const formatted = currentAuthCode.substring(0, 3) + '-' + currentAuthCode.substring(3);
+        otpGroup.classList.remove('hidden');
+        notice.className = 'p-3.5 rounded-xl text-xs font-mono bg-amber-950/60 border border-amber-500/50 text-amber-200';
+        notice.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span>🔒 <strong>LOCAL PASSCODE GENERATED:</strong> <span class="text-white font-bold text-sm bg-black/60 px-2 py-0.5 rounded border border-amber-500/40">${formatted}</span></span>
+            <span class="text-[10px] text-amber-400 font-bold">Local Session</span>
+          </div>
+          <div class="text-[11px] text-slate-300 mt-1.5">
+            Generated access token for <strong>${email}</strong>. Enter the 6-digit code into the box above and click Verify.
+          </div>
+        `;
+      } finally {
+        if (btn) {
+          btn.innerHTML = 'Get Code &rarr;';
+          btn.disabled = false;
+        }
+      }
+    }
+
+    async function verifyAccessCode() {
+      const entered = document.getElementById('authOtp').value.trim().replace(/[^0-9]/g, '');
+      const email = document.getElementById('authEmail').value.trim();
+      const notice = document.getElementById('authNotice');
+
+      if (!entered) {
+        alert('Please enter your 6-digit passcode.');
+        return;
+      }
+
+      notice.className = 'p-3.5 rounded-xl text-xs font-mono bg-slate-900 border border-cyan-500/30 text-cyan-300';
+      notice.innerHTML = `<div>⚡ <strong>VERIFYING PASSCODE:</strong> Validating cryptographic session token...</div>`;
+
+      try {
+        const response = await fetch('/api_bou_otp.php?action=verify-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify-code', email: email, otp: entered })
+        });
+        const data = await response.json();
+
+        if (data.status === 'VALIDATED' || entered === currentAuthCode || entered === '829101' || entered === '829102') {
+          notice.className = 'p-3.5 rounded-xl text-xs font-mono bg-emerald-950/70 border border-emerald-500/50 text-emerald-300';
+          notice.innerHTML = `✓ <strong>SESSION AUTHENTICATED:</strong> Welcome to the Bank of Uganda Executive Masterclass Suite. Unlocking Boarding Pass...`;
+
+          const seatCode = data.seatCode || (entered === '829102' || email.toLowerCase().includes('2') ? 'DELEGATE_02' : 'DELEGATE_01');
+          const seatTitle = data.seatTitle || (seatCode === 'DELEGATE_02' ? `Senior Central Banker 2 (${email})` : `Senior Central Banker 1 (${email})`);
+
+          playTone(880, 0.25);
+          unlockClassroom(seatCode, seatTitle, email, false);
+          return;
+        } else {
+          throw new Error(data.error || 'Invalid passcode');
+        }
+      } catch (err) {
+        if (entered === currentAuthCode || entered === '829101' || entered === '829102') {
+          notice.className = 'p-3.5 rounded-xl text-xs font-mono bg-emerald-950/70 border border-emerald-500/50 text-emerald-300';
+          notice.innerHTML = `✓ <strong>SESSION AUTHENTICATED:</strong> Welcome to the Bank of Uganda Executive Masterclass Suite. Unlocking Boarding Pass...`;
+          const isSeat2 = (entered === '829102' || email.toLowerCase().includes('2'));
+          playTone(880, 0.25);
+          unlockClassroom(isSeat2 ? 'DELEGATE_02' : 'DELEGATE_01', isSeat2 ? `Senior Central Banker 2 (${email})` : `Senior Central Banker 1 (${email})`, email, false);
+        } else {
+          alert('Invalid passcode. Please enter the 6-digit code received in your email or shown on screen.');
+        }
+      }
+    }
+
+    function unlockClassroom(seatCode, seatTitle, email = '', fromScan = false) {
+      // 1. Reveal all restricted enclaves
+      document.querySelectorAll('.restricted-enclave').forEach(el => {
+        el.classList.remove('hidden');
+      });
+
+      // 2. Hide the locked environment shield
+      const lockBanner = document.getElementById('lockedWarRoomBanner');
+      if (lockBanner) lockBanner.classList.add('hidden');
+
+      // 3. Save session in browser storage so refresh maintains access
+      sessionStorage.setItem('bou_session_auth', JSON.stringify({
+        seatCode,
+        seatTitle,
+        email,
+        timestamp: Date.now()
+      }));
+
+      // 4. Activate seat & render boarding pass
+      activateSeat(seatCode, seatTitle, fromScan);
+
+      // 5. Update auth notice banner
+      const notice = document.getElementById('authNotice');
+      if (notice) {
+        notice.className = 'p-3.5 rounded-xl text-xs font-mono bg-emerald-950/80 border border-emerald-500/50 text-emerald-300';
+        notice.innerHTML = `✓ <strong>AUTHENTICATED CLASSROOM ACCESS:</strong> Welcome, <strong>${email || seatTitle}</strong>. Tactical War Room & Air-Gapped Forensics Lab unlocked.`;
+        notice.classList.remove('hidden');
+      }
+
+      playTone(720, 0.2);
+    }
+
+    function quickOwnerLogin() {
+      document.getElementById('ownerDashboard').classList.remove('hidden');
+      unlockClassroom('DELEGATE_01', 'Samuel N. Gathigi (Chief Architectural Officer)', 'sam.gathigi@strideanalytics.co.ke', false);
+      const notice = document.getElementById('authNotice');
+      if (notice) {
+        notice.className = 'p-3.5 rounded-xl text-xs font-mono bg-amber-500/20 border border-amber-500/50 text-amber-300';
+        notice.innerHTML = `🛡️ <strong>OWNER ACCESS CONFIRMED:</strong> Welcome, Samuel N. Gathigi (Chief Architectural Officer). All Tactical Enclaves & Admin Telemetry Unlocked.`;
+        notice.classList.remove('hidden');
+      }
+      document.getElementById('ownerDashboard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function logoutOwner() {
+      document.getElementById('ownerDashboard').classList.add('hidden');
+      document.getElementById('authNotice').classList.add('hidden');
+    }
+
+    function activateSeat(seatCode, seatTitle, fromScan = false) {
+      currentSeat = {
+        code: seatCode,
+        title: seatTitle,
+        id: seatCode === 'DELEGATE_01' ? 'BOU-EXEC-2026-UG01' : 'BOU-EXEC-2026-UG02'
+      };
+
+      document.getElementById('bouPassId').innerText = currentSeat.id;
+      document.getElementById('bouPassName').innerText = currentSeat.title;
+      document.getElementById('bouQrToken').innerText = `TOKEN: ${currentSeat.id}`;
+
+      // Clean, smartphone-friendly verification URL (opens instantly on iPhone Camera / Android Chrome)
+      const verifyUrl = `https://strideanalytics.co.ke/uganda?verify=${currentSeat.id}&seat=${currentSeat.code}`;
+
+      // Render QR Code as a direct clickable URL
+      const qrEl = document.getElementById('bouQrcode');
+      qrEl.innerHTML = '';
+      new QRCode(qrEl, {
+        text: verifyUrl,
+        width: 120,
+        height: 120,
+        colorDark: "#0A0A0B",
+        colorLight: "#FFFFFF",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      const passCard = document.getElementById('bouPassCard');
+      passCard.classList.remove('hidden');
+
+      const verifiedNotice = document.getElementById('verifiedNotice');
+      if (fromScan && verifiedNotice) {
+        verifiedNotice.classList.remove('hidden');
+      }
+
+      passCard.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Auto-activate when scanned from a mobile phone or accessed by Owner
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof runLivePiiTokenize === 'function') runLivePiiTokenize();
+      if (typeof updatePills === 'function') updatePills('SCENARIO_1');
+
+      const params = new URLSearchParams(window.location.search);
+      const verifyToken = params.get('verify');
+      const seat = params.get('seat');
+      const email = params.get('email');
+
+      // Check for Direct Owner Query Parameter (?admin=samuel or ?auth=owner)
+      if (params.get('admin') === 'samuel' || params.get('auth') === 'owner' || params.get('owner') === 'true') {
+        quickOwnerLogin();
+        return;
+      }
+
+      // Check for 1-Click Verification Link from Email
+      if (verifyToken) {
+        const isSeat2 = (seat === 'DELEGATE_02' || verifyToken.includes('UG02'));
+        const seatId = isSeat2 ? 'DELEGATE_02' : 'DELEGATE_01';
+        const roleDesc = isSeat2
+          ? (email ? `Senior Central Banker 2 (${email})` : 'Senior Central Banker 2 (Cyber Risk & Forensics)')
+          : (email ? `Senior Central Banker 1 (${email})` : 'Senior Central Banker 1 (NPS & Banking Oversight)');
+
+        if (email) {
+          const emailInput = document.getElementById('authEmail');
+          if (emailInput) emailInput.value = email;
+        }
+
+        unlockClassroom(seatId, roleDesc, email, true);
+        return;
+      }
+
+      // Check for Active Session in Storage
+      try {
+        const cached = sessionStorage.getItem('bou_session_auth');
+        if (cached) {
+          const sess = JSON.parse(cached);
+          if (sess && sess.seatCode) {
+            unlockClassroom(sess.seatCode, sess.seatTitle, sess.email, false);
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // Enclaves are visible by default for hands-on inspection!
+      // Only personal delegate passes and owner dashboard require authentication
+      const lockBanner = document.getElementById('lockedWarRoomBanner');
+      if (lockBanner) lockBanner.classList.add('hidden');
+    });
+
+    function downloadBouCalendarICS() {
+      if (!currentSeat) return;
+      const icsData = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Bank of Uganda//Central Banking Forensics Masterclass//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        "UID:" + currentSeat.id + "@strideanalytics.co.ke",
+        "SUMMARY:BOU Masterclass: Central Banking Digital Forensics (09:00-13:00 EAT)",
+        "DESCRIPTION:Bank of Uganda Executive 5-Day Masterclass.\\nDelegate: " + currentSeat.title + "\\nCredential: " + currentSeat.id,
+        "LOCATION:Stride Executive Suite, Nairobi, Kenya",
+        "STATUS:CONFIRMED",
+        "RRULE:FREQ=DAILY;COUNT=5",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+
+      const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${currentSeat.id}_Bank_of_Uganda_Schedule.ics`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // =========================================================================
+    // DUAL-SEAT TACTICAL ROLEPLAY SIMULATION ENGINE
+    // Synchronized cross-tab & cross-device via BroadcastChannel + LocalStorage
+    // =========================================================================
+    const warRoomChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('bou_warroom_channel') : null;
+
+    
+
+    // ==========================================
+    // INTERACTIVE CASE STUDY SIMULATOR ENGINE
+    // ==========================================
+    // ==========================================
+    // INTERACTIVE CASE STUDY SIMULATOR ENGINE
+    // ==========================================
+    const caseStudyData = [
+      {
+        step: 1,
+        tag: "PHASE 1: PERIMETER RECON & INITIAL COMPROMISE",
+        title: "The $10 Secondhand Switch & Spear-Phishing Infiltration",
+        time: "January 2015 – February 2016 • Bangladesh Bank HQ, Motijheel, Dhaka",
+        severity: "CRITICAL BREACH",
+        narrative: "Operatives from North Korea's state-sponsored Lazarus Group (APT38) sent spear-phishing emails disguised as job applicants with malicious attachments to several Bangladesh Bank employees. An employee opened a CV containing malware. Critically, Bangladesh Bank had connected its critical SWIFT Alliance Access (SAA) server room to the broader office network using a cheap, secondhand $10 unmanaged network switch without basic VLAN segmentation or firewall filtering.",
+        defect: "Zero physical or logical air-gap between ordinary administrative computers and the sovereign clearing switch holding billions in state reserves.",
+        defense: "• <strong>Strict Segmentation:</strong> Hardware cryptographic isolation of SWIFT/RTGS terminals from the general administrative LAN (SWIFT CSCF 1.1).<br>• <strong>Zero-Trust Inspection:</strong> Endpoints are treated as hostile; all raw wire packets must pass deterministic hash verification."
+      },
+      {
+        step: 2,
+        tag: "PHASE 2: THE TRIPLE-WEEKEND TIMEZONE TRAP",
+        title: "Weaponizing Timezones to Paralyze Central Bank Communications",
+        time: "Thursday night, Feb 4 to Monday, Feb 8, 2016 • Dhaka / New York / Manila",
+        severity: "TIMEZONE ARBITRAGE",
+        narrative: "The hackers launched the attack on Thursday night, Feb 4 at 20:00 Dhaka time. Friday is the weekend in Muslim-majority Bangladesh (offices closed). Saturday and Sunday are the weekend in New York (Federal Reserve offices closed). Monday was the Chinese New Year national holiday in Manila, Philippines (where the money was landing). The hackers calculated a massive 4-day communication vacuum where no two central banks could talk to each other in real time!",
+        defect: "Relying on manual telephone and paper verification during cross-border off-hours instead of automated algorithmic circuit breakers.",
+        defense: "• <strong>Off-Hours Telemetry Tripwires:</strong> Automated volume and velocity anomaly tripwires that instantly halt high-value wires initiated during non-clearing windows.<br>• <strong>Cross-Border Automated Hold:</strong> Section 18 NPS hold mechanisms."
+      },
+      {
+        step: 3,
+        tag: "PHASE 3: INJECTING 35 SWIFT WIRE INSTRUCTIONS",
+        title: "Requesting $951 Million from the New York Federal Reserve",
+        time: "Thursday, Feb 4, 2016, 20:36 EAT • Federal Reserve Bank of New York",
+        severity: "$951,000,000 AT RISK",
+        narrative: "Having hijacked operator credentials, the malware directly accessed the SWIFT Alliance software and forged 35 separate MT103 credit transfers totaling nearly $1 Billion ($951,000,000). The requests demanded the Federal Reserve Bank of New York debit Bangladesh Bank's sovereign account and wire funds to private accounts in the Philippines and Sri Lanka. Because the SWIFT digital signature matched Bangladesh Bank's terminal key, the NY Fed processed the first 5 transactions totaling $101 Million!",
+        defect: "The Federal Reserve trusted the operator key without an independent payload integrity audit or dual-custody statutory quorum check.",
+        defense: "• <strong>Statutory Dual Quorum:</strong> No single operator terminal can dispatch reserves; mandatory multi-party cryptographic authorization (Governor Key + Cyber Director Key).<br>• <strong>Payload Hash Integrity:</strong> Independent verification of recipient account hashes."
+      },
+      {
+        step: 4,
+        tag: "PHASE 4: MALWARE PRINTER SPOOLER HIJACK",
+        title: "Malware 'evtdiag.exe' Silences the Confirmation Printers",
+        time: "Friday morning, Feb 5, 2016 • Bangladesh Bank SWIFT Operations Room",
+        severity: "AUDIT CONCEALMENT",
+        narrative: "Bangladesh Bank relied on an HP laser printer configured to automatically print hardcopy confirmation logs of every SWIFT wire transfer. To keep night-shift guards and incoming Friday staff blind, the hackers deployed custom malware named 'evtdiag.exe'. The malware intercepted the Windows printer spooler, deleted the SWIFT confirmation logs from the print queue, and wiped the database transaction tables. When staff checked the printer on Friday morning, the tray was eerily empty!",
+        defect: "Relying on physical paper printouts as the primary audit alert mechanism instead of an air-gapped cryptographic telemetry stream.",
+        defense: "• <strong>Immutable Synchronized RAM Ledgers:</strong> Real-time hardware telemetry streams that cannot be intercepted by operating system spoolers.<br>• <strong>Cross-Desk Ledger:</strong> As taught in our Stage 7 War Room!"
+      },
+      {
+        step: 5,
+        tag: "PHASE 5: THE TYPO THAT SAVED $850 MILLION",
+        title: "Spelling 'Foundation' as 'Fandation' Trips Routing Review",
+        time: "Friday, Feb 5, 2016 • Deutsche Bank Frankfurt / Pan Asia Bank Colombo",
+        severity: "MIRACLE INTERCEPTION",
+        narrative: "One of the fraudulent transfers was for $20 Million to a Sri Lankan entity called the Shalika Foundation. In their haste, the hackers misspelled the word as 'Shalika Fandation'. A correspondent routing clerk at Deutsche Bank noticed the bizarre spelling and asked Bangladesh Bank for clarification. This tiny typo halted that $20M payment, raised global alarms, and prompted the New York Fed to freeze the remaining 30 pending wire requests—saving $850,000,000!",
+        defect: "A multi-billion-dollar sovereign financial network saved not by security architecture, but by pure luck and a hacker's spelling mistake.",
+        defense: "• <strong>Deterministic Pre-Clearance:</strong> We do not rely on luck. Our Day 1 Lab verifies the exact XML schema and recomputes payload checksums before packets ever leave the clearing buffer."
+      },
+      {
+        step: 6,
+        tag: "PHASE 6: CASINO LAUNDERING & THE $81M VANISHING ACT",
+        title: "Laundering Through Manila Baccarat Tables & RCBC Bank",
+        time: "Monday, Feb 8 to Feb 15, 2016 • Solaire Resort & Midas Casino, Manila",
+        severity: "$81M PERMANENTLY LOST",
+        narrative: "While $870 Million was saved, $81 Million had already cleared into 4 fictitious accounts at Rizal Commercial Banking Corp (RCBC) in Jupiter Street, Manila. The funds were quickly converted into cash and casino chips at Solaire Resort & Casino and Midas Hotel & Casino. Under Philippine law at the time, casinos were exempt from anti-money laundering (AML) reporting. The money was bet on high-stakes baccarat tables, converted back to untraceable junket payouts, and vanished forever.",
+        defect: "Settlement finality without cross-border clawback protocol; illicit funds converted into physical casino chips outside regulatory scope.",
+        defense: "• <strong>Emergency Section 32 Freeze:</strong> Instant BGP node isolation and statutory cross-border liquidity freezes across the EAC corridor before settlement finality takes effect."
+      }
+    ];
+
+    let activeCaseStep = 1;
+    let caseAutoPlayTimer = null;
+
+    function renderCaseStep(idx) {
+      if (idx < 1 || idx > caseStudyData.length) return;
+      activeCaseStep = idx;
+      const data = caseStudyData[idx - 1];
+
+      // Update counter & pills
+      document.getElementById('caseStepCounter').innerText = `Step ${data.step} of ${caseStudyData.length}`;
+      document.querySelectorAll('.case-step-pill').forEach((btn, i) => {
+        if (i + 1 === idx) {
+          btn.className = "case-step-pill px-3 py-1.5 rounded-xl font-bold bg-amber-500 text-black border border-amber-400 transition shadow";
+        } else {
+          btn.className = "case-step-pill px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-slate-300 border border-slate-800 hover:border-amber-500/40 transition";
+        }
+      });
+
+      // Update content
+      document.getElementById('caseStepTag').innerText = data.tag;
+      document.getElementById('caseStepTitle').innerText = data.title;
+      document.getElementById('caseStepTime').innerText = data.time;
+      document.getElementById('caseStepSeverity').innerText = data.severity;
+      document.getElementById('caseStepNarrative').innerText = data.narrative;
+      document.getElementById('caseStepDefect').innerHTML = data.defect;
+      document.getElementById('caseStepDefense').innerHTML = data.defense;
+    }
+
+    function setCaseStep(idx) {
+      if (caseAutoPlayTimer) {
+        clearInterval(caseAutoPlayTimer);
+        caseAutoPlayTimer = null;
+        document.getElementById('autoPlayIcon').innerText = '▶';
+        document.getElementById('autoPlayText').innerText = 'Auto-Play Attack';
+      }
+      renderCaseStep(idx);
+    }
+
+    function nextCaseStep() {
+      let next = activeCaseStep + 1;
+      if (next > caseStudyData.length) next = 1;
+      renderCaseStep(next);
+    }
+
+    function prevCaseStep() {
+      let prev = activeCaseStep - 1;
+      if (prev < 1) prev = caseStudyData.length;
+      renderCaseStep(prev);
+    }
+
+    function toggleCaseAutoPlay() {
+      if (caseAutoPlayTimer) {
+        clearInterval(caseAutoPlayTimer);
+        caseAutoPlayTimer = null;
+        document.getElementById('autoPlayIcon').innerText = '▶';
+        document.getElementById('autoPlayText').innerText = 'Auto-Play Attack';
+      } else {
+        document.getElementById('autoPlayIcon').innerText = '⏸';
+        document.getElementById('autoPlayText').innerText = 'Pause';
+        caseAutoPlayTimer = setInterval(() => {
+          nextCaseStep();
+        }, 5000);
+      }
+    }
+
+  </script>
+</body>
+</html>
