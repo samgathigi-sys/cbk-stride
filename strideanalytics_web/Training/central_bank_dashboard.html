@@ -171,22 +171,25 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        .icon-btn {
-            background: transparent;
-            border: none;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
+        .cf-btn-secondary {
+            background: #ffffff;
+            border: 1px solid var(--cf-border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: #4b5563;
-            cursor: pointer;
-            transition: background 0.15s;
+            gap: 6px;
+            transition: all 0.15s;
+            text-decoration: none;
         }
 
-        .icon-btn:hover {
-            background: #f3f4f6;
+        .cf-btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
         }
 
         /* App Body Layout */
@@ -203,7 +206,7 @@
             padding: 16px 12px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             flex-shrink: 0;
             min-height: calc(100vh - 54px);
         }
@@ -344,24 +347,19 @@
             gap: 8px;
         }
 
-        .cf-btn-secondary {
-            background: #ffffff;
-            border: 1px solid var(--cf-border);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #374151;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.15s;
+        /* Views Container: only the active view is displayed */
+        .dashboard-view {
+            display: none;
+            animation: fadeIn 0.2s ease-in-out;
         }
 
-        .cf-btn-secondary:hover {
-            background: #f9fafb;
-            border-color: #d1d5db;
+        .dashboard-view.active-view {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* 2x2 Analytics Grid (Cloudflare Screenshot Structure) */
@@ -403,10 +401,6 @@
             color: #9ca3af;
             font-size: 12px;
             cursor: pointer;
-        }
-
-        .card-tools i:hover {
-            color: #4b5563;
         }
 
         /* Custom Chart Legends */
@@ -460,7 +454,7 @@
             font-size: 13px;
             gap: 16px;
             cursor: pointer;
-            padding: 3px 6px;
+            padding: 4px 6px;
             border-radius: 4px;
             transition: background 0.15s;
         }
@@ -508,18 +502,18 @@
             font-size: 12px;
             font-weight: 600;
             color: #111827;
-            width: 48px;
+            width: 54px;
             text-align: right;
             font-family: inherit;
         }
 
-        /* Operational Chaos & Forensic Control Tray */
+        /* Operational Chaos & Control Tray */
         .control-tray {
             background: #ffffff;
             border: 1px solid var(--cf-border);
             border-radius: 8px;
             padding: 16px 20px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -572,17 +566,17 @@
             transform: translateY(-1px);
         }
 
-        /* Security Table */
+        /* Tables */
         .sec-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 13px;
             margin-top: 8px;
         }
 
         .sec-table th {
             text-align: left;
-            padding: 8px 12px;
+            padding: 10px 14px;
             background: #f9fafb;
             color: #6b7280;
             font-weight: 600;
@@ -590,9 +584,10 @@
         }
 
         .sec-table td {
-            padding: 10px 12px;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--cf-border);
             color: #374151;
+            vertical-align: middle;
         }
 
         .sec-badge {
@@ -621,7 +616,44 @@
             border: 1px solid #a7f3d0;
         }
 
-        /* Packet Modal */
+        /* Big Cards & Metric Blocks */
+        .metric-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .metric-box {
+            background: #ffffff;
+            border: 1px solid var(--cf-border);
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--cf-text-muted);
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .metric-val {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .metric-sub {
+            font-size: 11px;
+            color: #059669;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -638,7 +670,7 @@
             background: #ffffff;
             border-radius: 8px;
             width: 100%;
-            max-width: 760px;
+            max-width: 780px;
             max-height: 85vh;
             display: flex;
             flex-direction: column;
@@ -682,38 +714,8 @@
             cursor: pointer;
         }
 
-        .modal-close-btn:hover {
-            color: #111827;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #111827;
-            color: #ffffff;
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.15);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            pointer-events: none;
-            z-index: 1001;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         @media (max-width: 1024px) {
-            .analytics-grid {
+            .analytics-grid, .metric-grid-4 {
                 grid-template-columns: 1fr;
             }
             .sidebar {
@@ -739,7 +741,7 @@
                     <span style="font-size: 11px; color: var(--cf-text-muted); display: block;">National Payment Systems Enclave</span>
                 </div>
             </a>
-            <div class="account-pill" onclick="showToast('Sovereign Operator: Sam Gathigi (Director NPS & Cyber Resilience)')">
+            <div class="account-pill" onclick="switchView('banks')">
                 <span style="font-weight: 600;">Sam.Gathigi@bou.go.ug</span>
                 <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #9ca3af;"></i>
             </div>
@@ -747,7 +749,7 @@
 
         <div class="top-center-search">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search BIC, pacs.008, SWIFT MT103, Rule ID..." id="quickSearch">
+            <input type="text" placeholder="Search BIC, pacs.008, SWIFT MT103, Rule ID... (Ctrl K)" id="quickSearch">
             <span class="kbd-shortcut">Ctrl K</span>
         </div>
 
@@ -764,9 +766,6 @@
                 <i class="fa-solid fa-diagram-project" style="color: var(--cf-blue);"></i>
                 <span>Architecture</span>
             </a>
-            <button class="icon-btn" title="Audit Vault" onclick="showToast('Zero unmitigated critical incidents across national clearing rails')">
-                <i class="fa-regular fa-bell"></i>
-            </button>
             <div style="width: 32px; height: 32px; background: #b45309; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">
                 SG
             </div>
@@ -784,7 +783,7 @@
             </a>
 
             <div class="nav-section-title">Enclave Overview</div>
-            <a href="#" class="sidebar-item active" onclick="switchNav(this, 'Settlement Analytics')">
+            <a href="javascript:void(0)" class="sidebar-item active" id="side-requests" onclick="switchView('requests')">
                 <div class="sidebar-item-left">
                     <i class="fa-regular fa-clock"></i>
                     <div>
@@ -793,7 +792,7 @@
                     </div>
                 </div>
             </a>
-            <a href="#" class="sidebar-item" onclick="switchTab('Threats')">
+            <a href="javascript:void(0)" class="sidebar-item" id="side-threats" onclick="switchView('threats')">
                 <div class="sidebar-item-left">
                     <i class="fa-solid fa-shield-virus"></i>
                     <div>
@@ -802,7 +801,7 @@
                     </div>
                 </div>
             </a>
-            <a href="#" class="sidebar-item" onclick="switchNav(this, 'EAPS Corridor')">
+            <a href="javascript:void(0)" class="sidebar-item" id="side-eaps" onclick="switchView('eaps')">
                 <div class="sidebar-item-left">
                     <i class="fa-solid fa-handshake"></i>
                     <div>
@@ -811,7 +810,7 @@
                     </div>
                 </div>
             </a>
-            <a href="#" class="sidebar-item" onclick="switchNav(this, 'Mobile Money Switch')">
+            <a href="javascript:void(0)" class="sidebar-item" id="side-mobile" onclick="switchView('mobile')">
                 <div class="sidebar-item-left">
                     <i class="fa-solid fa-mobile-screen-button"></i>
                     <div>
@@ -822,33 +821,31 @@
             </a>
 
             <div class="nav-section-title">Forensics & SOAR</div>
-            <a href="#" class="sidebar-item" onclick="switchTab('SOAR')">
+            <a href="javascript:void(0)" class="sidebar-item" id="side-banks" onclick="switchView('banks')">
                 <div class="sidebar-item-left">
-                    <i class="fa-solid fa-bolt"></i>
-                    <span>Shuffle SOAR</span>
+                    <i class="fa-solid fa-building-columns"></i>
+                    <span>Commercial Banks</span>
                 </div>
-                <span class="badge-sovereign">Automated</span>
+                <span class="badge-sovereign">25 Banks</span>
             </a>
-            <a href="#" class="sidebar-item" onclick="switchTab('Audit')">
-                <div class="sidebar-item-left">
-                    <i class="fa-solid fa-file-shield"></i>
-                    <span>Forensic Evidence</span>
-                </div>
-                <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: #9ca3af;"></i>
-            </a>
-            <a href="#" class="sidebar-item" onclick="showToast('OpenSearch telemetry ingest rate: 24,000 eps')">
-                <div class="sidebar-item-left">
-                    <i class="fa-solid fa-database"></i>
-                    <span>OpenSearch SIEM</span>
-                </div>
-                <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: #9ca3af;"></i>
-            </a>
-            <a href="#" class="sidebar-item" onclick="showToast('ISO 20022 Validator: Enforcing camt.053 & pacs.008 schema')">
+            <a href="javascript:void(0)" class="sidebar-item" id="side-protocols" onclick="switchView('protocols')">
                 <div class="sidebar-item-left">
                     <i class="fa-solid fa-code"></i>
                     <span>ISO 20022 Engine</span>
                 </div>
-                <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: #9ca3af;"></i>
+            </a>
+            <a href="javascript:void(0)" class="sidebar-item" id="side-soar" onclick="switchView('soar')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Shuffle SOAR</span>
+                </div>
+                <span class="badge-sovereign">Auto</span>
+            </a>
+            <a href="javascript:void(0)" class="sidebar-item" id="side-audit" onclick="switchView('audit')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-file-shield"></i>
+                    <span>Forensic Evidence</span>
+                </div>
             </a>
         </aside>
 
@@ -858,12 +855,14 @@
             <!-- View Header / Tabs & Controls (Matching Cloudflare UI) -->
             <div class="view-header">
                 <div class="view-tabs">
-                    <button class="tab-btn active" id="tab-Requests" onclick="switchTab('Requests')">Settlement Traffic</button>
-                    <button class="tab-btn" id="tab-Threats" onclick="switchTab('Threats')">Threat Mitigations</button>
-                    <button class="tab-btn" id="tab-Protocols" onclick="switchTab('Protocols')">Protocols</button>
-                    <button class="tab-btn" id="tab-Banks" onclick="switchTab('Banks')">Commercial Banks</button>
-                    <button class="tab-btn" id="tab-SOAR" onclick="switchTab('SOAR')">SOAR Actions</button>
-                    <button class="tab-btn" id="tab-Audit" onclick="switchTab('Audit')">Evidence Log</button>
+                    <button class="tab-btn active" id="tab-requests" onclick="switchView('requests')">Settlement Traffic</button>
+                    <button class="tab-btn" id="tab-threats" onclick="switchView('threats')">Threat Mitigations</button>
+                    <button class="tab-btn" id="tab-protocols" onclick="switchView('protocols')">Protocols</button>
+                    <button class="tab-btn" id="tab-banks" onclick="switchView('banks')">Commercial Banks</button>
+                    <button class="tab-btn" id="tab-eaps" onclick="switchView('eaps')">EAPS Corridor</button>
+                    <button class="tab-btn" id="tab-mobile" onclick="switchView('mobile')">Mobile Money Switch</button>
+                    <button class="tab-btn" id="tab-soar" onclick="switchView('soar')">SOAR Actions</button>
+                    <button class="tab-btn" id="tab-audit" onclick="switchView('audit')">Evidence Log</button>
                 </div>
 
                 <div class="view-controls">
@@ -871,61 +870,54 @@
                         <i class="fa-solid fa-play" style="color: var(--cf-orange);"></i>
                         <span id="simBtnText">Simulate Live Settlements</span>
                     </button>
-                    <button class="cf-btn-secondary" onclick="showToast('Filter: All 25 Supervised Commercial Banks + Mobile Telcos')">
-                        <i class="fa-solid fa-filter"></i>
-                        <span>Add filter</span>
-                    </button>
-                    <button class="cf-btn-secondary" onclick="showToast('Time Range: Last 24 Hours (Real-Time RTGS Window)')">
-                        <i class="fa-regular fa-calendar"></i>
-                        <span>Last 24 hours</span>
-                        <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i>
-                    </button>
-                    <button class="cf-btn-secondary" style="padding: 6px 10px;" onclick="showToast('Exporting ISO 20022 Executive Audit Summary...')">
-                        <i class="fa-solid fa-ellipsis"></i>
+                    <button class="cf-btn-secondary" onclick="exportExecutiveReport()">
+                        <i class="fa-solid fa-file-export"></i>
+                        <span>Export Report</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Operational Adversary Simulation Tray -->
-            <div class="control-tray">
-                <div class="tray-left">
-                    <i class="fa-solid fa-biohazard" style="color: #dc2626; font-size: 18px;"></i>
-                    <div>
-                        <div class="tray-title">Chaos Engineering & Adversary Injection Pad</div>
-                        <div class="tray-desc">Test real-time Cloudflare/Coraza WAF defense and Shuffle SOAR containment under sovereign threat scenarios.</div>
+            <!-- VIEW 1: Settlement Traffic (Cloudflare 2x2 Grid) -->
+            <div id="view-requests" class="dashboard-view active-view">
+                
+                <!-- Operational Adversary Simulation Tray -->
+                <div class="control-tray">
+                    <div class="tray-left">
+                        <i class="fa-solid fa-biohazard" style="color: #dc2626; font-size: 18px;"></i>
+                        <div>
+                            <div class="tray-title">Chaos Engineering & Adversary Injection Pad</div>
+                            <div class="tray-desc">Trigger live synthetic cyber attacks to inspect immediate WAF and SOAR containment across payment rails.</div>
+                        </div>
+                    </div>
+                    <div class="chaos-btn-group">
+                        <button class="chaos-btn" onclick="triggerAttack('swift')">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>SWIFT MT103 Tamper</span>
+                        </button>
+                        <button class="chaos-btn" onclick="triggerAttack('drain')">
+                            <i class="fa-solid fa-money-bill-transfer"></i>
+                            <span>RTGS Outlier Drain</span>
+                        </button>
+                        <button class="chaos-btn" onclick="triggerAttack('ransomware')">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Enclave Ransomware</span>
+                        </button>
+                        <button class="chaos-btn" onclick="triggerAttack('mobile')">
+                            <i class="fa-solid fa-satellite-dish"></i>
+                            <span>M-Pesa API Replay</span>
+                        </button>
                     </div>
                 </div>
-                <div class="chaos-btn-group">
-                    <button class="chaos-btn" onclick="triggerAttack('swift')">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span>SWIFT MT103 Tamper</span>
-                    </button>
-                    <button class="chaos-btn" onclick="triggerAttack('drain')">
-                        <i class="fa-solid fa-money-bill-transfer"></i>
-                        <span>RTGS Outlier Drain</span>
-                    </button>
-                    <button class="chaos-btn" onclick="triggerAttack('ransomware')">
-                        <i class="fa-solid fa-lock"></i>
-                        <span>Enclave Ransomware</span>
-                    </button>
-                    <button class="chaos-btn" onclick="triggerAttack('mobile')">
-                        <i class="fa-solid fa-satellite-dish"></i>
-                        <span>M-Pesa API Replay</span>
-                    </button>
-                </div>
-            </div>
 
-            <!-- TAB VIEW: Settlement Traffic (Exact 2x2 Grid from Screenshot) -->
-            <div id="requests-view">
                 <div class="analytics-grid">
                     
-                    <!-- Card 1: Settlement Volume by Clearing Status (Matches "Requests by status code") -->
+                    <!-- Card 1: Settlement Volume by Clearing Status -->
                     <div class="chart-card">
                         <div>
                             <div class="card-header">
                                 <h3 class="card-title">Settlement requests by clearing status</h3>
                                 <div class="card-tools">
-                                    <i class="fa-solid fa-ellipsis" onclick="showToast('Status code breakdown: 2xx Settled, 3xx Queued, 4xx WAF Blocked, 5xx Core Exception')"></i>
+                                    <i class="fa-solid fa-ellipsis"></i>
                                 </div>
                             </div>
                             <div class="chart-legend">
@@ -956,13 +948,13 @@
                         </div>
                     </div>
 
-                    <!-- Card 2: Ingress by Protocol Channel (Matches "Requests by cache status") -->
+                    <!-- Card 2: Ingress by Protocol Channel -->
                     <div class="chart-card">
                         <div>
                             <div class="card-header">
                                 <h3 class="card-title">Ingress volume by payment protocol</h3>
                                 <div class="card-tools">
-                                    <i class="fa-solid fa-ellipsis" onclick="showToast('Protocol breakdown: ISO 20022 XML, SWIFT MT FIN, EAPS Net Settle, Mobile Money API, PFM Treasury')"></i>
+                                    <i class="fa-solid fa-ellipsis"></i>
                                 </div>
                             </div>
                             <div class="chart-legend">
@@ -978,7 +970,7 @@
                                 </div>
                                 <div class="legend-item">
                                     <span class="legend-dot" style="background: #8b5cf6;"></span>
-                                    <span>EAPS East Africa:</span>
+                                    <span>EAPS Regional:</span>
                                     <span class="legend-val" id="val-eaps">430</span>
                                 </div>
                                 <div class="legend-item">
@@ -998,116 +990,515 @@
                         </div>
                     </div>
 
-                    <!-- Card 3: Top Settlement Endpoints & Corridors (Matches "Top paths") -->
+                    <!-- Card 3: Top Settlement Endpoints & Corridors -->
                     <div class="chart-card">
                         <div class="card-header">
                             <h3 class="card-title">Top settlement endpoints & payment corridors</h3>
                             <div class="card-tools">
-                                <i class="fa-solid fa-up-right-and-down-left-from-center" title="Expand view" onclick="showToast('Expanded Top Settlement Endpoints')"></i>
-                                <i class="fa-solid fa-ellipsis" onclick="showToast('Filter by endpoint')"></i>
+                                <i class="fa-solid fa-up-right-and-down-left-from-center" onclick="switchView('protocols')"></i>
                             </div>
                         </div>
-                        <div class="rank-list" id="endpointsList">
-                            <!-- Populated with RTGS / SWIFT / EAPS paths -->
-                        </div>
+                        <div class="rank-list" id="endpointsList"></div>
                     </div>
 
-                    <!-- Card 4: Top Ingress Commercial Banks & Gateways (Matches "Top countries") -->
+                    <!-- Card 4: Top Ingress Commercial Banks & Gateways -->
                     <div class="chart-card">
                         <div class="card-header">
                             <h3 class="card-title">Top clearing institutions & commercial banks</h3>
                             <div class="card-tools">
-                                <i class="fa-solid fa-up-right-and-down-left-from-center" title="Expand view" onclick="showToast('Expanded Top Clearing Institutions')"></i>
-                                <i class="fa-solid fa-ellipsis" onclick="showToast('Filter by bank')"></i>
+                                <i class="fa-solid fa-up-right-and-down-left-from-center" onclick="switchView('banks')"></i>
                             </div>
                         </div>
-                        <div class="rank-list" id="banksList">
-                            <!-- Populated with Stanbic, Centenary, SCB, CBK EAPS -->
-                        </div>
+                        <div class="rank-list" id="banksList"></div>
                     </div>
 
                 </div>
             </div>
 
-            <!-- TAB VIEW: Threat Mitigations & Coraza WAF (Detailed View) -->
-            <div id="threats-view" style="display: none;">
-                <div class="analytics-grid">
-                    <div class="chart-card" style="grid-column: span 2;">
-                        <div class="card-header">
-                            <h3 class="card-title">Coraza WAF & Suricata DPI Threat Mitigations (Last 24 Hours)</h3>
-                            <span class="sec-badge sec-badge-block">1,960 Adversarial Packets Blocked at Edge</span>
-                        </div>
-                        <p style="font-size: 13px; color: var(--cf-text-muted); margin-bottom: 14px;">
-                            Edge packet inspection intercepts malicious ISO 20022 XML entity expansion, rogue SWIFT MT103 checksum tampering, and credential attacks before they touch the internal Bank of Uganda enclave.
-                        </p>
-                        <table class="sec-table">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp (EAT)</th>
-                                    <th>Source / BIC</th>
-                                    <th>Subsystem Target</th>
-                                    <th>Threat Signature</th>
-                                    <th>Coraza / Suricata Rule</th>
-                                    <th>Enclave Action</th>
-                                    <th>Forensic Packet</th>
-                                </tr>
-                            </thead>
-                            <tbody id="secTableBody">
-                                <tr>
-                                    <td>10:48:12</td>
-                                    <td><code>185.220.101.5</code> (Unknown Tor Relay)</td>
-                                    <td><code>/swift/mt103/inbound</code></td>
-                                    <td>Field 20/32A Tamper ($12.5M Outlier)</td>
-                                    <td>CRS 942100 (Cryptographic Invalidation)</td>
-                                    <td><span class="sec-badge sec-badge-block">Coraza WAF Drop</span></td>
-                                    <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('SWIFT-HEIST-01')">Inspect</button></td>
-                                </tr>
-                                <tr>
-                                    <td>09:22:04</td>
-                                    <td><code>194.26.29.112</code> (Staging Botnet)</td>
-                                    <td><code>/mobile-money/mtn-ug/escrow</code></td>
-                                    <td>High-Rate Replay Attack (500 txns/sec)</td>
-                                    <td>CRS 912120 (Rate Limit & Token Violation)</td>
-                                    <td><span class="sec-badge sec-badge-block">WAF Auto-Throttle</span></td>
-                                    <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('MM-REPLAY-02')">Inspect</button></td>
-                                </tr>
-                                <tr>
-                                    <td>08:15:39</td>
-                                    <td><code>SBICUGKX</code> (Stanbic Uganda)</td>
-                                    <td><code>/rtgs/settle/pacs.008</code></td>
-                                    <td>Clean Sovereign Interbank Settlement</td>
-                                    <td>BOU-SEC-PASS (Valid PKI Cert)</td>
-                                    <td><span class="sec-badge sec-badge-cleared">200 OK Settled</span></td>
-                                    <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('RTGS-STANBIC-03')">Inspect</button></td>
-                                </tr>
-                                <tr>
-                                    <td>06:11:51</td>
-                                    <td><code>45.154.255.89</code> (APT29 Infrastructure)</td>
-                                    <td><code>/treasury/tax-clearing/ura</code></td>
-                                    <td>Malicious XInclude XML Entity Injection</td>
-                                    <td>CRS 933100 (XML Entity Resolver Block)</td>
-                                    <td><span class="sec-badge sec-badge-block">Coraza Drop</span></td>
-                                    <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('XML-INJECT-04')">Inspect</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <!-- VIEW 2: Threat Mitigations & Coraza WAF -->
+            <div id="view-threats" class="dashboard-view">
+                <div class="metric-grid-4">
+                    <div class="metric-box">
+                        <div class="metric-label">Total Attacks Blocked</div>
+                        <div class="metric-val" id="threatBlockedVal" style="color: #dc2626;">1,960</div>
+                        <div class="metric-sub"><i class="fa-solid fa-shield"></i> 100% Edge Interception</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Mean Time to Contain (MTTC)</div>
+                        <div class="metric-val" style="color: #2563eb;">1.28s</div>
+                        <div class="metric-sub"><i class="fa-solid fa-bolt"></i> Shuffle SOAR Automated</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Active WAF Rules Enforced</div>
+                        <div class="metric-val">418</div>
+                        <div class="metric-sub"><i class="fa-solid fa-check"></i> OWASP CRS 3.3.4</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Capital Protected (UGX)</div>
+                        <div class="metric-val" style="color: #059669;">14.8B</div>
+                        <div class="metric-sub"><i class="fa-solid fa-circle-check"></i> Zero Fraud Loss</div>
                     </div>
                 </div>
-            </div>
 
-            <!-- TAB VIEW: Forensic Packets / Audit Log -->
-            <div id="audit-view" style="display: none;">
                 <div class="chart-card">
                     <div class="card-header">
-                        <h3 class="card-title">Chain of Custody & Evidence Vault (Uganda Electronic Transactions Act 2011)</h3>
-                        <span class="sec-badge sec-badge-cleared">SHA-256 Immutability Active</span>
+                        <h3 class="card-title">Coraza WAF & Suricata DPI Threat Log (Live Ingress Stream)</h3>
+                        <span class="sec-badge sec-badge-block">Edge Deep Packet Inspection</span>
                     </div>
-                    <div id="auditLogContainer" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.8; color: #374151;">
-                        <p>[2026-10-21 11:00:15] <span style="color: #047857; font-weight: 600;">ENCLAVE_HEARTBEAT:</span> 4,490 transactions verified against BOU PKI Root CA. Zero chain breaks.</p>
-                        <p>[2026-10-21 10:48:13] <span style="color: #dc2626; font-weight: 600;">SOAR_PLAYBOOK_08:</span> Triggered for Lazarus SWIFT anomaly. Account quarantine executed in 1.28 seconds.</p>
-                        <p>[2026-10-21 09:22:05] <span style="color: #b45309; font-weight: 600;">EAPS_CORRIDOR_SYNC:</span> Bilateral net settlement confirmed with Central Bank of Kenya (CBK KES/UGX netting).</p>
-                        <p>[2026-10-21 08:00:00] <span style="color: #2563eb; font-weight: 600;">DAILY_WINDOW_OPEN:</span> Bank of Uganda RTGS operational clearing window initialized with UGX 14.8B collateral backing.</p>
+                    <table class="sec-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp (EAT)</th>
+                                <th>Adversary Source</th>
+                                <th>Target Subsystem</th>
+                                <th>Threat Signature</th>
+                                <th>Defense Rule Triggered</th>
+                                <th>Enclave Verdict</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="secTableBody">
+                            <tr>
+                                <td>10:48:12</td>
+                                <td><code>185.220.101.5</code> (Tor Exit Node)</td>
+                                <td><code>/swift/mt103/inbound</code></td>
+                                <td>SWIFT Field 20/32A Tamper ($12.5M Outlier)</td>
+                                <td>CRS 942100 (Cryptographic Invalidation)</td>
+                                <td><span class="sec-badge sec-badge-block">Coraza WAF Drop</span></td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('SWIFT-HEIST-01')">Inspect</button></td>
+                            </tr>
+                            <tr>
+                                <td>09:22:04</td>
+                                <td><code>194.26.29.112</code> (Mirai/Botnet)</td>
+                                <td><code>/mobile-money/mtn-ug/escrow</code></td>
+                                <td>High-Rate Replay Attack (500 txns/sec)</td>
+                                <td>CRS 912120 (Rate Limit & Token Violation)</td>
+                                <td><span class="sec-badge sec-badge-block">Auto-Throttled</span></td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('MM-REPLAY-02')">Inspect</button></td>
+                            </tr>
+                            <tr>
+                                <td>08:15:39</td>
+                                <td><code>SBICUGKX</code> (Stanbic Uganda)</td>
+                                <td><code>/rtgs/settle/pacs.008</code></td>
+                                <td>Clean Sovereign Interbank Settlement</td>
+                                <td>BOU-SEC-PASS (Valid PKI Cert)</td>
+                                <td><span class="sec-badge sec-badge-cleared">200 OK Settled</span></td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('RTGS-STANBIC-03')">Inspect</button></td>
+                            </tr>
+                            <tr>
+                                <td>06:11:51</td>
+                                <td><code>45.154.255.89</code> (APT29 Infrastructure)</td>
+                                <td><code>/treasury/tax-clearing/ura</code></td>
+                                <td>Malicious XInclude XML Entity Injection</td>
+                                <td>CRS 933100 (XML Entity Resolver Block)</td>
+                                <td><span class="sec-badge sec-badge-block">Coraza Drop</span></td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('XML-INJECT-04')">Inspect</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 3: Payment Protocols (ISO 20022 Engine & Schemas) -->
+            <div id="view-protocols" class="dashboard-view">
+                <div class="metric-grid-4">
+                    <div class="metric-box">
+                        <div class="metric-label">ISO 20022 Share</div>
+                        <div class="metric-val" style="color: #f59e0b;">56.3%</div>
+                        <div class="metric-sub">pacs.008 & camt.053 dominant</div>
                     </div>
+                    <div class="metric-box">
+                        <div class="metric-label">SWIFT MT / FIN Share</div>
+                        <div class="metric-val" style="color: #06b6d4;">34.8%</div>
+                        <div class="metric-sub">Legacy Cross-Border Wires</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">EAPS Netting Engine</div>
+                        <div class="metric-val" style="color: #8b5cf6;">5.9%</div>
+                        <div class="metric-sub">Regional Bilateral Settle</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">OpenAPI / JSON Escrow</div>
+                        <div class="metric-val" style="color: #ec4899;">3.0%</div>
+                        <div class="metric-sub">MTN & Airtel Trust Rails</div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Sovereign Financial Message Schema Roster</h3>
+                        <span class="sec-badge sec-badge-cleared">All Schemas Validated</span>
+                    </div>
+                    <table class="sec-table">
+                        <thead>
+                            <tr>
+                                <th>Protocol Family</th>
+                                <th>Standard ID</th>
+                                <th>Operational Purpose</th>
+                                <th>Daily Volume (UGX)</th>
+                                <th>Crypto Verification</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>ISO 20022</strong></td>
+                                <td><code>pacs.008.001.08</code></td>
+                                <td>Financial Institutional Customer Credit Transfer</td>
+                                <td>UGX 8.92 Trillion</td>
+                                <td><span class="sec-badge sec-badge-cleared">BOU PKI X.509</span></td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('RTGS-STANBIC-03')">View Schema</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>ISO 20022</strong></td>
+                                <td><code>camt.053.001.08</code></td>
+                                <td>Bank-to-Customer End-of-Day Statement</td>
+                                <td>UGX 1.45 Trillion</td>
+                                <td><span class="sec-badge sec-badge-cleared">SHA-256 Digest</span></td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('CAMT053-STATEMENT')">View Schema</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SWIFT FIN</strong></td>
+                                <td><code>MT103 / MT202 COV</code></td>
+                                <td>International Single Customer Transfer</td>
+                                <td>$420 Million USD</td>
+                                <td><span class="sec-badge sec-badge-cleared">SWIFT Alliance RMA</span></td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('SWIFT-HEIST-01')">View Schema</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>EAPS Regional</strong></td>
+                                <td><code>EAPS-ISO-NET</code></td>
+                                <td>East African Payment System Net Multilateral Settle</td>
+                                <td>KES 1.8B / UGX 52B</td>
+                                <td><span class="sec-badge sec-badge-cleared">EAC Central Bank VPN</span></td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="switchView('eaps')">Inspect Corridor</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 4: Commercial Banks Roster -->
+            <div id="view-banks" class="dashboard-view">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Commercial Banks & Financial Institutions Directory (Bank of Uganda Supervised)</h3>
+                        <span class="sec-badge sec-badge-cleared">25 Licensed Institutions Active</span>
+                    </div>
+                    <table class="sec-table">
+                        <thead>
+                            <tr>
+                                <th>Institution Name</th>
+                                <th>SWIFT BIC</th>
+                                <th>Clearing Volume (Today)</th>
+                                <th>Settlement Value (UGX)</th>
+                                <th>Liquidity Buffer Status</th>
+                                <th>WAF Security Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Stanbic Bank Uganda Limited</strong></td>
+                                <td><code>SBICUGKX</code></td>
+                                <td>3,190 wires</td>
+                                <td>UGX 4.85 Trillion</td>
+                                <td><span class="sec-badge sec-badge-cleared">Optimal (142% LCR)</span></td>
+                                <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Centenary Rural Development Bank</strong></td>
+                                <td><code>CERBUGKA</code></td>
+                                <td>1,380 wires</td>
+                                <td>UGX 1.92 Trillion</td>
+                                <td><span class="sec-badge sec-badge-cleared">Optimal (128% LCR)</span></td>
+                                <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Standard Chartered Bank Uganda</strong></td>
+                                <td><code>SCBLUGKA</code></td>
+                                <td>1,150 wires</td>
+                                <td>UGX 1.60 Trillion</td>
+                                <td><span class="sec-badge sec-badge-cleared">Optimal (155% LCR)</span></td>
+                                <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bank of Baroda Uganda</strong></td>
+                                <td><code>BARBUGKA</code></td>
+                                <td>800 wires</td>
+                                <td>UGX 890 Billion</td>
+                                <td><span class="sec-badge sec-badge-cleared">Optimal (118% LCR)</span></td>
+                                <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Absa Bank Uganda Limited</strong></td>
+                                <td><code>BARCUGKX</code></td>
+                                <td>740 wires</td>
+                                <td>UGX 780 Billion</td>
+                                <td><span class="sec-badge sec-badge-cleared">Optimal (134% LCR)</span></td>
+                                <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>dfcu Bank Limited</strong></td>
+                                <td><code>DFCUUGKX</code></td>
+                                <td>620 wires</td>
+                                <td>UGX 610 Billion</td>
+                                <td><span class="sec-badge sec-badge-cleared">Optimal (112% LCR)</span></td>
+                                <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Equity Bank Uganda</strong></td>
+                                <td><code>EQBLUGKA</code></td>
+                                <td>590 wires</td>
+                                <td>UGX 540 Billion</td>
+                                <td><span class="sec-badge sec-badge-cleared">Optimal (122% LCR)</span></td>
+                                <td><span class="sec-badge sec-badge-cleared">Clean (0 Anomaly)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 5: EAPS Cross-Border Corridor -->
+            <div id="view-eaps" class="dashboard-view">
+                <div class="metric-grid-4">
+                    <div class="metric-box">
+                        <div class="metric-label">Cross-Border Settlement Cycle</div>
+                        <div class="metric-val" style="color: #059669;">T+0 Instant</div>
+                        <div class="metric-sub">Bilateral Clearing Protocol</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">BOU - CBK Netting Volume</div>
+                        <div class="metric-val" style="color: #2563eb;">KES 840M</div>
+                        <div class="metric-sub">UGX Equiv: ~24.3 Billion</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">BOU - BOT Netting Volume</div>
+                        <div class="metric-val" style="color: #f59e0b;">TZS 1.2B</div>
+                        <div class="metric-sub">UGX Equiv: ~1.8 Billion</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">BOU - BNR Netting Volume</div>
+                        <div class="metric-val" style="color: #8b5cf6;">RWF 450M</div>
+                        <div class="metric-sub">UGX Equiv: ~1.2 Billion</div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">East African Payment System (EAPS) Real-Time Bilateral Clearing</h3>
+                        <span class="sec-badge sec-badge-cleared">All Central Bank Gateways Synced</span>
+                    </div>
+                    <table class="sec-table">
+                        <thead>
+                            <tr>
+                                <th>Central Bank Counterparty</th>
+                                <th>Corridor Identifier</th>
+                                <th>Settlement Currency</th>
+                                <th>Daily Bilateral Batch</th>
+                                <th>Forensic Telemetry</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Central Bank of Kenya (CBK)</strong></td>
+                                <td><code>EAPS-KE-UG-NET</code></td>
+                                <td>KES / UGX Real-Time Conversion</td>
+                                <td>170 settlement bundles</td>
+                                <td>Zero packet loss via Dedicated EAC Fiber</td>
+                                <td><span class="sec-badge sec-badge-cleared">Active (200 OK)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bank of Tanzania (BOT)</strong></td>
+                                <td><code>EAPS-TZ-UG-NET</code></td>
+                                <td>TZS / UGX Multilateral Net</td>
+                                <td>120 settlement bundles</td>
+                                <td>Latency: 18ms over Dar-es-Salaam Trunk</td>
+                                <td><span class="sec-badge sec-badge-cleared">Active (200 OK)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>National Bank of Rwanda (BNR)</strong></td>
+                                <td><code>EAPS-RW-UG-NET</code></td>
+                                <td>RWF / UGX Bilateral Net</td>
+                                <td>100 settlement bundles</td>
+                                <td>Latency: 14ms over Kigali Enclave</td>
+                                <td><span class="sec-badge sec-badge-cleared">Active (200 OK)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 6: Mobile Money Switch -->
+            <div id="view-mobile" class="dashboard-view">
+                <div class="metric-grid-4">
+                    <div class="metric-box">
+                        <div class="metric-label">MTN Mobile Money Escrow</div>
+                        <div class="metric-val" style="color: #f59e0b;">UGX 8.4B</div>
+                        <div class="metric-sub">Guaranteed by Stanbic Escrow</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Airtel Money Escrow</div>
+                        <div class="metric-val" style="color: #dc2626;">UGX 5.6B</div>
+                        <div class="metric-sub">Guaranteed by Absa Escrow</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Daily Interop Sweeps</div>
+                        <div class="metric-val">12 Sweeps</div>
+                        <div class="metric-sub">2-Hour RTGS Netting Intervals</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Fraud Infiltration Detected</div>
+                        <div class="metric-val" style="color: #059669;">0 Breaches</div>
+                        <div class="metric-sub">Rate-limited by Coraza CRS</div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">National Mobile Money Trust Escrow Interoperability Switch</h3>
+                        <span class="sec-badge sec-badge-cleared">National Payment Systems Act 2020 Compliant</span>
+                    </div>
+                    <table class="sec-table">
+                        <thead>
+                            <tr>
+                                <th>Telecom Provider</th>
+                                <th>Trust Escrow Bank</th>
+                                <th>API Gateway Endpoint</th>
+                                <th>Hourly Transaction Volume</th>
+                                <th>WAF Anomaly Throttling</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>MTN Uganda Mobile Money</strong></td>
+                                <td>Stanbic Bank Uganda</td>
+                                <td><code>/mobile-money/mtn-ug/escrow</code></td>
+                                <td>120,400 micro-transfers/hr</td>
+                                <td>CRS 912120 Active (18 Bot Spikes Mitigated)</td>
+                                <td><span class="sec-badge sec-badge-cleared">Operational</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Airtel Money Uganda</strong></td>
+                                <td>Absa Bank Uganda</td>
+                                <td><code>/mobile-money/airtel/callback</code></td>
+                                <td>98,200 micro-transfers/hr</td>
+                                <td>CRS 912120 Active (7 Replay Attacks Blocked)</td>
+                                <td><span class="sec-badge sec-badge-cleared">Operational</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 7: Shuffle SOAR Actions -->
+            <div id="view-soar" class="dashboard-view">
+                <div class="metric-grid-4">
+                    <div class="metric-box">
+                        <div class="metric-label">Automated Playbooks</div>
+                        <div class="metric-val" style="color: #2563eb;">24 Active</div>
+                        <div class="metric-sub">Zero Human Latency</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Fastest Containment</div>
+                        <div class="metric-val" style="color: #059669;">0.84s</div>
+                        <div class="metric-sub">BGP RTBH Null-Route</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Automated BICs Quarantined</div>
+                        <div class="metric-val">1 Session</div>
+                        <div class="metric-sub">Lazarus Tamper Isolation</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">PII Masking Rate</div>
+                        <div class="metric-val">100%</div>
+                        <div class="metric-sub">National ID & Account Salted</div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Shuffle SOAR Autonomous Orchestration Runbook</h3>
+                        <span class="sec-badge sec-badge-cleared">Active Auto-Pilot</span>
+                    </div>
+                    <table class="sec-table">
+                        <thead>
+                            <tr>
+                                <th>Playbook ID</th>
+                                <th>Trigger Condition</th>
+                                <th>Orchestration Workflow</th>
+                                <th>MTTC Latency</th>
+                                <th>Execution Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SOAR-PB-08</strong></td>
+                                <td>SWIFT MT103 Field 20/32A Checksum Discrepancy</td>
+                                <td>1. Drop ingress packet &rarr; 2. Suspend BIC Alliance Session &rarr; 3. Alert BOU War Room &rarr; 4. Freeze Escrow Ledger</td>
+                                <td>1.28 seconds</td>
+                                <td><span class="sec-badge sec-badge-cleared">Executed (Success)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SOAR-PB-14</strong></td>
+                                <td>Mobile Money Callback Rate &gt; 500 req/sec</td>
+                                <td>1. Trigger Coraza CRS Dynamic Token Challenge &rarr; 2. Throttle IP CIDR &rarr; 3. Notify Telco Security NOC</td>
+                                <td>0.92 seconds</td>
+                                <td><span class="sec-badge sec-badge-cleared">Executed (Success)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SOAR-PB-22</strong></td>
+                                <td>High-Value RTGS Transfer &gt; UGX 10 Billion Outlier</td>
+                                <td>1. Hold in Escrow Memory Queue &rarr; 2. Verify Multi-Party PKI Signature &rarr; 3. Release to Core RTGS</td>
+                                <td>1.15 seconds</td>
+                                <td><span class="sec-badge sec-badge-cleared">Executed (Success)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 8: Forensic Evidence & Law -->
+            <div id="view-audit" class="dashboard-view">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Chain of Custody & Legal Evidence Vault</h3>
+                        <span class="sec-badge sec-badge-cleared">Uganda Electronic Transactions Act 2011 (Section 8)</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--cf-text-muted); margin-bottom: 16px;">
+                        All transaction artifacts, packet dumps, and SOAR intervention traces are hashed via SHA-256 and chronologically signed to ensure legal admissibility in court proceedings under the laws of Uganda.
+                    </p>
+                    <table class="sec-table">
+                        <thead>
+                            <tr>
+                                <th>Evidence ID</th>
+                                <th>Transaction / Event Ref</th>
+                                <th>Cryptographic Hash (SHA-256)</th>
+                                <th>Admissibility Standard</th>
+                                <th>Custody Officer</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>EVID-2026-001</code></td>
+                                <td>SWIFT-HEIST-01 (Lazarus Tamper)</td>
+                                <td><code>e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code></td>
+                                <td>Section 8, Electronic Transactions Act 2011</td>
+                                <td>Sam Gathigi (Director NPS)</td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('SWIFT-HEIST-01')">Download Audit Bag</button></td>
+                            </tr>
+                            <tr>
+                                <td><code>EVID-2026-002</code></td>
+                                <td>RTGS-STANBIC-03 (pacs.008 Clearing)</td>
+                                <td><code>8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4</code></td>
+                                <td>National Payment Systems Act 2020</td>
+                                <td>Automated BOU Hardware HSM</td>
+                                <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('RTGS-STANBIC-03')">Download Audit Bag</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -1124,20 +1515,12 @@
                 </div>
                 <button class="modal-close-btn" onclick="closeModal()">&times;</button>
             </div>
-            <div class="modal-body" id="modalPacketContent">
-                <!-- Injected JSON/XML payload -->
-            </div>
+            <div class="modal-body" id="modalPacketContent"></div>
         </div>
     </div>
 
-    <!-- Notification Toast -->
-    <div class="toast" id="toastBox">
-        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
-        <span id="toastMsg">Action confirmed</span>
-    </div>
-
     <script>
-        // Central Bank Telemetry State matching the Cloudflare Visual Scale
+        // Central Bank Telemetry State
         let bankState = {
             statusCodes: {
                 c2xx: 4490,
@@ -1174,6 +1557,46 @@
             simInterval: null
         };
 
+        // Switch View Function: Transitions entire screen immediately!
+        function switchView(viewName) {
+            // 1. Hide all views
+            document.querySelectorAll('.dashboard-view').forEach(v => {
+                v.classList.remove('active-view');
+            });
+
+            // 2. Show target view
+            const target = document.getElementById('view-' + viewName);
+            if (target) {
+                target.classList.add('active-view');
+            }
+
+            // 3. Update top tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeTab = document.getElementById('tab-' + viewName);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+
+            // 4. Update sidebar active item
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const activeSide = document.getElementById('side-' + viewName);
+            if (activeSide) {
+                activeSide.classList.add('active');
+            }
+
+            // If switching to requests, trigger charts resize
+            if (viewName === 'requests' && window.settlementStatusChart) {
+                setTimeout(() => {
+                    window.settlementStatusChart.resize();
+                    window.protocolChannelChart.resize();
+                }, 50);
+            }
+        }
+
         // Render Top Endpoints
         function renderEndpoints() {
             const container = document.getElementById("endpointsList");
@@ -1181,7 +1604,7 @@
             container.innerHTML = bankState.endpoints.map(item => {
                 const pct = ((item.count / maxVal) * 100).toFixed(1);
                 return `
-                    <div class="rank-row" onclick="viewEndpointDetails('${item.path}')">
+                    <div class="rank-row" onclick="switchView('protocols')">
                         <span class="rank-name" title="${item.desc}">${item.path}</span>
                         <div class="rank-bar-container">
                             <div class="progress-track">
@@ -1201,7 +1624,7 @@
             container.innerHTML = bankState.banks.map(item => {
                 const pct = ((item.count / maxVal) * 100).toFixed(1);
                 return `
-                    <div class="rank-row" onclick="showToast('Inspecting BIC telemetry for: ${item.name}')">
+                    <div class="rank-row" onclick="switchView('banks')">
                         <span class="rank-name" style="font-family: inherit;">${item.name}</span>
                         <div class="rank-bar-container">
                             <div class="progress-track">
@@ -1214,208 +1637,59 @@
             }).join("");
         }
 
-        // Time Series Labels (24 Hour Sovereign Settlement Window)
+        // Chart Setup
         const timeLabels = [
             "Oct 20, 12:00", "Oct 20, 14:00", "Oct 20, 16:00", "Oct 20, 18:00", 
             "Oct 20, 20:00", "Oct 20, 22:00", "Oct 21, 00:00", "Oct 21, 02:00", 
             "Oct 21, 04:00", "Oct 21, 06:00", "Oct 21, 08:00", "Oct 21, 10:00"
         ];
 
-        // Chart 1: Settlement Volume by Status Code (Stacked Bar Chart matching Cloudflare)
         const ctxStatus = document.getElementById('settlementStatusChart').getContext('2d');
-        const settlementStatusChart = new Chart(ctxStatus, {
+        window.settlementStatusChart = new Chart(ctxStatus, {
             type: 'bar',
             data: {
                 labels: timeLabels,
                 datasets: [
-                    {
-                        label: '2xx Settled',
-                        data: [150, 750, 480, 50, 100, 800, 20, 80, 30, 70, 350, 520],
-                        backgroundColor: '#2563eb',
-                        borderRadius: 2
-                    },
-                    {
-                        label: '3xx Queued',
-                        data: [30, 100, 80, 10, 20, 120, 10, 20, 10, 30, 80, 120],
-                        backgroundColor: '#f59e0b',
-                        borderRadius: 2
-                    },
-                    {
-                        label: '4xx Blocked (WAF)',
-                        data: [120, 1150, 60, 20, 10, 150, 10, 10, 10, 20, 40, 180],
-                        backgroundColor: '#ec4899',
-                        borderRadius: 2
-                    },
-                    {
-                        label: '5xx Quarantined',
-                        data: [0, 10, 0, 0, 0, 10, 0, 0, 0, 0, 0, 10],
-                        backgroundColor: '#8b5cf6',
-                        borderRadius: 2
-                    }
+                    { label: '2xx Settled', data: [150, 750, 480, 50, 100, 800, 20, 80, 30, 70, 350, 520], backgroundColor: '#2563eb', borderRadius: 2 },
+                    { label: '3xx Queued', data: [30, 100, 80, 10, 20, 120, 10, 20, 10, 30, 80, 120], backgroundColor: '#f59e0b', borderRadius: 2 },
+                    { label: '4xx Blocked', data: [120, 1150, 60, 20, 10, 150, 10, 10, 10, 20, 40, 180], backgroundColor: '#ec4899', borderRadius: 2 },
+                    { label: '5xx Quarantined', data: [0, 10, 0, 0, 0, 10, 0, 0, 0, 0, 0, 10], backgroundColor: '#8b5cf6', borderRadius: 2 }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: '#0f172a',
-                        titleFont: { size: 12 },
-                        bodyFont: { size: 11 },
-                        padding: 10,
-                        cornerRadius: 6
-                    }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
-                    x: {
-                        stacked: true,
-                        grid: { display: false },
-                        ticks: {
-                            color: '#9ca3af',
-                            font: { size: 10 },
-                            maxRotation: 0,
-                            callback: function(val, index) {
-                                return index % 2 === 0 ? this.getLabelForValue(val) : '';
-                            }
-                        }
-                    },
-                    y: {
-                        stacked: true,
-                        max: 2500,
-                        border: { dash: [4, 4] },
-                        grid: {
-                            color: '#e5e7eb',
-                            drawTicks: false
-                        },
-                        ticks: {
-                            color: '#9ca3af',
-                            font: { size: 10 },
-                            stepSize: 500
-                        }
-                    }
+                    x: { stacked: true, grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+                    y: { stacked: true, max: 2500, border: { dash: [4, 4] }, grid: { color: '#e5e7eb' }, ticks: { color: '#9ca3af', font: { size: 10 }, stepSize: 500 } }
                 }
             }
         });
 
-        // Chart 2: Protocol Channel Ingress (Stacked Bar Chart matching Cloudflare Cache Status)
         const ctxProtocol = document.getElementById('protocolChannelChart').getContext('2d');
-        const protocolChannelChart = new Chart(ctxProtocol, {
+        window.protocolChannelChart = new Chart(ctxProtocol, {
             type: 'bar',
             data: {
                 labels: timeLabels,
                 datasets: [
-                    {
-                        label: 'ISO 20022',
-                        data: [80, 1350, 50, 20, 40, 650, 20, 50, 20, 40, 250, 450],
-                        backgroundColor: '#f59e0b',
-                        borderRadius: 2
-                    },
-                    {
-                        label: 'SWIFT MT',
-                        data: [200, 520, 20, 10, 30, 300, 10, 30, 20, 30, 150, 200],
-                        backgroundColor: '#06b6d4',
-                        borderRadius: 2
-                    },
-                    {
-                        label: 'EAPS Regional',
-                        data: [10, 50, 10, 0, 10, 40, 0, 10, 0, 10, 80, 120],
-                        backgroundColor: '#8b5cf6',
-                        borderRadius: 2
-                    },
-                    {
-                        label: 'Mobile Escrow',
-                        data: [0, 30, 0, 0, 0, 20, 0, 0, 0, 0, 20, 30],
-                        backgroundColor: '#ec4899',
-                        borderRadius: 2
-                    },
-                    {
-                        label: 'Treasury PFM',
-                        data: [0, 20, 0, 0, 0, 10, 0, 0, 0, 0, 10, 20],
-                        backgroundColor: '#2563eb',
-                        borderRadius: 2
-                    }
+                    { label: 'ISO 20022', data: [80, 1350, 50, 20, 40, 650, 20, 50, 20, 40, 250, 450], backgroundColor: '#f59e0b', borderRadius: 2 },
+                    { label: 'SWIFT MT', data: [200, 520, 20, 10, 30, 300, 10, 30, 20, 30, 150, 200], backgroundColor: '#06b6d4', borderRadius: 2 },
+                    { label: 'EAPS Regional', data: [10, 50, 10, 0, 10, 40, 0, 10, 0, 10, 80, 120], backgroundColor: '#8b5cf6', borderRadius: 2 },
+                    { label: 'Mobile Escrow', data: [0, 30, 0, 0, 0, 20, 0, 0, 0, 0, 20, 30], backgroundColor: '#ec4899', borderRadius: 2 },
+                    { label: 'Treasury PFM', data: [0, 20, 0, 0, 0, 10, 0, 0, 0, 0, 10, 20], backgroundColor: '#2563eb', borderRadius: 2 }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: '#0f172a',
-                        titleFont: { size: 12 },
-                        bodyFont: { size: 11 },
-                        padding: 10,
-                        cornerRadius: 6
-                    }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
-                    x: {
-                        stacked: true,
-                        grid: { display: false },
-                        ticks: {
-                            color: '#9ca3af',
-                            font: { size: 10 },
-                            maxRotation: 0,
-                            callback: function(val, index) {
-                                return index % 2 === 0 ? this.getLabelForValue(val) : '';
-                            }
-                        }
-                    },
-                    y: {
-                        stacked: true,
-                        max: 2100,
-                        border: { dash: [4, 4] },
-                        grid: {
-                            color: '#e5e7eb',
-                            drawTicks: false
-                        },
-                        ticks: {
-                            color: '#9ca3af',
-                            font: { size: 10 },
-                            stepSize: 300
-                        }
-                    }
+                    x: { stacked: true, grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+                    y: { stacked: true, max: 2100, border: { dash: [4, 4] }, grid: { color: '#e5e7eb' }, ticks: { color: '#9ca3af', font: { size: 10 }, stepSize: 300 } }
                 }
             }
         });
-
-        // Tab Switching
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.getElementById('tab-' + tabName);
-            if (activeBtn) activeBtn.classList.add('active');
-
-            const reqView = document.getElementById('requests-view');
-            const threatsView = document.getElementById('threats-view');
-            const auditView = document.getElementById('audit-view');
-
-            reqView.style.display = 'none';
-            threatsView.style.display = 'none';
-            auditView.style.display = 'none';
-
-            if (tabName === 'Threats' || tabName === 'SOAR') {
-                threatsView.style.display = 'block';
-                showToast('Switched to Coraza WAF & Suricata DPI Threat Log');
-            } else if (tabName === 'Audit') {
-                auditView.style.display = 'block';
-                showToast('Switched to Immutability & Forensic Evidence Vault');
-            } else {
-                reqView.style.display = 'block';
-                showToast(`Switched to ${tabName} view`);
-            }
-        }
-
-        function switchNav(el, title) {
-            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            showToast(`Navigation active: ${title}`);
-        }
 
         // Live Simulation Toggle
         function toggleSimulateWires() {
@@ -1428,31 +1702,25 @@
                 btn.style.background = "#fee2e2";
                 btn.style.borderColor = "#fca5a5";
                 btnText.innerText = "Pause Simulation";
-                statusText.innerText = "Streaming Synthetic Settlements...";
-                showToast("Simulating high-throughput RTGS settlement traffic!");
+                statusText.innerText = "Streaming Settlements...";
 
                 bankState.simInterval = setInterval(() => {
-                    // 2xx increment
                     bankState.statusCodes.c2xx += 10;
                     document.getElementById("val-2xx").innerText = bankState.statusCodes.c2xx.toLocaleString();
                     bankState.protocolChannels.iso += 8;
                     document.getElementById("val-iso").innerText = bankState.protocolChannels.iso.toLocaleString();
 
-                    // Increment random bank
                     const randBank = bankState.banks[Math.floor(Math.random() * 3)];
                     randBank.count += 5;
                     renderBanks();
 
-                    // Increment random endpoint
                     const randEp = bankState.endpoints[Math.floor(Math.random() * 3)];
                     randEp.count += 5;
                     renderEndpoints();
 
-                    // Update chart
                     const lastIdx = timeLabels.length - 1;
-                    settlementStatusChart.data.datasets[0].data[lastIdx] += 10;
-                    settlementStatusChart.update('none');
-
+                    window.settlementStatusChart.data.datasets[0].data[lastIdx] += 10;
+                    window.settlementStatusChart.update('none');
                 }, 1600);
             } else {
                 clearInterval(bankState.simInterval);
@@ -1460,7 +1728,6 @@
                 btn.style.borderColor = "#e5e7eb";
                 btnText.innerText = "Simulate Live Settlements";
                 statusText.innerText = "RTGS Core Active (UGX)";
-                showToast("Simulation Paused.");
             }
         }
 
@@ -1488,20 +1755,19 @@
                 blockedCount = 80;
             }
 
-            // Spike the 4xx Blocked count
             bankState.statusCodes.c4xx += blockedCount;
             document.getElementById("val-4xx").innerText = bankState.statusCodes.c4xx.toLocaleString();
+            document.getElementById("threatBlockedVal").innerText = bankState.statusCodes.c4xx.toLocaleString();
 
             const lastIdx = timeLabels.length - 1;
-            settlementStatusChart.data.datasets[2].data[lastIdx] += blockedCount;
-            settlementStatusChart.update('none');
+            window.settlementStatusChart.data.datasets[2].data[lastIdx] += blockedCount;
+            window.settlementStatusChart.update('none');
 
-            // Add to Security Table
             const tbody = document.getElementById("secTableBody");
             const newRow = document.createElement("tr");
             const timeStr = new Date().toLocaleTimeString();
             newRow.innerHTML = `
-                <td style="color: #dc2626; font-weight: 600;">${timeStr} (NEW)</td>
+                <td style="color: #dc2626; font-weight: 700;">${timeStr} (NEW)</td>
                 <td><code>197.234.12.9</code> (Adversary Pivot)</td>
                 <td><code>/rtgs/settle/pacs.008</code></td>
                 <td>${desc}</td>
@@ -1511,8 +1777,8 @@
             `;
             tbody.insertBefore(newRow, tbody.firstChild);
 
-            showToast(`[ALERT] ${desc} intercepted & blocked by Coraza WAF!`);
-            switchTab('Threats');
+            // Automatically switch directly to the Threat Mitigations view so the user immediately sees the change!
+            switchView('threats');
         }
 
         // Modal Packet Inspector
@@ -1532,7 +1798,8 @@
                     "tag_59_beneficiary": "/UG/998877665544/Lazarus-Syndicate-Mule",
                     "pki_signature": "INVALID_CHECKSUM_DETECTED",
                     "coraza_verdict": "RULE_942100_TRIGGERED",
-                    "soar_remediation": "BIC CERBUGKXXXX session suspended; MTTC 1.28s"
+                    "soar_remediation": "BIC CERBUGKXXXX session suspended; MTTC 1.28s",
+                    "law_admissibility": "Uganda Electronic Transactions Act 2011 Sec 8 Verified"
                 };
             } else {
                 sample = {
@@ -1554,28 +1821,9 @@
             document.getElementById("packetModal").style.display = "none";
         }
 
-        function viewEndpointDetails(path) {
-            showToast(`Inspecting microservice routing & CRS WAF policy for: ${path}`);
+        function exportExecutiveReport() {
+            alert("Exporting Sovereign Executive Forensic Report...\nFormat: PDF / Cryptographic Audit Package\nStandard: Bank of Uganda NPS & ISO 20022");
         }
-
-        // Toast Helper
-        function showToast(msg) {
-            const toast = document.getElementById("toastBox");
-            document.getElementById("toastMsg").innerText = msg;
-            toast.classList.add("show");
-            setTimeout(() => {
-                toast.classList.remove("show");
-            }, 2600);
-        }
-
-        // Ctrl + K Focus Search
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                document.getElementById('quickSearch').focus();
-                showToast("Quick search activated");
-            }
-        });
 
         // Initialize lists
         renderEndpoints();
