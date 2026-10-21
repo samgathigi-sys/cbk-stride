@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare | strideanalytics.co.ke | Analytics</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --cf-orange: #f38020;
+            --cf-orange-hover: #e56d0d;
+            --cf-blue: #2563eb;
+            --cf-blue-light: #3b82f6;
+            --cf-bg: #f4f5f7;
+            --cf-card-bg: #ffffff;
+            --cf-border: #e5e7eb;
+            --cf-text-dark: #1f2937;
+            --cf-text-muted: #6b7280;
+            --cf-sidebar-bg: #ffffff;
+            --cf-sidebar-hover: #f3f4f6;
+            --cf-sidebar-active: #eef2f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--cf-bg);
+            color: var(--cf-text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Cloudflare Navigation Bar */
+        .top-navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--cf-border);
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cf-logo-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .cf-cloud-icon {
+            color: var(--cf-orange);
+            font-size: 26px;
+        }
+
+        .account-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .account-pill:hover {
+            background-color: #f3f4f6;
+        }
+
+        .top-center-search {
+            display: flex;
+            align-items: center;
+            background: #f3f4f6;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 6px 12px;
+            width: 320px;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--cf-text-muted);
+        }
+
+        .top-center-search:focus-within {
+            background: #ffffff;
+            border-color: var(--cf-blue);
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+        }
+
+        .top-center-search input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .kbd-shortcut {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .portal-link-btn {
+            background: #111827;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .portal-link-btn:hover {
+            background: #374151;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4b5563;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .icon-btn:hover {
+            background: #f3f4f6;
+        }
+
+        /* Layout Container */
+        .app-body {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 240px;
+            background: var(--cf-sidebar-bg);
+            border-right: 1px solid var(--cf-border);
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+            min-height: calc(100vh - 52px);
+        }
+
+        .back-to-domains {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            padding: 8px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        .back-to-domains:hover {
+            background-color: var(--cf-sidebar-hover);
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+            padding: 8px 10px 4px 10px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #374151;
+            padding: 8px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .sidebar-item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-item i {
+            width: 16px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .sidebar-item:hover {
+            background: var(--cf-sidebar-hover);
+            color: #111827;
+        }
+
+        .sidebar-item.active {
+            background: #e5e7eb;
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .sidebar-item.active i {
+            color: #111827;
+        }
+
+        .badge-new {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .recents-subtext {
+            font-size: 11px;
+            color: #9ca3af;
+            display: block;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            flex: 1;
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+
+        /* Top Breadcrumb & Controls */
+        .view-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .view-tabs {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #e5e7eb;
+            padding: 3px;
+            border-radius: 8px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .tab-btn:hover {
+            color: #111827;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: #111827;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+        }
+
+        .view-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cf-btn-secondary {
+            background: #ffffff;
+            border: 1px solid var(--cf-border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .cf-btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .cf-live-badge {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* 2x2 Analytics Grid */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-card {
+            background: var(--cf-card-bg);
+            border: 1px solid var(--cf-border);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .card-tools {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #9ca3af;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .card-tools i:hover {
+            color: #4b5563;
+        }
+
+        /* Custom Chart Legends */
+        .chart-legend {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .legend-val {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* Chart Canvas Container */
+        .chart-wrapper {
+            position: relative;
+            height: 220px;
+            width: 100%;
+        }
+
+        /* List Items Cards (Top Paths & Countries) */
+        .rank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .rank-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            gap: 16px;
+        }
+
+        .rank-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 12px;
+            color: #1f2937;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 48%;
+        }
+
+        .rank-bar-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2563eb;
+            border-radius: 999px;
+            transition: width 0.5s ease;
+        }
+
+        .rank-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: #111827;
+            width: 40px;
+            text-align: right;
+            font-family: inherit;
+        }
+
+        /* Security View (Hidden by default) */
+        #security-view {
+            display: none;
+        }
+
+        .sec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+
+        .sec-table th {
+            text-align: left;
+            padding: 8px 12px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-weight: 600;
+            border-bottom: 1px solid var(--cf-border);
+        }
+
+        .sec-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--cf-border);
+            color: #374151;
+        }
+
+        .sec-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .sec-badge-block {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .sec-badge-challenge {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        /* Interactive Action Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #111827;
+            color: #ffffff;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+        <div class="top-left">
+            <a href="synthetic_central_bank.html" class="cf-logo-box" title="Cloudflare Portal">
+                <i class="fa-brands fa-cloudflare cf-cloud-icon"></i>
+            </a>
+            <div class="account-pill" onclick="showToast('Active Account: Sam Gathigi (Enterprise Tenant)')">
+                <span>Sam.gathigi@gmail....</span>
+                <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #9ca3af;"></i>
+            </div>
+        </div>
+
+        <div class="top-center-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Quick search..." id="quickSearch">
+            <span class="kbd-shortcut">Ctrl K</span>
+        </div>
+
+        <div class="top-right">
+            <a href="synthetic_central_bank.html" class="portal-link-btn" title="Switch to Virtual Sandbox">
+                <i class="fa-solid fa-building-columns"></i>
+                <span>Synthetic Central Bank</span>
+            </a>
+            <button class="icon-btn" title="Notifications" onclick="showToast('Zero critical vulnerabilities in Cloudflare WAF')">
+                <i class="fa-regular fa-bell"></i>
+            </button>
+            <button class="icon-btn" title="Documentation & Help" onclick="window.open('https://strideanalytics.co.ke/Training/', '_blank')">
+                <i class="fa-regular fa-circle-question"></i>
+            </button>
+            <div style="width: 30px; height: 30px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; color: #374151;">
+                SG
+            </div>
+        </div>
+    </header>
+
+    <!-- App Body Layout -->
+    <div class="app-body">
+        
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <a href="synthetic_central_bank.html" class="back-to-domains">
+                <i class="fa-solid fa-arrow-turn-up" style="transform: rotate(-90deg); font-size: 12px;"></i>
+                <span>Back to Domains</span>
+            </a>
+
+            <div class="nav-section-title">Overview</div>
+            <a href="#" class="sidebar-item" onclick="switchNav(this, 'Overview')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Overview</span>
+                </div>
+            </a>
+
+            <div class="nav-section-title">Recents</div>
+            <a href="#" class="sidebar-item active" onclick="switchNav(this, 'Analytics')">
+                <div class="sidebar-item-left">
+                    <i class="fa-regular fa-clock"></i>
+                    <div>
+                        <span>Analytics</span>
+                        <span class="recents-subtext">strideanalytics.co...</span>
+                    </div>
+                </div>
+            </a>
+            <a href="#" class="sidebar-item" onclick="switchNav(this, 'Email Routing')">
+                <div class="sidebar-item-left">
+                    <i class="fa-regular fa-envelope"></i>
+                    <div>
+                        <span>Email Routing</span>
+                        <span class="recents-subtext">Email Service</span>
+                    </div>
+                </div>
+            </a>
+            <a href="#" class="sidebar-item" onclick="switchNav(this, 'Records')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-list-check"></i>
+                    <div>
+                        <span>Records</span>
+                        <span class="recents-subtext">strideanalytics.co... / DNS</span>
+                    </div>
+                </div>
+            </a>
+            <a href="#" class="sidebar-item" onclick="switchNav(this, 'Domains')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-globe"></i>
+                    <div>
+                        <span>strideanalytics.co.ke</span>
+                        <span class="recents-subtext">Domains</span>
+                    </div>
+                </div>
+            </a>
+
+            <div class="nav-section-title">Security & Traffic</div>
+            <a href="#" class="sidebar-item" onclick="switchTab('Security')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Security & WAF</span>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: #9ca3af;"></i>
+            </a>
+            <a href="#" class="sidebar-item" onclick="showToast('AI Crawl Control: Active (Zero malicious scrapers)')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>AI Crawl Control</span>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: #9ca3af;"></i>
+            </a>
+            <a href="#" class="sidebar-item" onclick="showToast('Agent Readiness: Verified for Sovereign Autonomy')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Agent Readiness</span>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: #9ca3af;"></i>
+            </a>
+            <a href="#" class="sidebar-item" onclick="showToast('Observability: Logs streamed to OpenSearch & Wazuh')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Observability</span>
+                </div>
+                <span class="badge-new">New</span>
+            </a>
+            <a href="#" class="sidebar-item" onclick="showToast('DNS Zone: 173.214.168.54 Managed')">
+                <div class="sidebar-item-left">
+                    <i class="fa-solid fa-network-wired"></i>
+                    <span>DNS</span>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: #9ca3af;"></i>
+            </a>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- View Header / Tabs & Controls -->
+            <div class="view-header">
+                <div class="view-tabs">
+                    <button class="tab-btn active" id="tab-Requests" onclick="switchTab('Requests')">Requests</button>
+                    <button class="tab-btn" id="tab-Visitors" onclick="switchTab('Visitors')">Visitors</button>
+                    <button class="tab-btn" id="tab-Performance" onclick="switchTab('Performance')">Performance</button>
+                    <button class="tab-btn" id="tab-Security" onclick="switchTab('Security')">Security</button>
+                    <button class="tab-btn" id="tab-Cache" onclick="switchTab('Cache')">Cache</button>
+                    <button class="tab-btn" id="tab-Origin" onclick="switchTab('Origin')">Origin</button>
+                    <button class="tab-btn" id="tab-DNS" onclick="switchTab('DNS')">DNS</button>
+                </div>
+
+                <div class="view-controls">
+                    <div class="cf-live-badge" id="livePill">
+                        <span class="live-dot"></span>
+                        <span id="liveStatusText">Live Telemetry Synced</span>
+                    </div>
+                    <button class="cf-btn-secondary" onclick="toggleSimulateTraffic()" id="simBtn">
+                        <i class="fa-solid fa-play" style="color: var(--cf-orange);"></i>
+                        <span id="simBtnText">Simulate Live Hits</span>
+                    </button>
+                    <button class="cf-btn-secondary" onclick="showToast('Filter Applied: Zone strideanalytics.co.ke')">
+                        <i class="fa-solid fa-filter"></i>
+                        <span>Add filter</span>
+                    </button>
+                    <button class="cf-btn-secondary" onclick="showToast('Range: Last 24 hours (Oct 20, 12:00 - Oct 21, 11:00)')">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span>Last 24 hours</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i>
+                    </button>
+                    <button class="cf-btn-secondary" style="padding: 6px 10px;" onclick="showToast('Cloudflare Analytics Snapshot synced')">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB VIEW: Requests (Matches Sam's Screenshot 1:1) -->
+            <div id="requests-view">
+                <div class="analytics-grid">
+                    
+                    <!-- Card 1: Requests by status code -->
+                    <div class="chart-card">
+                        <div>
+                            <div class="card-header">
+                                <h3 class="card-title">Requests by status code</h3>
+                                <div class="card-tools">
+                                    <i class="fa-solid fa-ellipsis" onclick="showToast('Status code breakdown options')"></i>
+                                </div>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #2563eb;"></span>
+                                    <span>2xx</span>
+                                    <span class="legend-val" id="val-2xx">449</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #f59e0b;"></span>
+                                    <span>3xx</span>
+                                    <span class="legend-val" id="val-3xx">99</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #ec4899;"></span>
+                                    <span>4xx</span>
+                                    <span class="legend-val" id="val-4xx">196</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #8b5cf6;"></span>
+                                    <span>5xx</span>
+                                    <span class="legend-val" id="val-5xx">3</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="statusCodeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Requests by cache status -->
+                    <div class="chart-card">
+                        <div>
+                            <div class="card-header">
+                                <h3 class="card-title">Requests by cache status</h3>
+                                <div class="card-tools">
+                                    <i class="fa-solid fa-ellipsis" onclick="showToast('Cache status breakdown options')"></i>
+                                </div>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #f59e0b;"></span>
+                                    <span>Dynamic:</span>
+                                    <span class="legend-val" id="val-dynamic">412</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #06b6d4;"></span>
+                                    <span>None:</span>
+                                    <span class="legend-val" id="val-none">255</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #8b5cf6;"></span>
+                                    <span>Miss:</span>
+                                    <span class="legend-val" id="val-miss">43</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #ec4899;"></span>
+                                    <span>Hit:</span>
+                                    <span class="legend-val" id="val-hit">13</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #2563eb;"></span>
+                                    <span>Bypass:</span>
+                                    <span class="legend-val" id="val-bypass">9</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="cacheStatusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Top paths -->
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top paths</h3>
+                            <div class="card-tools">
+                                <i class="fa-solid fa-up-right-and-down-left-from-center" title="Expand view" onclick="showToast('Expanded Top Paths view')"></i>
+                                <i class="fa-solid fa-ellipsis" onclick="showToast('Path options')"></i>
+                            </div>
+                        </div>
+                        <div class="rank-list" id="pathsList">
+                            <!-- Injected dynamically to match screenshot exactly -->
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Top countries -->
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top countries</h3>
+                            <div class="card-tools">
+                                <i class="fa-solid fa-up-right-and-down-left-from-center" title="Expand view" onclick="showToast('Expanded Top Countries view')"></i>
+                                <i class="fa-solid fa-ellipsis" onclick="showToast('Country options')"></i>
+                            </div>
+                        </div>
+                        <div class="rank-list" id="countriesList">
+                            <!-- Injected dynamically to match screenshot exactly -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB VIEW: Security (Correlates Bank & Threat Intel) -->
+            <div id="security-view">
+                <div class="analytics-grid">
+                    <div class="chart-card" style="grid-column: span 2;">
+                        <div class="card-header">
+                            <h3 class="card-title">Cloudflare WAF Mitigated Security Events (Last 24 Hours)</h3>
+                            <span class="sec-badge sec-badge-block">196 Mitigated Threats (Correlated with 4xx Ingress)</span>
+                        </div>
+                        <p style="font-size: 13px; color: var(--cf-text-muted); margin-bottom: 16px;">
+                            Detailed edge packet inspection showing blocked adversary scans targeting <code style="color: #2563eb;">/wp/wp-json/</code> and automated scrapers intercepted before reaching sovereign financial microservices.
+                        </p>
+                        <table class="sec-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp (UTC)</th>
+                                    <th>Client IP</th>
+                                    <th>Country</th>
+                                    <th>Target URI</th>
+                                    <th>Action Taken</th>
+                                    <th>WAF Rule / Service Triggered</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Oct 21, 10:48:12</td>
+                                    <td>185.220.101.5</td>
+                                    <td>Poland 🇵🇱</td>
+                                    <td><code>/wp/wp-json/</code></td>
+                                    <td><span class="sec-badge sec-badge-block">Block</span></td>
+                                    <td>Cloudflare Managed Ruleset: Vulnerability Scanner CRS 942100</td>
+                                </tr>
+                                <tr>
+                                    <td>Oct 21, 09:22:04</td>
+                                    <td>194.26.29.112</td>
+                                    <td>Belgium 🇧🇪</td>
+                                    <td><code>/robots.txt</code></td>
+                                    <td><span class="sec-badge sec-badge-challenge">Managed Challenge</span></td>
+                                    <td>Bot Fight Mode: High Likelihood Automated Crawler</td>
+                                </tr>
+                                <tr>
+                                    <td>Oct 21, 08:15:39</td>
+                                    <td>102.134.45.88</td>
+                                    <td>Kenya 🇰🇪</td>
+                                    <td><code>/uganda</code></td>
+                                    <td><span class="sec-badge" style="background:#ecfdf5; color:#047857; border: 1px solid #a7f3d0;">Allowed</span></td>
+                                    <td>Legitimate Sovereign Delegate Portal Ingress</td>
+                                </tr>
+                                <tr>
+                                    <td>Oct 20, 20:11:51</td>
+                                    <td>45.154.255.89</td>
+                                    <td>United States 🇺🇸</td>
+                                    <td><code>/stride-chat.css</code></td>
+                                    <td><span class="sec-badge sec-badge-block">Block</span></td>
+                                    <td>HTTP Anomalous Payload: Suspected Header Smuggling</td>
+                                </tr>
+                                <tr>
+                                    <td>Oct 20, 14:02:18</td>
+                                    <td>197.232.8.14</td>
+                                    <td>Nigeria 🇳🇬</td>
+                                    <td><code>/agm-copilot.html</code></td>
+                                    <td><span class="sec-badge" style="background:#ecfdf5; color:#047857; border: 1px solid #a7f3d0;">Allowed</span></td>
+                                    <td>Clean Browser Session (200 OK)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toastBox">
+        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+        <span id="toastMsg">Action confirmed</span>
+    </div>
+
+    <script>
+        // Exact screenshot baseline data
+        let state = {
+            statusCodes: {
+                c2xx: 449,
+                c3xx: 99,
+                c4xx: 196,
+                c5xx: 3
+            },
+            cacheStatus: {
+                dynamic: 412,
+                none: 255,
+                miss: 43,
+                hit: 13,
+                bypass: 9
+            },
+            paths: [
+                { path: "/cdn-cgi/rum", count: 167 },
+                { path: "/", count: 132 },
+                { path: "/uganda", count: 66 },
+                { path: "/wp/wp-json/", count: 12 },
+                { path: "/stride-chat.css", count: 10 },
+                { path: "/robots.txt", count: 9 },
+                { path: "/agm-copilot.html", count: 8 },
+                { path: "/Training/synthetic_central_bank.html", count: 7 },
+                { path: "/Training/payment_systems_architecture.html", count: 6 }
+            ],
+            countries: [
+                { name: "Kenya", code: "KE", count: 319 },
+                { name: "United States", code: "US", count: 138 },
+                { name: "Belgium", code: "BE", count: 115 },
+                { name: "Poland", code: "PL", count: 80 },
+                { name: "Nigeria", code: "NG", count: 17 },
+                { name: "Germany", code: "DE", count: 12 },
+                { name: "France", code: "FR", count: 10 },
+                { name: "Uganda", code: "UG", count: 8 }
+            ],
+            simulating: false,
+            simInterval: null
+        };
+
+        // Render Top Paths List
+        function renderPaths() {
+            const container = document.getElementById("pathsList");
+            const maxVal = Math.max(...state.paths.map(p => p.count));
+            container.innerHTML = state.paths.slice(0, 7).map(item => {
+                const pct = ((item.count / maxVal) * 100).toFixed(1);
+                return `
+                    <div class="rank-row">
+                        <span class="rank-name" title="${item.path}">${item.path}</span>
+                        <div class="rank-bar-container">
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: ${pct}%;"></div>
+                            </div>
+                            <span class="rank-count">${item.count}</span>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        // Render Top Countries List
+        function renderCountries() {
+            const container = document.getElementById("countriesList");
+            const maxVal = Math.max(...state.countries.map(c => c.count));
+            container.innerHTML = state.countries.slice(0, 7).map(item => {
+                const pct = ((item.count / maxVal) * 100).toFixed(1);
+                return `
+                    <div class="rank-row">
+                        <span class="rank-name" style="font-family: inherit;">${item.name}</span>
+                        <div class="rank-bar-container">
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: ${pct}%;"></div>
+                            </div>
+                            <span class="rank-count">${item.count}</span>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        // Chart 1: Requests by status code (Stacked Bar)
+        const timeLabels = [
+            "Oct 20, 12:00", "Oct 20, 14:00", "Oct 20, 16:00", "Oct 20, 18:00", 
+            "Oct 20, 20:00", "Oct 20, 22:00", "Oct 21, 00:00", "Oct 21, 02:00", 
+            "Oct 21, 04:00", "Oct 21, 06:00", "Oct 21, 08:00", "Oct 21, 10:00"
+        ];
+
+        // Status code series matching screenshot profile
+        const ctxStatus = document.getElementById('statusCodeChart').getContext('2d');
+        const statusCodeChart = new Chart(ctxStatus, {
+            type: 'bar',
+            data: {
+                labels: timeLabels,
+                datasets: [
+                    {
+                        label: '2xx',
+                        data: [15, 75, 48, 5, 10, 80, 2, 8, 3, 7, 35, 52],
+                        backgroundColor: '#2563eb',
+                        borderRadius: 2
+                    },
+                    {
+                        label: '3xx',
+                        data: [3, 10, 8, 1, 2, 12, 1, 2, 1, 3, 8, 12],
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 2
+                    },
+                    {
+                        label: '4xx',
+                        data: [12, 115, 6, 2, 1, 15, 1, 1, 1, 2, 4, 18],
+                        backgroundColor: '#ec4899',
+                        borderRadius: 2
+                    },
+                    {
+                        label: '5xx',
+                        data: [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#1f2937',
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 11 },
+                        padding: 10,
+                        cornerRadius: 6
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { display: false },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: { size: 10 },
+                            maxRotation: 0,
+                            callback: function(val, index) {
+                                return index % 2 === 0 ? this.getLabelForValue(val) : '';
+                            }
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        max: 250,
+                        border: { dash: [4, 4] },
+                        grid: {
+                            color: '#e5e7eb',
+                            drawTicks: false
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: { size: 10 },
+                            stepSize: 50
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 2: Requests by cache status (Stacked Bar)
+        const ctxCache = document.getElementById('cacheStatusChart').getContext('2d');
+        const cacheStatusChart = new Chart(ctxCache, {
+            type: 'bar',
+            data: {
+                labels: timeLabels,
+                datasets: [
+                    {
+                        label: 'Dynamic',
+                        data: [8, 135, 5, 2, 4, 65, 2, 5, 2, 4, 25, 45],
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 2
+                    },
+                    {
+                        label: 'None',
+                        data: [20, 52, 2, 1, 3, 30, 1, 3, 2, 3, 15, 20],
+                        backgroundColor: '#06b6d4',
+                        borderRadius: 2
+                    },
+                    {
+                        label: 'Miss',
+                        data: [1, 5, 1, 0, 1, 4, 0, 1, 0, 1, 8, 12],
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 2
+                    },
+                    {
+                        label: 'Hit',
+                        data: [0, 3, 0, 0, 0, 2, 0, 0, 0, 0, 2, 3],
+                        backgroundColor: '#ec4899',
+                        borderRadius: 2
+                    },
+                    {
+                        label: 'Bypass',
+                        data: [0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 1, 2],
+                        backgroundColor: '#2563eb',
+                        borderRadius: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#1f2937',
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 11 },
+                        padding: 10,
+                        cornerRadius: 6
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { display: false },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: { size: 10 },
+                            maxRotation: 0,
+                            callback: function(val, index) {
+                                return index % 2 === 0 ? this.getLabelForValue(val) : '';
+                            }
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        max: 210,
+                        border: { dash: [4, 4] },
+                        grid: {
+                            color: '#e5e7eb',
+                            drawTicks: false
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: { size: 10 },
+                            stepSize: 30
+                        }
+                    }
+                }
+            }
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('tab-' + tabName);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            if (tabName === 'Security') {
+                document.getElementById('requests-view').style.display = 'none';
+                document.getElementById('security-view').style.display = 'block';
+                showToast('Viewing Cloudflare WAF Security Mitigation logs');
+            } else {
+                document.getElementById('requests-view').style.display = 'block';
+                document.getElementById('security-view').style.display = 'none';
+                showToast(`Viewing ${tabName} analytics`);
+            }
+        }
+
+        function switchNav(element, title) {
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            element.classList.add('active');
+            showToast(`Switched navigation to: ${title}`);
+        }
+
+        // Live Simulation Toggle
+        function toggleSimulateTraffic() {
+            state.simulating = !state.simulating;
+            const btn = document.getElementById("simBtn");
+            const btnText = document.getElementById("simBtnText");
+            const liveStatus = document.getElementById("liveStatusText");
+
+            if (state.simulating) {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#fca5a5";
+                btnText.innerText = "Pause Simulation";
+                liveStatus.innerText = "Streaming Synthetic Edge Hits...";
+                showToast("Live Traffic Simulation Started!");
+
+                state.simInterval = setInterval(() => {
+                    // Random increment
+                    const isSuccess = Math.random() > 0.15;
+                    if (isSuccess) {
+                        state.statusCodes.c2xx += 1;
+                        document.getElementById("val-2xx").innerText = state.statusCodes.c2xx;
+                        state.cacheStatus.dynamic += 1;
+                        document.getElementById("val-dynamic").innerText = state.cacheStatus.dynamic;
+                    } else {
+                        state.statusCodes.c4xx += 1;
+                        document.getElementById("val-4xx").innerText = state.statusCodes.c4xx;
+                    }
+
+                    // Increment random country
+                    const randCountry = state.countries[Math.floor(Math.random() * 3)];
+                    randCountry.count += 1;
+                    renderCountries();
+
+                    // Increment random path
+                    const randPath = state.paths[Math.floor(Math.random() * 4)];
+                    randPath.count += 1;
+                    renderPaths();
+
+                    // Update last chart bar
+                    const lastIdx = timeLabels.length - 1;
+                    statusCodeChart.data.datasets[0].data[lastIdx] += 1;
+                    statusCodeChart.update('none');
+
+                }, 1800);
+            } else {
+                clearInterval(state.simInterval);
+                btn.style.background = "#ffffff";
+                btn.style.borderColor = "#e5e7eb";
+                btnText.innerText = "Simulate Live Hits";
+                liveStatus.innerText = "Live Telemetry Synced";
+                showToast("Simulation Paused. Showing Snapshot.");
+            }
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById("toastBox");
+            document.getElementById("toastMsg").innerText = msg;
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2500);
+        }
+
+        // Keyboard Shortcut Ctrl+K
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('quickSearch').focus();
+                showToast("Quick search activated");
+            }
+        });
+
+        // Initialize lists on load
+        renderPaths();
+        renderCountries();
+    </script>
+</body>
+</html>
