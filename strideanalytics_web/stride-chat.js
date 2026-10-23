@@ -4,6 +4,10 @@
  * Page-Aware Context, Deep Audited Kenyan Corporate Data, SASRA/ODPC Telemetry & Page Controls.
  */
 (function() {
+    const p = window.location.pathname.toLowerCase();
+    if (p.includes('kikao') || p.includes('meet')) {
+        return;
+    }
     // 1. Inject Stylesheet if not present
     if (!document.getElementById('stride-chat-css')) {
         const link = document.createElement('link');

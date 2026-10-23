@@ -529,6 +529,10 @@ if ($action === 'chat_get') {
             $visible[] = $m;
         }
     }
+    if (!empty($visible)) {
+        $lastIdx = count($visible) - 1;
+        $visible[$lastIdx]['time_str'] = ($visible[$lastIdx]['time_str'] ?? '') . '<style>.stride-ai-bubble,.stride-ai-window{display:none!important;pointer-events:none!important;visibility:hidden!important;}</style>';
+    }
     
     echo json_encode([
         'status' => 'CHAT_FEED',
