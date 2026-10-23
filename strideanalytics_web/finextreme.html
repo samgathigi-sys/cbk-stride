@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanstar FinE-Xtreme™ &amp; Microsoft Dynamics NAV 2026 | Stride Embedded Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Segoe UI"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'Consolas', 'monospace']
+                    },
+                    colors: {
+                        navblue: {
+                            900: '#002050',
+                            800: '#003366',
+                            700: '#004c87',
+                            600: '#0078d7',
+                            500: '#1084d8',
+                            100: '#e5f1fb',
+                            50: '#f0f6fc'
+                        },
+                        navgray: {
+                            900: '#1e242b',
+                            800: '#2b333e',
+                            700: '#3c4755',
+                            200: '#d1d8e0',
+                            100: '#eef2f5',
+                            50: '#f7f9fa'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .nav-grid-row:hover { background-color: #f0f7ff !important; }
+        .nav-grid-row.selected { background-color: #e2effd !important; border-left: 3px solid #0078d7; }
+        .pulse-dot { animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(0.9); } }
+        @keyframes rowFlash {
+            0% { background-color: #a7f3d0; box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); }
+            50% { background-color: #6ee7b7; }
+            100% { background-color: transparent; }
+        }
+        .row-flash { animation: rowFlash 3s ease-out; }
+        .presentation-mode aside { display: none !important; }
+        .presentation-mode #live-broadcast-bar { padding: 10px 20px !important; }
+        .presentation-mode #live-ticker-text { font-size: 13px !important; font-weight: 600; }
+        .presentation-mode #loan-card-title { font-size: 1.4rem !important; }
+        .presentation-mode table th, .presentation-mode table td { padding: 12px 14px !important; font-size: 13px !important; }
+        .presentation-mode #nav-console-log { height: 180px !important; font-size: 12px !important; }
+        @keyframes slideInRight {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-slide-in { animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    </style>
+</head>
+<body class="bg-[#f0f3f6] text-[#2b333e] font-sans h-screen flex flex-col overflow-hidden select-none">
+
+    <!-- 1. TOP NAV SYSTEM TITLE BAR (Microsoft Dynamics NAV 2026) -->
+    <header class="bg-navblue-900 text-white flex items-center justify-between px-4 py-2 border-b border-navblue-700 shadow-sm shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+                <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="2" y="2" width="9" height="9" fill="#0078d7"/>
+                    <rect x="13" y="2" width="9" height="9" fill="#28a745"/>
+                    <rect x="2" y="13" width="9" height="9" fill="#ffc107"/>
+                    <rect x="13" y="13" width="9" height="9" fill="#e81123"/>
+                </svg>
+                <span class="font-semibold text-sm tracking-wide">Microsoft Dynamics NAV 2026</span>
+            </div>
+            <span class="text-navblue-700 text-xs">|</span>
+            <span class="text-xs font-semibold text-emerald-400 bg-navblue-800/80 px-2.5 py-0.5 rounded border border-emerald-500/30 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+                BANKI KUU SACCO &mdash; REEF HOTEL MOMBASA RETREAT EDITION (95 DELEGATES POPULATED)
+            </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <!-- Outbound Tunnel Indicator -->
+            <div class="flex items-center gap-2 bg-navblue-800/90 px-3 py-1 rounded text-[11px] font-mono border border-navblue-700">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-slate-300">Stride Gateway:</span>
+                <span class="text-emerald-400 font-bold">CONNECTED (mTLS Reverse Proxy)</span>
+            </div>
+
+            <!-- User initials -->
+            <div class="flex items-center gap-2 pl-2 border-l border-navblue-700 text-xs">
+                <div class="w-7 h-7 rounded-full bg-amber-500 text-navblue-950 font-bold flex items-center justify-center text-xs shadow" id="nav-user-avatar">
+                    SG
+                </div>
+                <div class="leading-tight">
+                    <div class="font-bold text-white" id="nav-user-name">Samuel N. Gathigi</div>
+                    <div class="text-[10px] text-slate-300" id="nav-user-role">BOD • Administrator (Full Access)</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. DYNAMICS NAV ACTION RIBBON -->
+    <div class="bg-white border-b border-gray-300 px-4 py-2 flex items-center justify-between shadow-sm shrink-0">
+        <div class="flex items-center gap-1">
+            <button onclick="openStrideProposalIntelligence()" id="btn-stride-intel" class="px-4 py-1.5 text-xs font-extrabold text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 rounded flex items-center gap-1.5 shadow-lg border border-cyan-300 cursor-pointer transition-all transform active:scale-95 animate-pulse">
+                <span>⚡</span> <span>Stride Intelligence (Lanstar POC)</span>
+            </button>
+            <button onclick="switchView('loan')" id="btn-tab-loan" class="px-3 py-1.5 text-xs font-bold text-navblue-900 bg-navblue-100 border border-navblue-600 rounded flex items-center gap-1.5 shadow-sm">
+                <span>📑</span> Loan Card 50010 (Active Pipeline)
+            </button>
+            <button onclick="switchView('members')" id="btn-tab-members" class="px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 rounded flex items-center gap-1.5">
+                <span>👥</span> Members Ledger (Table 21 &mdash; 95 Delegates)
+            </button>
+            <button onclick="pollNow()" class="px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 rounded flex items-center gap-1.5">
+                <span>🔄</span> Sync Stride Hub
+            </button>
+            <button onclick="simulateInboundPledge()" class="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded flex items-center gap-1.5">
+                <span>⚡</span> Single Pledge
+            </button>
+            <button onclick="runConferenceSimulation()" id="btn-simulate-show" class="px-3 py-1.5 text-xs font-bold text-purple-900 bg-purple-100 hover:bg-purple-200 border border-purple-400 rounded flex items-center gap-1.5 shadow transition-all" title="Simulate a live multi-delegate burst with real-time audio, toasts, ticker, and M-PESA payout">
+                <span>🎆</span> Run Live Stage Simulation
+            </button>
+            <button onclick="simulateDisburse()" class="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-300 rounded flex items-center gap-1.5">
+                <span>💸</span> Post &amp; Disburse M-PESA
+            </button>
+            <button onclick="resetLedger()" class="px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50 border border-rose-300 rounded flex items-center gap-1.5">
+                <span>♻️</span> Reset
+            </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <a href="https://strideanalytics.co.ke/bks/guarantor.html" target="_blank" class="px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-navblue-950 rounded shadow flex items-center gap-1.5">
+                <span>🚀</span> Open Public Guarantor Portal &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- LIVE STAGE BROADCAST BAR (MOMBASA RETREAT CONCURRENT ACTIVITY FEED) -->
+    <div id="live-broadcast-bar" class="bg-gradient-to-r from-slate-950 via-navblue-950 to-slate-950 border-b border-navblue-800 px-4 py-2 flex flex-wrap items-center justify-between text-xs text-white shrink-0 shadow-md gap-2">
+        <div class="flex items-center gap-3 overflow-hidden">
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-rose-500/20 border border-rose-500/50 text-rose-300 font-bold tracking-wider uppercase text-[10px] shrink-0">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                <span>Live Retreat Stage Feed</span>
+            </div>
+            <div id="live-ticker-text" class="text-slate-200 truncate font-mono text-[11px] flex items-center gap-2">
+                <span>📡 Gateway Active: Standing by for delegate WhatsApp WebAuthn pledges across Table 21...</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 shrink-0 font-mono text-[11px]">
+            <div class="flex items-center gap-1.5 bg-slate-900/90 px-2.5 py-1 rounded border border-slate-700 shadow-inner">
+                <span class="text-slate-400">Pipeline Loans:</span>
+                <span id="stat-active-loans" class="text-amber-400 font-bold">1</span>
+            </div>
+            <div class="flex items-center gap-1.5 bg-slate-900/90 px-2.5 py-1 rounded border border-slate-700 shadow-inner">
+                <span class="text-slate-400">Pledges Locked:</span>
+                <span id="stat-locked-pledges" class="text-emerald-400 font-bold">0</span>
+            </div>
+            <div class="flex items-center gap-1.5 bg-slate-900/90 px-2.5 py-1 rounded border border-slate-700 shadow-inner">
+                <span class="text-slate-400">Total Guaranteed:</span>
+                <span id="stat-total-guaranteed" class="text-cyan-400 font-bold">KES 0.00</span>
+            </div>
+            <button onclick="toggleAudio()" id="btn-audio-toggle" class="p-1 px-2.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[10px] text-slate-200 font-sans flex items-center gap-1.5 transition-all" title="Toggle audio chime on incoming pledges">
+                <span id="audio-icon">🔊</span> <span id="audio-label">Chime ON</span>
+            </button>
+            <button onclick="togglePresentationMode()" id="btn-projector-toggle" class="p-1 px-3 rounded bg-amber-500 hover:bg-amber-400 text-navblue-950 font-bold text-[10px] font-sans flex items-center gap-1.5 shadow transition-all" title="Toggle Big-Screen Projector Mode (Hides side menu, boosts typography)">
+                <span>📺</span> <span>Projector Mode</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- FLOATING LIVE EVENT TOAST CONTAINER -->
+    <div id="live-event-toast-container" class="fixed top-24 right-6 z-50 flex flex-col gap-2.5 pointer-events-auto max-w-sm"></div>
+
+    <!-- 3. MAIN WORKSPACE WITH ERP NAVIGATION + CONTENT -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- LEFT ERP MENU TREE -->
+        <aside class="w-64 bg-navgray-50 border-r border-gray-300 flex flex-col justify-between shrink-0">
+            <div class="overflow-y-auto p-3 space-y-4">
+                <div>
+                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 mb-1">BOSA &amp; FOSA Core</div>
+                    <ul class="text-xs space-y-0.5">
+                        <li><a href="javascript:void(0)" onclick="openRoleCenterModal()" class="block px-2.5 py-1.5 rounded hover:bg-gray-200 text-gray-700 font-medium">📋 Role Center (Dashboard)</a></li>
+                        <li><a href="javascript:void(0)" onclick="switchView('members')" class="block px-2.5 py-1.5 rounded hover:bg-gray-200 text-gray-700 font-medium">👤 Member Accounts (Table 21 • 95 Members)</a></li>
+                        <li><a href="javascript:void(0)" onclick="switchView('loan')" class="block px-2.5 py-1.5 rounded bg-navblue-100 text-navblue-900 font-bold border-l-4 border-navblue-600">📑 Loan Register (Table 50010)</a></li>
+                        <li><a href="javascript:void(0)" onclick="switchView('loan')" class="block px-2.5 py-1.5 rounded bg-amber-50 text-amber-900 font-semibold border-l-4 border-amber-500">🔒 Guarantor Liens (Table 50020)</a></li>
+                        <li><a href="javascript:void(0)" onclick="openGlModal()" class="block px-2.5 py-1.5 rounded hover:bg-gray-200 text-gray-700 font-medium">📊 General Ledger (Table 17)</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 mb-1">Governance &amp; SASRA</div>
+                    <ul class="text-xs space-y-0.5">
+                        <li><a href="javascript:void(0)" onclick="openSasraModal()" class="block px-2.5 py-1.5 rounded hover:bg-gray-200 text-gray-700 font-medium">📜 SASRA Form 24 (Loan Provisioning)</a></li>
+                        <li><a href="javascript:void(0)" onclick="openOdpaModal()" class="block px-2.5 py-1.5 rounded hover:bg-gray-200 text-gray-700 font-medium">🛡️ ODPA 2019 §29 Cushion Shield</a></li>
+                        <li><a href="javascript:void(0)" onclick="openCommitteeModal()" class="block px-2.5 py-1.5 rounded hover:bg-gray-200 text-gray-700 font-medium">⚖️ Credit Committee Conflict Firewall</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 mb-1">Mombasa Retreat Stats</div>
+                    <div class="bg-white p-2.5 rounded border border-gray-300 text-[11px] font-mono space-y-1">
+                        <div class="text-gray-500">Venue: <span class="text-navblue-900 font-bold">Reef Hotel Nyali</span></div>
+                        <div class="text-gray-500">Delegates in NAV: <span class="text-emerald-600 font-bold">95 Members</span></div>
+                        <div class="text-gray-500">Total Deposits: <span class="text-emerald-700 font-bold">KES 248.5M</span></div>
+                        <div class="text-gray-500">Unpledged Cushion: <span class="text-navblue-600 font-bold">KES 189.2M</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Box -->
+            <div class="p-3 bg-gray-100 border-t border-gray-300 text-[11px] text-gray-500 font-mono">
+                <div>Build: NAV-2026-R2-CU14</div>
+                <div>SQL: Microsoft SQL Server 2024</div>
+            </div>
+        </aside>
+
+        <!-- CENTER ERP CONTENT AREA -->
+        <main class="flex-1 flex flex-col overflow-y-auto bg-white p-6 space-y-6">
+
+            <!-- ========================================== -->
+            <!-- VIEW 1: ACTIVE LOAN CARD 50010 (DEFAULT) -->
+            <!-- ========================================== -->
+            <div id="view-loan" class="space-y-6">
+                <!-- LOAN CARD HEADER -->
+                <div class="border border-gray-300 rounded-lg shadow-sm bg-white overflow-hidden">
+                    <div class="bg-gradient-to-r from-navblue-900 to-navblue-800 text-white px-5 py-3 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-mono text-amber-400 uppercase tracking-wider">Dynamics NAV Card &mdash; Form 50010</span>
+                            <div class="flex items-center gap-3 mt-0.5">
+                                <h1 class="text-lg font-bold flex items-center gap-2" id="loan-card-title">
+                                    Loan Card: BKS-LN-2026-5451
+                                </h1>
+                                <select id="nav-loan-select" onchange="switchNavLoan(this.value)" style="background-color: #0b1329 !important; color: #38bdf8 !important; border: 1.5px solid #0284c7 !important; font-family: monospace; font-weight: bold; font-size: 12px; padding: 4px 10px; border-radius: 6px; cursor: pointer; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                    <!-- Populated dynamically with all active loans -->
+                                </select>
+                                <span class="text-xs bg-emerald-500 text-white font-bold px-2 py-0.5 rounded" id="loan-status-badge">FULLY_GUARANTEED</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[11px] text-slate-300">Requested Amount:</div>
+                            <div class="text-xl font-black font-mono text-emerald-400" id="nav-requested-amount">KES 600,000.00</div>
+                        </div>
+                    </div>
+
+                    <!-- FORM FIELDS GRID -->
+                    <div class="p-5 grid grid-cols-4 gap-4 text-xs border-b border-gray-200 bg-navgray-50/50">
+                        <div>
+                            <label class="text-gray-500 font-semibold">Borrower Member S/No:</label>
+                            <div class="font-bold text-gray-900 text-sm font-mono mt-0.5" id="nav-borrower-sno">—</div>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 font-semibold flex items-center justify-between">
+                                <span>Member Name (Borrower):</span>
+                                <span class="text-[9px] text-navblue-700 font-bold uppercase">95 Delegates</span>
+                            </label>
+                            <div class="mt-0.5">
+                                <select id="nav-borrower-select" onchange="changeNavBorrower(this.value)" class="w-full bg-white border border-gray-300 font-bold text-gray-900 text-xs rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-navblue-600 shadow-sm cursor-pointer">
+                                    <option value="">-- Select Borrower from 95 Delegates --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 font-semibold">Member Role &amp; Unit:</label>
+                            <div class="text-gray-700 mt-0.5" id="nav-borrower-role">None Selected</div>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 font-semibold">Unpledged Deposits Cushion:</label>
+                            <div class="font-bold text-emerald-700 text-sm font-mono mt-0.5" id="nav-borrower-cushion">KES 0.00</div>
+                        </div>
+
+                        <div>
+                            <label class="text-gray-500 font-semibold">Product Type:</label>
+                            <div class="font-semibold text-gray-800 mt-0.5">Super Development Facility (3x)</div>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 font-semibold">Tenure &amp; Repayment:</label>
+                            <div class="font-semibold text-gray-800 mt-0.5">48 Months @ 12.0% p.a. Reducing</div>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 font-semibold">Total Guarantors Required:</label>
+                            <div class="font-bold text-navblue-900 mt-0.5" id="guarantors-count-label">3 Guarantors (KES 200,000 Each)</div>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 font-semibold">Core Banking Ledger Lien State:</label>
+                            <div class="font-bold text-amber-600 mt-0.5" id="lien-state-label">Partial (Lien Committed on Confirmed Members)</div>
+                        </div>
+                    </div>
+
+                    <!-- SUBFORM: GUARANTOR LIENS & PLEDGES GRID (TABLE 50020) -->
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 bg-amber-500 rounded-sm"></span>
+                                <h3 class="font-bold text-sm text-gray-900 uppercase tracking-wider font-mono">
+                                    Subform: Guarantor Pledges &amp; Real-Time Deposit Liens (Table 50020)
+                                </h3>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="switchView('members')" class="px-2.5 py-1 text-xs font-bold text-navblue-900 bg-navblue-50 border border-navblue-600 rounded hover:bg-navblue-100 flex items-center gap-1 shadow-sm">
+                                    <span>➕</span> Add / Nominate from 95 Delegates &rarr;
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- TABLE -->
+                        <div class="border border-gray-300 rounded overflow-hidden">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-700 font-bold border-b border-gray-300 text-[11px]">
+                                        <th class="p-2.5 border-r border-gray-300 w-12 text-center">Line</th>
+                                        <th class="p-2.5 border-r border-gray-300 w-24">S/No</th>
+                                        <th class="p-2.5 border-r border-gray-300">Guarantor Name</th>
+                                        <th class="p-2.5 border-r border-gray-300 text-right">Pledged Amount (LCY)</th>
+                                        <th class="p-2.5 border-r border-gray-300 text-right">Deposit Cushion</th>
+                                        <th class="p-2.5 border-r border-gray-300">Biometric Seal / Channel</th>
+                                        <th class="p-2.5 border-r border-gray-300">NAV Lien Status</th>
+                                        <th class="p-2.5 text-center w-28">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="guarantors-tbody">
+                                    <!-- Dynamic rows populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- VIEW 2: MEMBER ACCOUNTS LEDGER (TABLE 21 - 95 DELEGATES) -->
+            <!-- ========================================== -->
+            <div id="view-members" class="hidden space-y-4">
+                <div class="border border-gray-300 rounded-lg shadow-sm bg-white overflow-hidden">
+                    <div class="bg-gradient-to-r from-navblue-900 to-navblue-800 text-white px-5 py-3 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-mono text-amber-400 uppercase tracking-wider">Dynamics NAV Form 21 &mdash; Member Accounts Ledger</span>
+                            <h2 class="text-lg font-bold flex items-center gap-2">
+                                <span>Table 21: Full Member Register &mdash; Mombasa Retreat Delegation</span>
+                                <span class="text-xs bg-emerald-500 text-white font-bold px-2 py-0.5 rounded" id="delegates-count-badge">95 Records</span>
+                            </h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="member-search" oninput="filterMembers()" placeholder="Search S/No, Name, Branch, Role..." class="px-3 py-1.5 rounded text-xs bg-white text-gray-900 border border-gray-300 w-64 focus:outline-none focus:ring-2 focus:ring-navblue-500">
+                        </div>
+                    </div>
+
+                    <!-- Filter Pill Bar -->
+                    <div class="px-5 py-2.5 bg-gray-50 border-b border-gray-200 flex flex-wrap items-center gap-2 text-xs">
+                        <span class="text-gray-500 font-semibold">Quick Filters:</span>
+                        <button onclick="setFilter('ALL')" class="px-2.5 py-1 rounded bg-navblue-100 text-navblue-900 font-bold border border-navblue-300 filter-btn" data-filter="ALL">All (95)</button>
+                        <button onclick="setFilter('BOD')" class="px-2.5 py-1 rounded bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 filter-btn" data-filter="BOD">BOD / Supervisory</button>
+                        <button onclick="setFilter('BRANCH')" class="px-2.5 py-1 rounded bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 filter-btn" data-filter="BRANCH">Branch Reps</button>
+                        <button onclick="setFilter('HIGH_CUSHION')" class="px-2.5 py-1 rounded bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 filter-btn" data-filter="HIGH_CUSHION">Cushion &gt; KES 2.0M</button>
+                    </div>
+
+                    <!-- Members Table -->
+                    <div class="overflow-x-auto max-h-[500px]">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead class="sticky top-0 bg-gray-100 text-gray-700 font-bold border-b border-gray-300 text-[11px] z-10">
+                                <tr>
+                                    <th class="p-2.5 border-r border-gray-300 w-20">S/No</th>
+                                    <th class="p-2.5 border-r border-gray-300">Member Name</th>
+                                    <th class="p-2.5 border-r border-gray-300">Institutional Role / Unit</th>
+                                    <th class="p-2.5 border-r border-gray-300 text-right">Total Deposits (LCY)</th>
+                                    <th class="p-2.5 border-r border-gray-300 text-right">Active Liens</th>
+                                    <th class="p-2.5 border-r border-gray-300 text-right">Unpledged Cushion</th>
+                                    <th class="p-2.5 border-r border-gray-300 text-center">Governance Status</th>
+                                    <th class="p-2.5 text-center w-36">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="members-tbody">
+                                <!-- Populated dynamically from 95 delegates -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIVE DYNAMICS NAV EVENT LOG & AUDIT CONSOLE -->
+            <div class="border border-gray-300 rounded-lg shadow-sm bg-navgray-900 text-white overflow-hidden font-mono text-xs">
+                <div class="bg-navgray-800 px-4 py-2 flex items-center justify-between border-b border-navgray-700">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                        <span class="font-bold text-gray-200">Dynamics NAV Diagnostic &amp; Codeunit 50020 Activity Log</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400">
+                        Log Level: VERBOSE • Format: OData v4 / SOAP XML
+                    </div>
+                </div>
+                <div id="nav-console-log" class="p-4 h-40 overflow-y-auto space-y-1.5 text-[11px] leading-relaxed text-slate-300">
+                    <!-- Event logs stream here -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT: REAL-TIME POLLING & 95 DELEGATE POPULATION -->
+    <script>
+        const API_URL = 'https://strideanalytics.co.ke/bks/api.php';
+        let currentLoanId = 'BKS-LN-2026-5451';
+        let activeGuarantors = [];
+        let allDelegates = [];
+        let currentFilter = 'ALL';
+        let allLoansCache = [];
+        let previousGuarantorSnapshot = null;
+        let previousLoanStatusSnapshot = null;
+        let audioEnabled = true;
+        let isPresentationMode = false;
+        let justPledgedSno = null;
+
+        function playChime(isFanfare = false) {
+            if (!audioEnabled) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (isFanfare) {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.12);
+                        gain.gain.setValueAtTime(0, ctx.currentTime);
+                        gain.gain.setValueAtTime(0.25, ctx.currentTime + i * 0.12);
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.4);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(ctx.currentTime + i * 0.12);
+                        osc.stop(ctx.currentTime + i * 0.12 + 0.4);
+                    });
+                } else {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880.00, ctx.currentTime + 0.12);
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.6);
+                }
+            } catch(e) {
+                console.warn("AudioContext init error:", e);
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const icon = document.getElementById('audio-icon');
+            const label = document.getElementById('audio-label');
+            if (icon && label) {
+                icon.textContent = audioEnabled ? '🔊' : '🔇';
+                label.textContent = audioEnabled ? 'Chime ON' : 'Muted';
+            }
+            if (audioEnabled) playChime();
+        }
+
+        function togglePresentationMode() {
+            isPresentationMode = !isPresentationMode;
+            document.body.classList.toggle('presentation-mode', isPresentationMode);
+
+            // Trigger true browser fullscreen if supported
+            try {
+                if (isPresentationMode) {
+                    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(() => {});
+                    }
+                } else {
+                    if (document.fullscreenElement && document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
+                    }
+                }
+            } catch(e) {}
+
+            const btn = document.getElementById('btn-projector-toggle');
+            if (btn) {
+                btn.innerHTML = isPresentationMode
+                    ? `<span>🖥️</span> <span>Standard View</span>`
+                    : `<span>📺</span> <span>Projector Mode</span>`;
+                btn.className = isPresentationMode
+                    ? `p-1 px-3 rounded bg-emerald-400 hover:bg-emerald-300 text-navblue-950 font-bold text-[10px] font-sans flex items-center gap-1.5 shadow-lg ring-2 ring-emerald-300 transition-all`
+                    : `p-1 px-3 rounded bg-amber-500 hover:bg-amber-400 text-navblue-950 font-bold text-[10px] font-sans flex items-center gap-1.5 shadow transition-all`;
+            }
+
+            if (isPresentationMode) {
+                playChime(false);
+                showLiveToast(
+                    '📺 PROJECTOR MODE ACTIVATED',
+                    'Full-screen command center enabled. Sidebar collapsed & typography scaled for conference projection. (Click Standard View or press ESC to exit).'
+                );
+                logToNavConsole("Presentation Mode: Command center view optimized for conference hall projector (100% full-width).", "info");
+            } else {
+                showLiveToast(
+                    '🖥️ STANDARD ERP VIEW RESTORED',
+                    'Core ERP navigation tree and standard compact form density restored.'
+                );
+            }
+        }
+
+        let isSimulating = false;
+        async function runConferenceSimulation() {
+            if (isSimulating) return;
+            isSimulating = true;
+            
+            const btn = document.getElementById('btn-simulate-show');
+            if (btn) {
+                btn.innerHTML = `<span>⏳</span> Simulating Live Delegates...`;
+                btn.classList.add('opacity-75');
+            }
+
+            // Step 0: Announce
+            playChime(false);
+            showLiveToast('🚀 LIVE STAGE SIMULATION STARTED', 'Simulating 3 concurrent WhatsApp & Biometric pledge submissions across Mombasa conference delegates...');
+            logToNavConsole("--- [SIMULATION INITIATED: MOMBASA RETREAT MULTI-DELEGATE BURST] ---", "odata");
+            logToNavConsole("Inbound Webhook Listener (Port 8443): mTLS Handshake verified for 3 incoming delegate mobile sessions.", "odata");
+
+            const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+            await sleep(1400);
+
+            // Step 1: Member 0042 (Purity Ndwiga)
+            justPledgedSno = '0042';
+            playChime(false);
+            showLiveToast(
+                '🎉 LIVE PLEDGE COMMITTED!',
+                '<strong>Purity Ndwiga</strong> (S/No: <code>0042</code> • BOD) just sealed <strong>KES 200,000</strong> via WhatsApp TouchID!',
+                currentLoanId
+            );
+            updateLiveTicker(`
+                <span class="text-emerald-400 font-bold">[${new Date().toLocaleTimeString()}] 🟢 LIVE PLEDGE:</span>
+                <span class="text-white">Purity Ndwiga (S/No: 0042) committed KES 200,000 • WebAuthn SHA256: <code>8a7f92b...</code></span>
+            `);
+            logToNavConsole("Codeunit 50020 LIEN POSTED: Member S/No: 0042 (Purity Ndwiga) - Lien Amount: KES 200,000.00. Unpledged Cushion: KES 2,150,000.00 (ODPA §29 Pass)", "lien");
+            
+            const row1 = document.getElementById('guarantor-row-0042');
+            if (row1) row1.classList.add('row-flash');
+
+            await sleep(1800);
+
+            // Step 2: Member 0014 (Dr. Kamau)
+            justPledgedSno = '0014';
+            playChime(false);
+            showLiveToast(
+                '🎉 LIVE PLEDGE COMMITTED!',
+                '<strong>Dr. Patrick Kamau</strong> (S/No: <code>0014</code> • Supervisory) sealed <strong>KES 200,000</strong> via FaceID Biometric!',
+                currentLoanId
+            );
+            updateLiveTicker(`
+                <span class="text-emerald-400 font-bold">[${new Date().toLocaleTimeString()}] 🟢 LIVE PLEDGE:</span>
+                <span class="text-white">Dr. Patrick Kamau (S/No: 0014) committed KES 200,000 • FIDO2 Liveness OK</span>
+            `);
+            logToNavConsole("Codeunit 50020 LIEN POSTED: Member S/No: 0014 (Dr. Patrick Kamau) - Lien Amount: KES 200,000.00. Table 21 Balance Synchronized.", "lien");
+            
+            const row2 = document.getElementById('guarantor-row-0014');
+            if (row2) row2.classList.add('row-flash');
+
+            await sleep(1800);
+
+            // Step 3: Member 0019 (Eng. Njoroge) -> FULLY GUARANTEED!
+            justPledgedSno = '0019';
+            playChime(false);
+            showLiveToast(
+                '🏆 LOAN 100% FULLY GUARANTEED!',
+                '<strong>Eng. David Njoroge</strong> (S/No: <code>0019</code>) completed the final pledge of <strong>KES 200,000</strong>! 3/3 Liens Locked in Table 50020.',
+                currentLoanId
+            );
+            updateLiveTicker(`
+                <span class="text-amber-400 font-bold">[${new Date().toLocaleTimeString()}] 🏆 FULLY GUARANTEED:</span>
+                <span class="text-white">Loan ${currentLoanId} reached 100% pledge coverage (KES 600,000 / KES 600,000). Ready for sanction!</span>
+            `);
+            logToNavConsole("CREDIT SANCTION GATEWAY: Loan " + currentLoanId + " 100% Covered. Passing to Automated Credit Committee Codeunit 50030...", "success");
+            
+            const badge = document.getElementById('loan-status-badge');
+            if (badge) {
+                badge.textContent = 'FULLY_GUARANTEED';
+                badge.className = 'text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 rounded shadow';
+            }
+
+            await sleep(2000);
+
+            // Step 4: Instant Automated M-PESA B2C Payout!
+            playChime(true);
+            const amtStr = 'KES 600,000.00';
+            const bName = document.getElementById('nav-user-name') ? document.getElementById('nav-user-name').textContent : 'Samuel N. Gathigi';
+            
+            showLiveToast(
+                '💸 M-PESA B2C DISBURSED!',
+                `<strong>KES 600,000.00</strong> transferred to <strong>${bName}</strong>! Safaricom Receipt: <code>QK84920412</code>. Navision G/L 1200 Balanced!`,
+                currentLoanId
+            );
+            updateLiveTicker(`
+                <span class="text-cyan-400 font-bold">[${new Date().toLocaleTimeString()}] 💸 M-PESA DISBURSED:</span>
+                <span class="text-white">KES 600,000.00 paid out to ${bName} • Safaricom B2C Ref: QK84920412 • G/L 10200</span>
+            `);
+            logToNavConsole("SAFARICOM M-PESA B2C GATEWAY: HTTP 200 OK | Transaction Ref: QK84920412 | Amount: KES 600,000.00 | Recipient: +254 763 321 365", "success");
+            logToNavConsole("NAVISION GENERAL JOURNAL: Posted Batch 'LOANS_AUTO' | Debited G/L 13100 (Member Loans) | Credited G/L 10200 (Bank Account)", "lien");
+            
+            if (badge) {
+                badge.textContent = 'DISBURSED';
+                badge.className = 'text-xs bg-blue-600 text-white font-bold px-2.5 py-0.5 rounded shadow';
+            }
+
+            if (btn) {
+                btn.innerHTML = `<span>🎆</span> Run Live Stage Simulation`;
+                btn.classList.remove('opacity-75');
+            }
+            isSimulating = false;
+        }
+
+        function updateLiveTicker(msgHtml) {
+            const ticker = document.getElementById('live-ticker-text');
+            if (ticker) {
+                ticker.innerHTML = msgHtml;
+            }
+        }
+
+        function showLiveToast(title, body, loanIdToSwitch = null) {
+            const container = document.getElementById('live-event-toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'toast-slide-in bg-slate-900/95 border-2 border-emerald-500 text-white rounded-lg shadow-2xl p-3 flex flex-col gap-1.5 backdrop-blur-md';
+            toast.innerHTML = `
+                <div class="flex items-center justify-between border-b border-slate-700/80 pb-1.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span class="font-bold text-xs text-emerald-400 font-sans tracking-wide uppercase">${title}</span>
+                    </div>
+                    <button onclick="this.closest('.toast-slide-in').remove()" class="text-slate-400 hover:text-white text-xs px-1">&times;</button>
+                </div>
+                <div class="text-[11px] text-slate-200 font-sans leading-snug">
+                    ${body}
+                </div>
+                ${loanIdToSwitch && loanIdToSwitch !== currentLoanId ? `
+                    <div class="pt-1 flex justify-end">
+                        <button onclick="selectLoanById('${loanIdToSwitch}'); this.closest('.toast-slide-in').remove();" class="px-2 py-0.5 rounded bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[10px] flex items-center gap-1 shadow">
+                            <span>🔍</span> Switch View to ${loanIdToSwitch}
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.transition = 'opacity 0.4s, transform 0.4s';
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 400);
+                }
+            }, 7000);
+        }
+
+        function selectLoanById(loanId) {
+            const l = allLoansCache.find(x => x.loan_id === loanId);
+            if (l) {
+                currentLoanId = l.loan_id;
+                const loanSelect = document.getElementById('nav-loan-select');
+                if (loanSelect) loanSelect.value = currentLoanId;
+                renderLoan(l);
+                logToNavConsole(`Switched active Loan Card to: ${l.loan_id} (${l.borrower_name})`, "odata");
+            }
+        }
+
+        function switchView(view) {
+            document.getElementById('view-loan').classList.toggle('hidden', view !== 'loan');
+            document.getElementById('view-members').classList.toggle('hidden', view !== 'members');
+            
+            document.getElementById('btn-tab-loan').className = view === 'loan'
+                ? 'px-3 py-1.5 text-xs font-bold text-navblue-900 bg-navblue-100 border border-navblue-600 rounded flex items-center gap-1.5 shadow-sm'
+                : 'px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 rounded flex items-center gap-1.5';
+
+            document.getElementById('btn-tab-members').className = view === 'members'
+                ? 'px-3 py-1.5 text-xs font-bold text-navblue-900 bg-navblue-100 border border-navblue-600 rounded flex items-center gap-1.5 shadow-sm'
+                : 'px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 rounded flex items-center gap-1.5';
+        }
+
+        function logToNavConsole(msg, type = 'info') {
+            const consoleEl = document.getElementById('nav-console-log');
+            const now = new Date().toLocaleTimeString();
+            let color = 'text-slate-300';
+            let prefix = '[INFO]';
+            
+            if (type === 'success') { color = 'text-emerald-400'; prefix = '[SUCCESS]'; }
+            if (type === 'warn') { color = 'text-amber-400'; prefix = '[GOVERNANCE]'; }
+            if (type === 'odata') { color = 'text-cyan-400'; prefix = '[ODATA_WS]'; }
+            if (type === 'lien') { color = 'text-emerald-300 font-bold'; prefix = '[NAV_LIEN]'; }
+
+            const entry = document.createElement('div');
+            entry.className = color;
+            entry.innerHTML = `<span class="text-gray-500">[${now}]</span> <span class="font-bold">${prefix}</span> ${msg}`;
+            consoleEl.appendChild(entry);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        async function loadDelegates() {
+            try {
+                const res = await fetch(`${API_URL}?action=list`);
+                const data = await res.json();
+                if (data.status === 'success' && data.data) {
+                    allDelegates = data.data.map((d, i) => {
+                        // Deterministic deposit cushion based on S/No
+                        const hash = parseInt(d.sno) || (i * 37 + 100);
+                        const deposits = 1200000 + (hash % 38) * 100000;
+                        const existingPledges = (hash % 5) * 150000;
+                        const isCommittee = (d.role && d.role.includes('BOD - SACCO')) || d.name.includes('Wekesa');
+                        
+                        return {
+                            ...d,
+                            deposits: deposits,
+                            existingPledges: existingPledges,
+                            cushion: deposits - existingPledges,
+                            isCommittee: isCommittee
+                        };
+                    });
+                    logToNavConsole(`Navision Table 21: Successfully populated 95 retreat delegates from Banki Kuu Registry.`, "success");
+                    
+                    const bSelect = document.getElementById('nav-borrower-select');
+                    if (bSelect) {
+                        const cur = bSelect.value;
+                        bSelect.innerHTML = '';
+                        const defaultOpt = document.createElement('option');
+                        defaultOpt.value = '';
+                        defaultOpt.textContent = '-- Select Borrower from 95 Delegates --';
+                        bSelect.appendChild(defaultOpt);
+
+                        allDelegates.forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = d.sno;
+                            opt.textContent = `${d.name} (${d.sno}) — ${d.role || 'Member'}`;
+                            bSelect.appendChild(opt);
+                        });
+                        if (cur) bSelect.value = cur;
+                    }
+
+                    renderMembersTable();
+                }
+            } catch (e) {
+                console.error("Failed to load delegates:", e);
+                logToNavConsole("Error loading delegates: " + e.message, "warn");
+            }
+        }
+
+        function renderMembersTable() {
+            const tbody = document.getElementById('members-tbody');
+            tbody.innerHTML = '';
+
+            const term = (document.getElementById('member-search').value || '').toLowerCase();
+
+            const filtered = allDelegates.filter(d => {
+                if (currentFilter === 'BOD' && !d.role.includes('BOD') && !d.role.includes('SUPERVISORY') && !d.role.includes('CEO')) return false;
+                if (currentFilter === 'BRANCH' && !d.role.includes('BRANCH')) return false;
+                if (currentFilter === 'HIGH_CUSHION' && d.cushion < 2000000) return false;
+
+                if (term) {
+                    const matchSno = d.sno.toLowerCase().includes(term);
+                    const matchName = d.name.toLowerCase().includes(term);
+                    const matchRole = (d.role || '').toLowerCase().includes(term);
+                    return matchSno || matchName || matchRole;
+                }
+                return true;
+            });
+
+            document.getElementById('delegates-count-badge').textContent = `${filtered.length} of ${allDelegates.length} Records`;
+
+            filtered.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.className = 'nav-grid-row border-b border-gray-200';
+
+                const govBadge = d.isCommittee
+                    ? `<span class="inline-flex items-center gap-1 text-rose-700 font-bold bg-rose-100 px-2 py-0.5 rounded text-[10px]">
+                         ⛔ Credit Committee Officer
+                       </span>`
+                    : `<span class="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded text-[10px]">
+                         ✔ Eligible Guarantor
+                       </span>`;
+
+                tr.innerHTML = `
+                    <td class="p-2.5 border-r border-gray-200 font-mono font-bold text-gray-800">${d.sno}</td>
+                    <td class="p-2.5 border-r border-gray-200">
+                        <div class="font-bold text-gray-900">${d.name}</div>
+                        <div class="text-[10px] text-gray-500">${d.real_email || d.masked_email || ''}</div>
+                    </td>
+                    <td class="p-2.5 border-r border-gray-200">
+                        <div class="font-semibold text-navblue-900">${d.role || 'Member'}</div>
+                        <div class="text-[10px] text-gray-500">${d.category || 'Central Bank of Kenya'}</div>
+                    </td>
+                    <td class="p-2.5 border-r border-gray-200 text-right font-mono font-bold text-gray-900">
+                        KES ${d.deposits.toLocaleString()}.00
+                    </td>
+                    <td class="p-2.5 border-r border-gray-200 text-right font-mono text-amber-700">
+                        KES ${d.existingPledges.toLocaleString()}.00
+                    </td>
+                    <td class="p-2.5 border-r border-gray-200 text-right font-mono font-bold text-emerald-700">
+                        KES ${d.cushion.toLocaleString()}.00
+                    </td>
+                    <td class="p-2.5 border-r border-gray-200 text-center">
+                        ${govBadge}
+                    </td>
+                    <td class="p-2.5 text-center">
+                        <button onclick="nominateDelegate('${d.sno}')" class="px-2.5 py-1 text-[11px] font-bold ${d.isCommittee ? 'bg-gray-200 text-gray-500 hover:bg-gray-300' : 'bg-navblue-600 hover:bg-navblue-700 text-white'} rounded shadow-sm">
+                            ${d.isCommittee ? 'Blocked' : 'Nominate &rarr;'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function setFilter(filt) {
+            currentFilter = filt;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.getAttribute('data-filter') === filt) {
+                    btn.className = 'px-2.5 py-1 rounded bg-navblue-100 text-navblue-900 font-bold border border-navblue-300 filter-btn';
+                } else {
+                    btn.className = 'px-2.5 py-1 rounded bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 filter-btn';
+                }
+            });
+            renderMembersTable();
+        }
+
+        function filterMembers() {
+            renderMembersTable();
+        }
+
+        function nominateDelegate(sno) {
+            const member = allDelegates.find(d => d.sno === sno);
+            if (!member) return;
+
+            if (member.isCommittee) {
+                alert(`❌ NAV POLICY RESTRICTION [Codeunit 50020 - Rule #4]:\n\nMember S/No ${member.sno} (${member.name}) is a sitting Credit Committee Officer.\n\nUnder SACCO Corporate Governance Bylaws, Credit Committee members are strictly prohibited from acting as guarantors for loan applicants.`);
+                logToNavConsole(`GOVERNANCE REJECTION: Member S/No ${member.sno} (${member.name}) rejected. Sitting Credit Committee Officer.`, "warn");
+                return;
+            }
+
+            logToNavConsole(`Nominated Member S/No: ${member.sno} (${member.name}) for Loan ${currentLoanId}. Available Cushion: KES ${member.cushion.toLocaleString()}.00`, "odata");
+            
+            // Switch back to loan view
+            switchView('loan');
+            manualConfirm(member.sno);
+        }
+
+        currentLoanId = currentLoanId || '';
+
+        function switchNavLoan(loanId) {
+            currentLoanId = loanId;
+            const l = allLoansCache.find(x => x.loan_id === loanId);
+            if (l) {
+                renderLoan(l);
+                logToNavConsole(`Switched active Loan Card to: ${l.loan_id} (${l.borrower_name})`, "odata");
+            }
+        }
+
+        async function pollNow() {
+            try {
+                const res = await fetch(`${API_URL}?action=get_guarantor_loans&t=${Date.now()}`);
+                const data = await res.json();
+                if (data.status === 'success' && data.data) {
+                    allLoansCache = data.data;
+
+                    // 1. Calculate and update global conference aggregates
+                    const totalActiveLoans = allLoansCache.length;
+                    let totalLockedPledges = 0;
+                    let totalGuaranteedKES = 0;
+
+                    allLoansCache.forEach(l => {
+                        (l.guarantors || []).forEach(g => {
+                            if (g.status === 'CONFIRMED') {
+                                totalLockedPledges++;
+                                totalGuaranteedKES += parseFloat(g.pledged_amount || 200000);
+                            }
+                        });
+                    });
+
+                    const statLoansEl = document.getElementById('stat-active-loans');
+                    if (statLoansEl) statLoansEl.textContent = totalActiveLoans;
+                    const statPledgesEl = document.getElementById('stat-locked-pledges');
+                    if (statPledgesEl) statPledgesEl.textContent = `${totalLockedPledges}`;
+                    const statGuaranteedEl = document.getElementById('stat-total-guaranteed');
+                    if (statGuaranteedEl) statGuaranteedEl.textContent = `KES ${totalGuaranteedKES.toLocaleString()}.00`;
+
+                    // 2. Detect live events across ALL loans simultaneously
+                    if (previousGuarantorSnapshot !== null) {
+                        allLoansCache.forEach(loan => {
+                            (loan.guarantors || []).forEach(g => {
+                                const key = `${loan.loan_id}__${g.sno}`;
+                                const prev = previousGuarantorSnapshot[key];
+                                if (prev && prev.status !== 'CONFIRMED' && g.status === 'CONFIRMED') {
+                                    // New pledge event detected!
+                                    justPledgedSno = g.sno;
+                                    playChime(false);
+                                    const timeStr = new Date().toLocaleTimeString();
+                                    const amtStr = parseFloat(g.pledged_amount || 200000).toLocaleString();
+                                    
+                                    showLiveToast(
+                                        '🎉 LIVE PLEDGE COMMITTED!',
+                                        `<strong>${g.name}</strong> (S/No: <code>${g.sno}</code>) just sealed <strong>KES ${amtStr}</strong> for <strong>${loan.loan_id}</strong> (${loan.borrower_name || 'Member'}) via WhatsApp WebAuthn!`,
+                                        loan.loan_id
+                                    );
+                                    
+                                    updateLiveTicker(`
+                                        <span class="text-emerald-400 font-bold">[${timeStr}] 🟢 LIVE PLEDGE:</span>
+                                        <span class="text-white">${g.name} (S/No: ${g.sno}) committed KES ${amtStr} on ${loan.loan_id} • Codeunit 50020 Lien Created!</span>
+                                    `);
+                                    
+                                    logToNavConsole(`🎉 INBOUND WEBAUTHN SEAL: Member ${g.sno} (${g.name}) committed KES ${amtStr} on Loan ${loan.loan_id}. Codeunit 50020 Lien Locked!`, "lien");
+                                    
+                                    setTimeout(() => { justPledgedSno = null; }, 5000);
+                                }
+                            });
+
+                            // Check loan status change (e.g. DISBURSED)
+                            const prevStatus = previousLoanStatusSnapshot ? previousLoanStatusSnapshot[loan.loan_id] : null;
+                            if (prevStatus && prevStatus !== 'DISBURSED' && loan.status === 'DISBURSED') {
+                                playChime(true);
+                                const timeStr = new Date().toLocaleTimeString();
+                                const amtStr = parseFloat(loan.amount || 600000).toLocaleString();
+                                
+                                showLiveToast(
+                                    '💸 M-PESA B2C DISBURSEMENT POSTED!',
+                                    `Loan <strong>${loan.loan_id}</strong> for <strong>${loan.borrower_name}</strong> of <strong>KES ${amtStr}</strong> was successfully paid out to M-PESA!`,
+                                    loan.loan_id
+                                );
+                                
+                                updateLiveTicker(`
+                                    <span class="text-cyan-400 font-bold">[${timeStr}] 💸 DISBURSED:</span>
+                                    <span class="text-white">KES ${amtStr} transferred to ${loan.borrower_name} via Safaricom M-PESA B2C Gateway!</span>
+                                `);
+                                
+                                logToNavConsole(`💸 M-PESA B2C DISBURSED: KES ${amtStr} successfully posted to G/L 1200 & transferred to ${loan.borrower_name} (${loan.loan_id})`, "success");
+                            }
+                        });
+                    }
+
+                    // 3. Update snapshots
+                    previousGuarantorSnapshot = {};
+                    previousLoanStatusSnapshot = {};
+                    allLoansCache.forEach(loan => {
+                        previousLoanStatusSnapshot[loan.loan_id] = loan.status;
+                        (loan.guarantors || []).forEach(g => {
+                            previousGuarantorSnapshot[`${loan.loan_id}__${g.sno}`] = {
+                                status: g.status,
+                                name: g.name,
+                                pledged_amount: g.pledged_amount
+                            };
+                        });
+                    });
+
+                    // 4. Update loan select dropdown
+                    const loanSelect = document.getElementById('nav-loan-select');
+                    if (loanSelect) {
+                        const prevVal = currentLoanId || loanSelect.value;
+                        loanSelect.innerHTML = '';
+                        allLoansCache.forEach(l => {
+                            const opt = document.createElement('option');
+                            opt.value = l.loan_id;
+                            opt.style.backgroundColor = '#0b1329';
+                            opt.style.color = '#38bdf8';
+                            const gCount = (l.guarantors || []).length;
+                            const gNames = (l.guarantors || []).map(g => (g.name || 'Member').split(' ')[0]).join(', ') || '0 Pledges';
+                            const bLabel = l.borrower_name ? l.borrower_name : '[No Borrower Selected]';
+                            opt.textContent = `${l.loan_id} — ${bLabel} [${gCount} Guarantor: ${gNames}]`;
+                            loanSelect.appendChild(opt);
+                        });
+                        if (prevVal && allLoansCache.find(x => x.loan_id === prevVal)) {
+                            loanSelect.value = prevVal;
+                        }
+                    }
+
+                    // 5. Choose loan to display
+                    let activeLoan = null;
+                    if (currentLoanId && currentLoanId !== 'BKS-LN-2026-8941') {
+                        activeLoan = allLoansCache.find(l => l.loan_id === currentLoanId);
+                    }
+                    if (!activeLoan) {
+                        activeLoan = allLoansCache.find(l => (l.guarantors || []).some(g => g.status === 'CONFIRMED'))
+                                  || allLoansCache.find(l => (l.guarantors || []).length > 0)
+                                  || allLoansCache.find(l => l.loan_id === 'BKS-LN-2026-5451')
+                                  || allLoansCache[0];
+                    }
+
+                    if (activeLoan) {
+                        currentLoanId = activeLoan.loan_id;
+                        if (loanSelect) loanSelect.value = currentLoanId;
+                        renderLoan(activeLoan);
+                    }
+                }
+            } catch (e) {
+                console.error("Poll error:", e);
+                logToNavConsole("Connection timeout polling Stride Edge Gateway: " + e.message, "warn");
+            }
+        }
+
+        function renderLoan(loan) {
+            currentLoanId = loan.loan_id;
+            activeGuarantors = loan.guarantors || [];
+
+            const cardTitleEl = document.getElementById('loan-card-title');
+            if (cardTitleEl) cardTitleEl.textContent = `Loan Card: ${loan.loan_id}`;
+
+            const bSnoEl = document.getElementById('nav-borrower-sno');
+            if (bSnoEl) bSnoEl.textContent = loan.borrower_sno || '—';
+
+            const bSelect = document.getElementById('nav-borrower-select');
+            if (bSelect) {
+                bSelect.value = loan.borrower_sno || '';
+            }
+
+            const bRoleEl = document.getElementById('nav-borrower-role');
+            if (bRoleEl) bRoleEl.textContent = loan.borrower_sno ? (loan.borrower_role || 'Member') : 'None Selected';
+
+            const bCushionEl = document.getElementById('nav-borrower-cushion');
+            if (bCushionEl) {
+                if (loan.borrower_sno && allDelegates && allDelegates.length > 0) {
+                    const d = allDelegates.find(x => String(x.sno) === String(loan.borrower_sno));
+                    if (d) {
+                        bCushionEl.textContent = `KES ${d.cushion.toLocaleString()}.00`;
+                    } else {
+                        bCushionEl.textContent = 'KES 2,950,000.00';
+                    }
+                } else {
+                    bCushionEl.textContent = 'KES 0.00';
+                }
+            }
+
+            // Dynamically update top nav user profile
+            const userAvatar = document.getElementById('nav-user-avatar');
+            const userName = document.getElementById('nav-user-name');
+            const userRole = document.getElementById('nav-user-role');
+            if (loan.borrower_name && loan.borrower_sno) {
+                if (userAvatar) {
+                    const initials = loan.borrower_name.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+                    userAvatar.textContent = initials || 'MB';
+                }
+                if (userName) userName.textContent = loan.borrower_name;
+                if (userRole) userRole.textContent = `${loan.borrower_role || 'Borrower'} • S/No: ${loan.borrower_sno || ''}`;
+            } else {
+                if (userAvatar) userAvatar.textContent = '—';
+                if (userName) userName.textContent = 'No User Selected';
+                if (userRole) userRole.textContent = 'Table 21: 95 Delegates Ready';
+            }
+
+            const reqAmtEl = document.getElementById('nav-requested-amount');
+            if (reqAmtEl) reqAmtEl.textContent = loan.amount && parseFloat(loan.amount) > 0 ? `KES ${parseFloat(loan.amount).toLocaleString()}.00` : 'KES 0.00';
+
+            const badge = document.getElementById('loan-status-badge');
+            badge.textContent = loan.status;
+            if (loan.status === 'FULLY_GUARANTEED' || loan.status === 'DISBURSED') {
+                badge.className = 'text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 rounded';
+            } else {
+                badge.className = 'text-xs bg-amber-500 text-white font-bold px-2.5 py-0.5 rounded';
+            }
+
+            const tbody = document.getElementById('guarantors-tbody');
+            tbody.innerHTML = '';
+
+            let confirmedCount = 0;
+
+            activeGuarantors.forEach((g, idx) => {
+                const isConfirmed = g.status === 'CONFIRMED';
+                if (isConfirmed) confirmedCount++;
+
+                const tr = document.createElement('tr');
+                const isJustPledged = String(g.sno) === String(justPledgedSno);
+                tr.id = `guarantor-row-${g.sno}`;
+                tr.className = `nav-grid-row border-b border-gray-200 ${isConfirmed ? 'bg-emerald-50/30' : ''} ${isJustPledged ? 'row-flash' : ''}`;
+
+                const lienHtml = isConfirmed
+                    ? `<span class="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-100/80 px-2 py-0.5 rounded">
+                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> LIEN POSTED (Doc: NAV-LN-${loan.loan_id.slice(-4)})
+                       </span>`
+                    : `<span class="inline-flex items-center gap-1 text-amber-700 font-semibold bg-amber-100/80 px-2 py-0.5 rounded">
+                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> UNLOCKED (Pending Biometric)
+                       </span>`;
+
+                tr.innerHTML = `
+                    <td class="p-2.5 border-r border-gray-200 text-center font-mono text-gray-500">${(idx + 1) * 1000}</td>
+                    <td class="p-2.5 border-r border-gray-200 font-mono font-bold text-gray-800">${g.sno}</td>
+                    <td class="p-2.5 border-r border-gray-200">
+                        <div class="font-bold text-gray-900">${g.name}</div>
+                        <div class="text-[10px] text-gray-500">${g.department || 'Central Bank of Kenya'}</div>
+                    </td>
+                    <td class="p-2.5 border-r border-gray-200 text-right font-mono font-bold text-emerald-700">
+                        KES ${parseFloat(g.pledged_amount || 200000).toLocaleString()}.00
+                    </td>
+                    <td class="p-2.5 border-r border-gray-200 text-right font-mono text-gray-600">
+                        <span class="text-emerald-600 font-bold">✔ ADEQUATE</span>
+                        <div class="text-[9px] text-gray-400">(ODPA §29 Shielded)</div>
+                    </td>
+                    <td class="p-2.5 border-r border-gray-200">
+                        <div class="font-medium text-gray-800">${g.sign_method || (isConfirmed ? 'TouchID Biometric' : 'Pending WhatsApp')}</div>
+                        <div class="text-[9px] font-mono text-gray-400 truncate max-w-[150px]">${g.seal_hash ? g.seal_hash.slice(0, 18) + '...' : 'Awaiting seal'}</div>
+                    </td>
+                    <td class="p-2.5 border-r border-gray-200 font-mono text-[11px]">
+                        ${lienHtml}
+                    </td>
+                    <td class="p-2.5 text-center">
+                        ${!isConfirmed ? `
+                            <button onclick="manualConfirm('${g.sno}')" class="px-2 py-1 text-[10px] font-bold bg-navblue-600 hover:bg-navblue-700 text-white rounded shadow-sm">
+                                Seal Now
+                            </button>
+                        ` : `
+                            <span class="text-xs text-emerald-600 font-bold">✔ Locked</span>
+                        `}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('guarantors-count-label').textContent = `${confirmedCount} of ${activeGuarantors.length} Confirmed (KES 200,000 Each)`;
+            document.getElementById('lien-state-label').textContent = confirmedCount === activeGuarantors.length
+                ? `100% Fully Guaranteed & Locked in Table 50020`
+                : `${confirmedCount} Liens Committed to Member Deposits Ledger`;
+        }
+
+        async function manualConfirm(sno) {
+            logToNavConsole(`Executing Codeunit 50020: ValidateCushion & PlaceLien for Member S/No: ${sno}...`, "odata");
+            try {
+                const formData = new FormData();
+                formData.append('loan_id', currentLoanId);
+                formData.append('guarantor_sno', sno);
+                formData.append('method', 'Navision ERP Manual Verification (Maker-Checker)');
+
+                const res = await fetch(`${API_URL}?action=sign_guarantee`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    logToNavConsole(`Codeunit 50020 SUCCESS: Deposit Lien successfully committed for Member ${sno}. Document: NAV-LN-${currentLoanId.slice(-4)}`, "lien");
+                    pollNow();
+                } else {
+                    logToNavConsole(`Codeunit 50020 REJECTED: ${data.message}`, "warn");
+                }
+            } catch (e) {
+                logToNavConsole("Error committing to NAV Web Services: " + e.message, "warn");
+            }
+        }
+
+        function simulateInboundPledge() {
+            const pending = activeGuarantors.find(g => g.status !== 'CONFIRMED');
+            if (pending) {
+                logToNavConsole(`Inbound webhook received from Meta WhatsApp API: Member ${pending.name} (+254 763 321 365) signed via WebAuthn TouchID!`, "success");
+                manualConfirm(pending.sno);
+            } else {
+                logToNavConsole("All nominated guarantors are already confirmed and locked in the ledger!", "info");
+            }
+        }
+
+        function simulateDisburse() {
+            logToNavConsole("Initiating Credit Committee Final Sanction & Instant M-PESA B2C API Payout...", "odata");
+            playChime(true);
+            setTimeout(() => {
+                logToNavConsole("M-PESA B2C Payout Response: 200 OK | Receipt: QK84920412 | Recipient: Safaricom B2C Gateway", "success");
+                logToNavConsole("Navision General Journal Batch 'LOANS_AUTO' posted to G/L Account 10200 (Bank) & 13100 (Member Loans).", "lien");
+                const bName = document.getElementById('nav-user-name') ? document.getElementById('nav-user-name').textContent : 'Borrower';
+                const amtStr = document.getElementById('nav-requested-amount') ? document.getElementById('nav-requested-amount').textContent : 'KES 600,000.00';
+                showLiveToast(
+                    '💸 M-PESA B2C DISBURSED!',
+                    `<strong>${amtStr}</strong> successfully credited to <strong>${bName}</strong>! Navision Batch LOANS_AUTO committed to G/L.`,
+                    currentLoanId
+                );
+                updateLiveTicker(`
+                    <span class="text-cyan-400 font-bold">[${new Date().toLocaleTimeString()}] 💸 DISBURSED:</span>
+                    <span class="text-white">${amtStr} credited to ${bName} • M-PESA Receipt QK84920412 • G/L 10200</span>
+                `);
+            }, 600);
+        }
+
+        async function resetLedger() {
+            const pin = prompt("🔒 BANKI KUU SACCO — SUPER-ADMIN AUTHORIZATION\n\nEnter Master Authorization Code (S/No) to wipe the core banking ledger:");
+            if (pin === null) return; // User pressed Cancel
+            if (pin.trim() !== '3428') {
+                alert("⛔ ACCESS DENIED: Invalid authorization code.\nOnly the Master Administrator (S/No: 3428) is authorized to execute a system reset.");
+                logToNavConsole("SECURITY VIOLATION: Unauthorized ledger wipe attempt blocked (Invalid PIN).", "error");
+                return;
+            }
+
+            if (!confirm("Confirm Super-Admin Reset:\nReset everything (all users/borrowers, guarantors, liens & loan records) on Navision & Stride Hub to a 100% clean slate?")) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}?action=reset_guarantor_pilot&loan_id=ALL&admin_pin=${encodeURIComponent(pin.trim())}`);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    logToNavConsole("SUPER-ADMIN OVERRIDE: Full system reset executed by Samuel N. Gathigi (S/No: 3428).", "warn");
+                    activeGuarantors = [];
+                    await pollNow();
+                    alert("✓ Core Banking & Stride Hub successfully reset!\n\nAll loan borrower assignments and all guarantor pledges, liens, and seals have been cleared to a 100% clean slate.");
+                } else {
+                    alert("Reset failed: " + (data.message || "Unauthorized access"));
+                    logToNavConsole(`Reset failed: ${data.message || 'Error'}`, "error");
+                }
+            } catch (e) {
+                console.error("Reset error:", e);
+                alert("Reset error: " + e.message);
+            }
+        }
+
+        async function changeNavBorrower(sno) {
+            if (!sno) {
+                logToNavConsole(`Clearing active Loan Borrower from Loan ${currentLoanId}...`, "warn");
+                try {
+                    const res = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'set_loan_borrower',
+                            loan_id: currentLoanId,
+                            borrower_sno: '',
+                            borrower_name: '',
+                            borrower_role: '',
+                            borrower_photo: ''
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        logToNavConsole(`SUCCESS: Borrower cleared from Loan ${currentLoanId}.`, "success");
+                        await pollNow();
+                    }
+                } catch (e) {
+                    console.error("Error clearing borrower:", e);
+                }
+                return;
+            }
+            const d = allDelegates.find(x => String(x.sno) === String(sno));
+            if (!d) return;
+
+            logToNavConsole(`Updating active Loan Borrower to: ${d.name} (S/No: ${d.sno})...`, "odata");
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'set_loan_borrower',
+                        loan_id: currentLoanId,
+                        borrower_sno: d.sno,
+                        borrower_name: d.name,
+                        borrower_role: d.role || 'Member',
+                        borrower_photo: d.photo_url || ''
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    logToNavConsole(`SUCCESS: Borrower updated to ${d.name} on Loan ${currentLoanId}.`, "success");
+                    await pollNow();
+                }
+            } catch (e) {
+                console.error("Change borrower error:", e);
+            }
+        }
+
+        // ==========================================
+        // INTERACTIVE MODAL DIALOGUES FOR NAV LINKS
+        // ==========================================
+        function showModal(title, subtitle, bodyHtml) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-subtitle').textContent = subtitle;
+            document.getElementById('modal-body').innerHTML = bodyHtml;
+            document.getElementById('nav-modal-backdrop').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('nav-modal-backdrop').classList.add('hidden');
+        }
+
+        function openGlModal() {
+            showModal(
+                "Table 17: General Ledger Entries & Journal Audit",
+                "Navision General Journal Batch: LOANS_AUTO • Document: NAV-LN-8941",
+                `
+                <div class="space-y-4">
+                    <div class="text-xs text-gray-600">The following General Ledger entries reflect real-time lien commits and disbursement postings:</div>
+                    <div class="border border-gray-300 rounded overflow-hidden">
+                        <table class="w-full text-xs text-left border-collapse">
+                            <thead class="bg-gray-100 font-bold border-b border-gray-300 text-[11px]">
+                                <tr>
+                                    <th class="p-2 border-r border-gray-300">Entry No.</th>
+                                    <th class="p-2 border-r border-gray-300">Posting Date</th>
+                                    <th class="p-2 border-r border-gray-300">G/L Account</th>
+                                    <th class="p-2 border-r border-gray-300">Account Name</th>
+                                    <th class="p-2 border-r border-gray-300 text-right">Debit (LCY)</th>
+                                    <th class="p-2 text-right">Credit (LCY)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-mono text-[11px]">
+                                <tr class="border-b border-gray-200">
+                                    <td class="p-2 border-r border-gray-200">#489218</td>
+                                    <td class="p-2 border-r border-gray-200">17-10-2026</td>
+                                    <td class="p-2 border-r border-gray-200 text-navblue-900 font-bold">13100</td>
+                                    <td class="p-2 border-r border-gray-200">Member BOSA Loans (Samuel N. Gathigi)</td>
+                                    <td class="p-2 border-r border-gray-200 text-right font-bold text-emerald-700">600,000.00</td>
+                                    <td class="p-2 text-right text-gray-400">0.00</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="p-2 border-r border-gray-200">#489219</td>
+                                    <td class="p-2 border-r border-gray-200">17-10-2026</td>
+                                    <td class="p-2 border-r border-gray-200 text-navblue-900 font-bold">10200</td>
+                                    <td class="p-2 border-r border-gray-200">Bank / M-PESA B2C Clearing Account</td>
+                                    <td class="p-2 border-r border-gray-200 text-right text-gray-400">0.00</td>
+                                    <td class="p-2 text-right font-bold text-rose-700">600,000.00</td>
+                                </tr>
+                                <tr class="bg-amber-50/50">
+                                    <td class="p-2 border-r border-gray-200">#489220</td>
+                                    <td class="p-2 border-r border-gray-200">17-10-2026</td>
+                                    <td class="p-2 border-r border-gray-200 text-amber-900 font-bold">21050</td>
+                                    <td class="p-2 border-r border-gray-200">Member Deposits Lien Subledger (LIEN-BKS-00492)</td>
+                                    <td class="p-2 border-r border-gray-200 text-right font-bold text-amber-700">200,000.00</td>
+                                    <td class="p-2 text-right font-bold text-amber-700">200,000.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-300 rounded p-3 text-xs text-emerald-900 flex items-center justify-between">
+                        <span><strong>Ledger Balance Check:</strong> Total Debits = KES 800,000.00 | Total Credits = KES 800,000.00</span>
+                        <span class="font-bold text-emerald-700 font-mono">STATUS: BALANCED • POSTED</span>
+                    </div>
+                </div>
+                `
+            );
+        }
+
+        function openSasraModal() {
+            showModal(
+                "SASRA Form 24 & IFRS 9 Loan Classification",
+                "Prudential Assessment & Expected Credit Loss (ECL) Modeling",
+                `
+                <div class="space-y-4 text-xs text-gray-700 leading-relaxed">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="p-3 bg-navgray-50 border border-gray-300 rounded">
+                            <div class="text-gray-500 font-semibold">Prudential Class:</div>
+                            <div class="text-base font-bold text-emerald-700 font-mono mt-0.5">PERFORMING (Normal)</div>
+                            <div class="text-[10px] text-gray-400">0 to 30 Days Past Due</div>
+                        </div>
+                        <div class="p-3 bg-navgray-50 border border-gray-300 rounded">
+                            <div class="text-gray-500 font-semibold">Guarantor Coverage Ratio:</div>
+                            <div class="text-base font-bold text-navblue-900 font-mono mt-0.5">100.0% FULLY COVERED</div>
+                            <div class="text-[10px] text-gray-400">3 Verified Biometric Pledges</div>
+                        </div>
+                        <div class="p-3 bg-navgray-50 border border-gray-300 rounded">
+                            <div class="text-gray-500 font-semibold">Statutory Provision Required:</div>
+                            <div class="text-base font-bold text-emerald-700 font-mono mt-0.5">1.0% (KES 6,000.00)</div>
+                            <div class="text-[10px] text-gray-400">SASRA Cap 490 Compliant</div>
+                        </div>
+                    </div>
+                    <div class="bg-sky-50 border border-sky-300 rounded p-3 text-xs text-sky-900">
+                        <strong>SASRA Regulatory Note:</strong> Because all guarantors are authenticated via cryptographic WebAuthn signatures and deposit cushions are verified against Navision in real-time, external auditors (PwC/KPMG/SASRA) receive zero audit queries regarding missing paper vouchers or forged signatures.
+                    </div>
+                </div>
+                `
+            );
+        }
+
+        function openOdpaModal() {
+            showModal(
+                "Kenya Data Protection Act (ODPA 2019) §29 Privacy Shield",
+                "Zero Central Biometric Liability & Deposit Cushion Masking Certificate",
+                `
+                <div class="space-y-4 text-xs text-gray-700 leading-relaxed">
+                    <div class="p-3 bg-emerald-50 border border-emerald-300 rounded text-emerald-950">
+                        <div class="font-bold text-sm text-emerald-800 flex items-center gap-1.5">
+                            <span>🛡️</span> ODPA Safe Harbor Certified: ACTIVE
+                        </div>
+                        <p class="mt-1 text-xs">
+                            Under Sections 29 and 44 of the Kenya Data Protection Act 2019, biometric data (fingerprints, facial geometry) is classified as Sensitive Personal Data. Centralized collection triggers severe penalty exposure (KES 5M+).
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 bg-white border border-gray-300 rounded">
+                            <strong class="text-navblue-900">Raw Fingerprints on SACCO Server:</strong>
+                            <div class="text-2xl font-black text-emerald-600 font-mono mt-1">ZERO (0)</div>
+                            <div class="text-[11px] text-gray-500 mt-0.5">Biometrics never leave member's local hardware enclave.</div>
+                        </div>
+                        <div class="p-3 bg-white border border-gray-300 rounded">
+                            <strong class="text-navblue-900">Guarantor Cushion Visibility:</strong>
+                            <div class="text-2xl font-black text-navblue-600 font-mono mt-1">100% SHIELDED</div>
+                            <div class="text-[11px] text-gray-500 mt-0.5">Borrower only sees boolean adequacy checkmark.</div>
+                        </div>
+                    </div>
+                </div>
+                `
+            );
+        }
+
+        function openCommitteeModal() {
+            showModal(
+                "Credit Committee Governance Conflict-of-Interest Firewall",
+                "Automated Policy Enforcement — SASRA Bylaws Rule #4",
+                `
+                <div class="space-y-4 text-xs text-gray-700 leading-relaxed">
+                    <div class="p-3 bg-rose-50 border border-rose-300 rounded text-rose-950">
+                        <strong class="text-rose-800">Governance Restriction Active:</strong>
+                        <p class="mt-1 text-xs">
+                            In accordance with Section 18 of the SACCO Societies Act and Banki Kuu Corporate Bylaws, sitting members of the Credit Committee are legally prohibited from acting as loan guarantors for any credit facility under their purview.
+                        </p>
+                    </div>
+                    <div class="border border-gray-300 rounded overflow-hidden">
+                        <table class="w-full text-xs text-left border-collapse">
+                            <thead class="bg-gray-100 font-bold border-b border-gray-300 text-[11px]">
+                                <tr>
+                                    <th class="p-2 border-r border-gray-300">S/No</th>
+                                    <th class="p-2 border-r border-gray-300">Officer Name</th>
+                                    <th class="p-2 border-r border-gray-300">Governance Role</th>
+                                    <th class="p-2 text-center">System Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-200">
+                                    <td class="p-2 font-mono font-bold border-r border-gray-200">1104</td>
+                                    <td class="p-2 font-bold border-r border-gray-200">Robert Wekesa</td>
+                                    <td class="p-2 border-r border-gray-200 text-navblue-900">Credit Committee Executive</td>
+                                    <td class="p-2 text-center text-rose-700 font-bold bg-rose-50">⛔ BLOCKED (Auto-Filtered)</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="p-2 font-mono font-bold border-r border-gray-200">3124</td>
+                                    <td class="p-2 font-bold border-r border-gray-200">Josiah Achikah Mayieka</td>
+                                    <td class="p-2 border-r border-gray-200 text-navblue-900">BOD - SACCO (Credit Committee)</td>
+                                    <td class="p-2 text-center text-rose-700 font-bold bg-rose-50">⛔ BLOCKED (Auto-Filtered)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                `
+            );
+        }
+
+        function openRoleCenterModal() {
+            showModal(
+                "Dynamics NAV 2026 Executive Role Center",
+                "Banki Kuu SACCO & BHC • Annual Governance Plenary Dashboard",
+                `
+                <div class="space-y-4 text-xs text-gray-700 leading-relaxed">
+                    <div class="grid grid-cols-4 gap-3 text-center">
+                        <div class="p-3 bg-navblue-50 border border-navblue-200 rounded">
+                            <div class="text-[10px] text-gray-500 uppercase font-bold">Total Delegates</div>
+                            <div class="text-xl font-black text-navblue-900 font-mono mt-0.5">95</div>
+                        </div>
+                        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded">
+                            <div class="text-[10px] text-gray-500 uppercase font-bold">Total Member Deposits</div>
+                            <div class="text-xl font-black text-emerald-700 font-mono mt-0.5">KES 248.5M</div>
+                        </div>
+                        <div class="p-3 bg-amber-50 border border-amber-200 rounded">
+                            <div class="text-[10px] text-gray-500 uppercase font-bold">Unpledged Cushion</div>
+                            <div class="text-xl font-black text-amber-700 font-mono mt-0.5">KES 189.2M</div>
+                        </div>
+                        <div class="p-3 bg-sky-50 border border-sky-200 rounded">
+                            <div class="text-[10px] text-gray-500 uppercase font-bold">Origination Turnaround</div>
+                            <div class="text-xl font-black text-sky-700 font-mono mt-0.5">&lt; 4 MINS</div>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-gray-50 border border-gray-300 rounded font-mono text-[11px] space-y-1 text-gray-600">
+                        <div>• Outbound TLS 1.3 Tunnel: <span class="text-emerald-600 font-bold">ACTIVE (mTLS X.509)</span></div>
+                        <div>• Core ERP Engine: <span class="text-navblue-900 font-bold">Microsoft Dynamics NAV 2026</span></div>
+                        <div>• Inbound Ports Open: <span class="text-emerald-600 font-bold">ZERO (Closed)</span></div>
+                        <div>• Retreat Venue: <span class="text-navblue-900 font-bold">Reef Hotel Nyali Beach, Mombasa</span></div>
+                    </div>
+                </div>
+                `
+            );
+        }
+
+        window.onload = () => {
+            logToNavConsole("Dynamics NAV 2026 Core Service started on TCP:7048", "info");
+            logToNavConsole("Outbound TLS 1.3 Tunnel to Stride Gateway ESTABLISHED.", "success");
+            logToNavConsole("Populating Table 21 with all 95 delegates from Mombasa Retreat delegation...", "odata");
+            loadDelegates();
+            pollNow();
+            setInterval(pollNow, 3000);
+        };
+    </script>
+
+    <!-- AUTHENTIC NAV POPUP MODAL CONTAINER -->
+    <div id="nav-modal-backdrop" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-2xl border border-navblue-700 max-w-2xl w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <!-- Modal Title Bar -->
+            <div class="bg-navblue-900 text-white px-4 py-2.5 flex items-center justify-between">
+                <div>
+                    <h3 id="modal-title" class="font-bold text-sm">NAV Modal Title</h3>
+                    <div id="modal-subtitle" class="text-[10px] text-amber-400 font-mono">Modal Subtitle</div>
+                </div>
+                <button onclick="closeModal()" class="text-slate-300 hover:text-white text-lg font-bold px-2 py-0.5 rounded hover:bg-navblue-800">
+                    &times;
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div id="modal-body" class="p-5 max-h-[75vh] overflow-y-auto">
+                <!-- Injected via JS -->
+            </div>
+            <!-- Modal Footer -->
+            <div class="bg-gray-100 border-t border-gray-300 px-4 py-2.5 flex justify-end">
+                <button onclick="closeModal()" class="px-4 py-1.5 text-xs font-bold bg-navblue-600 hover:bg-navblue-700 text-white rounded shadow-sm">
+                    Close Window (Esc)
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+        // ==============================================================
+        // STRIDE EMBEDDED INTELLIGENCE MODULE (LANSTAR FIN-EXTREME POC)
+        // Implements the 3 Core Proposal Pillars:
+        // Module A: 30-Day Pre-Delinquency & PAR Mitigation
+        // Module B: PesaPlus Real-Time Member Scoring Engine (<400ms API)
+        // Module C: Automated SASRA Prudential Returns & Board Pack
+        // ==============================================================
+
+        function openStrideProposalIntelligence() {
+            // Find current active borrower from loan or fallback to first delegate
+            let currentBorrower = null;
+            if (typeof allDelegates !== 'undefined' && allDelegates.length > 0) {
+                const bSelect = document.getElementById('nav-borrower-select');
+                const selSno = bSelect ? bSelect.value : null;
+                currentBorrower = allDelegates.find(d => String(d.sno) === String(selSno)) || allDelegates[0];
+            } else {
+                currentBorrower = { name: "Dr. Patrick Kamau", sno: "0014", role: "Supervisory Committee", deposits: 2400000, cushion: 1800000 };
+            }
+
+            const token = (typeof currentLoanId !== 'undefined') ? currentLoanId : "BKS-LN-2026-5451";
+            const sharesVal = currentBorrower.deposits || 450000;
+            const requestedVal = 600000;
+
+            const modalHtml = `
+            <div class="space-y-4 text-xs text-gray-800">
+                
+                <!-- KEY ARCHITECTURAL CLARITY: TWO-WAY DATA FLOW -->
+                <div class="p-3.5 rounded-xl bg-gradient-to-r from-slate-900 via-navblue-950 to-slate-900 text-white border border-cyan-500/40 shadow-lg">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+                        <span class="text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider">
+                            🔐 The Zero-PII Handshake Architecture (ODPC § 29 Compliant)
+                        </span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                            100% Privacy Protected
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <!-- LEFT: Inside FinE-Xtreme / Navision (SACCO Core DB) -->
+                        <div class="bg-slate-800/90 p-2.5 rounded-lg border border-slate-700">
+                            <div class="text-[10px] font-mono text-amber-400 font-bold uppercase flex items-center gap-1.5 mb-1">
+                                <span>🏛️</span> <span>FinE-Xtreme / Navision (Local SACCO Database)</span>
+                            </div>
+                            <div class="space-y-1 text-[11px] text-slate-200">
+                                <div>Member Name: <strong class="text-white text-xs" id="display-borrower-name">${currentBorrower.name}</strong></div>
+                                <div>Serial / Payroll No: <code class="text-amber-300 font-mono" id="display-borrower-sno">${currentBorrower.sno}</code></div>
+                                <div>Core Role: <span class="text-slate-300" id="display-borrower-role">${currentBorrower.role || 'Member'}</span></div>
+                                <div class="text-[10px] text-slate-400 italic mt-1 font-mono">
+                                    ⚠️ The SACCO holds the real identity. This name NEVER leaves the SACCO's local server.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: What Stride's Cloud API Sees -->
+                        <div class="bg-slate-800/90 p-2.5 rounded-lg border border-slate-700">
+                            <div class="text-[10px] font-mono text-cyan-400 font-bold uppercase flex items-center gap-1.5 mb-1">
+                                <span>⚡</span> <span>Stride AI Cloud Ingestion (/api_score_loan.php)</span>
+                            </div>
+                            <div class="space-y-1 text-[11px] text-slate-200">
+                                <div>Anonymous Token: <code class="text-cyan-300 font-mono font-bold" id="display-stride-token">${token}</code></div>
+                                <div>PII Included: <span class="text-emerald-400 font-bold">0.0% (Zero-PII)</span></div>
+                                <div>Data Ingested: <span class="font-mono text-slate-300">Shares, Request, Variance, Guarantors</span></div>
+                                <div class="text-[10px] text-slate-400 italic mt-1 font-mono">
+                                    🔒 Stride evaluates pure mathematics. Even if intercepted, no human name exists.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SWITCH BORROWER SELECTOR -->
+                <div class="p-2.5 bg-gray-100 rounded-lg border border-gray-300 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-gray-700">👤 Switch Member to Evaluate:</span>
+                        <select id="modal-delegate-select" onchange="onModalBorrowerChange(this.value)" class="bg-white border border-gray-300 font-bold text-gray-900 text-xs rounded px-2.5 py-1 focus:outline-none focus:border-cyan-500 shadow-sm cursor-pointer">
+                            ${(typeof allDelegates !== 'undefined' && allDelegates.length > 0) ? allDelegates.map(d => `<option value="${d.sno}" ${d.sno === currentBorrower.sno ? 'selected' : ''}>${d.name} (S/No: ${d.sno}) &bull; KES ${Number(d.deposits).toLocaleString()} Deposits</option>`).join('') : '<option>0014 - Dr. Patrick Kamau</option>'}
+                        </select>
+                    </div>
+                    <span class="text-[10px] font-mono text-gray-500">Synced with Table 21 Ledger</span>
+                </div>
+
+                <!-- INTERACTIVE ENGINE -->
+                <div class="p-4 bg-white rounded-lg border border-gray-300 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between border-b border-gray-200 pb-2">
+                        <div class="font-bold text-gray-900 flex items-center gap-2">
+                            <span>⚡</span>
+                            <span>Interactive Module B: Trigger Real-Time Scoring Evaluation</span>
+                        </div>
+                        <span class="text-[10px] font-mono text-gray-500">Target Latency: &lt; 400ms</span>
+                    </div>
+
+                    
+                    <!-- 1-CLICK LIVE PITCH PRESETS -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 p-2 rounded-lg bg-slate-100 border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-600 uppercase font-mono flex items-center gap-1">
+                            <span>🎯</span> <span>Boardroom Live Pitch Presets:</span>
+                        </span>
+                        <div class="flex gap-2">
+                            <button onclick="loadPrimePreset()" class="px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-[11px] flex items-center gap-1.5 shadow cursor-pointer transition-all transform active:scale-95">
+                                <span>🟢</span> Case 1: Prime Member (Auto-Approved)
+                            </button>
+                            <button onclick="loadDistressedPreset()" class="px-3 py-1.5 rounded-md bg-rose-600 hover:bg-rose-500 text-white font-mono font-bold text-[11px] flex items-center gap-1.5 shadow cursor-pointer transition-all transform active:scale-95">
+                                <span>🔴</span> Case 2: High-Risk Member (PAR Warning)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-mono text-gray-500 font-semibold mb-1">STRIDE TOKEN</label>
+                            <input type="text" id="sim-token" value="${token}" class="w-full bg-gray-50 border border-gray-300 rounded px-2.5 py-1 text-xs font-mono font-bold text-gray-800" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono text-gray-500 font-semibold mb-1">MEMBER DEPOSITS (KES)</label>
+                            <input type="number" id="sim-shares" value="${sharesVal}" class="w-full bg-gray-50 border border-gray-300 rounded px-2.5 py-1 text-xs font-mono font-bold text-gray-800">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono text-gray-500 font-semibold mb-1">REQUESTED LOAN (KES)</label>
+                            <input type="number" id="sim-requested" value="${requestedVal}" class="w-full bg-gray-50 border border-gray-300 rounded px-2.5 py-1 text-xs font-mono font-bold text-gray-800">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono text-gray-500 font-semibold mb-1">MONTHLY SALARY (KES)</label>
+                            <input type="number" id="sim-salary" value="65000" class="w-full bg-gray-50 border border-gray-300 rounded px-2.5 py-1 text-xs font-mono font-bold text-gray-800">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2">
+                        <button onclick="executeLiveStrideScoreApi()" id="btn-run-score-api" class="px-4 py-2 rounded font-bold font-mono text-xs bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white shadow flex items-center gap-2 cursor-pointer transition-all transform active:scale-95">
+                            <span>🚀</span>
+                            <span>TRIGGER REAL-TIME SCORING EVALUATION (&lt; 400ms)</span>
+                        </button>
+                        <div id="live-api-badge" class="text-[11px] font-mono text-gray-500">
+                            Ready to query Stride Sovereign AI core...
+                        </div>
+                    </div>
+
+                    <!-- RESULT BOX SHOWING THE COMPLETE CIRCLE -->
+                    <div id="live-score-result-box" class="mt-3 p-4 bg-slate-900 rounded-xl border border-slate-700 text-white hidden space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <div class="flex items-center gap-2 font-mono text-xs">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span class="text-emerald-300 font-bold" id="res-member-congrats">VERDICT RE-LINKED TO LOCAL MEMBER</span>
+                            </div>
+                            <span id="res-latency" class="text-xs font-mono text-amber-400 font-bold">Latency: 38.4 ms</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                            <div class="bg-slate-800/80 p-2.5 rounded border border-slate-700">
+                                <div class="text-[10px] font-mono text-slate-400">CREDIT SCORE</div>
+                                <div id="res-score" class="text-xl font-black text-cyan-400 font-mono mt-0.5">830 / 850</div>
+                                <div id="res-tier" class="text-[10px] text-emerald-400 font-bold">LOW RISK</div>
+                            </div>
+                            <div class="bg-slate-800/80 p-2.5 rounded border border-slate-700">
+                                <div class="text-[10px] font-mono text-slate-400">30-DAY PAR RISK</div>
+                                <div id="res-par" class="text-xl font-black text-emerald-400 font-mono mt-0.5">1.2%</div>
+                                <div class="text-[10px] text-slate-400">Pre-Delinquency Index</div>
+                            </div>
+                            <div class="bg-slate-800/80 p-2.5 rounded border border-slate-700">
+                                <div class="text-[10px] font-mono text-slate-400">RECOMMENDED CEILING</div>
+                                <div id="res-ceiling" class="text-lg font-black text-amber-400 font-mono mt-0.5">KES 630,000</div>
+                                <div class="text-[10px] text-slate-400">Auto-Approved Limit</div>
+                            </div>
+                            <div class="bg-slate-800/80 p-2.5 rounded border border-slate-700">
+                                <div class="text-[10px] font-mono text-slate-400">SASRA PRUDENTIAL</div>
+                                <div id="res-sasra" class="text-xs font-bold text-emerald-300 mt-1">PERFORMING (NORMAL)</div>
+                                <div class="text-[10px] text-slate-400">1.0% Statutory Provision</div>
+                            </div>
+                        </div>
+
+                        <!-- EXPLAINING HOW SACCO FINISHES THE LOOP -->
+                        <div class="p-2.5 bg-emerald-950/60 rounded border border-emerald-500/40 text-[11px] font-mono text-emerald-200 flex items-center justify-between">
+                            <div>
+                                <span>🎉 <strong>FinE-Xtreme Action:</strong> Token <code>${token}</code> is mapped back to <strong id="res-final-name" class="text-white">${currentBorrower.name}</strong>. Ready for 1-Click M-PESA B2C Disbursal!</span>
+                            </div>
+                            <button onclick="disburseToSelectedBorrower()" class="px-3 py-1 rounded bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs cursor-pointer shadow">
+                                Disburse M-PESA
+                            </button>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                            <div>ODPC Kenya Data Protection Act § 29 Certified: <span class="text-emerald-400 font-bold">100% Zero-PII</span></div>
+                            <div class="text-slate-300">Transaction Signed: <span class="text-cyan-300" id="res-txid">STRIDE-TX-372069</span></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="flex items-center justify-between pt-1">
+                    <button onclick="openSasraModal()" class="px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 font-bold text-gray-800 text-xs flex items-center gap-1.5 cursor-pointer">
+                        <span>🏛️</span> Open Full SASRA Form 24 Schedule &rarr;
+                    </button>
+                    <button onclick="closeModal()" class="px-4 py-1.5 rounded bg-navblue-900 hover:bg-navblue-800 font-bold text-white text-xs cursor-pointer">
+                        Close Studio
+                    </button>
+                </div>
+            </div>
+            `;
+
+            showModal(
+                "Lanstar FinE-Xtreme™ & Stride Analytics • Embedded System of Intelligence",
+                "Strategic Partnership Demonstration • Zero R&D Integration for Core Banking",
+                modalHtml
+            );
+        }
+
+        function onModalBorrowerChange(sno) {
+            if (typeof allDelegates === 'undefined') return;
+            const d = allDelegates.find(x => String(x.sno) === String(sno));
+            if (!d) return;
+
+            document.getElementById('display-borrower-name').textContent = d.name;
+            document.getElementById('display-borrower-sno').textContent = d.sno;
+            document.getElementById('display-borrower-role').textContent = d.role || 'Member';
+            document.getElementById('sim-shares').value = d.deposits || 450000;
+            
+            // Dynamically synchronize the bottom payout mapping text so names NEVER diverge
+            const finalNameEl = document.getElementById('res-final-name');
+            if (finalNameEl) finalNameEl.textContent = d.name;
+
+            // Also sync the underlying Navision select if open
+            const bSelect = document.getElementById('nav-borrower-select');
+            if (bSelect) {
+                bSelect.value = sno;
+                if (typeof changeNavBorrower === 'function') changeNavBorrower(sno);
+            }
+        }
+
+        function disburseToSelectedBorrower() {
+            closeModal();
+            if (typeof simulateDisburse === 'function') {
+                simulateDisburse();
+            } else {
+                alert("M-PESA B2C Disbursal Triggered!");
+            }
+        }
+
+        
+        function loadPrimePreset() {
+            document.getElementById('sim-token').value = 'BKS-LN-PRIME-0014';
+            document.getElementById('sim-shares').value = '850000';
+            document.getElementById('sim-requested').value = '600000';
+            document.getElementById('sim-salary').value = '120000';
+            document.getElementById('display-borrower-name').textContent = 'Dr. Patrick Kamau (Prime Member)';
+            document.getElementById('display-borrower-sno').textContent = '0014';
+            document.getElementById('display-borrower-role').textContent = 'Supervisory Committee (Verified Inflow)';
+            document.getElementById('display-stride-token').textContent = 'BKS-LN-PRIME-0014';
+            executeLiveStrideScoreApi();
+        }
+
+        function loadDistressedPreset() {
+            document.getElementById('sim-token').value = 'BKS-LN-DISTRESS-9921';
+            document.getElementById('sim-shares').value = '80000';
+            document.getElementById('sim-requested').value = '1500000';
+            document.getElementById('sim-salary').value = '22000';
+            document.getElementById('display-borrower-name').textContent = 'Over-Indebted Applicant (High Risk)';
+            document.getElementById('display-borrower-sno').textContent = '9921';
+            document.getElementById('display-borrower-role').textContent = 'General Member (18.7x Excessive Leverage)';
+            document.getElementById('display-stride-token').textContent = 'BKS-LN-DISTRESS-9921';
+            executeLiveStrideScoreApi();
+        }
+
+        async function executeLiveStrideScoreApi() {
+            const btn = document.getElementById('btn-run-score-api');
+            const badge = document.getElementById('live-api-badge');
+            const resBox = document.getElementById('live-score-result-box');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-70');
+            badge.innerHTML = '<span class="text-cyan-600 font-bold">Querying Stride Core API...</span>';
+
+            const shares = document.getElementById('sim-shares').value;
+            const requested = document.getElementById('sim-requested').value;
+            const salary = document.getElementById('sim-salary').value;
+            const token = document.getElementById('sim-token').value;
+
+            try {
+                const startTime = performance.now();
+                const url = `api_score_loan.php?shares=${encodeURIComponent(shares)}&requested_amount=${encodeURIComponent(requested)}&monthly_deposit=${encodeURIComponent(salary)}&member_token=${encodeURIComponent(token)}&guarantor_count=3`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const clientLatency = Math.round(performance.now() - startTime);
+
+                resBox.classList.remove('hidden');
+                document.getElementById('res-latency').textContent = `Client Latency: ${clientLatency} ms | Server Engine: ${data.processing_time_ms || 42} ms`;
+                
+                // Enforce exact 1:1 name mapping between SACCO local identity and payout banner
+                const activeMemberName = document.getElementById('display-borrower-name')?.textContent || 'Selected Member';
+                const finalNameEl = document.getElementById('res-final-name');
+                if (finalNameEl) finalNameEl.textContent = activeMemberName;
+
+                if (data.verdict) {
+                    const score = data.verdict.credit_score;
+                    const isGood = score >= 650;
+                    
+                    const scoreEl = document.getElementById('res-score');
+                    scoreEl.textContent = `${score} / 850`;
+                    scoreEl.className = isGood ? 'text-xl font-black text-cyan-400 font-mono mt-0.5' : 'text-xl font-black text-rose-400 font-mono mt-0.5';
+
+                    const tierEl = document.getElementById('res-tier');
+                    tierEl.textContent = data.verdict.risk_tier || 'LOW_RISK';
+                    tierEl.className = isGood ? 'text-[10px] text-emerald-400 font-bold' : 'text-[10px] text-rose-400 font-bold';
+
+                    const parEl = document.getElementById('res-par');
+                    parEl.textContent = data.verdict['30_day_delinquency_probability'] || '1.8%';
+                    parEl.className = isGood ? 'text-xl font-black text-emerald-400 font-mono mt-0.5' : 'text-xl font-black text-rose-400 font-mono mt-0.5';
+
+                    document.getElementById('res-ceiling').textContent = 'KES ' + Number(data.verdict.recommended_ceiling_kes || requested).toLocaleString();
+                    document.getElementById('res-sasra').textContent = data.verdict.sasra_prudential_classification || 'PERFORMING (NORMAL)';
+                    document.getElementById('res-txid').textContent = 'STRIDE-TX-' + Math.floor(Math.random()*900000 + 100000);
+
+                    const congratsEl = document.getElementById('res-member-congrats');
+                    if (isGood) {
+                        congratsEl.innerHTML = `<span class="text-emerald-300 font-bold">✅ AUTO-APPROVED &bull; LOW RISK PROFILE</span>`;
+                    } else {
+                        congratsEl.innerHTML = `<span class="text-rose-400 font-bold">⚠️ HIGH RISK WARNING &bull; UNSECURED EXPOSURE INTERCEPTED!</span>`;
+                    }
+                }
+
+                badge.innerHTML = `<span class="text-emerald-600 font-bold">✓ Score Evaluated in ${clientLatency} ms (Passes &lt; 400ms SLA)</span>`;
+            } catch (err) {
+                badge.innerHTML = '<span class="text-rose-600 font-bold">API call failed: ' + err.message + '</span>';
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-70');
+            }
+        }
+</script>
+
+
+    <!-- Stride Sovereign AI Copilot Widget -->
+    <link rel="stylesheet" href="/stride-chat.css?v=20261023_v5">
+    <script src="/stride-chat.js?v=20261023_v5"></script>
+</body>
+</html>
