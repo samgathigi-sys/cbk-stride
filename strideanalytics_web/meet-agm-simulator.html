@@ -1018,12 +1018,40 @@
     </div>
   </div>
 
+  
+  <!-- 10-MINUTE TEST DRIVE COMPLETION MODAL -->
+  <div id="demoExpiredModal" class="seat-lobby-backdrop" style="z-index: 10000; display: none;">
+    <div class="seat-lobby-card" style="max-width: 520px; text-align: center; padding: 32px 28px;">
+      <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); border: 2px solid #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 14px auto;">
+        ⏱️
+      </div>
+      <div style="display: inline-block; background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); padding: 2px 10px; border-radius: 999px; font-size: 10px; font-weight: 800; margin-bottom: 8px;">
+        10-MINUTE TEST DRIVE COMPLETED
+      </div>
+      <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">Your 10-Minute Kikao™ Demo Session Has Concluded</h2>
+      <p style="font-size: 12.5px; color: #94a3b8; line-height: 1.6; margin-bottom: 20px;">
+        Thank you for test-driving <strong>Stride Kikao™</strong>! To keep the 6 boardroom seats available for all test groups, trial sessions are capped at <strong>10 minutes</strong> and your seat has now been released back to the pool.
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button onclick="restartTenMinuteDemo()" class="seat-btn seat-btn-claim" style="margin-top: 0; padding: 11px; font-size: 13px;">
+          🔄 Start Another 10-Minute Test Drive (Re-Enter Lobby)
+        </button>
+        <a href="index.html#contact" style="display: block; padding: 10px; border-radius: 8px; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; text-decoration: none; font-size: 12px; font-weight: 700;">
+          🏛️ Request Full Institutional License (Unlimited Time)
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- Top Header Bar -->
   <header class="header-bar">
     <div class="header-left">
       <div class="badge-telecast">STRIDE KIKAO™ LIVE</div>
       <div class="header-title">STRIDE KIKAO™ // SOVEREIGN INSTITUTIONAL AUDITORIUM &amp; PARLIAMENTARY TELECAST</div>
       <span id="roleIndicator" class="role-badge role-chairman">ROLE: CHAIRMAN (STAGE - LAPTOP 1)</span>
+      <span id="demoTimerBadge" style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #fbbf24; padding: 3px 10px; border-radius: 6px; font-size: 10.5px; font-family: 'JetBrains Mono', monospace; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;" title="10-Minute Interactive Test Drive Limit">
+        ⏱️ DEMO: <span id="demoTimerDisplay">10:00</span>
+      </span>
     </div>
     <div style="display: flex; align-items: center; gap: 6px;">
       <button onclick="openSeatLobbyModal()" class="btn-action" style="font-size: 10.5px; background: rgba(16, 185, 129, 0.12); border-color: #10b981; color: #ecfdf5;">
@@ -1075,7 +1103,7 @@
         <!-- ============================================== -->
         <div id="tile_chairman" class="camera-tile active-live">
           <div id="rx_tile_chairman" class="tile-rx-bubble"></div>
-          <div id="hand_tile_chairman" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div id="hand_tile_chairman" class="tile-hand-tag" style="display: none; cursor: pointer;" onclick="forceLowerHand('chairman')" title="Click to lower hand">✋ HAND RAISED &times;</div>
           <div class="avatar-placeholder" id="avatar_chairman">
             <div class="avatar-bubble c1">CN</div>
             <div>
@@ -1099,7 +1127,7 @@
         <!-- ============================================== -->
         <div id="tile_member" class="camera-tile">
           <div id="rx_tile_member" class="tile-rx-bubble"></div>
-          <div id="hand_tile_member" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div id="hand_tile_member" class="tile-hand-tag" style="display: none; cursor: pointer;" onclick="forceLowerHand('member')" title="Click to lower hand">✋ HAND RAISED &times;</div>
           <div class="tile-overlay-top" id="muteControl_member" style="display: none;">
             <button onclick="statutoryMuteIndividual('member')" class="btn-statutory-mute">
               🔇 Mute Delegate
@@ -1128,7 +1156,7 @@
         <!-- ============================================== -->
         <div id="tile_auditor" class="camera-tile">
           <div id="rx_tile_auditor" class="tile-rx-bubble"></div>
-          <div id="hand_tile_auditor" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div id="hand_tile_auditor" class="tile-hand-tag" style="display: none; cursor: pointer;" onclick="forceLowerHand('auditor')" title="Click to lower hand">✋ HAND RAISED &times;</div>
           <div class="tile-overlay-top" id="muteControl_auditor" style="display: none;">
             <button onclick="statutoryMuteIndividual('auditor')" class="btn-statutory-mute">
               🔇 Mute Auditor
@@ -1157,7 +1185,7 @@
         <!-- ============================================== -->
         <div id="tile_delegate3" class="camera-tile">
           <div id="rx_tile_delegate3" class="tile-rx-bubble"></div>
-          <div id="hand_tile_delegate3" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div id="hand_tile_delegate3" class="tile-hand-tag" style="display: none; cursor: pointer;" onclick="forceLowerHand('delegate3')" title="Click to lower hand">✋ HAND RAISED &times;</div>
           <div class="tile-overlay-top" id="muteControl_delegate3" style="display: none;">
             <button onclick="statutoryMuteIndividual('delegate3')" class="btn-statutory-mute">
               🔇 Mute Delegate
@@ -1186,7 +1214,7 @@
         <!-- ============================================== -->
         <div id="tile_delegate4" class="camera-tile">
           <div id="rx_tile_delegate4" class="tile-rx-bubble"></div>
-          <div id="hand_tile_delegate4" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div id="hand_tile_delegate4" class="tile-hand-tag" style="display: none; cursor: pointer;" onclick="forceLowerHand('delegate4')" title="Click to lower hand">✋ HAND RAISED &times;</div>
           <div class="tile-overlay-top" id="muteControl_delegate4" style="display: none;">
             <button onclick="statutoryMuteIndividual('delegate4')" class="btn-statutory-mute">
               🔇 Mute Delegate
@@ -1215,7 +1243,7 @@
         <!-- ============================================== -->
         <div id="tile_delegate5" class="camera-tile">
           <div id="rx_tile_delegate5" class="tile-rx-bubble"></div>
-          <div id="hand_tile_delegate5" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div id="hand_tile_delegate5" class="tile-hand-tag" style="display: none; cursor: pointer;" onclick="forceLowerHand('delegate5')" title="Click to lower hand">✋ HAND RAISED &times;</div>
           <div class="tile-overlay-top" id="muteControl_delegate5" style="display: none;">
             <button onclick="statutoryMuteIndividual('delegate5')" class="btn-statutory-mute">
               🔇 Mute Delegate
@@ -2114,10 +2142,11 @@
             enforceStatutoryMute(false);
           }
 
-          // Check for Raised Hands across the boardroom
-          if (statusJson.raised_hands) {
+          // Check for Raised Hands across the boardroom (with debounce so user clicks are never overwritten by in-flight polls)
+          const rhMap = (statusJson.raised_hands && !Array.isArray(statusJson.raised_hands)) ? statusJson.raised_hands : {};
+          if (!window.lastHandActionTs || (Date.now() - window.lastHandActionTs > 3000)) {
             ALL_ROLES.forEach(r => {
-              const isRaised = Boolean(statusJson.raised_hands[r]);
+              const isRaised = Boolean(rhMap[r]);
               showTileHand(r, isRaised);
               if (r === currentRole && isHandRaised !== isRaised) {
                 isHandRaised = isRaised;
@@ -2433,6 +2462,7 @@
     }
 
     async function toggleRaiseHand() {
+      window.lastHandActionTs = Date.now();
       isHandRaised = !isHandRaised;
       const btn = document.getElementById('btnRaiseHand');
       const lbl = document.getElementById('lblHand');
@@ -2442,24 +2472,117 @@
         if (lbl) lbl.innerText = 'Lower Hand';
         spawnFlyingEmoji('✋');
         showTileHand(currentRole, true);
+        try {
+          await fetch(`${API_URL}?action=reaction_send&room=${encodeURIComponent(currentRoom)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sender: currentRole,
+              emoji: '✋',
+              type: 'raise_hand'
+            })
+          });
+        } catch (e) {}
       } else {
         if (btn) btn.classList.remove('active');
         if (lbl) lbl.innerText = 'Raise Hand';
         showTileHand(currentRole, false);
+        try {
+          await fetch(`${API_URL}?action=lower_hand&target=${encodeURIComponent(currentRole)}&room=${encodeURIComponent(currentRoom)}`);
+        } catch (e) {}
       }
+    }
 
+    async function forceLowerHand(targetRole) {
+      window.lastHandActionTs = Date.now();
+      showTileHand(targetRole, false);
+      if (targetRole === currentRole) {
+        isHandRaised = false;
+        const btn = document.getElementById('btnRaiseHand');
+        const lbl = document.getElementById('lblHand');
+        if (btn) btn.classList.remove('active');
+        if (lbl) lbl.innerText = 'Raise Hand';
+      }
       try {
-        await fetch(`${API_URL}?action=reaction_send`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sender: currentRole,
-            emoji: '✋',
-            type: isHandRaised ? 'raise_hand' : 'lower_hand'
-          })
-        });
+        await fetch(`${API_URL}?action=lower_hand&target=${encodeURIComponent(targetRole)}&room=${encodeURIComponent(currentRoom)}`);
       } catch (e) {}
     }
+
+    // -------------------------------------------------------------
+    // 10-MINUTE (600 SECONDS) TEST DRIVE DEMO TIMER
+    // -------------------------------------------------------------
+    const DEMO_DURATION_SEC = 600; // 10 minutes
+    let demoRemainingSec = DEMO_DURATION_SEC;
+    let demoCountdownInterval = null;
+
+    function startTenMinuteDemoTimer() {
+      if (demoCountdownInterval) clearInterval(demoCountdownInterval);
+      let startTs = parseInt(sessionStorage.getItem('kikao_demo_start_ts') || '0', 10);
+      if (!startTs || (Date.now() - startTs) >= DEMO_DURATION_SEC * 1000) {
+        startTs = Date.now();
+        sessionStorage.setItem('kikao_demo_start_ts', String(startTs));
+      }
+
+      demoCountdownInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTs) / 1000);
+        demoRemainingSec = Math.max(0, DEMO_DURATION_SEC - elapsed);
+
+        const mins = String(Math.floor(demoRemainingSec / 60)).padStart(2, '0');
+        const secs = String(demoRemainingSec % 60).padStart(2, '0');
+        const disp = document.getElementById('demoTimerDisplay');
+        const badge = document.getElementById('demoTimerBadge');
+        if (disp) disp.innerText = `${mins}:${secs}`;
+
+        if (badge) {
+          if (demoRemainingSec <= 60) {
+            badge.style.background = 'rgba(220, 38, 38, 0.25)';
+            badge.style.borderColor = '#ef4444';
+            badge.style.color = '#fecaca';
+          } else {
+            badge.style.background = 'rgba(245, 158, 11, 0.15)';
+            badge.style.borderColor = '#f59e0b';
+            badge.style.color = '#fbbf24';
+          }
+        }
+
+        if (demoRemainingSec <= 0) {
+          clearInterval(demoCountdownInterval);
+          handleDemoTimeExpired();
+        }
+      }, 1000);
+    }
+
+    async function handleDemoTimeExpired() {
+      // Stop local camera/mic if active
+      try {
+        if (typeof stopMyCamera === 'function') stopMyCamera();
+      } catch (e) {}
+
+      // Release seat so other testers can use it
+      hasClaimedValidSeat = false;
+      sessionStorage.removeItem('kikao_claimed_role');
+      sessionStorage.removeItem('kikao_demo_start_ts');
+      try {
+        await fetch(`${API_URL}?action=seat_release&room=${encodeURIComponent(currentRoom)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_id: kikaoClientId })
+        });
+      } catch (e) {}
+
+      const expModal = document.getElementById('demoExpiredModal');
+      if (expModal) expModal.style.display = 'flex';
+    }
+
+    function restartTenMinuteDemo() {
+      const expModal = document.getElementById('demoExpiredModal');
+      if (expModal) expModal.style.display = 'none';
+      sessionStorage.setItem('kikao_demo_start_ts', String(Date.now()));
+      startTenMinuteDemoTimer();
+      openSeatLobbyModal();
+    }
+
+    startTenMinuteDemoTimer();
 
     function showTileReaction(role, emoji, type) {
       const bubble = document.getElementById('rx_tile_' + role);

@@ -217,7 +217,11 @@ if ($action === 'seat_release') {
 if ($action === 'seat_reset_all') {
     header('Content-Type: application/json; charset=utf-8');
     @file_put_contents($seatsFile, json_encode([], JSON_PRETTY_PRINT));
-    echo json_encode(['status' => 'ALL_SEATS_RESET', 'seats' => []]);
+    $state['raised_hands'] = [];
+    $state['muted_roles'] = [];
+    $state['floor_locked'] = false;
+    @file_put_contents($stateFile, json_encode($state, JSON_PRETTY_PRINT));
+    echo json_encode(['status' => 'ALL_SEATS_RESET', 'seats' => [], 'raised_hands' => []]);
     exit;
 }
 
@@ -320,6 +324,19 @@ if ($action === 'stream_status') {
     }
     $res['muted_roles'] = $state['muted_roles'] ?? [];
     $res['floor_locked'] = $state['floor_locked'] ?? false;
+    // Auto-clean stale raised hands (> 180s)
+    $rhChanged = false;
+    if (!empty($state['raised_hands']) && is_array($state['raised_hands'])) {
+        foreach ($state['raised_hands'] as $rk => $rv) {
+            if (!isset($rv['time']) || (time() - (int)$rv['time']) > 180) {
+                unset($state['raised_hands'][$rk]);
+                $rhChanged = true;
+            }
+        }
+        if ($rhChanged) {
+            @file_put_contents($stateFile, json_encode($state, JSON_PRETTY_PRINT));
+        }
+    }
     $res['raised_hands'] = $state['raised_hands'] ?? [];
 
     $reactions = file_exists($reactionsFile) ? (json_decode(file_get_contents($reactionsFile), true) ?: []) : [];
