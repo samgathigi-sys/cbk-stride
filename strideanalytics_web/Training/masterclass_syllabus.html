@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank of Uganda | 5-Day Cyber Forensics & Sovereign Payment Systems Syllabus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bou-navy: #0f172a;
+            --bou-gold: #b45309;
+            --bou-gold-light: #fef3c7;
+            --cf-blue: #2563eb;
+            --border: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 32px 20px;
+        }
+
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        /* Top Action Ribbon (Hidden when printing) */
+        .action-bar {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 12px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .action-bar-left {
+            font-size: 13px;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .btn-gold {
+            background: #d97706;
+            color: #ffffff;
+        }
+
+        .btn-gold:hover {
+            background: #b45309;
+        }
+
+        .btn-outline {
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Official Document Header */
+        .doc-header {
+            padding: 36px 40px;
+            border-bottom: 3px solid var(--bou-gold);
+            background: linear-gradient(to right, #ffffff, #fffbeb);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+        }
+
+        .header-title-block h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--bou-navy);
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .header-title-block h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--bou-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 10px;
+        }
+
+        .header-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .accreditation-stamp {
+            background: #ffffff;
+            border: 2px solid var(--bou-gold);
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-align: center;
+            min-width: 210px;
+            flex-shrink: 0;
+        }
+
+        .stamp-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--bou-gold);
+            letter-spacing: 0.08em;
+        }
+
+        .stamp-val {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--bou-navy);
+            margin-top: 2px;
+        }
+
+        .doc-body {
+            padding: 36px 40px;
+        }
+
+        .section-heading {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bou-navy);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-heading i {
+            color: var(--bou-gold);
+        }
+
+        .exec-overview {
+            background: #f8fafc;
+            border-left: 4px solid var(--bou-navy);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+            color: #334155;
+            margin-bottom: 32px;
+        }
+
+        /* Portal Capabilities Grid */
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .portal-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color 0.15s;
+        }
+
+        .portal-card:hover {
+            border-color: var(--cf-blue);
+        }
+
+        .portal-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .portal-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--bou-navy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .live-tag {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .portal-card-desc {
+            font-size: 12.5px;
+            color: #475569;
+            margin-bottom: 12px;
+        }
+
+        .portal-link {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--cf-blue);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .portal-link:hover {
+            text-decoration: underline;
+        }
+
+        /* 5-Day Curriculum Cards */
+        .day-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            page-break-inside: avoid;
+        }
+
+        .day-header {
+            background: var(--bou-navy);
+            color: #ffffff;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .day-badge {
+            background: var(--bou-gold);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .day-title {
+            font-size: 15px;
+            font-weight: 700;
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .day-hours {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .day-body {
+            padding: 20px;
+            background: #ffffff;
+        }
+
+        .module-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .module-table th {
+            text-align: left;
+            padding: 8px 12px;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .module-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: top;
+            color: #334155;
+        }
+
+        .lab-callout {
+            margin-top: 12px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 12.5px;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .doc-footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        @media print {
+            body { background: #ffffff; padding: 0; }
+            .container { box-shadow: none; border: none; max-width: 100%; }
+            .action-bar { display: none !important; }
+        }
+
+        @media (max-width: 768px) {
+            .portal-grid { grid-template-columns: 1fr; }
+            .doc-header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top Action Bar -->
+        <div class="action-bar">
+            <div class="action-bar-left">
+                <i class="fa-solid fa-shield-halved" style="color: #f59e0b;"></i>
+                <span><strong>Official Curriculum & Portal Prospectus</strong> — Ready for Training Center Submission</span>
+            </div>
+            <div class="action-buttons">
+                <a href="synthetic_central_bank.html" class="btn btn-outline">
+                    <i class="fa-solid fa-gauge-high"></i> Open Central Bank Sandbox
+                </a>
+                <button class="btn btn-gold" onclick="window.print()">
+                    <i class="fa-solid fa-file-pdf"></i> Print / Save Official PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="doc-header">
+            <div class="header-title-block">
+                <h2>Executive Masterclass Prospectus & Technical Syllabus</h2>
+                <h1>CYBER FORENSICS, SOVEREIGN PAYMENT SYSTEMS &amp; AUTONOMOUS SOC ARCHITECTURE</h1>
+                <div class="header-meta">
+                    <strong>Target Institution:</strong> Bank of Uganda (BOU) &amp; Supervised Financial Institutions &nbsp;|&nbsp;
+                    <strong>Duration:</strong> 5 Intensive Days (40 CPE Hours) &nbsp;|&nbsp;
+                    <strong>Delivery Mode:</strong> Instructor-Led with Live Virtual Sovereign Enclave Labs
+                </div>
+            </div>
+            <div class="accreditation-stamp">
+                <div class="stamp-title">Regulatory Alignment</div>
+                <div class="stamp-val">ISO 20022 &amp; SWIFT CSP</div>
+                <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Uganda ETA 2011 (Sec. 8) &amp; NPS Act 2020 Compliant</div>
+            </div>
+        </header>
+
+        <div class="doc-body">
+
+            <!-- Executive Summary -->
+            <div class="exec-overview">
+                <strong>Program Mandate:</strong> Modern central banks and national payment switches face sophisticated nation-state adversaries (e.g., Lazarus Group/APT38, Carbanak) targeting RTGS settlement wires, SWIFT gateways, cross-border regional corridors (EAPS), and mobile money trust escrows. Rather than relying on passive slide decks, this 5-day masterclass equips central bank engineers, SOC analysts, forensic investigators, and IT auditors with a <strong>live, interactive Sovereign Central Bank Virtual Enclave</strong>—enabling hands-on packet inspection, sub-second SOAR containment, memory forensics, and court-admissible evidence packaging.
+            </div>
+
+            <!-- Section 1: What the Interactive Portal Provides -->
+            <h3 class="section-heading">
+                <i class="fa-solid fa-laptop-code"></i>
+                1. What Our Dedicated Training Portal Provides (Live Virtual Enclave)
+            </h3>
+            <p style="font-size: 13.5px; color: #475569; margin-bottom: 16px;">
+                Every delegate receives 24/7 browser-based access to six bespoke, zero-latency simulation laboratories hosted on our sovereign training portal (requiring zero local software installation):
+            </p>
+
+            <div class="portal-grid">
+                <!-- Lab 1 -->
+                <div class="portal-card">
+                    <div>
+                        <div class="portal-card-header">
+                            <div class="portal-card-title">
+                                <i class="fa-solid fa-building-columns" style="color: #b45309;"></i>
+                                1. Synthetic Central Bank Telemetry &amp; SOAR Sandbox
+                            </div>
+                            <span class="live-tag">Live Lab</span>
+                        </div>
+                        <p class="portal-card-desc">
+                            A Cloudflare/Rapid7-grade operational dashboard simulating live RTGS clearing across 25 Ugandan commercial banks (Stanbic, Centenary, Absa, etc.), ISO 20022 <code>pacs.008</code> validation, EAPS cross-border netting (CBK, BOT, BNR), and MTN/Airtel mobile money escrow sweeps. Includes a Chaos Adversary Injection Pad and 3-format Executive Report Exporter (PDF, CSV, Section 8 JSON).
+                        </p>
+                    </div>
+                    <a href="synthetic_central_bank.html" class="portal-link" target="_blank">
+                        Launch Synthetic Central Bank Sandbox <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+                <!-- Lab 2 -->
+                <div class="portal-card">
+                    <div>
+                        <div class="portal-card-header">
+                            <div class="portal-card-title">
+                                <i class="fa-solid fa-diagram-project" style="color: #2563eb;"></i>
+                                2. Sovereign Payment Systems &amp; SOC Architecture Map
+                            </div>
+                            <span class="live-tag">Live Lab</span>
+                        </div>
+                        <p class="portal-card-desc">
+                            Interactive multi-tier network proposal and defense-in-depth blueprint integrating commercial enterprise perimeter appliances (Fortinet, Palo Alto, F5, Cisco ESA) with open-source sovereign detection engines (Coraza WAF, Suricata IDS, Wazuh XDR, Shuffle SOAR, and OpenSearch SIEM).
+                        </p>
+                    </div>
+                    <a href="payment_systems_architecture.html" class="portal-link" target="_blank">
+                        Launch Payment Architecture Blueprint <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+                <!-- Lab 3 -->
+                <div class="portal-card">
+                    <div>
+                        <div class="portal-card-header">
+                            <div class="portal-card-title">
+                                <i class="fa-solid fa-bullhorn" style="color: #dc2626;"></i>
+                                3. Multi-Scenario Cyber War Room Simulator
+                            </div>
+                            <span class="live-tag">Live Lab</span>
+                        </div>
+                        <p class="portal-card-desc">
+                            Command-level crisis simulation pitting Red Team attackers against Blue Team defenders across realistic central bank emergencies: SWIFT MT103 Heists, Enclave Ransomware Outbreaks, Insider HSM Key Compromise, and Cross-Border EAPS DDoS floods.
+                        </p>
+                    </div>
+                    <a href="war_room_simulator.html" class="portal-link" target="_blank">
+                        Launch Cyber War Room Simulator <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+                <!-- Lab 4 -->
+                <div class="portal-card">
+                    <div>
+                        <div class="portal-card-header">
+                            <div class="portal-card-title">
+                                <i class="fa-solid fa-bolt" style="color: #059669;"></i>
+                                4. Autonomous SOAR Playbook &amp; MTTC Simulator
+                            </div>
+                            <span class="live-tag">Live Lab</span>
+                        </div>
+                        <p class="portal-card-desc">
+                            Step-by-step orchestration engine demonstrating how automated webhooks in Shuffle SOAR and Coraza CRS isolate rogue SWIFT BIC sessions, throttle API replay storms, and freeze escrow ledgers in 1.28 seconds without human latency.
+                        </p>
+                    </div>
+                    <a href="soar_playbook_simulator.html" class="portal-link" target="_blank">
+                        Launch SOAR Playbook Simulator <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+                <!-- Lab 5 -->
+                <div class="portal-card">
+                    <div>
+                        <div class="portal-card-header">
+                            <div class="portal-card-title">
+                                <i class="fa-solid fa-microchip" style="color: #7c3aed;"></i>
+                                5. CyberForensic Chef &amp; PII Sanitization Workbench
+                            </div>
+                            <span class="live-tag">Live Lab</span>
+                        </div>
+                        <p class="portal-card-desc">
+                            Browser-based forensic decoding laboratory for de-obfuscating Base64, Hex, and XOR malware payloads, extracting hidden C2 indicators, and performing cryptographic PII masking (salted hashing of National IDs and Bank Accounts) prior to SIEM log ingestion.
+                        </p>
+                    </div>
+                    <a href="cyber_forensic_chef.html" class="portal-link" target="_blank">
+                        Launch CyberForensic Chef Workbench <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+                <!-- Lab 6 -->
+                <div class="portal-card">
+                    <div>
+                        <div class="portal-card-header">
+                            <div class="portal-card-title">
+                                <i class="fa-brands fa-cloudflare" style="color: #f38020;"></i>
+                                6. Cloudflare Edge Perimeter &amp; WAF Telemetry Replica
+                            </div>
+                            <span class="live-tag">Live Lab</span>
+                        </div>
+                        <p class="portal-card-desc">
+                            Dedicated edge perimeter analytics environment training delegates on HTTP status code distribution (2xx/3xx/4xx/5xx), cache posture, bot fight mode, OWASP Core Rule Set (CRS 942100) SQLi/XSS blocks, and geographic threat origin profiling.
+                        </p>
+                    </div>
+                    <a href="cloudflare_analytics.html" class="portal-link" target="_blank">
+                        Launch Edge WAF Analytics Lab <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Section 2: Detailed 5-Day Syllabus -->
+            <h3 class="section-heading">
+                <i class="fa-solid fa-calendar-check"></i>
+                2. Comprehensive 5-Day Masterclass Syllabus (Day-by-Day Breakdown)
+            </h3>
+
+            <!-- DAY 1 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-badge">Day 01</span>
+                    <span class="day-title">Sovereign Payment Foundations, Threat Landscape &amp; Central Bank Attack Vectors</span>
+                    <span class="day-hours">08:30 – 17:00 EAT (8 CPE Hrs)</span>
+                </div>
+                <div class="day-body">
+                    <table class="module-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%;">Session</th>
+                                <th style="width: 32%;">Module Topic</th>
+                                <th>Technical &amp; Operational Coverage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>08:30 – 10:30</strong></td>
+                                <td><strong>Anatomy of Sovereign Payment Rails</strong></td>
+                                <td>Architecture of the Bank of Uganda RTGS core, ISO 20022 (<code>pacs.008</code> credit transfers &amp; <code>camt.053</code> EOD statements), SWIFT Alliance Access/Entry gateways, East African Payment System (EAPS) bilateral netting, and MTN/Airtel Mobile Money trust escrows.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>11:00 – 13:00</strong></td>
+                                <td><strong>Nation-State Adversaries &amp; Heist Case Studies</strong></td>
+                                <td>Forensic deconstruction of the Bangladesh Bank $81M SWIFT heist, Lazarus Group (APT38) wiper/printer manipulation, Carbanak/FIN7 core banking persistence, and African mobile money API callback replay syndicates.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>14:00 – 15:30</strong></td>
+                                <td><strong>Defense-in-Depth &amp; Hybrid SOC Design</strong></td>
+                                <td>Integrating commercial perimeter appliances (Fortinet NGFW, Palo Alto, F5 BIG-IP, Cisco ESA) with open-source sovereign telemetry (Coraza WAF, Suricata DPI, Wazuh EDR, OpenSearch SIEM, and Shuffle SOAR) for zero-vendor-lock-in visibility.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="lab-callout">
+                        <div>
+                            <i class="fa-solid fa-flask"></i>
+                            <strong>Day 1 Practical Lab (15:30 – 17:00):</strong> Mapping the Sovereign Payment Systems &amp; Hybrid SOC Architecture Blueprint; tracing a live UGX 4.2B interbank settlement from Stanbic Uganda through perimeter WAFs to the RTGS core.
+                        </div>
+                        <a href="payment_systems_architecture.html" class="portal-link">Open Lab &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAY 2 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-badge">Day 02</span>
+                    <span class="day-title">Network Forensics, Deep Packet Inspection (DPI) &amp; Payment Protocol Anomaly Hunting</span>
+                    <span class="day-hours">08:30 – 17:00 EAT (8 CPE Hrs)</span>
+                </div>
+                <div class="day-body">
+                    <table class="module-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%;">Session</th>
+                                <th style="width: 32%;">Module Topic</th>
+                                <th>Technical &amp; Operational Coverage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>08:30 – 10:30</strong></td>
+                                <td><strong>ISO 20022 &amp; SWIFT Packet Inspection</strong></td>
+                                <td>Dissecting raw ISO 20022 XML schemas and SWIFT FIN blocks (Header 1–5, Tag 20 Transaction Ref, Tag 32A Value/Currency, Tag 59 Beneficiary). Detecting XInclude XML Entity Expansion (XXE) and PKI X.509 signature stripping.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>11:00 – 13:00</strong></td>
+                                <td><strong>Edge WAF &amp; Suricata Rule Engineering</strong></td>
+                                <td>Writing custom Coraza OWASP CRS rules (Rule 942100/912120) and Suricata network signatures to intercept high-rate mobile money callback floods, Tor exit node probes, and unauthorized BIC routing.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>14:00 – 15:30</strong></td>
+                                <td><strong>Cross-Border Corridor Telemetry (EAPS)</strong></td>
+                                <td>Monitoring bilateral clearing links between Bank of Uganda (BOU), Central Bank of Kenya (CBK), Bank of Tanzania (BOT), and National Bank of Rwanda (BNR); identifying BGP hijacking and latency anomalies on regional fiber trunks.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="lab-callout">
+                        <div>
+                            <i class="fa-solid fa-flask"></i>
+                            <strong>Day 2 Practical Lab (15:30 – 17:00):</strong> Operating the Cloudflare-Style Central Bank Telemetry Sandbox; analyzing live 2xx/3xx/4xx/5xx clearing status codes and inspecting intercepted SWIFT/ISO 20022 packets.
+                        </div>
+                        <a href="synthetic_central_bank.html" class="portal-link">Open Lab &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAY 3 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-badge">Day 03</span>
+                    <span class="day-title">Digital Evidence Acquisition, Volatile Memory Forensics &amp; Payload De-obfuscation</span>
+                    <span class="day-hours">08:30 – 17:00 EAT (8 CPE Hrs)</span>
+                </div>
+                <div class="day-body">
+                    <table class="module-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%;">Session</th>
+                                <th style="width: 32%;">Module Topic</th>
+                                <th>Technical &amp; Operational Coverage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>08:30 – 10:30</strong></td>
+                                <td><strong>Order of Volatility &amp; Live RAM Acquisition</strong></td>
+                                <td>RFC 3227 guidelines for critical financial servers that cannot be powered down. Capturing volatile memory (LiME/WinPmem) from RTGS jump-hosts without disrupting national liquidity clearing.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>11:00 – 13:00</strong></td>
+                                <td><strong>Memory Analysis &amp; Fileless Malware Hunting</strong></td>
+                                <td>Using Volatility 3 and Velociraptor to uncover injected DLLs, hollowed system processes (<code>lsass.exe</code> / <code>svchost.exe</code>), rogue scheduled tasks, and in-memory credential harvesting targeting HSM operator tokens.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>14:00 – 15:30</strong></td>
+                                <td><strong>Cryptographic De-obfuscation &amp; PII Masking</strong></td>
+                                <td>Reversing multi-layer Base64, Hex, and XOR-encoded PowerShell/Python stagers. Enforcing privacy-by-design through salted cryptographic hashing of Ugandan National IDs (NIN) and bank account numbers prior to SIEM storage.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="lab-callout">
+                        <div>
+                            <i class="fa-solid fa-flask"></i>
+                            <strong>Day 3 Practical Lab (15:30 – 17:00):</strong> Hands-on decoding of obfuscated APT malware payloads and automated PII sanitization using the CyberForensic Chef Workbench.
+                        </div>
+                        <a href="cyber_forensic_chef.html" class="portal-link">Open Lab &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAY 4 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-badge">Day 04</span>
+                    <span class="day-title">Autonomous Incident Response, SOAR Orchestration &amp; Live Cyber War Room Exercises</span>
+                    <span class="day-hours">08:30 – 17:00 EAT (8 CPE Hrs)</span>
+                </div>
+                <div class="day-body">
+                    <table class="module-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%;">Session</th>
+                                <th style="width: 32%;">Module Topic</th>
+                                <th>Technical &amp; Operational Coverage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>08:30 – 10:30</strong></td>
+                                <td><strong>Sub-Second SOAR Playbook Engineering</strong></td>
+                                <td>Eliminating human reaction delay during high-velocity financial heists. Designing 5-node Shuffle SOAR workflows: (1) Threat Ingest &rarr; (2) Coraza WAF Drop &rarr; (3) Alliance BIC Session Revoke &rarr; (4) Escrow Freeze &rarr; (5) SHA-256 Vaulting in 1.28 seconds.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>11:00 – 13:00</strong></td>
+                                <td><strong>Ransomware &amp; Insider Threat Containment</strong></td>
+                                <td>Micro-segmentation isolation for BlackCat/LockBit enclave outbreaks, BGP FlowSpec automated rate throttling for mobile money switches, and dual-custody HSM quorum enforcement.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>14:00 – 15:30</strong></td>
+                                <td><strong>Chaos Engineering &amp; Adversary Emulation</strong></td>
+                                <td>Executing controlled Red Team injections against the synthetic central bank enclave—testing SWIFT MT103 beneficiary tampering, RTGS high-value outlier drains, and M-Pesa/MTN callback spoofing.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="lab-callout">
+                        <div>
+                            <i class="fa-solid fa-flask"></i>
+                            <strong>Day 4 Practical Lab (15:30 – 17:00):</strong> Commanding the Multi-Scenario Cyber War Room &amp; triggering live 5-Node SOAR Playbooks under simulated attack pressure.
+                        </div>
+                        <a href="war_room_simulator.html" class="portal-link">Open Lab &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAY 5 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-badge">Day 05</span>
+                    <span class="day-title">Uganda Cyber Law, Section 8 Admissibility, Cross-Border Governance &amp; Board Reporting</span>
+                    <span class="day-hours">08:30 – 17:00 EAT (8 CPE Hrs)</span>
+                </div>
+                <div class="day-body">
+                    <table class="module-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%;">Session</th>
+                                <th style="width: 32%;">Module Topic</th>
+                                <th>Technical &amp; Operational Coverage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>08:30 – 10:30</strong></td>
+                                <td><strong>Statutory &amp; Legal Frameworks in Uganda</strong></td>
+                                <td>Mastering the legal requirements of the <strong>Uganda Electronic Transactions Act 2011 (Section 8 — Admissibility &amp; Evidential Weight of Electronic Records)</strong>, Computer Misuse Act, Data Protection &amp; Privacy Act 2019, and National Payment Systems Act 2020.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>11:00 – 13:00</strong></td>
+                                <td><strong>Cryptographic Chain of Custody &amp; Expert Testimony</strong></td>
+                                <td>Constructing immutable SHA-256 evidence bags signed by FIPS 140-2 Level 3 Hardware HSMs. Preparing forensic affidavits and defending digital evidence against courtroom challenges.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>14:00 – 15:30</strong></td>
+                                <td><strong>Executive Board &amp; Governor Briefing</strong></td>
+                                <td>Translating deep packet captures and SOAR metrics into clear executive KPIs: Capital Preserved (UGX), Mean Time to Contain (MTTC), Commercial Bank LCR Liquidity Impact, and Regional EAPS Stability.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="lab-callout">
+                        <div>
+                            <i class="fa-solid fa-flask"></i>
+                            <strong>Day 5 Capstone Exercise (15:30 – 17:00):</strong> Generating and defending the 3-format Sovereign Executive Forensic Audit Package (Printable PDF Briefing, Excel CSV Clearing Dataset, and Section 8 JSON Evidence Vault).
+                        </div>
+                        <a href="synthetic_central_bank.html" class="portal-link">Open Capstone &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="doc-footer">
+                <div>
+                    <strong>Stride Analytics — Sovereign Cyber Forensics &amp; Financial Systems Practice</strong><br>
+                    Portal Access: <a href="https://strideanalytics.co.ke/Training/masterclass_syllabus.html" style="color: #2563eb;">https://strideanalytics.co.ke/Training/masterclass_syllabus.html</a>
+                </div>
+                <div style="text-align: right;">
+                    <strong>Lead Faculty &amp; Program Director:</strong> Sam Gathigi<br>
+                    Document Ref: <code>BOU-SYLLABUS-2026-V4</code>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+</body>
+</html>
