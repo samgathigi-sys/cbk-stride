@@ -2106,17 +2106,22 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
 
 
     // -------------------------------------------------------------
-    // REAL-TIME CROSS-DEVICE VOICE AUDIO ENGINE (12kHz PCM RELAY)
-    // Captures microphone audio, downsamples to 12kHz Int16 PCM,
-    // and plays peer voice streams seamlessly across all devices.
+    // REAL-TIME CROSS-DEVICE VOICE AUDIO ENGINE (3-LAYER ECHO KILLER)
+    // Layer 1: Single-flight poll + seenAudioSeqs Set (zero duplicate playback)
+    // Layer 2: Hard Speakerphone Acoustic Gate (mutes mic while speaker plays + 650ms tail)
+    // Layer 3: Smart VAD Noise Gate + Server Active-Speaker Lock
     // -------------------------------------------------------------
     let sharedAudioCtx = null;
     let micCaptureProcessor = null;
     let micCaptureSource = null;
     let audioPollInterval = null;
+    let isPollingAudio = false;
+    let isSendingAudio = false;
     let lastAudioSeq = 0;
+    let audioSeqInitialized = false;
+    let seenAudioSeqs = new Set();
     let peerNextPlayTime = {};
-    let isRemoteAudioPlaying = false;
+    let remoteSpeakerBusyUntil = 0;
     let remoteSpeakTimeouts = {};
 
     function ensureSharedAudioContext() {
@@ -2135,7 +2140,6 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
       }
     }
 
-    // Unlock AudioContext on any click/touch so mobile browsers play incoming voice immediately
     ['click', 'touchstart', 'keydown'].forEach(evt => {
       window.addEventListener(evt, () => {
         ensureSharedAudioContext();
@@ -2166,10 +2170,12 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
         let pcmAccumulator = [];
         let energySum = 0;
         let sampleCount = 0;
-        const CHUNK_SAMPLES = 4800; // 400ms at 12,000 Hz
+        let prevSample = 0;
+        const CHUNK_SAMPLES = 5400; // 450ms at 12,000 Hz
 
         micCaptureProcessor.onaudioprocess = function(e) {
-          if (!stream.active || isMicMuted || isStatutoryMuted) {
+          // HARD ECHO GATE: If muted OR if loudspeaker is playing remote voice (plus 650ms acoustic tail), discard mic input completely!
+          if (!stream.active || isMicMuted || isStatutoryMuted || (ctx.currentTime < remoteSpeakerBusyUntil)) {
             pcmAccumulator = [];
             energySum = 0;
             sampleCount = 0;
@@ -2177,19 +2183,17 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
           }
 
           const inputData = e.inputBuffer.getChannelData(0);
-          // Downsample from inputSampleRate (e.g. 48000) to 12000 Hz
           let idx = 0;
           while (idx < inputData.length) {
             const sIdx = Math.min(inputData.length - 1, Math.floor(idx));
-            let sample = inputData[sIdx];
-            // Soft anti-feedback attenuation if remote speaker is playing on the same device
-            if (isRemoteAudioPlaying) {
-              sample *= 0.35;
-            }
+            const rawSample = inputData[sIdx];
+            // High-pass DC/rumble filter
+            const sample = rawSample - (0.15 * prevSample);
+            prevSample = rawSample;
+
             energySum += Math.abs(sample);
             sampleCount++;
 
-            // Clamp and convert Float32 (-1..1) to Int16 (-32768..32767)
             const clamped = Math.max(-1, Math.min(1, sample));
             const int16 = clamped < 0 ? Math.round(clamped * 32768) : Math.round(clamped * 32767);
             pcmAccumulator.push(int16);
@@ -2203,14 +2207,13 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
             energySum = 0;
             sampleCount = 0;
 
-            // Only transmit when voice energy is above silence floor (prevents static/echo)
-            if (avgEnergy > 0.0045) {
+            // Voice Activity Detection threshold: only transmit real human speech (ignores background hum/distant speaker bleed)
+            if (avgEnergy > 0.013 && !isSendingAudio && (ctx.currentTime >= remoteSpeakerBusyUntil)) {
               sendPcmChunkToRoom(chunkSamples, targetSampleRate);
             }
           }
         };
 
-        // Connect processor through a zero-gain node so you never hear your own local mic echo
         const zeroGain = ctx.createGain();
         zeroGain.gain.value = 0;
         micCaptureSource.connect(micCaptureProcessor);
@@ -2222,6 +2225,7 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     }
 
     async function sendPcmChunkToRoom(int16List, sampleRate) {
+      isSendingAudio = true;
       try {
         const int16Arr = new Int16Array(int16List);
         const bytes = new Uint8Array(int16Arr.buffer);
@@ -2241,26 +2245,53 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
             b64: b64
           })
         });
-      } catch (e) {}
+      } catch (e) {
+      } finally {
+        isSendingAudio = false;
+      }
     }
 
     function startRemoteVoiceIngest() {
       if (audioPollInterval) return;
       audioPollInterval = setInterval(async () => {
+        if (isPollingAudio) return; // Single-flight lock: NEVER overlap polls!
+        isPollingAudio = true;
         try {
           const resp = await fetch(`${API_URL}?action=audio_poll&role=${encodeURIComponent(currentRole)}&room=${encodeURIComponent(currentRoom)}&since=${lastAudioSeq}`);
           if (!resp.ok) return;
           const data = await resp.json();
+
+          // On very first poll, sync sequence number without playing old buffered history
+          if (!audioSeqInitialized) {
+            audioSeqInitialized = true;
+            if (data.latest_seq) lastAudioSeq = data.latest_seq;
+            if (data.chunks && Array.isArray(data.chunks)) {
+              data.chunks.forEach(c => seenAudioSeqs.add(c.seq));
+            }
+            return;
+          }
+
           if (data.latest_seq && data.latest_seq > lastAudioSeq) {
             lastAudioSeq = data.latest_seq;
           }
           if (data.chunks && Array.isArray(data.chunks) && data.chunks.length > 0) {
             data.chunks.forEach(c => {
-              playIncomingPcmChunk(c.role, c.b64, c.sr || 12000);
+              if (!seenAudioSeqs.has(c.seq)) {
+                seenAudioSeqs.add(c.seq);
+                playIncomingPcmChunk(c.role, c.b64, c.sr || 12000);
+              }
             });
+            // Keep Set size bounded
+            if (seenAudioSeqs.size > 200) {
+              const arr = Array.from(seenAudioSeqs).slice(-100);
+              seenAudioSeqs = new Set(arr);
+            }
           }
-        } catch (e) {}
-      }, 320);
+        } catch (e) {
+        } finally {
+          isPollingAudio = false;
+        }
+      }, 360);
     }
 
     function playIncomingPcmChunk(senderRole, b64, sampleRate) {
@@ -2281,43 +2312,44 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
 
         const audioBuffer = ctx.createBuffer(1, numSamples, sampleRate);
         const channelData = audioBuffer.getChannelData(0);
+        // Apply 8ms fade-in/fade-out envelope to prevent clicks between chunks
+        const fadeSamples = Math.min(96, Math.floor(numSamples / 10));
         for (let i = 0; i < numSamples; i++) {
-          channelData[i] = int16Arr[i] / 32768.0;
+          let env = 1.0;
+          if (i < fadeSamples) env = i / fadeSamples;
+          else if (i > numSamples - fadeSamples) env = (numSamples - i) / fadeSamples;
+          channelData[i] = (int16Arr[i] / 32768.0) * env;
         }
 
         const source = ctx.createBufferSource();
         source.buffer = audioBuffer;
 
-        // Slight gain boost so mobile speakers sound loud & clear
         const gainNode = ctx.createGain();
-        gainNode.gain.value = 1.35;
+        gainNode.gain.value = 1.0;
         source.connect(gainNode);
         gainNode.connect(ctx.destination);
 
         const now = ctx.currentTime;
-        if (!peerNextPlayTime[senderRole] || peerNextPlayTime[senderRole] < now || (peerNextPlayTime[senderRole] - now) > 1.8) {
-          peerNextPlayTime[senderRole] = now + 0.04;
+        if (!peerNextPlayTime[senderRole] || peerNextPlayTime[senderRole] < now || (peerNextPlayTime[senderRole] - now) > 1.35) {
+          peerNextPlayTime[senderRole] = now + 0.03;
         }
 
         const startAt = peerNextPlayTime[senderRole];
-        peerNextPlayTime[senderRole] = startAt + audioBuffer.duration;
+        const endAt = startAt + audioBuffer.duration;
+        peerNextPlayTime[senderRole] = endAt;
 
-        isRemoteAudioPlaying = true;
-        source.onended = () => {
-          if (ctx.currentTime >= (peerNextPlayTime[senderRole] - 0.05)) {
-            isRemoteAudioPlaying = false;
-          }
-        };
+        // Lock local microphone capture until 650ms AFTER speaker finishes playing this chunk!
+        remoteSpeakerBusyUntil = Math.max(remoteSpeakerBusyUntil, endAt + 0.65);
+
         source.start(startAt);
 
-        // Highlight speaker tile in green while their voice is heard
         const speakerTile = document.getElementById('tile_' + senderRole);
         if (speakerTile) {
           speakerTile.classList.add('speaking');
           if (remoteSpeakTimeouts[senderRole]) clearTimeout(remoteSpeakTimeouts[senderRole]);
           remoteSpeakTimeouts[senderRole] = setTimeout(() => {
             speakerTile.classList.remove('speaking');
-          }, Math.ceil((peerNextPlayTime[senderRole] - now) * 1000) + 150);
+          }, Math.ceil((endAt - now) * 1000) + 120);
         }
       } catch (e) {}
     }

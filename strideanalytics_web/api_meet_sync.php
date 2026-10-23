@@ -308,14 +308,25 @@ if ($action === 'audio_put') {
         $data = json_decode($raw, true);
         $chunks = (is_array($data) && isset($data['chunks']) && is_array($data['chunks'])) ? $data['chunks'] : [];
 
-        // Keep only chunks from the last 3.5 seconds
+        // Keep only chunks from the last 2.8 seconds
         $chunks = array_values(array_filter($chunks, function($c) use ($now) {
-            return isset($c['ts']) && (($now - (float)$c['ts']) < 3.5);
+            return isset($c['ts']) && (($now - (float)$c['ts']) < 2.8);
         }));
 
-        // Ensure strictly increasing sequence number
+        // ANTI-ECHO ACTIVE-SPEAKER FLOOR LOCK (1.35s):
+        // If another participant transmitted voice within the last 1.35 seconds,
+        // reject simultaneous secondary mic pickup (eliminates 2-phones-in-same-room echo & speaker bounce!)
         if (!empty($chunks)) {
-            $lastSeq = (int)end($chunks)['seq'];
+            $latestChunk = end($chunks);
+            $latestRole = $latestChunk['role'] ?? '';
+            $latestTs = (float)($latestChunk['ts'] ?? 0);
+            if ($latestRole !== '' && $latestRole !== $role && ($now - $latestTs) < 1.35) {
+                @flock($fp, LOCK_UN);
+                fclose($fp);
+                echo json_encode(['status' => 'ECHO_GATED', 'active_speaker' => $latestRole]);
+                exit;
+            }
+            $lastSeq = (int)$latestChunk['seq'];
             if ($seq <= $lastSeq) $seq = $lastSeq + 1;
         }
 
