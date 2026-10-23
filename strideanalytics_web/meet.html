@@ -1,0 +1,2865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stride Kikao™ — Sovereign Meeting, Townhall & Statutory Telecast</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #070a13;
+      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Header */
+    .header-bar {
+      height: 52px;
+      background: #0b0f19;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 50;
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .badge-telecast {
+      background: #dc2626;
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 12px rgba(220, 38, 38, 0.4);
+    }
+    .badge-telecast::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: livePulse 1.2s infinite;
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.8); }
+    }
+    .header-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: #f8fafc;
+      letter-spacing: -0.2px;
+    }
+    .role-badge {
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-mono;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .role-chairman { background: #0c4a6e; color: #38bdf8; border: 1px solid #0284c7; }
+    .role-member { background: #064e3b; color: #34d399; border: 1px solid #10b981; }
+    .role-auditor { background: #4c1d95; color: #c084fc; border: 1px solid #a855f7; }
+
+    /* Layout Container */
+    .telecast-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 370px;
+      height: calc(100vh - 52px);
+      overflow: hidden;
+    }
+    @media (max-width: 1024px) {
+      .telecast-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+      }
+    }
+
+    /* Left: Video Stage Arena */
+    .stage-section {
+      background: #040711;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    /* Presence Status Banner */
+    .presence-banner {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11px;
+    }
+    .peer-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-mono;
+      font-size: 10px;
+    }
+    .peer-online { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #10b981; }
+    .peer-offline { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid #ef4444; }
+
+    /* 6-TILE EXECUTIVE BOARDROOM MATRIX */
+    .boardroom-grid-6 {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 10px;
+      min-height: 440px;
+    }
+    @media (max-width: 900px) {
+      .boardroom-grid-6 {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 640px) {
+      .boardroom-grid-6 {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+    }
+
+    /* Individual Camera Tiles */
+    .camera-tile {
+      background: #0c1324;
+      border-radius: 12px;
+      border: 1.5px solid #1e293b;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+      transition: all 0.25s ease;
+      min-height: 180px;
+    }
+    .camera-tile.active-live {
+      border-color: #0284c7;
+      box-shadow: 0 0 16px rgba(2, 132, 199, 0.35);
+    }
+    .camera-tile.speaking {
+      border-color: #10b981 !important;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.6) !important;
+    }
+    .camera-tile.statutory-muted {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.5) !important;
+    }
+
+    .video-stream-elem {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #070c18;
+      image-rendering: -webkit-optimize-contrast;
+      filter: contrast(1.05) brightness(1.02);
+      border-radius: 10px;
+    }
+
+    /* Tile Header Overlay with Mute Control */
+    .tile-overlay-top {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 25;
+    }
+    .btn-statutory-mute {
+      background: rgba(220, 38, 38, 0.85);
+      color: #ffffff;
+      border: 1px solid #ef4444;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(6px);
+      transition: background 0.2s;
+    }
+    .btn-statutory-mute:hover { background: #b91c1c; }
+
+    /* Tile Bottom Overlay */
+    .tile-overlay-bottom {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 20;
+    }
+    .tile-name-tag {
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot-indicator {
+      width: 6.5px;
+      height: 6.5px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+    .dot-indicator.red { background: #ef4444; }
+
+    .tile-status-tag {
+      background: rgba(11, 15, 25, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3px 7px;
+      border-radius: 5px;
+      font-size: 9px;
+      font-mono;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    /* Avatar Fallback */
+    .avatar-placeholder {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+      text-align: center;
+      padding: 12px;
+    }
+    .avatar-bubble {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      border: 2.5px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+    .avatar-bubble.c1 { background: linear-gradient(135deg, #0284c7, #1e3a8a); }
+    .avatar-bubble.c2 { background: linear-gradient(135deg, #059669, #064e3b); }
+    .avatar-bubble.c3 { background: linear-gradient(135deg, #7c3aed, #4c1d95); }
+    .avatar-bubble.c4 { background: linear-gradient(135deg, #d97706, #78350f); }
+    .avatar-bubble.c5 { background: linear-gradient(135deg, #2563eb, #1e3a8a); }
+    .avatar-bubble.c6 { background: linear-gradient(135deg, #0d9488, #134e4a); }
+
+    /* Control Bar */
+    .controls-bar {
+      background: #0b0f19;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .btn-action {
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+      padding: 6px 11px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+    .btn-action:hover { background: #334155; border-color: #64748b; }
+    .btn-primary { background: #0284c7; border-color: #38bdf8; color: #ffffff; font-weight: 700; }
+    .btn-primary:hover { background: #0369a1; }
+    .btn-red { background: #b91c1c; border-color: #ef4444; color: #ffffff; }
+
+    /* Statutory Warning Banner for Muted Delegates */
+    #statutoryMuteBanner {
+      display: none;
+      background: rgba(220, 38, 38, 0.95);
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      animation: flashWarning 1s infinite alternate;
+      border: 1px solid #f87171;
+    }
+    @keyframes flashWarning {
+      from { box-shadow: 0 0 10px rgba(220, 38, 38, 0.5); }
+      to { box-shadow: 0 0 20px rgba(220, 38, 38, 0.9); }
+    }
+
+    /* Right: Sovereign AGM In-Call Voting Panel */
+    .panel-section {
+      background: #090d16;
+      border-left: 1px solid #1e293b;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .panel-header {
+      padding: 12px 16px;
+      background: #0d1322;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    /* Cards */
+    .info-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px 12px;
+      position: relative;
+    }
+    .progress-track {
+      background: #1e293b;
+      height: 6px;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0284c7, #10b981);
+      transition: width 0.4s ease;
+    }
+
+    /* Voting Buttons */
+    .vote-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+    .btn-vote {
+      padding: 10px 4px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .btn-vote.for { background: #10b981; color: #ffffff; }
+    .btn-vote.against { background: #ef4444; color: #ffffff; }
+    .btn-vote.abstain { background: #475569; color: #ffffff; }
+
+    /* Receipts Ticker */
+    .receipts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+    .receipt-item {
+      background: #131d33;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-mono;
+    }
+
+    /* Floating Emojis Layer */
+    .floating-reactions-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999999;
+      overflow: hidden;
+    }
+    .floating-emoji {
+      position: absolute;
+      bottom: 15px;
+      font-size: 40px;
+      user-select: none;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.8));
+      animation: floatUpAllTheWay ease-out forwards;
+    }
+    @keyframes floatUpAllTheWay {
+      0% {
+        transform: translateY(0) scale(0.5) rotate(0deg);
+        opacity: 0;
+      }
+      6% {
+        opacity: 1;
+        transform: translateY(-10vh) scale(1.4) rotate(-12deg);
+      }
+      25% {
+        opacity: 0.98;
+        transform: translateY(-35vh) scale(1.25) rotate(14deg);
+      }
+      55% {
+        opacity: 0.95;
+        transform: translateY(-70vh) scale(1.1) rotate(-10deg);
+      }
+      85% {
+        opacity: 0.92;
+        transform: translateY(-100vh) scale(1.0) rotate(8deg);
+      }
+      100% {
+        transform: translateY(-120vh) scale(0.85) rotate(-5deg);
+        opacity: 0;
+      }
+    }
+
+    /* File Vault Tab UI */
+    .files-panel-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 480px;
+    }
+    .file-upload-dropzone {
+      margin: 12px;
+      padding: 16px 12px;
+      border: 2px dashed #0284c7;
+      border-radius: 10px;
+      background: rgba(2, 132, 199, 0.05);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .file-upload-dropzone:hover {
+      background: rgba(2, 132, 199, 0.12);
+      border-color: #38bdf8;
+      transform: translateY(-1px);
+    }
+    .files-count-badge {
+      background: #0284c7;
+      color: #ffffff;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 9999px;
+    }
+    .shared-files-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 400px;
+    }
+    .file-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.15s ease;
+    }
+    .file-card:hover {
+      border-color: #38bdf8;
+    }
+    .file-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .file-card-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #f8fafc;
+      word-break: break-all;
+    }
+    .file-card-meta {
+      font-size: 9.5px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .file-threat-badge {
+      font-size: 8.5px;
+      font-weight: 800;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .btn-file-dl {
+      background: #0284c7;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 10.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-file-dl:hover {
+      background: #0369a1;
+    }
+
+    /* Reactions Ribbon */
+    .reactions-ribbon {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #090e1a;
+      border: 1px solid #1e293b;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+    .reactions-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #38bdf8;
+      font-mono;
+      letter-spacing: 0.5px;
+      margin-right: 3px;
+    }
+    .btn-reaction {
+      background: #131d33;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      font-size: 16px;
+      padding: 4px 8px;
+      cursor: pointer;
+      line-height: 1;
+      transition: all 0.15s ease;
+    }
+    .btn-reaction:hover {
+      background: #1e293b;
+      transform: scale(1.25);
+      border-color: #38bdf8;
+    }
+    .btn-reaction:active {
+      transform: scale(0.9);
+    }
+    .btn-hand-toggle {
+      background: #1e293b;
+      color: #f1f5f9;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border-color: #475569;
+    }
+    .btn-hand-toggle.active {
+      background: #b45309;
+      border-color: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    /* Tile Reaction & Raised Hand Badges */
+    .tile-rx-bubble {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #38bdf8;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 20;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+    .tile-rx-bubble.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .tile-hand-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #b45309;
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      z-index: 21;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+      animation: pulseHand 1.5s infinite;
+    }
+    @keyframes pulseHand {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .tile-video.hand-raised {
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.5) !important;
+    }
+
+    /* Panel Tab Navigation */
+    .panel-tab-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #090e1a;
+      border-bottom: 1px solid #1e293b;
+    }
+    .panel-tab-btn {
+      padding: 12px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #94a3b8;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .panel-tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .panel-tab-btn.active {
+      color: #38bdf8;
+      background: #0d1527;
+      border-bottom: 2px solid #0284c7;
+    }
+    .chat-unread-badge {
+      background: #ec4899;
+      color: #ffffff;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 9999px;
+      animation: pulseBadge 1s infinite alternate;
+    }
+    @keyframes pulseBadge {
+      from { transform: scale(1); }
+      to { transform: scale(1.15); }
+    }
+
+    /* Boardroom Chat UI */
+    .chat-panel-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 480px;
+    }
+    .chat-header-select {
+      padding: 12px 14px;
+      background: #0d1527;
+      border-bottom: 1px solid #1e293b;
+    }
+    .chat-select-dropdown {
+      width: 100%;
+      background: #131d33;
+      border: 1px solid #334155;
+      color: #f1f5f9;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 7px 10px;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+    }
+    .chat-select-dropdown:focus {
+      border-color: #0284c7;
+    }
+    .chat-messages-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 400px;
+    }
+    .chat-msg-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11px;
+      line-height: 1.4;
+      position: relative;
+    }
+    .chat-msg-card.from-me {
+      background: #0c1c38;
+      border-color: #1e3a8a;
+      align-self: flex-end;
+      width: 90%;
+    }
+    .chat-msg-card.is-private {
+      background: #200f33;
+      border-color: #7e22ce;
+      box-shadow: 0 0 10px rgba(126, 34, 206, 0.2);
+    }
+    .chat-msg-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-size: 10px;
+    }
+    .chat-sender-name {
+      font-weight: 800;
+      color: #38bdf8;
+    }
+    .chat-badge-target {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .chat-badge-public {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .chat-badge-private {
+      background: rgba(168, 85, 247, 0.2);
+      color: #d8b4fe;
+      border: 1px solid #a855f7;
+    }
+    .chat-msg-time {
+      color: #64748b;
+      font-mono;
+      font-size: 9px;
+    }
+    .chat-msg-body {
+      color: #f8fafc;
+      word-break: break-word;
+    }
+    .chat-input-wrapper {
+      padding: 10px 12px;
+      background: #090e1a;
+      border-top: 1px solid #1e293b;
+    }
+    .chat-emoji-quickbar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .chat-emoji-quickbar button {
+      background: #131d33;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      color: #f1f5f9;
+      font-size: 11px;
+      padding: 3px 6px;
+      cursor: pointer;
+    }
+    .chat-emoji-quickbar button:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+    }
+    .chat-text-input {
+      flex: 1;
+      background: #131d33;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #ffffff;
+      font-size: 11.5px;
+      outline: none;
+    }
+    .chat-text-input:focus {
+      border-color: #0284c7;
+    }
+    .chat-send-btn {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s ease;
+    }
+    .chat-send-btn:hover {
+      background: #0369a1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Emojis Layer -->
+  <div id="floatingReactionsLayer" class="floating-reactions-layer"></div>
+
+  <!-- Hidden Canvas for Video Compression -->
+  <canvas id="hiddenFrameCanvas" width="640" height="360" style="display: none;"></canvas>
+
+  
+  <!-- ========================================================================== -->
+  <!-- LIVE 6-SEAT BOARDROOM LOBBY & SEAT-LOCKING MODAL                           -->
+  <!-- ========================================================================== -->
+  <style>
+    .seat-lobby-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .seat-lobby-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      max-width: 880px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+    }
+    .seat-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    @media (max-width: 768px) {
+      .seat-grid-6 { grid-template-columns: 1fr; }
+    }
+    .seat-slot-card {
+      background: #0b0f19;
+      border: 1.5px solid #1e293b;
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .seat-slot-card.seat-available:hover {
+      border-color: #10b981;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.2);
+    }
+    .seat-slot-card.seat-mine {
+      border-color: #38bdf8;
+      background: rgba(14, 116, 144, 0.12);
+    }
+    .seat-slot-card.seat-occupied {
+      border-color: #7f1d1d;
+      background: rgba(69, 10, 10, 0.22);
+      opacity: 0.78;
+    }
+    .seat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .seat-pill-free { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .seat-pill-taken { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.5); }
+    .seat-pill-mine { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.5); }
+    .seat-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .seat-btn-claim {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #ffffff;
+    }
+    .seat-btn-claim:hover { filter: brightness(1.1); }
+    .seat-btn-mine {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .seat-btn-locked {
+      background: #1e293b;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+  </style>
+
+  <div id="seatLobbyModal" class="seat-lobby-backdrop">
+    <div class="seat-lobby-card">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px solid #1e293b; padding-bottom: 14px;">
+        <div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 10px; border-radius: 999px; font-size: 10px; font-weight: 800; margin-bottom: 6px;">
+            🪑 LIVE 6-SEAT TEST GROUP LOBBY &bull; REAL-TIME SEAT LOCKING
+          </div>
+          <h2 style="font-size: 18px; font-weight: 800; color: #ffffff;">Select Your Boardroom Role (6 Participants Max)</h2>
+          <p style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
+            Once a participant claims a seat (such as <strong>Board Chairman</strong>), that slot locks in real time—other testers can only select from the remaining empty slots!
+          </p>
+        </div>
+        <button onclick="closeSeatLobbyModal()" style="background: #1e293b; border: 1px solid #334155; color: #cbd5e1; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 15px;" title="Close">&times;</button>
+      </div>
+
+      <!-- Alert Banner if redirected from a taken seat -->
+      <div id="seatLobbyAlert" style="display: none; margin-top: 12px; background: rgba(220, 38, 38, 0.15); border: 1px solid #ef4444; color: #fecaca; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;"></div>
+
+      <!-- Optional Custom Display Name + Summary Bar -->
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 14px; background: #0b0f19; padding: 10px 14px; border-radius: 10px; border: 1px solid #1e293b;">
+        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 240px;">
+          <label for="customTesterName" style="font-size: 11.5px; font-weight: 700; color: #cbd5e1; white-space: nowrap;">👤 Your Name (Optional):</label>
+          <input id="customTesterName" type="text" placeholder="e.g. Sam Gathigi (or leave blank for default role name)" style="flex: 1; background: #1e293b; border: 1px solid #334155; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-size: 12px; outline: none;">
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span id="seatLobbySummaryBadge" style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #34d399; font-weight: 700;">Checking live slots...</span>
+          <button onclick="resetAllBoardroomSeats()" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #fca5a5; padding: 5px 10px; border-radius: 6px; font-size: 10.5px; font-weight: 700; cursor: pointer;" title="Clear all seat locks if testing fresh">
+            🔓 Reset All 6 Seats
+          </button>
+        </div>
+      </div>
+
+      <!-- 6 Seat Cards Grid -->
+      <div id="seatGridContainer" class="seat-grid-6">
+        <!-- Populated dynamically every 1.2s -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Header Bar -->
+  <header class="header-bar">
+    <div class="header-left">
+      <div class="badge-telecast">STRIDE KIKAO™ LIVE</div>
+      <div class="header-title">STRIDE KIKAO™ // SOVEREIGN INSTITUTIONAL AUDITORIUM &amp; PARLIAMENTARY TELECAST</div>
+      <span id="roleIndicator" class="role-badge role-chairman">ROLE: CHAIRMAN (STAGE - LAPTOP 1)</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <button onclick="openSeatLobbyModal()" class="btn-action" style="font-size: 10.5px; background: rgba(16, 185, 129, 0.12); border-color: #10b981; color: #ecfdf5;">
+        🪑 Boardroom Seats: <span id="otherRoleText" style="color: #34d399; font-weight: 800;">Pick / Switch Slot</span>
+      </button>
+      <a href="case-studies/index.html" class="btn-action" style="font-size: 10.5px;">
+        📂 Case Studies
+      </a>
+      <a href="vault.html" class="btn-action" style="font-size: 10.5px; color: #f59e0b; border-color: #f59e0b;">
+        🔒 Vault (25)
+      </a>
+    </div>
+  </header>
+
+  <!-- Statutory Mute Alert Notification Banner -->
+  <div id="statutoryMuteBanner">
+    ⛔ POINT OF ORDER: Your microphone has been forcefully muted by the Board Chairman pursuant to Cap 490 Standing Orders.
+  </div>
+
+  <!-- Main Telecast & Voting Layout -->
+  <main class="telecast-layout">
+
+    <!-- Left Video Stage Arena (6-Party Matrix) -->
+    <section class="stage-section">
+      
+      <!-- Live 6-Delegate Presence Status Bar -->
+      <div class="presence-banner">
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+          <span>Boardroom (6):</span>
+          <span id="presence_chairman" class="peer-tag peer-offline">○ Chairman (Podium)</span>
+          <span id="presence_member" class="peer-tag peer-offline">○ Patrick (Del #14)</span>
+          <span id="presence_auditor" class="peer-tag peer-offline">○ Peter (Auditor)</span>
+          <span id="presence_delegate3" class="peer-tag peer-offline">○ Beatrice (Supervisory)</span>
+          <span id="presence_delegate4" class="peer-tag peer-offline">○ Peter N. (Director)</span>
+          <span id="presence_delegate5" class="peer-tag peer-offline">○ Evans (Credit)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <button id="btnMuteAllChairman" onclick="statutoryMuteAll()" class="btn-action" style="background: #7f1d1d; border-color: #ef4444; color: #fecaca; font-weight: 800; font-size: 10px;">
+            🛑 MUTE ALL DELEGATES (Floor Order)
+          </button>
+        </div>
+      </div>
+
+      <!-- 6-TILE EXECUTIVE BOARDROOM MATRIX -->
+      <div class="boardroom-grid-6">
+        
+        <!-- ============================================== -->
+        <!-- TILE 1: CPA CHARLES NDEGWA (CHAIRMAN - STAGE) -->
+        <!-- ============================================== -->
+        <div id="tile_chairman" class="camera-tile active-live">
+          <div id="rx_tile_chairman" class="tile-rx-bubble"></div>
+          <div id="hand_tile_chairman" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div class="avatar-placeholder" id="avatar_chairman">
+            <div class="avatar-bubble c1">CN</div>
+            <div>
+              <div style="font-weight: 800; font-size: 13px; color: #f8fafc;">CPA Charles Ndegwa</div>
+              <div style="font-size: 10px; color: #94a3b8;">Board Chairman &bull; Stage Podium</div>
+            </div>
+          </div>
+          <video id="video_chairman" class="video-stream-elem" autoplay playsinline muted></video>
+          <img id="img_chairman" class="video-stream-elem" style="display: none;" alt="Chairman" />
+          <div class="tile-overlay-bottom">
+            <div class="tile-name-tag">
+              <span id="dot_chairman" class="dot-indicator"></span>
+              <span id="name_chairman">CPA Charles Ndegwa (Chairman)</span>
+            </div>
+            <div class="tile-status-tag">CHAIRMAN</div>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TILE 2: DR. PATRICK KAMAU (DELEGATE #0014)     -->
+        <!-- ============================================== -->
+        <div id="tile_member" class="camera-tile">
+          <div id="rx_tile_member" class="tile-rx-bubble"></div>
+          <div id="hand_tile_member" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div class="tile-overlay-top" id="muteControl_member" style="display: none;">
+            <button onclick="statutoryMuteIndividual('member')" class="btn-statutory-mute">
+              🔇 Mute Delegate
+            </button>
+          </div>
+          <div class="avatar-placeholder" id="avatar_member">
+            <div class="avatar-bubble c2">PK</div>
+            <div>
+              <div style="font-weight: 800; font-size: 13px; color: #f8fafc;">Dr. Patrick Kamau</div>
+              <div style="font-size: 10px; color: #94a3b8;">Delegate #0014 &bull; Sacco Veteran</div>
+            </div>
+          </div>
+          <video id="video_member" class="video-stream-elem" autoplay playsinline muted></video>
+          <img id="img_member" class="video-stream-elem" style="display: none;" alt="Member" />
+          <div class="tile-overlay-bottom">
+            <div class="tile-name-tag">
+              <span id="dot_member" class="dot-indicator"></span>
+              <span id="name_member">Dr. Patrick Kamau (Del #14)</span>
+            </div>
+            <div class="tile-status-tag">DELEGATE</div>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TILE 3: PETER KAMAU (EXTERNAL AUDITOR - PHONE) -->
+        <!-- ============================================== -->
+        <div id="tile_auditor" class="camera-tile">
+          <div id="rx_tile_auditor" class="tile-rx-bubble"></div>
+          <div id="hand_tile_auditor" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div class="tile-overlay-top" id="muteControl_auditor" style="display: none;">
+            <button onclick="statutoryMuteIndividual('auditor')" class="btn-statutory-mute">
+              🔇 Mute Auditor
+            </button>
+          </div>
+          <div class="avatar-placeholder" id="avatar_auditor">
+            <div class="avatar-bubble c3">📱</div>
+            <div>
+              <div style="font-weight: 800; font-size: 13px; color: #f8fafc;">Peter Kamau</div>
+              <div style="font-size: 10px; color: #94a3b8;">External Auditor &bull; Smartphone</div>
+            </div>
+          </div>
+          <video id="video_auditor" class="video-stream-elem" autoplay playsinline muted></video>
+          <img id="img_auditor" class="video-stream-elem" style="display: none;" alt="Auditor" />
+          <div class="tile-overlay-bottom">
+            <div class="tile-name-tag">
+              <span id="dot_auditor" class="dot-indicator"></span>
+              <span id="name_auditor">Peter Kamau (Auditor)</span>
+            </div>
+            <div class="tile-status-tag" style="color: #c084fc;">SCRUTINEER</div>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TILE 4: BEATRICE AKINYI (SUPERVISORY CHAIR)    -->
+        <!-- ============================================== -->
+        <div id="tile_delegate3" class="camera-tile">
+          <div id="rx_tile_delegate3" class="tile-rx-bubble"></div>
+          <div id="hand_tile_delegate3" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div class="tile-overlay-top" id="muteControl_delegate3" style="display: none;">
+            <button onclick="statutoryMuteIndividual('delegate3')" class="btn-statutory-mute">
+              🔇 Mute Delegate
+            </button>
+          </div>
+          <div class="avatar-placeholder" id="avatar_delegate3">
+            <div class="avatar-bubble c4">BA</div>
+            <div>
+              <div style="font-weight: 800; font-size: 13px; color: #f8fafc;">Beatrice Akinyi</div>
+              <div style="font-size: 10px; color: #94a3b8;">Supervisory Committee Chair</div>
+            </div>
+          </div>
+          <video id="video_delegate3" class="video-stream-elem" autoplay playsinline muted></video>
+          <img id="img_delegate3" class="video-stream-elem" style="display: none;" alt="Beatrice" />
+          <div class="tile-overlay-bottom">
+            <div class="tile-name-tag">
+              <span id="dot_delegate3" class="dot-indicator"></span>
+              <span id="name_delegate3">Beatrice Akinyi (Supervisory)</span>
+            </div>
+            <div class="tile-status-tag">SUPERVISORY</div>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TILE 5: HON. PETER NJOROGE (DIRECTOR NOMINEE)  -->
+        <!-- ============================================== -->
+        <div id="tile_delegate4" class="camera-tile">
+          <div id="rx_tile_delegate4" class="tile-rx-bubble"></div>
+          <div id="hand_tile_delegate4" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div class="tile-overlay-top" id="muteControl_delegate4" style="display: none;">
+            <button onclick="statutoryMuteIndividual('delegate4')" class="btn-statutory-mute">
+              🔇 Mute Delegate
+            </button>
+          </div>
+          <div class="avatar-placeholder" id="avatar_delegate4">
+            <div class="avatar-bubble c5">PN</div>
+            <div>
+              <div style="font-weight: 800; font-size: 13px; color: #f8fafc;">Hon. Peter Njoroge</div>
+              <div style="font-size: 10px; color: #94a3b8;">Board Director Candidate</div>
+            </div>
+          </div>
+          <video id="video_delegate4" class="video-stream-elem" autoplay playsinline muted></video>
+          <img id="img_delegate4" class="video-stream-elem" style="display: none;" alt="Peter N." />
+          <div class="tile-overlay-bottom">
+            <div class="tile-name-tag">
+              <span id="dot_delegate4" class="dot-indicator"></span>
+              <span id="name_delegate4">Hon. Peter Njoroge (Director)</span>
+            </div>
+            <div class="tile-status-tag">NOMINEE</div>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TILE 6: DR. EVANS KIPROP (CREDIT COMMITTEE)    -->
+        <!-- ============================================== -->
+        <div id="tile_delegate5" class="camera-tile">
+          <div id="rx_tile_delegate5" class="tile-rx-bubble"></div>
+          <div id="hand_tile_delegate5" class="tile-hand-tag" style="display: none;">✋ HAND RAISED</div>
+          <div class="tile-overlay-top" id="muteControl_delegate5" style="display: none;">
+            <button onclick="statutoryMuteIndividual('delegate5')" class="btn-statutory-mute">
+              🔇 Mute Delegate
+            </button>
+          </div>
+          <div class="avatar-placeholder" id="avatar_delegate5">
+            <div class="avatar-bubble c6">EK</div>
+            <div>
+              <div style="font-weight: 800; font-size: 13px; color: #f8fafc;">Dr. Evans Kiprop</div>
+              <div style="font-size: 10px; color: #94a3b8;">Credit Risk Committee</div>
+            </div>
+          </div>
+          <video id="video_delegate5" class="video-stream-elem" autoplay playsinline muted></video>
+          <img id="img_delegate5" class="video-stream-elem" style="display: none;" alt="Evans" />
+          <div class="tile-overlay-bottom">
+            <div class="tile-name-tag">
+              <span id="dot_delegate5" class="dot-indicator"></span>
+              <span id="name_delegate5">Dr. Evans Kiprop (Credit)</span>
+            </div>
+            <div class="tile-status-tag">CREDIT RISK</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Control Bar -->
+      <div class="controls-bar">
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+          <button id="btnJoinLive" onclick="startLiveCameraAndTelecast()" class="btn-action btn-primary" style="padding: 8px 14px; font-size: 12px;">
+            🎥 1-Click Join Call (Start Camera)
+          </button>
+          <button id="btnMuteMic" onclick="toggleMuteMic()" class="btn-action" style="background: #334155; border-color: #64748b;">
+            🎙️ Mute My Mic (Kill Echo)
+          </button>
+          <button id="btnScreen" onclick="toggleScreenShare()" class="btn-action">
+            🖥️ Share Screen
+          </button>
+          <button id="btnStopMedia" onclick="stopMedia()" class="btn-action btn-red" style="display: none;">
+            ⏹️ Stop Camera
+          </button>
+        </div>
+
+        <!-- Interactive Live Emoticons & Hand Raise Ribbon -->
+        <div class="reactions-ribbon">
+          <span class="reactions-label">REACTIONS:</span>
+          <button type="button" onclick="triggerReaction('👏', 'applause')" class="btn-reaction" title="Applause (Clapping)">👏</button>
+          <button type="button" onclick="triggerReaction('🎉', 'cheer')" class="btn-reaction" title="Cheer / Celebrate">🎉</button>
+          <button type="button" onclick="triggerReaction('😊', 'smile')" class="btn-reaction" title="Smile / Concur">😊</button>
+          <button type="button" onclick="triggerReaction('❤️', 'love')" class="btn-reaction" title="Heart / Agreement">❤️</button>
+          <button type="button" onclick="triggerReaction('👍', 'like')" class="btn-reaction" title="Thumbs Up">👍</button>
+          <button type="button" id="btnRaiseHand" onclick="toggleRaiseHand()" class="btn-reaction btn-hand-toggle" title="Raise Hand to Speak">
+            ✋ <span id="lblHand">Raise Hand</span>
+          </button>
+        </div>
+
+
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span id="telecastStatus" style="font-size: 10.5px; font-mono; color: #94a3b8;">
+            Telecast: Ready (6-Party)
+          </span>
+          <button onclick="reconnectStreams()" class="btn-action" style="font-size: 10px; background: #0c4a6e; border-color: #0284c7; color: #38bdf8;">
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Guidance & 6-Person Invitation Bar -->
+      <div style="background: #0b1528; border: 1px solid #1e3a8a; border-radius: 10px; padding: 8px 12px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <strong style="color: #38bdf8;">6-Person Simulation Staging:</strong>
+          <span style="color: #cbd5e1;"> Invite 5 other people or open across different browser tabs/devices. Chairman holds statutory mute powers!</span>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button onclick="copyRoleInvite('member')" class="btn-action" style="font-size: 10px;">📋 Copy Link #2</button>
+          <button onclick="copyRoleInvite('auditor')" class="btn-action" style="font-size: 10px; background: #581c87; color: #e9d5ff;">📱 Phone Link #3</button>
+          <button onclick="copyRoleInvite('delegate3')" class="btn-action" style="font-size: 10px;">📋 Link #4</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Right Sovereign AGM In-Call Voting Panel -->
+    <aside class="panel-section">
+      
+      <!-- Panel Navigation Tabs (Ballot, Chat, Vault Files) -->
+      <div class="panel-tab-bar" style="grid-template-columns: 1fr 1fr 1fr;">
+        <button id="tabBtnBallot" class="panel-tab-btn active" onclick="switchPanelTab('ballot')">
+          🗳️ Ballot
+        </button>
+        <button id="tabBtnChat" class="panel-tab-btn" onclick="switchPanelTab('chat')">
+          💬 Chat <span id="chatUnreadBadge" class="chat-unread-badge" style="display: none;">0</span>
+        </button>
+        <button id="tabBtnFiles" class="panel-tab-btn" onclick="switchPanelTab('files')">
+          📂 Vault <span id="filesCountBadge" class="files-count-badge">0</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: SOVEREIGN AGM BALLOT -->
+      <div id="tabContentBallot" class="panel-body">
+        
+        <!-- Quorum Card -->
+        <div class="info-card" id="quorumCard">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 10px; font-weight: 700; color: #94a3b8; font-mono;">STATUTORY QUORUM</span>
+            <span id="quorumVal" style="font-size: 16px; font-weight: 800; color: #10b981;">78.4%</span>
+          </div>
+          <div class="progress-track">
+            <div id="quorumBar" class="progress-fill" style="width: 78.4%;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; margin-top: 5px;">
+            <span>Target: 66.7% (Cap 490)</span>
+            <span id="quorumStatus" style="color: #10b981; font-weight: 700;">✓ QUORUM COMPLIANT</span>
+          </div>
+        </div>
+
+        <!-- Active Resolution Card -->
+        <div class="info-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 9px; font-weight: 800; color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 2px 6px; border-radius: 4px;">RESOLUTION #4</span>
+            <span style="font-size: 9px; color: #64748b; font-mono;" id="totalBallotsCount">38 Ballots Cast</span>
+          </div>
+          <p style="font-size: 11.5px; font-weight: 600; color: #f8fafc; margin-top: 6px; line-height: 1.4;">
+            To declare and authorize an 11.5% dividend payout on Member Share Capital for FY2026 (KES 1.48B Capital).
+          </p>
+
+          <!-- Tally Bars -->
+          <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 5px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 2px;">
+                <span style="color: #34d399; font-weight: 700;" id="lblFor">FOR (84.2%)</span>
+                <span id="unitsFor" style="font-mono; color: #94a3b8;">1,428,500 Units</span>
+              </div>
+              <div class="progress-track">
+                <div id="barFor" style="height: 100%; background: #10b981; width: 84.2%; transition: width 0.3s;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 2px;">
+                <span style="color: #f87171; font-weight: 700;" id="lblAgainst">AGAINST (10.8%)</span>
+                <span id="unitsAgainst" style="font-mono; color: #94a3b8;">183,200 Units</span>
+              </div>
+              <div class="progress-track">
+                <div id="barAgainst" style="height: 100%; background: #ef4444; width: 10.8%; transition: width 0.3s;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 2px;">
+                <span style="color: #94a3b8; font-weight: 700;" id="lblAbstain">ABSTAIN (5.0%)</span>
+                <span id="unitsAbstain" style="font-mono; color: #94a3b8;">84,800 Units</span>
+              </div>
+              <div class="progress-track">
+                <div id="barAbstain" style="height: 100%; background: #64748b; width: 5.0%; transition: width 0.3s;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cast Vote Section -->
+        <div class="info-card" id="votingBox">
+          <div style="font-size: 10px; font-weight: 700; color: #f8fafc; margin-bottom: 6px;">
+            CAST YOUR SECRET DIGITAL BALLOT:
+          </div>
+          <div id="votingActions" class="vote-grid">
+            <button onclick="castBallot('FOR')" class="btn-vote for">
+              <span style="font-size: 14px;">✓</span>
+              <span>FOR</span>
+            </button>
+            <button onclick="castBallot('AGAINST')" class="btn-vote against">
+              <span style="font-size: 14px;">✕</span>
+              <span>AGAINST</span>
+            </button>
+            <button onclick="castBallot('ABSTAIN')" class="btn-vote abstain">
+              <span style="font-size: 14px;">—</span>
+              <span>ABSTAIN</span>
+            </button>
+          </div>
+          <div id="voteConfirmedBadge" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 6px; padding: 8px; text-align: center; color: #34d399; font-weight: 700; font-size: 10.5px; margin-top: 6px;">
+            ✓ YOUR BALLOT HAS BEEN CRYPTOGRAPHICALLY SEALED
+          </div>
+        </div>
+
+        <!-- Live Receipts Feed -->
+        <div>
+          <div style="font-size: 10px; font-weight: 700; color: #94a3b8; font-mono; margin-bottom: 5px;">
+            LIVE VOTER RECEIPTS TICKER (ODPC § 29 HASH):
+          </div>
+          <div id="receiptsFeed" class="receipts-list">
+            <!-- Populated via poll -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: BOARDROOM LIVE CHAT (1-TO-ALL & 1-TO-1 DM) -->
+      <div id="tabContentChat" class="chat-panel-wrap" style="display: none;">
+        <!-- Recipient Channel Selector -->
+        <div class="chat-header-select">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <span style="font-size: 10px; font-weight: 800; color: #38bdf8; font-mono; letter-spacing: 0.8px;">TARGET CHANNEL:</span>
+            <span id="chatSyncStatus" style="font-size: 9px; font-mono; color: #10b981; font-weight: 700;">● LIVE CHAT</span>
+          </div>
+          <select id="chatRecipientSelect" class="chat-select-dropdown" onchange="onRecipientChange()">
+            <option value="all">🌐 Everyone (Public Boardroom Floor)</option>
+            <option value="chairman">🔒 Private 1-to-1: CPA Charles Ndegwa (Chairman)</option>
+            <option value="member">🔒 Private 1-to-1: Dr. Patrick Kamau (Del #14)</option>
+            <option value="auditor">🔒 Private 1-to-1: Peter Kamau (External Auditor)</option>
+            <option value="delegate3">🔒 Private 1-to-1: Beatrice Akinyi (Supervisory Chair)</option>
+            <option value="delegate4">🔒 Private 1-to-1: Hon. Peter Njoroge (Director Nominee)</option>
+            <option value="delegate5">🔒 Private 1-to-1: Dr. Evans Kiprop (Credit Risk)</option>
+          </select>
+          <div id="chatPrivacyNote" style="font-size: 9.5px; color: #94a3b8; margin-top: 5px;">
+            🌐 <strong>Public Message:</strong> Broadcasts to all boardroom delegates.
+          </div>
+        </div>
+
+        <!-- Chat Messages Scroll Area -->
+        <div id="chatMessagesList" class="chat-messages-scroll">
+          <div style="text-align: center; color: #64748b; font-size: 10.5px; padding: 20px 10px;">
+            💬 Sovereign Boardroom Chat initialized.<br>Send a message to <strong>Everyone</strong> or select a delegate for a <strong>Private 1-to-1 Direct Message</strong>.
+          </div>
+        </div>
+
+        <!-- Chat Input & Quick Reaction Bar -->
+        <div class="chat-input-wrapper">
+          <div class="chat-emoji-quickbar">
+            <button type="button" onclick="insertChatEmoji('👍 ')">👍 Agree</button>
+            <button type="button" onclick="insertChatEmoji('👏 ')">👏 Applause</button>
+            <button type="button" onclick="insertChatEmoji('🎉 ')">🎉 Cheer</button>
+            <button type="button" onclick="insertChatEmoji('😊 ')">😊</button>
+            <button type="button" onclick="insertChatEmoji('💡 Point of Order: ')">💡 Point</button>
+            <button type="button" onclick="insertChatEmoji('❓ Question: ')">❓ Query</button>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <input type="text" id="chatMessageInput" class="chat-text-input" placeholder="Message Everyone..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()" class="chat-send-btn">
+              <span>Send</span> ➔
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: SOVEREIGN FILE VAULT & INSTITUTIONAL HANDOUTS -->
+      <div id="tabContentFiles" class="files-panel-wrap" style="display: none;">
+        <!-- Upload Zone -->
+        <div class="file-upload-dropzone" onclick="document.getElementById('fileUploadInput').click()">
+          <input type="file" id="fileUploadInput" style="display: none;" onchange="handleFileSelected(this.files)" accept=".pdf,.docx,.xlsx,.pptx,.csv,.txt,.png,.jpg,.jpeg">
+          <div style="font-size: 26px; margin-bottom: 4px;">📤</div>
+          <div style="font-size: 11.5px; font-weight: 800; color: #38bdf8;">Click to Upload Lecture Handout or Document</div>
+          <div style="font-size: 9.5px; color: #94a3b8; margin-top: 2px;">
+            Permitted: PDF, DOCX, PPTX, XLSX, CSV, PNG, JPG (Max 25 MB)
+          </div>
+          <div style="display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 4px; padding: 2px 8px; font-size: 9px; color: #34d399; font-weight: 700; margin-top: 6px;">
+            🛡️ Anti-Virus & Magic-Byte Signature Quarantine Active
+          </div>
+        </div>
+
+        <div id="uploadProgressBox" style="display: none; padding: 10px 14px; background: #0c1a30; border-bottom: 1px solid #1e3a8a;">
+          <div style="display: flex; justify-content: space-between; font-size: 10px; color: #38bdf8; margin-bottom: 4px;">
+            <span id="uploadFileName">Scanning & Uploading...</span>
+            <span id="uploadPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="uploadProgressBar" class="progress-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Shared Files Feed -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px 6px; border-bottom: 1px solid #1e293b;">
+          <span style="font-size: 10px; font-weight: 800; color: #94a3b8; font-mono; letter-spacing: 0.8px;">SHARED HANDOUTS & AUDIT VAULT:</span>
+          <button onclick="pollFiles()" class="btn-action" style="font-size: 9.5px; padding: 2px 6px;">🔄 Refresh</button>
+        </div>
+
+        <div id="sharedFilesList" class="shared-files-scroll">
+          <!-- Populated dynamically via pollFiles() -->
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- 6-Party Live Video, Mute Enforcement & Telecasting Engine -->
+  <script>
+    const API_URL = 'api_meet_sync.php';
+    const ALL_ROLES = ['chairman', 'member', 'auditor', 'delegate3', 'delegate4', 'delegate5'];
+    
+    let currentRole = 'chairman';
+    let currentRoom = 'main';
+    let localStream = null;
+    let screenStream = null;
+    let isScreenSharing = false;
+    let timerWorker = null;
+    let pollInterval = null;
+    let uploadTimer = null;
+    let isUploading = false;
+    let ingestLoops = {};
+    let isMicMuted = false;
+    let isStatutoryMuted = false;
+
+    // Detect role from query param ?role=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const rParam = urlParams.get('role');
+    if (ALL_ROLES.includes(rParam)) {
+      currentRole = rParam;
+    }
+    const roomParam = urlParams.get('room');
+    if (roomParam) {
+      currentRoom = roomParam.replace(/[^a-zA-Z0-9_-]/g, '');
+    }
+    applyRoleUI();
+
+    
+    // -------------------------------------------------------------
+    // REAL-TIME 6-SEAT CLAIMING, LOCKING & HEARTBEAT ENGINE
+    // -------------------------------------------------------------
+    let kikaoClientId = sessionStorage.getItem('kikao_client_id');
+    if (!kikaoClientId) {
+      kikaoClientId = 'kikao_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now();
+      sessionStorage.setItem('kikao_client_id', kikaoClientId);
+    }
+    let hasClaimedValidSeat = false;
+    let latestSeatsMap = {};
+
+    const SEAT_CATALOG = [
+      {
+        role: 'chairman',
+        icon: '👑',
+        seatNum: 'Seat #1 (Stage Host)',
+        title: 'Board Chairman (Podium)',
+        persona: 'CPA Charles Ndegwa',
+        desc: 'Presides over the meeting. Has exclusive Statutory Mute-All & Individual Hardware Mute controls.'
+      },
+      {
+        role: 'member',
+        icon: '🏛️',
+        seatNum: 'Seat #2',
+        title: 'Member Delegate #14',
+        persona: 'Dr. Patrick Kamau',
+        desc: 'Nairobi Central Delegate. Can stream live camera, raise hand, chat, and cast weighted shares.'
+      },
+      {
+        role: 'auditor',
+        icon: '🔍',
+        seatNum: 'Seat #3',
+        title: 'Statutory External Auditor',
+        persona: 'Peter Kamau (ICPAK)',
+        desc: 'Presents audited financial statements, answers floor queries, and verifies ballot hashes.'
+      },
+      {
+        role: 'delegate3',
+        icon: '⚖️',
+        seatNum: 'Seat #4',
+        title: 'Supervisory Committee Chair',
+        persona: 'Beatrice Akinyi',
+        desc: 'Oversees internal governance compliance, standing orders, and supervisory audit reports.'
+      },
+      {
+        role: 'delegate4',
+        icon: '📊',
+        seatNum: 'Seat #5',
+        title: 'Board Nominee / Director',
+        persona: 'Hon. Peter Njoroge',
+        desc: 'Board member participating in resolution debates, screen sharing, and statutory voting.'
+      },
+      {
+        role: 'delegate5',
+        icon: '🛡️',
+        seatNum: 'Seat #6',
+        title: 'Credit & Risk Officer',
+        persona: 'Dr. Evans Kiprop',
+        desc: 'Presents loan portfolio risk telemetry, dividend liquidity impact, and treasury analytics.'
+      }
+    ];
+
+    function openSeatLobbyModal(alertMsg = '') {
+      const modal = document.getElementById('seatLobbyModal');
+      const alertBox = document.getElementById('seatLobbyAlert');
+      if (alertMsg) {
+        alertBox.innerText = alertMsg;
+        alertBox.style.display = 'block';
+      } else {
+        alertBox.style.display = 'none';
+      }
+      const savedName = sessionStorage.getItem('kikao_custom_name') || '';
+      const nameInput = document.getElementById('customTesterName');
+      if (nameInput && !nameInput.value && savedName) {
+        nameInput.value = savedName;
+      }
+      renderSeatLobbyCards();
+      modal.style.display = 'flex';
+    }
+
+    function closeSeatLobbyModal() {
+      document.getElementById('seatLobbyModal').style.display = 'none';
+    }
+
+    function renderSeatLobbyCards() {
+      const container = document.getElementById('seatGridContainer');
+      if (!container) return;
+
+      let occupiedCount = 0;
+      ALL_ROLES.forEach(r => {
+        if (latestSeatsMap[r]) occupiedCount++;
+      });
+      const emptyCount = ALL_ROLES.length - occupiedCount;
+
+      const summaryEl = document.getElementById('seatLobbySummaryBadge');
+      if (summaryEl) {
+        summaryEl.innerText = `${occupiedCount} Occupied • ${emptyCount} Empty Slots Available`;
+      }
+      const headerSwitchText = document.getElementById('otherRoleText');
+      if (headerSwitchText) {
+        headerSwitchText.innerText = `${emptyCount} Empty / Switch`;
+      }
+
+      container.innerHTML = SEAT_CATALOG.map(item => {
+        const lockInfo = latestSeatsMap[item.role];
+        const isMine = lockInfo && lockInfo.client_id === kikaoClientId;
+        const isTakenByOther = lockInfo && lockInfo.client_id !== kikaoClientId;
+
+        let cardClass = 'seat-slot-card seat-available';
+        let badgeHtml = `<span class="seat-pill seat-pill-free">🟢 Available Slot</span>`;
+        let btnHtml = `<button class="seat-btn seat-btn-claim" onclick="claimBoardroomSeat('${item.role}')">Claim ${item.seatNum} &rarr;</button>`;
+        let occupantLine = `<div style="font-size: 11px; color: #38bdf8; font-weight: 600; margin-top: 2px;">Default Persona: ${item.persona}</div>`;
+
+        if (isMine) {
+          cardClass = 'seat-slot-card seat-mine';
+          badgeHtml = `<span class="seat-pill seat-pill-mine">✅ Your Active Seat</span>`;
+          btnHtml = `<button class="seat-btn seat-btn-mine" onclick="closeSeatLobbyModal()">Continue in Seat &rarr;</button>`;
+          occupantLine = `<div style="font-size: 11px; color: #38bdf8; font-weight: 700; margin-top: 2px;">Seated as: ${lockInfo.custom_name} (You)</div>`;
+        } else if (isTakenByOther) {
+          cardClass = 'seat-slot-card seat-occupied';
+          badgeHtml = `<span class="seat-pill seat-pill-taken">🔴 Occupied</span>`;
+          btnHtml = `<button class="seat-btn seat-btn-locked" disabled>🔒 Taken by ${lockInfo.custom_name}</button>`;
+          occupantLine = `<div style="font-size: 11px; color: #fca5a5; font-weight: 700; margin-top: 2px;">Occupied by: ${lockInfo.custom_name}</div>`;
+        }
+
+        return `
+          <div class="${cardClass}">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 8px;">
+                <span style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #94a3b8; font-weight: 700;">${item.icon} ${item.seatNum}</span>
+                ${badgeHtml}
+              </div>
+              <div style="font-size: 14px; font-weight: 800; color: #ffffff;">${item.title}</div>
+              ${occupantLine}
+              <p style="font-size: 11px; color: #94a3b8; margin-top: 8px; line-height: 1.45;">${item.desc}</p>
+            </div>
+            ${btnHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function claimBoardroomSeat(roleToClaim, silentAuto = false) {
+      const nameInput = document.getElementById('customTesterName');
+      const customName = nameInput ? nameInput.value.trim() : (sessionStorage.getItem('kikao_custom_name') || '');
+      if (customName) {
+        sessionStorage.setItem('kikao_custom_name', customName);
+      }
+
+      try {
+        const resp = await fetch(`${API_URL}?action=seat_claim&room=${encodeURIComponent(currentRoom)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            role: roleToClaim,
+            client_id: kikaoClientId,
+            custom_name: customName
+          })
+        });
+        const data = await resp.json();
+        if (data.seats) {
+          latestSeatsMap = data.seats;
+        }
+
+        if (data.status === 'SEAT_CLAIMED') {
+          currentRole = roleToClaim;
+          hasClaimedValidSeat = true;
+          sessionStorage.setItem('kikao_claimed_role', currentRole);
+          // Update URL query string without reloading page
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set('role', currentRole);
+          window.history.replaceState({}, '', newUrl);
+
+          applyRoleUI();
+          renderSeatLobbyCards();
+          closeSeatLobbyModal();
+        } else if (data.status === 'SEAT_OCCUPIED') {
+          renderSeatLobbyCards();
+          openSeatLobbyModal(`⚠️ The "${roleToClaim.toUpperCase()}" slot is already occupied by another participant! Please pick one of the remaining empty slots below.`);
+        }
+      } catch (e) {
+        if (!silentAuto) alert('Could not claim seat: ' + e);
+      }
+    }
+
+    async function resetAllBoardroomSeats() {
+      if (!confirm('Reset all 6 seats so everyone in the test group can pick fresh slots?')) return;
+      try {
+        const resp = await fetch(`${API_URL}?action=seat_reset_all&room=${encodeURIComponent(currentRoom)}`);
+        const data = await resp.json();
+        latestSeatsMap = data.seats || {};
+        hasClaimedValidSeat = false;
+        sessionStorage.removeItem('kikao_claimed_role');
+        renderSeatLobbyCards();
+      } catch (e) {}
+    }
+
+    // Automatically release seat when closing tab
+    window.addEventListener('beforeunload', () => {
+      if (hasClaimedValidSeat && navigator.sendBeacon) {
+        const payload = JSON.stringify({ client_id: kikaoClientId });
+        navigator.sendBeacon(`${API_URL}?action=seat_release&room=${encodeURIComponent(currentRoom)}`, payload);
+      }
+    });
+
+    // Initialize Seat Lobby check on load
+    async function initSeatCoordination() {
+      try {
+        const statusResp = await fetch(`${API_URL}?action=stream_status&room=${encodeURIComponent(currentRoom)}`);
+        if (statusResp.ok) {
+          const statusJson = await statusResp.json();
+          latestSeatsMap = statusJson.seats || {};
+        }
+      } catch (e) {}
+
+      const explicitRole = urlParams.get('role');
+      const prevClaimed = sessionStorage.getItem('kikao_claimed_role');
+
+      if (explicitRole && ALL_ROLES.includes(explicitRole)) {
+        const lock = latestSeatsMap[explicitRole];
+        if (!lock || lock.client_id === kikaoClientId) {
+          // Auto-claim if free or already mine
+          await claimBoardroomSeat(explicitRole, true);
+          return;
+        } else {
+          // Occupied by someone else! Show lobby with message
+          openSeatLobbyModal(`⚠️ Seat "${explicitRole.toUpperCase()}" is already occupied by ${lock.custom_name}! Please choose one of the empty remaining slots below.`);
+          return;
+        }
+      }
+
+      if (prevClaimed && ALL_ROLES.includes(prevClaimed)) {
+        const lock = latestSeatsMap[prevClaimed];
+        if (!lock || lock.client_id === kikaoClientId) {
+          await claimBoardroomSeat(prevClaimed, true);
+          return;
+        }
+      }
+
+      // Otherwise, open the 6-Seat Boardroom Lobby so the tester picks from the available slots!
+      openSeatLobbyModal();
+    }
+    setTimeout(initSeatCoordination, 150);
+
+    function copyRoleInvite(role) {
+      const u = `https://strideanalytics.co.ke/meet?role=${role}`;
+      navigator.clipboard.writeText(u);
+      alert(`Copied link for ${role.toUpperCase()}:\n${u}\nSend via WhatsApp, Email, or open on device!`);
+    }
+
+    function cycleRole() {
+      const idx = ALL_ROLES.indexOf(currentRole);
+      const nextRole = ALL_ROLES[(idx + 1) % ALL_ROLES.length];
+      window.location.href = `meet.html?role=${nextRole}`;
+    }
+
+    function applyRoleUI() {
+      const ind = document.getElementById('roleIndicator');
+      const other = document.getElementById('otherRoleText');
+      
+      const roleNames = {
+        'chairman': 'CPA Charles Ndegwa (Chairman - Stage)',
+        'member': 'Dr. Patrick Kamau (Delegate #14)',
+        'auditor': 'Peter Kamau (Auditor - Phone)',
+        'delegate3': 'Beatrice Akinyi (Supervisory)',
+        'delegate4': 'Hon. Peter Njoroge (Director)',
+        'delegate5': 'Dr. Evans Kiprop (Credit)'
+      };
+
+      ind.className = 'role-badge ' + (currentRole === 'chairman' ? 'role-chairman' : (currentRole === 'auditor' ? 'role-auditor' : 'role-member'));
+      ind.innerText = 'ROLE: ' + roleNames[currentRole].toUpperCase();
+      
+      const nextIdx = (ALL_ROLES.indexOf(currentRole) + 1) % ALL_ROLES.length;
+      other.innerText = ALL_ROLES[nextIdx].toUpperCase();
+
+      document.getElementById('name_' + currentRole).innerText = roleNames[currentRole] + ' (You)';
+
+      // Show Mute Control buttons on tiles if I am Chairman!
+      if (currentRole === 'chairman') {
+        document.getElementById('btnMuteAllChairman').style.display = 'inline-flex';
+        ['member', 'auditor', 'delegate3', 'delegate4', 'delegate5'].forEach(r => {
+          const mc = document.getElementById('muteControl_' + r);
+          if (mc) mc.style.display = 'flex';
+        });
+      } else {
+        document.getElementById('btnMuteAllChairman').style.display = 'none';
+        ['member', 'auditor', 'delegate3', 'delegate4', 'delegate5'].forEach(r => {
+          const mc = document.getElementById('muteControl_' + r);
+          if (mc) mc.style.display = 'none';
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // CHAIRMAN STATUTORY MUTE-CONTROL (REMOTE HARDWARE OVERRIDE)
+    // -------------------------------------------------------------
+    async function statutoryMuteAll() {
+      if (currentRole !== 'chairman') return;
+      try {
+        await fetch(API_URL + '?action=mute_peer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target: 'all', mute: true })
+        });
+        alert('🛑 STATUTORY ORDER ENFORCED:\nAll delegates have been remotely muted on their physical hardware pursuant to Cap 490.');
+      } catch (e) {
+        alert('Mute command failed: ' + e);
+      }
+    }
+
+    async function statutoryMuteIndividual(targetRole) {
+      if (currentRole !== 'chairman') return;
+      try {
+        await fetch(API_URL + '?action=mute_peer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target: targetRole, mute: true })
+        });
+        alert(`🔇 Muted ${targetRole.toUpperCase()} remotely!`);
+      } catch (e) {}
+    }
+
+    // -------------------------------------------------------------
+    // LIVE CAMERA CAPTURE (HD WITH HARDWARE ECHO SUPPRESSION)
+    // -------------------------------------------------------------
+    async function startLiveCameraAndTelecast() {
+      try {
+        document.getElementById('telecastStatus').innerText = 'Starting Camera...';
+        document.getElementById('telecastStatus').style.color = '#38bdf8';
+
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: { 
+            width: { ideal: 640 }, 
+            height: { ideal: 360 }, 
+            frameRate: { ideal: 30 } 
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+
+        // Attach local camera immediately to this device's tile
+        const v = document.getElementById('video_' + currentRole);
+        v.srcObject = localStream;
+        v.style.display = 'block';
+        document.getElementById('img_' + currentRole).style.display = 'none';
+        document.getElementById('avatar_' + currentRole).style.display = 'none';
+        document.getElementById('tile_' + currentRole).classList.add('active-live');
+
+        document.getElementById('btnJoinLive').style.display = 'none';
+        document.getElementById('btnStopMedia').style.display = 'inline-flex';
+        document.getElementById('telecastStatus').innerText = '● Camera Live • Telecasting 30fps';
+        document.getElementById('telecastStatus').style.color = '#10b981';
+
+        attachVoiceVisualizer(localStream, 'tile_' + currentRole);
+        startFrameBroadcast();
+        startRemoteStreamIngest();
+
+      } catch (err) {
+        alert('Could not access camera/microphone: ' + err.message);
+        document.getElementById('telecastStatus').innerText = 'Camera Blocked';
+        document.getElementById('telecastStatus').style.color = '#ef4444';
+      }
+    }
+
+    function attachVoiceVisualizer(stream, targetTileId) {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const audioCtx = new AudioContext();
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 128;
+        source.connect(analyser);
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        const targetTile = document.getElementById(targetTileId);
+
+        function checkLevel() {
+          if (!stream.active) return;
+          analyser.getByteFrequencyData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+          let avg = sum / dataArray.length;
+
+          if (avg > 14 && !isMicMuted && !isStatutoryMuted) {
+            targetTile.classList.add('speaking');
+          } else {
+            targetTile.classList.remove('speaking');
+          }
+          requestAnimationFrame(checkLevel);
+        }
+        checkLevel();
+      } catch (e) {}
+    }
+
+    function toggleMuteMic() {
+      if (!localStream) return;
+      if (isStatutoryMuted) {
+        alert('⛔ Cannot unmute: The Board Chairman has placed a statutory mute on the floor pursuant to Cap 490.');
+        return;
+      }
+      isMicMuted = !isMicMuted;
+      localStream.getAudioTracks().forEach(track => {
+        track.enabled = !isMicMuted;
+      });
+      const btn = document.getElementById('btnMuteMic');
+      if (isMicMuted) {
+        btn.innerHTML = '🔇 Mic Muted';
+        btn.style.background = '#dc2626';
+        btn.style.borderColor = '#ef4444';
+      } else {
+        btn.innerHTML = '🎙️ Mute My Mic (Kill Echo)';
+        btn.style.background = '#334155';
+        btn.style.borderColor = '#64748b';
+      }
+    }
+
+    // -------------------------------------------------------------
+    // HIGH-SPEED FLUID STREAM PIPELINE (20-25 FPS ZERO-LAG)
+    // WITH BACKGROUND TAB HEARTBEAT (PREVENTS SCREEN-SHARE FREEZE)
+    // -------------------------------------------------------------
+    function startTimerWorker() {
+      if (timerWorker) return;
+      try {
+        const workerBlob = new Blob([`
+          let intervalId = null;
+          self.onmessage = function(e) {
+            if (e.data === 'start') {
+              if (intervalId) clearInterval(intervalId);
+              intervalId = setInterval(function() {
+                self.postMessage('tick');
+              }, 45);
+            } else if (e.data === 'stop') {
+              if (intervalId) clearInterval(intervalId);
+              intervalId = null;
+            }
+          };
+        `], { type: 'application/javascript' });
+        const blobUrl = URL.createObjectURL(workerBlob);
+        timerWorker = new Worker(blobUrl);
+        timerWorker.onmessage = function(e) {
+          if (e.data === 'tick') {
+            uploadNextFrame();
+          }
+        };
+        timerWorker.postMessage('start');
+      } catch (err) {
+        console.warn("Background worker fallback to timer", err);
+      }
+    }
+
+    function stopTimerWorker() {
+      if (timerWorker) {
+        timerWorker.postMessage('stop');
+        timerWorker.terminate();
+        timerWorker = null;
+      }
+    }
+
+    function startFrameBroadcast() {
+      startTimerWorker();
+      uploadNextFrame();
+    }
+
+    async function uploadNextFrame() {
+      const activeStream = screenStream || localStream;
+      if (!activeStream) return;
+
+      const sourceVideo = document.getElementById('video_' + currentRole);
+      if (!sourceVideo || sourceVideo.videoWidth === 0 || sourceVideo.videoHeight === 0) {
+        return;
+      }
+
+      if (isUploading) return;
+      isUploading = true;
+
+      const canvas = document.getElementById('hiddenFrameCanvas');
+      const ctx = canvas.getContext('2d');
+      const vW = sourceVideo.videoWidth;
+      const vH = sourceVideo.videoHeight;
+
+      let targetW = 480;
+      let targetH = 270;
+      let quality = 0.50;
+
+      if (isScreenSharing) {
+        // High-definition presentation rendering for documents, web pages & slides
+        targetW = 960;
+        targetH = Math.round((vH / vW) * 960);
+        if (isNaN(targetH) || targetH <= 0) targetH = 540;
+        quality = 0.65;
+      } else {
+        // High-efficiency camera frame
+        if (vH > vW) {
+          targetH = 480;
+          targetW = Math.round((vW / vH) * 480);
+        } else {
+          targetW = 480;
+          targetH = Math.round((vH / vW) * 480);
+        }
+        quality = 0.50;
+      }
+
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+
+      try {
+        ctx.drawImage(sourceVideo, 0, 0, canvas.width, canvas.height);
+      } catch (err) {
+        isUploading = false;
+        return;
+      }
+
+      const dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+      // AbortController ensures network stalls NEVER permanently hang the loop
+      const controller = new AbortController();
+      const abortTimer = setTimeout(() => controller.abort(), 1200);
+
+      try {
+        await fetch(`${API_URL}?action=stream_put&role=${currentRole}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: dataUrl,
+          signal: controller.signal
+        });
+      } catch (e) {
+      } finally {
+        clearTimeout(abortTimer);
+        isUploading = false;
+        // Fallback timer in case worker is paused
+        if (!timerWorker) {
+          uploadTimer = setTimeout(uploadNextFrame, isScreenSharing ? 55 : 40);
+        }
+      }
+    }
+
+    function startRemoteStreamIngest() {
+      setInterval(async () => {
+        try {
+          const hbQuery = hasClaimedValidSeat ? `&seat_role=${encodeURIComponent(currentRole)}&client_id=${encodeURIComponent(kikaoClientId)}` : '';
+          const statusResp = await fetch(`${API_URL}?action=stream_status&room=${encodeURIComponent(currentRoom)}${hbQuery}`);
+          if (!statusResp.ok) return;
+          const statusJson = await statusResp.json();
+
+          if (statusJson.seats) {
+            latestSeatsMap = statusJson.seats;
+            const modalEl = document.getElementById('seatLobbyModal');
+            if (modalEl && modalEl.style.display === 'flex') {
+              renderSeatLobbyCards();
+            } else {
+              // Update empty count badge in top header
+              let occ = 0;
+              ALL_ROLES.forEach(r => { if (latestSeatsMap[r]) occ++; });
+              const headerSwitchText = document.getElementById('otherRoleText');
+              if (headerSwitchText) headerSwitchText.innerText = `${ALL_ROLES.length - occ} Empty / Switch`;
+            }
+          }
+
+          // Update Presence indicators & custom tile names for all 6 roles
+          ALL_ROLES.forEach(r => {
+            const seatLock = latestSeatsMap[r];
+            const isPresent = Boolean(statusJson[r + '_active'] || seatLock);
+            const labelText = seatLock && seatLock.custom_name ? seatLock.custom_name.split(' ')[0].toUpperCase() : r.toUpperCase();
+            updatePeerBadge('presence_' + r, isPresent, labelText);
+
+            const nameEl = document.getElementById('name_' + r);
+            if (nameEl && seatLock && seatLock.custom_name) {
+              nameEl.innerText = seatLock.custom_name + (r === currentRole ? ' (You)' : '');
+            }
+          });
+
+          // Check if I was remotely muted by the Chairman!
+          if (currentRole !== 'chairman' && statusJson.muted_roles && statusJson.muted_roles[currentRole]) {
+            enforceStatutoryMute(true);
+          } else if (isStatutoryMuted && statusJson.muted_roles && !statusJson.muted_roles[currentRole]) {
+            enforceStatutoryMute(false);
+          }
+
+          // Check for Raised Hands across the boardroom
+          if (statusJson.raised_hands) {
+            ALL_ROLES.forEach(r => {
+              const isRaised = Boolean(statusJson.raised_hands[r]);
+              showTileHand(r, isRaised);
+              if (r === currentRole && isHandRaised !== isRaised) {
+                isHandRaised = isRaised;
+                const btn = document.getElementById('btnRaiseHand');
+                const lbl = document.getElementById('lblHand');
+                if (btn && lbl) {
+                  if (isRaised) {
+                    btn.classList.add('active');
+                    lbl.innerText = 'Lower Hand';
+                  } else {
+                    btn.classList.remove('active');
+                    lbl.innerText = 'Raise Hand';
+                  }
+                }
+              }
+            });
+          }
+
+          // Check for Recent Reactions from peers
+          if (statusJson.recent_reactions && Array.isArray(statusJson.recent_reactions)) {
+            statusJson.recent_reactions.forEach(rx => {
+              if (!seenReactionIds.has(rx.id)) {
+                seenReactionIds.add(rx.id);
+                if (rx.sender !== currentRole) {
+                  spawnFlyingEmoji(rx.emoji);
+                  showTileReaction(rx.sender, rx.emoji, rx.type);
+                  soundReactionPop();
+                }
+              }
+            });
+          }
+
+        } catch (e) {}
+      }, 1200);
+
+      const remoteRoles = ALL_ROLES.filter(r => r !== currentRole);
+      remoteRoles.forEach(r => {
+        if (!ingestLoops[r]) {
+          loopRemoteIngest(r);
+        }
+      });
+    }
+
+    function enforceStatutoryMute(shouldMute) {
+      isStatutoryMuted = shouldMute;
+      const banner = document.getElementById('statutoryMuteBanner');
+      const myTile = document.getElementById('tile_' + currentRole);
+      
+      if (shouldMute) {
+        banner.style.display = 'block';
+        if (myTile) myTile.classList.add('statutory-muted');
+        if (localStream) {
+          localStream.getAudioTracks().forEach(t => t.enabled = false);
+        }
+        isMicMuted = true;
+        const btn = document.getElementById('btnMuteMic');
+        btn.innerHTML = '⛔ STATUTORY MUTED';
+        btn.style.background = '#7f1d1d';
+      } else {
+        banner.style.display = 'none';
+        if (myTile) myTile.classList.remove('statutory-muted');
+        const btn = document.getElementById('btnMuteMic');
+        btn.innerHTML = '🎙️ Mute My Mic (Kill Echo)';
+        btn.style.background = '#334155';
+      }
+    }
+
+    function loopRemoteIngest(role) {
+      const targetImg = document.getElementById('img_' + role);
+      const targetAvatar = document.getElementById('avatar_' + role);
+      const targetTile = document.getElementById('tile_' + role);
+
+      let finished = false;
+      const tempImg = new Image();
+
+      // Watchdog: If frame load stalls, force next frame attempt after 1400ms
+      const watchdog = setTimeout(() => {
+        if (!finished) {
+          finished = true;
+          tempImg.src = '';
+          ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 100);
+        }
+      }, 1400);
+
+      tempImg.onload = () => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(watchdog);
+        targetImg.src = tempImg.src;
+        targetImg.style.display = 'block';
+        if (targetAvatar) targetAvatar.style.display = 'none';
+        if (targetTile) targetTile.classList.add('active-live');
+        ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 45); // Rapid next frame
+      };
+      tempImg.onerror = () => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(watchdog);
+        ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 250);
+      };
+      tempImg.src = `${API_URL}?action=stream_get&role=${role}&t=${Date.now()}`;
+    }
+
+    function updatePeerBadge(elemId, isActive, label) {
+      const el = document.getElementById(elemId);
+      if (!el) return;
+      if (isActive) {
+        el.className = 'peer-tag peer-online';
+        el.innerText = '● ' + label;
+      } else {
+        el.className = 'peer-tag peer-offline';
+        el.innerText = '○ ' + label;
+      }
+    }
+
+    function reconnectStreams() {
+      fetch(API_URL + '?action=rtc_reset').then(() => {
+        startRemoteStreamIngest();
+      });
+    }
+
+    async function toggleScreenShare() {
+      if (isScreenSharing) {
+        stopScreenShare();
+      } else {
+        await startScreenShare();
+      }
+    }
+
+    async function startScreenShare() {
+      try {
+        screenStream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            cursor: 'always'
+          },
+          audio: false
+        });
+
+        isScreenSharing = true;
+        const targetVid = document.getElementById('video_' + currentRole);
+        if (targetVid) {
+          targetVid.srcObject = screenStream;
+          targetVid.muted = true;
+          targetVid.playsInline = true;
+          targetVid.style.display = 'block';
+          document.getElementById('img_' + currentRole).style.display = 'none';
+          document.getElementById('avatar_' + currentRole).style.display = 'none';
+          document.getElementById('tile_' + currentRole).classList.add('active-live');
+          await targetVid.play().catch(e => console.warn(e));
+        }
+
+        const btnScreen = document.getElementById('btnScreen');
+        if (btnScreen) {
+          btnScreen.innerHTML = '🛑 Stop Sharing';
+          btnScreen.classList.add('btn-red');
+        }
+
+        document.getElementById('telecastStatus').innerText = '🖥️ Screen Sharing Live';
+        document.getElementById('telecastStatus').style.color = '#38bdf8';
+
+        // Auto-start broadcasting and ingestion
+        startFrameBroadcast();
+        startRemoteStreamIngest();
+
+        // Native browser "Stop Sharing" listener
+        const screenTrack = screenStream.getVideoTracks()[0];
+        if (screenTrack) {
+          screenTrack.onended = () => {
+            stopScreenShare();
+          };
+        }
+      } catch (e) {
+        console.warn('Screen share cancelled/denied:', e);
+        isScreenSharing = false;
+      }
+    }
+
+    function stopScreenShare() {
+      if (screenStream) {
+        screenStream.getTracks().forEach(t => t.stop());
+        screenStream = null;
+      }
+      isScreenSharing = false;
+
+      const targetVid = document.getElementById('video_' + currentRole);
+      if (localStream && targetVid) {
+        targetVid.srcObject = localStream;
+        targetVid.muted = true;
+        targetVid.playsInline = true;
+        targetVid.play().catch(e => console.warn(e));
+        document.getElementById('telecastStatus').innerText = '● Camera Live • Telecasting 30fps';
+        document.getElementById('telecastStatus').style.color = '#10b981';
+      } else if (targetVid) {
+        targetVid.srcObject = null;
+        targetVid.style.display = 'none';
+        document.getElementById('avatar_' + currentRole).style.display = 'flex';
+        document.getElementById('tile_' + currentRole).classList.remove('active-live');
+        document.getElementById('telecastStatus').innerText = 'Telecast: Ready';
+        document.getElementById('telecastStatus').style.color = '#94a3b8';
+      }
+
+      const btnScreen = document.getElementById('btnScreen');
+      if (btnScreen) {
+        btnScreen.innerHTML = '🖥️ Share Screen';
+        btnScreen.classList.remove('btn-red');
+      }
+    }
+
+    function stopMedia() {
+      stopTimerWorker();
+      if (uploadTimer) clearTimeout(uploadTimer);
+      if (screenStream) {
+        screenStream.getTracks().forEach(t => t.stop());
+        screenStream = null;
+      }
+      isScreenSharing = false;
+
+      if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+        localStream = null;
+      }
+      const v = document.getElementById('video_' + currentRole);
+      if (v) {
+        v.srcObject = null;
+        v.style.display = 'none';
+      }
+      document.getElementById('avatar_' + currentRole).style.display = 'flex';
+      document.getElementById('tile_' + currentRole).classList.remove('active-live');
+      document.getElementById('btnJoinLive').style.display = 'inline-flex';
+      document.getElementById('btnStopMedia').style.display = 'none';
+
+      const btnScreen = document.getElementById('btnScreen');
+      if (btnScreen) {
+        btnScreen.innerHTML = '🖥️ Share Screen';
+        btnScreen.classList.remove('btn-red');
+      }
+
+      document.getElementById('telecastStatus').innerText = 'Camera Stopped';
+      document.getElementById('telecastStatus').style.color = '#94a3b8';
+    }
+
+    // -------------------------------------------------------------
+    // AGM VOTING & QUORUM REAL-TIME SYNC
+    // -------------------------------------------------------------
+    
+    // -------------------------------------------------------------
+    // PROCEDURAL AUDIO SYNTHESIZER & REAL-TIME INTERACTIVE REACTIONS
+    // -------------------------------------------------------------
+    function playAudioTone(freq1, freq2, duration, type = 'sine') {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq1, ctx.currentTime);
+        if (freq2) {
+          osc.frequency.exponentialRampToValueAtTime(freq2, ctx.currentTime + duration);
+        }
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function soundReactionPop() { playAudioTone(520, 780, 0.12); }
+    function soundChatPing() { playAudioTone(660, 880, 0.18); }
+    function soundHandAlert() { playAudioTone(440, 554, 0.22); }
+
+    let isHandRaised = false;
+    let seenReactionIds = new Set();
+    let currentPanelTab = 'ballot';
+    let unreadChatCount = 0;
+    let lastSeenMsgCount = 0;
+
+    function spawnFlyingEmoji(emoji) {
+      const layer = document.getElementById('floatingReactionsLayer');
+      if (!layer) return;
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const el = document.createElement('div');
+          el.className = 'floating-emoji';
+          el.innerText = emoji;
+          const x = Math.random() * 65 + 18;
+          el.style.left = x + '%';
+          el.style.animationDuration = (2.0 + Math.random() * 0.7) + 's';
+          layer.appendChild(el);
+          setTimeout(() => el.remove(), 2800);
+        }, i * 140);
+      }
+    }
+
+    async function triggerReaction(emoji, type) {
+      soundReactionPop();
+      spawnFlyingEmoji(emoji);
+      showTileReaction(currentRole, emoji, type);
+
+      try {
+        await fetch(`${API_URL}?action=reaction_send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sender: currentRole,
+            emoji: emoji,
+            type: type
+          })
+        });
+      } catch (e) {}
+    }
+
+    async function toggleRaiseHand() {
+      isHandRaised = !isHandRaised;
+      const btn = document.getElementById('btnRaiseHand');
+      const lbl = document.getElementById('lblHand');
+      if (isHandRaised) {
+        soundHandAlert();
+        if (btn) btn.classList.add('active');
+        if (lbl) lbl.innerText = 'Lower Hand';
+        spawnFlyingEmoji('✋');
+        showTileHand(currentRole, true);
+      } else {
+        if (btn) btn.classList.remove('active');
+        if (lbl) lbl.innerText = 'Raise Hand';
+        showTileHand(currentRole, false);
+      }
+
+      try {
+        await fetch(`${API_URL}?action=reaction_send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sender: currentRole,
+            emoji: '✋',
+            type: isHandRaised ? 'raise_hand' : 'lower_hand'
+          })
+        });
+      } catch (e) {}
+    }
+
+    function showTileReaction(role, emoji, type) {
+      const bubble = document.getElementById('rx_tile_' + role);
+      if (!bubble) return;
+      bubble.innerHTML = `${emoji} <span style="font-size: 9.5px; text-transform: uppercase;">${type}</span>`;
+      bubble.classList.add('active');
+      setTimeout(() => {
+        bubble.classList.remove('active');
+      }, 3500);
+    }
+
+    function showTileHand(role, isRaised) {
+      const tag = document.getElementById('hand_tile_' + role);
+      const tile = document.getElementById('tile_' + role);
+      if (tag) tag.style.display = isRaised ? 'flex' : 'none';
+      if (tile) {
+        if (isRaised) tile.classList.add('hand-raised');
+        else tile.classList.remove('hand-raised');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // LIVE CHAT & DIRECT MESSAGING (1-TO-ALL & 1-TO-1 DM)
+    // -------------------------------------------------------------
+    function switchPanelTab(tab) {
+      currentPanelTab = tab;
+      const tabBallot = document.getElementById('tabContentBallot');
+      const tabChat = document.getElementById('tabContentChat');
+      const tabFiles = document.getElementById('tabContentFiles');
+      const btnBallot = document.getElementById('tabBtnBallot');
+      const btnChat = document.getElementById('tabBtnChat');
+      const btnFiles = document.getElementById('tabBtnFiles');
+      const badge = document.getElementById('chatUnreadBadge');
+
+      if (tab === 'chat') {
+        if (tabBallot) tabBallot.style.display = 'none';
+        if (tabFiles) tabFiles.style.display = 'none';
+        if (tabChat) tabChat.style.display = 'flex';
+        if (btnBallot) btnBallot.classList.remove('active');
+        if (btnFiles) btnFiles.classList.remove('active');
+        if (btnChat) btnChat.classList.add('active');
+        unreadChatCount = 0;
+        if (badge) badge.style.display = 'none';
+        scrollChatToBottom();
+      } else if (tab === 'files') {
+        if (tabBallot) tabBallot.style.display = 'none';
+        if (tabChat) tabChat.style.display = 'none';
+        if (tabFiles) tabFiles.style.display = 'flex';
+        if (btnBallot) btnBallot.classList.remove('active');
+        if (btnChat) btnChat.classList.remove('active');
+        if (btnFiles) btnFiles.classList.add('active');
+        pollFiles();
+      } else {
+        if (tabChat) tabChat.style.display = 'none';
+        if (tabFiles) tabFiles.style.display = 'none';
+        if (tabBallot) tabBallot.style.display = 'flex';
+        if (btnChat) btnChat.classList.remove('active');
+        if (btnFiles) btnFiles.classList.remove('active');
+        if (btnBallot) btnBallot.classList.add('active');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // INSTITUTIONAL FILE SHARING & ANTI-VIRUS INSPECTION PIPELINE
+    // -------------------------------------------------------------
+    async function handleFileSelected(files) {
+      if (!files || files.length === 0) return;
+      const file = files[0];
+      
+      const pBox = document.getElementById('uploadProgressBox');
+      const pBar = document.getElementById('uploadProgressBar');
+      const pName = document.getElementById('uploadFileName');
+      const pPct = document.getElementById('uploadPercent');
+
+      pBox.style.display = 'block';
+      pName.innerText = `🛡️ Anti-Virus Scanning: ${file.name}`;
+      pBar.style.width = '35%';
+      pPct.innerText = '35%';
+
+      const formData = new FormData();
+      formData.append('shared_file', file);
+      formData.append('sender', currentRole);
+
+      try {
+        pBar.style.width = '65%';
+        pPct.innerText = '65%';
+
+        const resp = await fetch(`${API_URL}?action=file_upload`, {
+          method: 'POST',
+          body: formData
+        });
+        const resJson = await resp.json();
+
+        if (resJson.status === 'REJECTED_THREAT') {
+          alert('⛔ THREAT DETECTED & BLOCKED:\n\n' + resJson.reason);
+          pBox.style.display = 'none';
+          return;
+        }
+
+        pBar.style.width = '100%';
+        pPct.innerText = '100% (Clean)';
+        setTimeout(() => { pBox.style.display = 'none'; }, 1000);
+
+        soundChatPing();
+        await pollFiles();
+        await pollChat();
+      } catch (err) {
+        alert('File upload error: ' + err.message);
+        pBox.style.display = 'none';
+      }
+    }
+
+    async function pollFiles() {
+      try {
+        const resp = await fetch(`${API_URL}?action=files_list`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const files = data.files || [];
+
+        const badge = document.getElementById('filesCountBadge');
+        if (badge) badge.innerText = files.length;
+
+        const listEl = document.getElementById('sharedFilesList');
+        if (!listEl) return;
+
+        if (files.length === 0) {
+          listEl.innerHTML = '<div style="text-align: center; color: #64748b; font-size: 11px; padding: 20px;">No documents shared yet. Drag or click above to upload.</div>';
+          return;
+        }
+
+        let html = '';
+        files.forEach(f => {
+          let icon = '📄';
+          let extColor = '#38bdf8';
+          const ext = (f.extension || '').toLowerCase();
+          if (ext === 'pdf') { icon = '📕'; extColor = '#f87171'; }
+          else if (ext === 'pptx') { icon = '📊'; extColor = '#fb923c'; }
+          else if (ext === 'xlsx' || ext === 'csv') { icon = '📈'; extColor = '#34d399'; }
+          else if (ext === 'docx') { icon = '📘'; extColor = '#60a5fa'; }
+          else if (['png', 'jpg', 'jpeg'].includes(ext)) { icon = '🖼️'; extColor = '#c084fc'; }
+
+          html += `
+            <div class="file-card">
+              <div class="file-card-top">
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span style="font-size: 20px; line-height: 1;">${icon}</span>
+                  <div>
+                    <div class="file-card-title">${f.original_name}</div>
+                    <div class="file-card-meta">
+                      <span style="color: ${extColor}; font-weight: 700; text-transform: uppercase;">.${f.extension}</span>
+                      <span>&bull; ${f.size_formatted}</span>
+                      <span>&bull; By ${f.uploader_title}</span>
+                      <span>&bull; ${f.time_str}</span>
+                    </div>
+                  </div>
+                </div>
+                <a href="${API_URL}?action=file_download&id=${f.id}" class="btn-file-dl" target="_blank" download>
+                  ⬇️ Download
+                </a>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px; font-size: 9px; color: #64748b;">
+                <span class="file-threat-badge">🛡️ SHA-256 SCANNED & CLEAN</span>
+                <span style="font-mono; font-size: 8.5px;" title="${f.sha256}">HASH: ${f.sha256.substring(0, 14)}...</span>
+              </div>
+            </div>
+          `;
+        });
+        listEl.innerHTML = html;
+      } catch (e) {}
+    }
+
+    function onRecipientChange() {
+      const sel = document.getElementById('chatRecipientSelect');
+      const target = sel.value;
+      const input = document.getElementById('chatMessageInput');
+      const note = document.getElementById('chatPrivacyNote');
+      const targetName = sel.options[sel.selectedIndex].text;
+
+      if (target === 'all') {
+        input.placeholder = 'Message Everyone (Public Floor)...';
+        note.innerHTML = '🌐 <strong>Public Message:</strong> Broadcasts to all boardroom delegates.';
+        note.style.color = '#94a3b8';
+      } else {
+        input.placeholder = `Private message to ${targetName.split(':')[1] || targetName}...`;
+        note.innerHTML = `🔒 <strong>Private 1-to-1 DM:</strong> Only you and <strong>${targetName}</strong> can view this message.`;
+        note.style.color = '#c084fc';
+      }
+    }
+
+    function insertChatEmoji(emoji) {
+      const inp = document.getElementById('chatMessageInput');
+      if (inp) {
+        inp.value += emoji;
+        inp.focus();
+      }
+    }
+
+    async function sendChatMessage() {
+      const inp = document.getElementById('chatMessageInput');
+      const text = inp.value.trim();
+      if (!text) return;
+      const sel = document.getElementById('chatRecipientSelect');
+      const recipient = sel.value;
+
+      inp.value = '';
+
+      try {
+        await fetch(`${API_URL}?action=chat_send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sender: currentRole,
+            recipient: recipient,
+            text: text
+          })
+        });
+        await pollChat();
+      } catch (e) {}
+    }
+
+    async function pollChat() {
+      try {
+        const resp = await fetch(`${API_URL}?action=chat_get&role=${currentRole}`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const messages = data.messages || [];
+
+        renderChatMessages(messages);
+      } catch (e) {}
+    }
+
+    function renderChatMessages(messages) {
+      const container = document.getElementById('chatMessagesList');
+      if (!container) return;
+
+      if (messages.length === 0) return;
+
+      if (messages.length > lastSeenMsgCount) {
+        const newCount = messages.length - lastSeenMsgCount;
+        if (lastSeenMsgCount > 0 && currentPanelTab !== 'chat') {
+          unreadChatCount += newCount;
+          const badge = document.getElementById('chatUnreadBadge');
+          if (badge) {
+            badge.style.display = 'inline-block';
+            badge.innerText = unreadChatCount;
+          }
+          soundChatPing();
+        }
+        lastSeenMsgCount = messages.length;
+      }
+
+      let html = '';
+      messages.forEach(m => {
+        const isFromMe = (m.sender === currentRole);
+        const isPrivate = m.is_private;
+        
+        let cardClass = 'chat-msg-card';
+        if (isFromMe) cardClass += ' from-me';
+        if (isPrivate) cardClass += ' is-private';
+
+        let targetBadgeHtml = '';
+        if (isPrivate) {
+          if (isFromMe) {
+            targetBadgeHtml = `<span class="chat-badge-target chat-badge-private">🔒 Private to ${m.recipient_title}</span>`;
+          } else {
+            targetBadgeHtml = `<span class="chat-badge-target chat-badge-private">🔒 Private DM to You</span>`;
+          }
+        } else {
+          targetBadgeHtml = `<span class="chat-badge-target chat-badge-public">🌐 Everyone</span>`;
+        }
+
+        html += `
+          <div class="${cardClass}">
+            <div class="chat-msg-header">
+              <span class="chat-sender-name">${m.sender_title}</span>
+              <div style="display: flex; align-items: center; gap: 5px;">
+                ${targetBadgeHtml}
+                <span class="chat-msg-time">${m.time_str}</span>
+              </div>
+            </div>
+            <div class="chat-msg-body">${m.text}</div>
+          </div>
+        `;
+      });
+
+      const wasAtBottom = (container.scrollHeight - container.scrollTop <= container.clientHeight + 50);
+      container.innerHTML = html;
+      if (wasAtBottom || currentPanelTab === 'chat') {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    function scrollChatToBottom() {
+      const container = document.getElementById('chatMessagesList');
+      if (container) {
+        setTimeout(() => { container.scrollTop = container.scrollHeight; }, 60);
+      }
+    }
+
+    async function pollState() {
+      try {
+        const resp = await fetch(API_URL + '?action=status');
+        if (!resp.ok) return;
+        const json = await resp.json();
+        renderState(json.state);
+      } catch (e) {}
+    }
+
+    function renderState(st) {
+      if (!st) return;
+
+      const qVal = st.current_quorum_pct || 78.4;
+      document.getElementById('quorumVal').innerText = qVal.toFixed(1) + '%';
+      document.getElementById('quorumBar').style.width = Math.min(100, qVal) + '%';
+
+      const res = st.resolution;
+      const pct = st.percentages || { for: 84.2, against: 10.8, abstain: 5.0 };
+
+      document.getElementById('unitsFor').innerText = Number(res.votes_for).toLocaleString() + ' Units';
+      document.getElementById('unitsAgainst').innerText = Number(res.votes_against).toLocaleString() + ' Units';
+      document.getElementById('unitsAbstain').innerText = Number(res.votes_abstain).toLocaleString() + ' Units';
+      document.getElementById('totalBallotsCount').innerText = (res.total_ballots_cast || 0) + ' Ballots Cast';
+
+      document.getElementById('lblFor').innerText = `FOR (${pct.for}%)`;
+      document.getElementById('lblAgainst').innerText = `AGAINST (${pct.against}%)`;
+      document.getElementById('lblAbstain').innerText = `ABSTAIN (${pct.abstain}%)`;
+
+      document.getElementById('barFor').style.width = pct.for + '%';
+      document.getElementById('barAgainst').style.width = pct.against + '%';
+      document.getElementById('barAbstain').style.width = pct.abstain + '%';
+
+      if (st.recent_receipts && st.recent_receipts.length > 0) {
+        let html = '';
+        st.recent_receipts.forEach(r => {
+          const color = r.choice === 'FOR' ? '#34d399' : (r.choice === 'AGAINST' ? '#f87171' : '#94a3b8');
+          html += `
+            <div class="receipt-item">
+              <div>
+                <strong style="color: #f8fafc;">${escapeHtml(r.voter)}</strong>: 
+                <span style="color: ${color}; font-weight: 700;">${r.choice}</span> 
+                <span style="color: #64748b;">(${Number(r.units).toLocaleString()} U)</span>
+              </div>
+              <span style="color: #38bdf8;">${r.time}</span>
+            </div>
+          `;
+        });
+        document.getElementById('receiptsFeed').innerHTML = html;
+      }
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>"']/g, function(m) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m];
+      });
+    }
+
+    async function castBallot(choice) {
+      let voterName = 'Dr. Patrick Kamau (Delegate #0014)';
+      let units = 12500;
+      if (currentRole === 'chairman') {
+        voterName = 'CPA Charles Ndegwa (Chairman)';
+        units = 25000;
+      } else if (currentRole === 'auditor') {
+        voterName = 'Peter Kamau (External Auditor)';
+        units = 5000;
+      } else if (currentRole === 'delegate3') {
+        voterName = 'Beatrice Akinyi (Supervisory Chair)';
+        units = 18000;
+      }
+
+      try {
+        const resp = await fetch(API_URL + '?action=vote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ voter: voterName, choice: choice, units: units })
+        });
+        const json = await resp.json();
+        renderState(json.state);
+
+        document.getElementById('votingActions').style.display = 'none';
+        document.getElementById('voteConfirmedBadge').style.display = 'block';
+        document.getElementById('voteConfirmedBadge').innerHTML = `
+          ✓ YOUR VOTE (${choice}) RECORDED WITH ${units.toLocaleString()} UNITS &bull; SHA-256 SEALED
+        `;
+      } catch (e) {
+        alert('Transmission error: ' + e);
+      }
+    }
+
+    // Initialize state polling
+    pollState();
+    pollChat();
+    setInterval(pollChat, 1400);
+    pollInterval = setInterval(pollState, 2000);
+    startRemoteStreamIngest();
+  </script>
+
+
+    <!-- Stride Sovereign AI Copilot Widget -->
+    <link rel="stylesheet" href="/stride-chat.css?v=20261023_v5">
+    <script src="/stride-chat.js?v=20261023_v5"></script>
+</body>
+</html>
