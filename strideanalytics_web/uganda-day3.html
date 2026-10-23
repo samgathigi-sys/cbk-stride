@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 3: Bank Solvency & Base64/Hex Wire Packet Carving — Bank of Uganda Masterclass</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bou: {
+              gold: '#F59E0B',
+              darkgold: '#B45309',
+              crimson: '#991B1B',
+              black: '#0A0A0B',
+              slate: '#0F172A',
+              card: '#141D2E',
+              border: '#1E293B'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse-subtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .live-pulse { animation: pulse-subtle 2s infinite ease-in-out; }
+    .uganda-flag-stripe { background: linear-gradient(90deg, #000000 33.3%, #FACC15 33.3%, #FACC15 66.6%, #DC2626 66.6%); }
+    .glass-card { background: rgba(20, 29, 46, 0.75); backdrop-filter: blur(14px); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .glass-input { background: rgba(10, 10, 11, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); }
+  </style>
+</head>
+<body class="bg-bou-black text-slate-100 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-black">
+  <div class="h-1.5 w-full uganda-flag-stripe"></div>
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-bou-slate/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/uganda" class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center font-bold text-amber-400 font-mono shadow text-sm">
+          BOU
+        </a>
+        <div>
+          <div class="flex items-center gap-2">
+            <a href="/uganda" class="text-xs sm:text-sm font-black font-heading text-white tracking-tight hover:text-amber-400 transition">
+              BANK OF UGANDA &bull; IMMERSION PORTAL
+            </a>
+            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
+              DAY 3 CLASSROOM
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-mono">
+            Bank Solvency & Base64/Hex Wire Packet Carving &bull; Wednesday (09:00 – 13:00 EAT)
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs font-mono">
+        <a href="/uganda" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition">
+          &larr; Master Hub
+        </a>
+        <a href="/uganda/day-2" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition">&larr; Day 2</a>
+        <a href="/uganda/day-4" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-black font-bold transition">Day 4 &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-8">
+    
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border border-amber-500/30 relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 font-mono text-xs font-bold border border-amber-500/40">
+            <span>📦 DAY 3 CLASSROOM &bull; WEDNESDAY (09:00 – 13:00 EAT)</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black font-heading text-white tracking-tight">
+            Bank Solvency Stress &amp; Base64/Hex Wire Packet Carving
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            Inspect obfuscated wire streams that evade perimeter firewalls. Decode Base64 and Hex byte arrays in browser memory to extract raw ISO 20022 XML messages and catch illicit beneficiary redirection.
+          </p>
+        </div>
+        <div class="flex flex-row md:flex-col items-center md:items-end gap-2 shrink-0 font-mono text-xs">
+          <div class="px-3 py-1.5 rounded-xl bg-bou-black/80 border border-slate-800 text-right">
+            <span class="text-[10px] text-slate-400 block">STANDARD:</span>
+            <span class="font-bold text-amber-400">ISO 20022 pacs.008</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-xl bg-bou-black/80 border border-slate-800 text-right">
+            <span class="text-[10px] text-slate-400 block">CARVER:</span>
+            <span class="font-bold text-emerald-400">Client-Side Parser</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">PART 1 &bull; MORNING DOCTRINE &amp; LEGAL MANDATE (09:00 – 11:00 EAT)</span>
+          <h3 class="text-xl font-bold font-heading text-white mt-1">Prudential Solvency &amp; Payload Obfuscation Mechanics</h3>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 hidden sm:block">2 Contact Hours</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-slate-800 space-y-2">
+          <div class="text-amber-400 font-bold flex items-center gap-1.5">
+            <span>📉</span> <span>1. Bank Run Liquidity Stress</span>
+          </div>
+          <p class="text-slate-300 font-sans text-xs leading-relaxed">
+            Modeling sudden intra-day deposit withdrawals. Calculating Basel III Liquidity Coverage Ratios (LCR) when Tier-1 banks suffer collateral haircuts at the central bank discount window.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-slate-800 space-y-2">
+          <div class="text-purple-400 font-bold flex items-center gap-1.5">
+            <span>🧩</span> <span>2. Why Hackers Encode in Base64</span>
+          </div>
+          <p class="text-slate-300 font-sans text-xs leading-relaxed">
+            Perimeter firewalls search for text keywords like "Offshore" or "UGX". By converting the XML into Base64 or Hex byte arrays, hackers bypass signature filters entirely.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-slate-800 space-y-2">
+          <div class="text-emerald-400 font-bold flex items-center gap-1.5">
+            <span>🛡️</span> <span>3. Section 32 Intervention Authority</span>
+          </div>
+          <p class="text-slate-300 font-sans text-xs leading-relaxed">
+            Uganda NPS Act 2020 § 32 gives the central bank emergency powers to take statutory management of a clearing node when systemic fraud threatens the RTGS settlement pool.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border-2 border-amber-500/40 space-y-6" id="day3Lab">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span class="text-xs font-mono text-amber-300 font-bold uppercase tracking-wider">PART 2 &bull; HANDS-ON TACTICAL SANDBOX (11:15 – 13:00 EAT)</span>
+          </div>
+          <h3 class="text-xl font-bold font-heading text-white mt-1">
+            Base64 &amp; Hex Wire Payload Carver &amp; Decoder
+          </h3>
+          <p class="text-xs text-slate-300 mt-1">
+            Click any captured wire preset below to carve and decode obfuscated ISO 20022 byte streams:
+          </p>
+        </div>
+      </div>
+
+      <!-- Presets Bar -->
+      <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+        <span class="text-[11px] text-slate-400 font-bold">Captured Wire Presets:</span>
+        <button onclick="loadEncodingPreset('b64_wire')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-bold">
+          1. Base64 pacs.008 Altered Wire
+        </button>
+        <button onclick="loadEncodingPreset('hex_c2')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold">
+          2. Hex C2 Offshore Beacon
+        </button>
+        <button onclick="clearEncodingLab()" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-xs">
+          Clear
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <!-- Input Area -->
+        <div class="space-y-3 bg-bou-black/90 p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-400 font-bold uppercase">OBFUSCATED RAW INPUT (BASE64 / HEX):</span>
+            <span id="detectedFormatBadge" class="text-amber-400 font-bold">Format: Auto-Detect</span>
+          </div>
+          <textarea id="encodingInput" rows="6" placeholder="Paste Base64 or Hex encoded string here..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white font-mono focus:border-amber-400 focus:outline-none" oninput="autoDecodeInput()"></textarea>
+          <div class="flex gap-2 font-mono text-xs">
+            <button onclick="decodeBase64Manual()" class="flex-1 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-black font-bold">
+              Decode Base64 &rarr;
+            </button>
+            <button onclick="decodeHexManual()" class="flex-1 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-black font-bold">
+              Decode Hex &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Decoded Output Area -->
+        <div class="space-y-3 bg-bou-black/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs font-mono pb-2 border-b border-slate-800">
+              <span class="text-emerald-400 font-bold uppercase">DECODED ISO 20022 PAYLOAD INSPECTOR:</span>
+              <span id="decodeStatusBadge" class="text-slate-400 text-xs">Awaiting Decrypt</span>
+            </div>
+            <div id="decodedOutput" class="mt-2 p-3 bg-slate-950 border border-emerald-500/30 rounded-xl font-mono text-xs text-slate-200 min-h-[140px] whitespace-pre-wrap break-all leading-relaxed">
+Click '1. Base64 pacs.008 Altered Wire' above to test instant decoding of captured RTGS packets.
+            </div>
+          </div>
+          <div class="text-[10px] font-mono text-slate-500 flex items-center justify-between pt-2 border-t border-slate-800">
+            <span id="charCountNotice">0 Bytes In &bull; 0 Bytes Out</span>
+            <span class="text-emerald-400 font-semibold">&check; 100% In-RAM Execution</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-bou-slate border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 font-mono mt-12">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>&copy; 2026/2027 Stride Analytics &bull; Central Banking Forensics Enclave</div>
+      <div>Day 3 Classroom &bull; Bank of Uganda In-Person Immersion, Nairobi, Kenya</div>
+    </div>
+  </footer>
+
+  <script>
+    
+    function playTone(freq, dur = 0.1) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+
+    
+    const presets = {
+      'b64_wire': 'PHBhY3MuMDA4PjxBbXQ+MTQ4MDAwMDAwMDA8L0FtdD48Q2R0cj5LYW1wYWxhIE9mZnNob3JlIENhcGl0YWw8L0NkdHI+PEFjY3Q+VUdYIDEwOTItODgxOS0wMDI8L0FjY3Q+PEF1ZGl0PlRlcm1pbmFsIElEIGFsdGVyZWQgYXQgMDk6MTI6NDQ8L0F1ZGl0PjwvcGFjcy4wMDg+',
+      'hex_c2': '433220426561636f6e3a20436f6e6e656374696f6e2065737461626c697368656420746f203139362e3230312e3231342e3132205b456e7465626265205377697463685d'
+    };
+
+    function loadEncodingPreset(key) {
+      const input = document.getElementById('encodingInput');
+      if (input && presets[key]) {
+        input.value = presets[key];
+        autoDecodeInput();
+        playTone(620, 0.1);
+      }
+    }
+
+    function clearEncodingLab() {
+      const input = document.getElementById('encodingInput');
+      const output = document.getElementById('decodedOutput');
+      if (input) input.value = '';
+      if (output) output.innerText = "Click a preset above to test instant decoding.";
+    }
+
+    function autoDecodeInput() {
+      const val = document.getElementById('encodingInput').value.trim();
+      if (!val) return;
+      if (/^[0-9a-fA-F\s]+$/.test(val) && val.length > 8 && val.length % 2 === 0) {
+        decodeHexManual();
+      } else {
+        decodeBase64Manual();
+      }
+    }
+
+    function decodeBase64Manual() {
+      const val = document.getElementById('encodingInput').value.trim();
+      const out = document.getElementById('decodedOutput');
+      const badge = document.getElementById('decodeStatusBadge');
+      try {
+        const decoded = atob(val);
+        out.innerText = decoded;
+        if (badge) {
+          badge.innerText = '● DECODED BASE64';
+          badge.className = 'text-emerald-400 font-bold';
+        }
+      } catch(e) {
+        if (badge) {
+          badge.innerText = '❌ INVALID BASE64';
+          badge.className = 'text-red-400 font-bold';
+        }
+      }
+    }
+
+    function decodeHexManual() {
+      const val = document.getElementById('encodingInput').value.replace(/\s+/g, '');
+      const out = document.getElementById('decodedOutput');
+      const badge = document.getElementById('decodeStatusBadge');
+      try {
+        let str = '';
+        for (let i = 0; i < val.length; i += 2) {
+          str += String.fromCharCode(parseInt(val.substr(i, 2), 16));
+        }
+        out.innerText = str;
+        if (badge) {
+          badge.innerText = '● DECODED HEX';
+          badge.className = 'text-cyan-400 font-bold';
+        }
+      } catch(e) {
+        if (badge) {
+          badge.innerText = '❌ INVALID HEX';
+          badge.className = 'text-red-400 font-bold';
+        }
+      }
+    }
+
+  </script>
+
+    <!-- Stride Sovereign AI Copilot Widget -->
+    <link rel="stylesheet" href="/stride-chat.css?v=20261023_v5">
+    <script src="/stride-chat.js?v=20261023_v5"></script>
+</body>
+</html>

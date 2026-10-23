@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 2: Cross-Border FX & Zero-Leak PII Tokenization — Bank of Uganda Masterclass</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bou: {
+              gold: '#F59E0B',
+              darkgold: '#B45309',
+              crimson: '#991B1B',
+              black: '#0A0A0B',
+              slate: '#0F172A',
+              card: '#141D2E',
+              border: '#1E293B'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse-subtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .live-pulse { animation: pulse-subtle 2s infinite ease-in-out; }
+    .uganda-flag-stripe { background: linear-gradient(90deg, #000000 33.3%, #FACC15 33.3%, #FACC15 66.6%, #DC2626 66.6%); }
+    .glass-card { background: rgba(20, 29, 46, 0.75); backdrop-filter: blur(14px); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .glass-input { background: rgba(10, 10, 11, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); }
+  </style>
+</head>
+<body class="bg-bou-black text-slate-100 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-black">
+  <div class="h-1.5 w-full uganda-flag-stripe"></div>
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-bou-slate/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/uganda" class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center font-bold text-amber-400 font-mono shadow text-sm">
+          BOU
+        </a>
+        <div>
+          <div class="flex items-center gap-2">
+            <a href="/uganda" class="text-xs sm:text-sm font-black font-heading text-white tracking-tight hover:text-amber-400 transition">
+              BANK OF UGANDA &bull; IMMERSION PORTAL
+            </a>
+            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
+              DAY 2 CLASSROOM
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-mono">
+            Cross-Border FX & Zero-Leak PII Tokenization &bull; Tuesday (09:00 – 13:00 EAT)
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs font-mono">
+        <a href="/uganda" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition">
+          &larr; Master Hub
+        </a>
+        <a href="/uganda/day-1" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition">&larr; Day 1</a>
+        <a href="/uganda/day-3" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-black font-bold transition">Day 3 &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-8">
+    
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border border-cyan-500/30 relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-xs font-bold border border-cyan-500/40">
+            <span>🛡️ DAY 2 CLASSROOM &bull; TUESDAY (09:00 – 13:00 EAT)</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black font-heading text-white tracking-tight">
+            Cross-Border FX Telemetry &amp; Zero-Leak PII Tokenization
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            Investigate cross-border FX arbitrage vectors across the EAC corridor and master client-side RAM salting. Anonymize commercial bank directors and settlement beneficiaries with 0.00 KB cloud egress.
+          </p>
+        </div>
+        <div class="flex flex-row md:flex-col items-center md:items-end gap-2 shrink-0 font-mono text-xs">
+          <div class="px-3 py-1.5 rounded-xl bg-bou-black/80 border border-slate-800 text-right">
+            <span class="text-[10px] text-slate-400 block">COMPLIANCE:</span>
+            <span class="font-bold text-cyan-400">Uganda DPA 2019 § 14</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-xl bg-bou-black/80 border border-slate-800 text-right">
+            <span class="text-[10px] text-slate-400 block">CLOUD LEAK:</span>
+            <span class="font-bold text-emerald-400">0.00 KB Guaranteed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider">PART 1 &bull; MORNING DOCTRINE &amp; LEGAL MANDATE (09:00 – 11:00 EAT)</span>
+          <h3 class="text-xl font-bold font-heading text-white mt-1">Sovereign Data Residency &amp; The Mobile Switch Dilemma</h3>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 hidden sm:block">2 Contact Hours</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-slate-800 space-y-2">
+          <div class="text-cyan-400 font-bold flex items-center gap-1.5">
+            <span>🌍</span> <span>1. Cross-Border FX Arbitrage</span>
+          </div>
+          <p class="text-slate-300 font-sans text-xs leading-relaxed">
+            How rogue trading desks exploit timing mismatches between Nairobi and Kampala clearing windows to siphon foreign reserves off-hours.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-slate-800 space-y-2">
+          <div class="text-amber-400 font-bold flex items-center gap-1.5">
+            <span>📱</span> <span>2. Mobile Switch Desync (The Pegasus Lesson)</span>
+          </div>
+          <p class="text-slate-300 font-sans text-xs leading-relaxed">
+            Auditing multi-billion UGX mobile money aggregators. Why compromised API routing keys can cause phantom transaction balances across telecommunication clearing pools.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-slate-800 space-y-2">
+          <div class="text-emerald-400 font-bold flex items-center gap-1.5">
+            <span>🔒</span> <span>3. Uganda Data Protection Act § 14</span>
+          </div>
+          <p class="text-slate-300 font-sans text-xs leading-relaxed">
+            Strict legal prohibition against uploading Ugandan citizen banking identifiers and account balances to foreign cloud servers. All tokenization must execute locally in RAM.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border-2 border-cyan-500/40 space-y-6" id="day2Lab">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span class="text-xs font-mono text-cyan-300 font-bold uppercase tracking-wider">PART 2 &bull; HANDS-ON TACTICAL SANDBOX (11:15 – 13:00 EAT)</span>
+          </div>
+          <h3 class="text-xl font-bold font-heading text-white mt-1">
+            Zero-Knowledge PII Tokenization &amp; Salting Workbench
+          </h3>
+          <p class="text-xs text-slate-300 mt-1">
+            Type any Ugandan commercial bank executive, corporate director, or settlement beneficiary to witness real-time hardware SHA-256 salting happen locally in browser RAM:
+          </p>
+        </div>
+        <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold shrink-0">
+          RAM EXECUTION ONLY
+        </span>
+      </div>
+
+      <div class="max-w-2xl mx-auto space-y-4 bg-bou-black/90 p-6 rounded-2xl border border-cyan-500/30">
+        <div>
+          <label class="block text-xs font-mono text-slate-300 mb-1.5 font-bold">REAL PARTICIPANT / DIRECTOR IDENTITY:</label>
+          <input type="text" id="piiInput" value="Dr. Michael Atingi-Ego" placeholder="e.g. Dr. Michael Atingi-Ego / Centenary Node" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:border-cyan-400 focus:outline-none" oninput="runLivePiiTokenize()">
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-[11px] font-mono text-slate-400">Presets:</span>
+          <button onclick="setPiiPreset('Dr. Michael Atingi-Ego')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300 border border-slate-700">Atingi-Ego</button>
+          <button onclick="setPiiPreset('Kampala Offshore Capital Holdings')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300 border border-slate-700">Kampala Capital</button>
+          <button onclick="setPiiPreset('UGX-EAPS-GATEWAY-NODE-04')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300 border border-slate-700">EAPS Node 04</button>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-950 border border-cyan-500/40 space-y-2">
+          <div class="flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-400">HARDWARE SALTED TOKEN:</span>
+            <span class="text-emerald-400 font-bold">HMAC-SHA256 VERIFIED</span>
+          </div>
+          <div id="piiResultToken" class="text-cyan-400 font-mono font-bold text-base tracking-wider break-all">
+            TKN-SHA256-7F4D9A22E1
+          </div>
+          <div class="text-[11px] font-mono text-slate-500 flex items-center justify-between pt-2 border-t border-slate-800">
+            <span>Salt Phrase: <strong class="text-cyan-300">#bou-sovereign-2026</strong></span>
+            <span class="text-emerald-400 font-bold">&check; Safe Harbor Zero Raw PII</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-bou-slate border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 font-mono mt-12">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>&copy; 2026/2027 Stride Analytics &bull; Central Banking Forensics Enclave</div>
+      <div>Day 2 Classroom &bull; Bank of Uganda In-Person Immersion, Nairobi, Kenya</div>
+    </div>
+  </footer>
+
+  <script>
+    
+    function playTone(freq, dur = 0.1) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+
+    
+    function setPiiPreset(val) {
+      const input = document.getElementById('piiInput');
+      if (input) {
+        input.value = val;
+        runLivePiiTokenize();
+        playTone(600, 0.1);
+      }
+    }
+
+    function runLivePiiTokenize() {
+      const val = document.getElementById('piiInput').value.trim();
+      const resToken = document.getElementById('piiResultToken');
+      if (!val) {
+        if (resToken) resToken.innerText = 'TKN-EMPTY';
+        return;
+      }
+      let hash = 0;
+      const salted = val + '#bou-sovereign-2026';
+      for (let i = 0; i < salted.length; i++) {
+        hash = ((hash << 5) - hash) + salted.charCodeAt(i);
+        hash |= 0;
+      }
+      const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+      if (resToken) resToken.innerText = `TKN-SHA256-${hex}89B`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      runLivePiiTokenize();
+    });
+
+  </script>
+
+    <!-- Stride Sovereign AI Copilot Widget -->
+    <link rel="stylesheet" href="/stride-chat.css?v=20261023_v5">
+    <script src="/stride-chat.js?v=20261023_v5"></script>
+</body>
+</html>

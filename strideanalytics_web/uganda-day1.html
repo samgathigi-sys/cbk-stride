@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 1: National Payment Systems (NPS), EAPS & Wire Forensics — Bank of Uganda Masterclass</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bou: {
+              gold: '#F59E0B',
+              darkgold: '#B45309',
+              crimson: '#991B1B',
+              black: '#0A0A0B',
+              slate: '#0F172A',
+              card: '#141D2E',
+              border: '#1E293B'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse-subtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .live-pulse { animation: pulse-subtle 2s infinite ease-in-out; }
+    .uganda-flag-stripe { background: linear-gradient(90deg, #000000 33.3%, #FACC15 33.3%, #FACC15 66.6%, #DC2626 66.6%); }
+    .glass-card { background: rgba(20, 29, 46, 0.75); backdrop-filter: blur(14px); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .glass-input { background: rgba(10, 10, 11, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); }
+  </style>
+</head>
+<body class="bg-bou-black text-slate-100 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-black">
+  <div class="h-1.5 w-full uganda-flag-stripe"></div>
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-bou-slate/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/uganda" class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center font-bold text-amber-400 font-mono shadow text-sm">
+          BOU
+        </a>
+        <div>
+          <div class="flex items-center gap-2">
+            <a href="/uganda" class="text-xs sm:text-sm font-black font-heading text-white tracking-tight hover:text-amber-400 transition">
+              BANK OF UGANDA &bull; IMMERSION PORTAL
+            </a>
+            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
+              DAY 1 CLASSROOM
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-mono">
+            National Payment Systems (NPS), EAPS & Wire Forensics &bull; Monday (09:00 – 13:00 EAT)
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs font-mono">
+        <a href="/uganda" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition">
+          &larr; Master Hub
+        </a>
+        
+        <a href="/uganda/day-2" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-black font-bold transition">Day 2 &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-8">
+    
+    <!-- Day 1 Hero Banner -->
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border border-amber-500/30 relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 font-mono text-xs font-bold border border-amber-500/40">
+            <span>🏛️ DAY 1 CLASSROOM &bull; MONDAY (09:00 – 13:00 EAT)</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black font-heading text-white tracking-tight">
+            National Payment Systems (NPS), EAPS &amp; Wire Forensics
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            Welcome to Day 1 of the Bank of Uganda immersion. Today we master Real-Time Gross Settlement (RTGS) mechanics, compare legacy SWIFT MT against modern ISO 20022 schemas, and inspect raw packet hashes to defeat man-in-the-middle wire redirection.
+          </p>
+        </div>
+        <div class="flex flex-row md:flex-col items-center md:items-end gap-2 shrink-0 font-mono text-xs">
+          <div class="px-3 py-1.5 rounded-xl bg-bou-black/80 border border-slate-800 text-right">
+            <span class="text-[10px] text-slate-400 block">SESSION TIMING:</span>
+            <span class="font-bold text-amber-400">09:00 – 13:00 EAT</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-xl bg-bou-black/80 border border-slate-800 text-right">
+            <span class="text-[10px] text-slate-400 block">DELIVERY:</span>
+            <span class="font-bold text-emerald-400">50% Doctrine &bull; 50% Lab</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <!-- Day 1 Morning Doctrine & Legal Discussion (09:00 - 11:00 EAT) -->
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">PART 1 &bull; MORNING DOCTRINE &amp; LEGAL MANDATE (09:00 – 11:00 EAT)</span>
+          <h3 class="text-xl font-bold font-heading text-white mt-1">EAPS Settlement Finality &amp; The Wire Hijack Vector</h3>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 hidden sm:block">2 Contact Hours</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-slate-800 space-y-2">
+          <div class="text-amber-400 font-bold flex items-center gap-1.5">
+            <span>📜</span> <span>1. Settlement Finality (NPS Act § 18)</span>
+          </div>
+          <p class="text-slate-300 font-sans text-xs leading-relaxed">
+            Under Section 18 of the Uganda National Payment Systems Act 2020, once an RTGS instruction is settled in central bank funds, it is <strong>irrevocable</strong>. Central bankers have zero margin for error; money cannot be pulled back once stamped final.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-slate-800 space-y-2">
+          <div class="text-cyan-400 font-bold flex items-center gap-1.5">
+            <span>📦</span> <span>2. SWIFT MT103 vs ISO 20022 pacs.008</span>
+          </div>
+          <p class="text-slate-300 font-sans text-xs leading-relaxed">
+            Legacy SWIFT MT messages used rigid telex text lines. Modern ISO 20022 wires use structured XML trees (<code class="text-cyan-300">pacs.008</code>). This offers richer audit trails, but also exposes XML payload tags to unauthorized in-transit mutation.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bou-black/80 border border-slate-800 space-y-2">
+          <div class="text-red-400 font-bold flex items-center gap-1.5">
+            <span>⚖️</span> <span>3. Computer Misuse Act § 19</span>
+          </div>
+          <p class="text-slate-300 font-sans text-xs leading-relaxed">
+            Uganda Computer Misuse Act 2011/2022 § 19 criminalizes unauthorized interception and alteration of electronic financial data. Establishes legal authority to demand forensic logs from commercial bank participants.
+          </p>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 text-xs text-slate-300 space-y-1">
+        <span class="text-amber-300 font-bold font-mono">KEY TAKEAWAY FOR TODAY:</span>
+        <p class="font-sans">
+          Never trust what the transaction summary says on your screen. Always verify the cryptographic math (SHA-256 payload checksum) before clearing multi-billion shilling wire batches.
+        </p>
+      </div>
+    </section>
+
+    
+    <!-- Day 1 Hands-on Tactical Lab (11:15 - 13:00 EAT) -->
+    <section class="glass-card rounded-3xl p-6 sm:p-8 border-2 border-emerald-500/40 space-y-6" id="day1Lab">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-mono text-emerald-300 font-bold uppercase tracking-wider">PART 2 &bull; HANDS-ON TACTICAL SANDBOX (11:15 – 13:00 EAT)</span>
+          </div>
+          <h3 class="text-xl font-bold font-heading text-white mt-1">
+            EAPS Wire Packet Inspector &amp; Live Forensic CLI Terminal
+          </h3>
+          <p class="text-xs text-slate-300 mt-1">
+            Execute real-time packet inspection on pending EAPS Batch #92811 (UGX 14.8B). Trace origin IP, catch mutated SHA-256 checksums, and issue router quarantine commands.
+          </p>
+        </div>
+        <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold shrink-0">
+          LOCAL RAM &bull; 0.00 KB LEAK
+        </span>
+      </div>
+
+      <!-- Command Shortcut Pills -->
+      <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+        <span class="text-[10px] text-slate-400 font-bold">Quick Commands:</span>
+        <button onclick="runCliPreset('help')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-[11px] font-bold">
+          help
+        </button>
+        <button onclick="runCliPreset('scan-rtgs --batch EAPS-92811')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-black border border-emerald-400 text-[11px] font-bold shadow-md shadow-emerald-600/30">
+          ⚡ scan-rtgs (EAPS Batch #92811)
+        </button>
+        <button onclick="runCliPreset('isolate-node --ip 196.201.214.12')" class="px-2.5 py-1 rounded-lg bg-red-950/60 hover:bg-red-900 text-red-300 border border-red-800 text-[11px] font-bold">
+          🚨 isolate-node
+        </button>
+        <button onclick="runCliPreset('threat-matrix')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px]">
+          threat-matrix
+        </button>
+        <button onclick="runCliPreset('clear')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[11px]">
+          clear
+        </button>
+      </div>
+
+      <!-- Terminal Window Frame -->
+      <div class="rounded-2xl border border-slate-800 bg-[#070b12] shadow-2xl overflow-hidden font-mono text-xs">
+        <div class="bg-slate-900/90 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+            <span class="ml-2 text-slate-400 text-[11px]">bou-forensic-surveillance (tty1) &bull; air-gapped terminal</span>
+          </div>
+          <div class="flex items-center gap-2 text-[10px] text-emerald-400 font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>SESSION: ACTIVE (BOU-ROOT)</span>
+          </div>
+        </div>
+
+        <div id="cliTerminalBox" class="p-4 space-y-1.5 max-h-[340px] min-h-[200px] overflow-y-auto text-slate-300 leading-relaxed text-[11px]">
+          <div class="text-amber-400">[BOOT] Bank of Uganda Central Banking Cyber Forensics Enclave initialized.</div>
+          <div class="text-slate-400">[INIT] Hardware Security Module (HSM) online &bull; SHA-256 Acceleration: READY.</div>
+          <div class="text-emerald-400">[READY] Sandboxed CLI listening. Type <span class="text-amber-300 font-bold">"help"</span> or click <span class="text-emerald-300 font-bold cursor-pointer underline" onclick="runCliPreset('scan-rtgs --batch EAPS-92811')">'scan-rtgs'</span> to inspect pending wire batches.</div>
+        </div>
+
+        <div class="p-3 bg-slate-950 border-t border-slate-800/80 flex items-center gap-2">
+          <span class="text-emerald-400 font-bold text-xs select-none">bou-soc@enclave:~$</span>
+          <input type="text" id="cliCommandInput" placeholder="Type command here (e.g. 'help', 'scan-rtgs', 'isolate-node')..." class="flex-1 bg-transparent text-white font-mono text-xs focus:outline-none placeholder-slate-600" autocomplete="off" spellcheck="false" onkeydown="handleCliKeyDown(event)">
+          <button onclick="executeCliCommand()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-black font-bold font-mono text-xs transition shadow flex items-center gap-1">
+            <span>Run &crarr;</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-bou-slate border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 font-mono mt-12">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>&copy; 2026/2027 Stride Analytics &bull; Central Banking Forensics Enclave</div>
+      <div>Day 1 Classroom &bull; Bank of Uganda In-Person Immersion, Nairobi, Kenya</div>
+    </div>
+  </footer>
+
+  <script>
+    
+    function playTone(freq, dur = 0.1) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+
+    
+    let cliHistory = [];
+    let cliHistoryIdx = -1;
+
+    function handleCliKeyDown(e) {
+      if (e.key === 'Enter') {
+        executeCliCommand();
+      } else if (e.key === 'ArrowUp') {
+        if (cliHistory.length > 0 && cliHistoryIdx < cliHistory.length - 1) {
+          cliHistoryIdx++;
+          document.getElementById('cliCommandInput').value = cliHistory[cliHistory.length - 1 - cliHistoryIdx];
+        }
+      } else if (e.key === 'ArrowDown') {
+        if (cliHistoryIdx > 0) {
+          cliHistoryIdx--;
+          document.getElementById('cliCommandInput').value = cliHistory[cliHistory.length - 1 - cliHistoryIdx];
+        } else if (cliHistoryIdx === 0) {
+          cliHistoryIdx = -1;
+          document.getElementById('cliCommandInput').value = '';
+        }
+      }
+    }
+
+    function runCliPreset(cmd) {
+      const inp = document.getElementById('cliCommandInput');
+      if (inp) {
+        inp.value = cmd;
+        executeCliCommand();
+      }
+    }
+
+    function appendCliOutput(lineHtml) {
+      const box = document.getElementById('cliTerminalBox');
+      if (!box) return;
+      const div = document.createElement('div');
+      div.innerHTML = lineHtml;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function executeCliCommand() {
+      const inp = document.getElementById('cliCommandInput');
+      if (!inp) return;
+      const raw = inp.value.trim();
+      if (!raw) return;
+
+      cliHistory.push(raw);
+      cliHistoryIdx = -1;
+      inp.value = '';
+
+      playTone(500, 0.08);
+      appendCliOutput(`<div class="text-slate-400 pt-1 border-t border-slate-800/40"><span class="text-emerald-400 font-bold">bou-soc@enclave:~$</span> <span class="text-white font-bold">${escapeHtml(raw)}</span></div>`);
+
+      const parts = raw.split(' ');
+      const cmd = parts[0].toLowerCase();
+      const args = parts.slice(1).join(' ');
+
+      if (cmd === 'clear' || cmd === 'cls') {
+        const box = document.getElementById('cliTerminalBox');
+        if (box) {
+          box.innerHTML = '<div class="text-emerald-400">[READY] Terminal buffer cleared. Type <span class="text-amber-300 font-bold">"help"</span> for commands.</div>';
+        }
+        return;
+      }
+
+      if (cmd === 'help' || cmd === '?') {
+        appendCliOutput(`
+          <div class="space-y-1 text-slate-300 my-1">
+            <div class="text-amber-300 font-bold">★ BANK OF UGANDA SOVEREIGN FORENSIC CLI - DAY 1 MANUAL ★</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-slate-300 pt-1">
+              <div><strong class="text-cyan-300">scan-rtgs</strong> &bull; Inspect pending EAPS transaction batch &amp; verify hashes</div>
+              <div><strong class="text-red-400">isolate-node &lt;ip&gt;</strong> &bull; Sever compromised commercial bank switch gateway</div>
+              <div><strong class="text-slate-200">threat-matrix</strong> &bull; Display systemic liquidity &amp; cyber risk metrics</div>
+              <div><strong class="text-slate-400">clear</strong> &bull; Reset terminal screen buffer</div>
+            </div>
+          </div>
+        `);
+        return;
+      }
+
+      if (cmd === 'scan-rtgs') {
+        appendCliOutput(`
+          <div class="space-y-1 my-1 text-xs">
+            <div class="text-cyan-300 font-bold">🔍 [SCAN] Inspecting EAPS Batch #92811 (ISO 20022 pacs.008.001.08)...</div>
+            <div class="text-slate-300">&bull; Settlement Amount: <strong class="text-amber-400">UGX 14,800,000,000</strong></div>
+            <div class="text-slate-300">&bull; Declared Header Checksum: <span class="font-mono text-emerald-400">SHA256[E90A32...]</span></div>
+            <div class="text-slate-300">&bull; Recomputed Payload Checksum: <span class="font-mono text-red-400">SHA256[7F4D9A...]</span></div>
+            <div class="text-red-400 font-bold bg-red-950/40 p-2 rounded border border-red-800">
+              [ALERT] CHECKSUM MISMATCH DETECTED: Wire body was mutated in transit between Commercial Bank A and EAPS clearing switch!
+            </div>
+            <div class="text-[11px] text-slate-400">
+              Recommended action: Execute <code class="text-red-300 font-bold cursor-pointer" onclick="runCliPreset('isolate-node --ip 196.201.214.12')">isolate-node --ip 196.201.214.12</code> to quarantine gateway.
+            </div>
+          </div>
+        `);
+        return;
+      }
+
+      if (cmd === 'isolate-node' || cmd === 'isolate') {
+        const ip = args.includes('--ip') ? args.split('--ip')[1].trim() : (args || '196.201.214.12');
+        appendCliOutput(`
+          <div class="space-y-1 my-1">
+            <div class="text-red-400 font-bold">🚨 [ISOLATE] Transmitting TCP RST &amp; BGP Route Sever Command...</div>
+            <div class="text-slate-300">&bull; Target Participant Gateway: <strong class="text-red-300 font-mono">${escapeHtml(ip)}</strong></div>
+            <div class="text-slate-300">&bull; Switch Port: <span class="text-white font-mono">ETH-SW-04 (Centenary Core Trunk)</span></div>
+            <div class="text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-emerald-500/40">
+              [SUCCESS] Participant node isolated from RTGS clearing pool. Contagion risk neutralized (Uganda NPS Act 2020 § 32 compliant).
+            </div>
+          </div>
+        `);
+        return;
+      }
+
+      if (cmd === 'threat-matrix') {
+        appendCliOutput(`
+          <div class="space-y-1 my-1">
+            <div class="text-slate-300 font-bold">📊 [THREAT-MATRIX] Bank of Uganda Live Systemic Health:</div>
+            <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-300 pt-1">
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800">
+                <span class="text-slate-500">Threat Severity:</span> <strong class="text-red-400">LEVEL 4 (CRITICAL)</strong>
+              </div>
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800">
+                <span class="text-slate-500">Systemic Liquidity Buffer:</span> <strong class="text-emerald-400">UGX 420.5 Billion</strong>
+              </div>
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800">
+                <span class="text-slate-500">RTGS Settlement Queue:</span> <strong class="text-amber-400">UGX 14.8 Billion (HELD)</strong>
+              </div>
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800">
+                <span class="text-slate-500">Surveillance Status:</span> <strong class="text-cyan-400">ACTIVE INTERVENTION</strong>
+              </div>
+            </div>
+          </div>
+        `);
+        return;
+      }
+
+      appendCliOutput(`
+        <div class="text-red-400 text-xs my-1">
+          command not found: <span class="font-mono font-bold">${escapeHtml(cmd)}</span>. Type <span class="text-amber-300 font-bold cursor-pointer underline" onclick="runCliPreset('help')">"help"</span>.
+        </div>
+      `);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+  </script>
+
+    <!-- Stride Sovereign AI Copilot Widget -->
+    <link rel="stylesheet" href="/stride-chat.css?v=20261023_v5">
+    <script src="/stride-chat.js?v=20261023_v5"></script>
+</body>
+</html>

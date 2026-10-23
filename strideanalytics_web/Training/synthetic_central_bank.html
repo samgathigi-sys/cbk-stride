@@ -237,6 +237,106 @@
                     auditBlocks.innerText = (cur + 1).toLocaleString();
                 }
             }
+
+            // 6. Update Threat Mitigations Tab (Coraza WAF & Suricata DPI Log)
+            if (Math.random() > 0.3) {
+                const threatPool = [
+                    {
+                        ip: "185.220.101.5",
+                        origin: "Tor Exit Node",
+                        subsystem: "/swift/mt103/inbound",
+                        sig: "SWIFT Field 20/32A Tamper ($12.5M Outlier)",
+                        rule: "CRS 942100 (Cryptographic Invalidation)",
+                        verdict: "Coraza WAF Drop",
+                        packetId: "SWIFT-HEIST-01"
+                    },
+                    {
+                        ip: "45.154.255.89",
+                        origin: "DarkPink APT Proxy",
+                        subsystem: "/rtgs/settle/pacs.008",
+                        sig: "ISO 20022 XML Entity Expansion (XEE Exploit)",
+                        rule: "CRS 933150 (XML Schema Strict Validation)",
+                        verdict: "Schema Parser Drop",
+                        packetId: "ISO-XEE-03"
+                    },
+                    {
+                        ip: "194.26.29.112",
+                        origin: "Mirai Botnet Cluster",
+                        subsystem: "/mobile-money/mtn-ug/escrow",
+                        sig: "High-Rate Replay Attack (650 txns/sec)",
+                        rule: "CRS 912120 (Rate Limit Violation)",
+                        verdict: "Auto-Throttled",
+                        packetId: "MM-REPLAY-02"
+                    },
+                    {
+                        ip: "103.152.220.4",
+                        origin: "Lazarus C2 Infrastructure",
+                        subsystem: "/eaps/kenya-uganda/remit",
+                        sig: "BGP Hijack & RPKI Prefix Spoofing",
+                        rule: "BGP-RPKI & Mutual TLS Route Rejection",
+                        verdict: "Route Blackholed",
+                        packetId: "EAPS-BGP-04"
+                    },
+                    {
+                        ip: "198.51.100.42",
+                        origin: "Bulletproof VPS (Seychelles)",
+                        subsystem: "/treasury/tax-clearing/ura",
+                        sig: "Blind SQL Injection in Settlement Memo",
+                        rule: "CRS 942100 (SQLi Signature Intercept)",
+                        verdict: "Coraza WAF Drop",
+                        packetId: "URA-SQLI-05"
+                    },
+                    {
+                        ip: "91.240.118.23",
+                        origin: "Ransomhub Affiliate",
+                        subsystem: "/swift/mt103/inbound",
+                        sig: "Malicious ISO Header Smuggling",
+                        rule: "CRS 921110 (HTTP Header Smuggling)",
+                        verdict: "TCP RST Reset",
+                        packetId: "SWIFT-SMUGGLE-06"
+                    }
+                ];
+
+                const threat = threatPool[Math.floor(Math.random() * threatPool.length)];
+
+                // Increment Threat Blocked Counter
+                const threatVal = document.getElementById("threatBlockedVal");
+                if (threatVal) {
+                    let cur = parseInt(threatVal.innerText.replace(/,/g, '')) || 1960;
+                    threatVal.innerText = (cur + 1).toLocaleString();
+                    flashElement("threatBlockedVal");
+                }
+
+                // Increment 4xx metric on main overview
+                if (typeof bankState !== 'undefined' && bankState.statusCodes) {
+                    bankState.statusCodes.c4xx += 1;
+                    const v4xx = document.getElementById("val-4xx");
+                    if (v4xx) {
+                        v4xx.innerText = bankState.statusCodes.c4xx.toLocaleString();
+                        flashElement("val-4xx");
+                    }
+                }
+
+                // Append live row to Threat Log table
+                const secTable = document.getElementById("secTableBody");
+                if (secTable) {
+                    const row = document.createElement("tr");
+                    row.className = "stream-threat-row";
+                    row.style.background = "rgba(220, 38, 38, 0.08)";
+                    row.innerHTML = `
+                        <td>${timeStr}</td>
+                        <td><code>${threat.ip}</code> <span style="font-size: 10px; color: #94a3b8;">(${threat.origin})</span></td>
+                        <td><code>${threat.subsystem}</code></td>
+                        <td style="color: #f87171; font-weight: 600;">${threat.sig}</td>
+                        <td><span style="font-size: 11px; font-family: monospace; color: #cbd5e1;">${threat.rule}</span></td>
+                        <td><span class="sec-badge sec-badge-block">${threat.verdict}</span></td>
+                        <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('${threat.packetId}')">Inspect</button></td>
+                    `;
+                    secTable.insertBefore(row, secTable.firstChild);
+                    if (secTable.children.length > 10) secTable.removeChild(secTable.lastChild);
+                }
+            }
+
         }
 
     </script>
@@ -2701,7 +2801,7 @@
         }
 
         // Modal Packet Inspector
-        function viewPacket(id) {
+                function viewPacket(id) {
             const modal = document.getElementById("packetModal");
             const title = document.getElementById("modalPacketId");
             const content = document.getElementById("modalPacketContent");
@@ -2709,16 +2809,52 @@
             title.innerText = `Forensic Trace: ${id}`;
 
             let sample = {};
-            if (id.includes('SWIFT')) {
+            if (id.includes('SWIFT') || id.includes('HEIST') || id.includes('SMUGGLE')) {
                 sample = {
                     "header": "{1:F01BOUUGKAAXXXX0000000000}{2:I103CERBUGKXXXXN}{3:{108:MT103-ADVERSARY-09}}",
                     "tag_20_tx_reference": "UGX-RTGS-20261021-99882",
                     "tag_32A_value": "UGX 12,500,000,000.00",
                     "tag_59_beneficiary": "/UG/998877665544/Lazarus-Syndicate-Mule",
                     "pki_signature": "INVALID_CHECKSUM_DETECTED",
-                    "coraza_verdict": "RULE_942100_TRIGGERED",
+                    "coraza_verdict": "RULE_942100_TRIGGERED (Cryptographic Invalidation)",
                     "soar_remediation": "BIC CERBUGKXXXX session suspended; MTTC 1.28s",
                     "law_admissibility": "Uganda Electronic Transactions Act 2011 Sec 8 Verified"
+                };
+            } else if (id.includes('XEE') || id.includes('ISO')) {
+                sample = {
+                    "protocol": "ISO 20022 pacs.008.001.08 XML Ingress",
+                    "exploit_signature": "<!ENTITY xxe SYSTEM 'file:///etc/bou/hsm/keys.pem'>",
+                    "target_parser": "/rtgs/settle/pacs.008",
+                    "coraza_verdict": "RULE_933150_BLOCKED (XML Entity Expansion)",
+                    "suricata_dpi_alert": "ET EXPLOIT LibXML Malicious Entity Reference",
+                    "soar_remediation": "Ingress Stream RST Dispatched; Threat IP Shunted",
+                    "law_admissibility": "Uganda Computer Misuse Act Sec 14 Evidence Preserved"
+                };
+            } else if (id.includes('MM') || id.includes('REPLAY')) {
+                sample = {
+                    "protocol": "Mobile Money Trust Escrow API Gateway",
+                    "adversary_source": "194.26.29.112 (Mirai Botnet Cluster)",
+                    "request_rate": "650 transactions / second",
+                    "coraza_verdict": "RULE_912120_THROTTLED (Token Bucket Exhausted)",
+                    "soar_remediation": "Temporary IP Jail (3600s) on Cloudflare Edge Worker",
+                    "loss_prevented": "UGX 1,480,000,000.00"
+                };
+            } else if (id.includes('BGP') || id.includes('EAPS')) {
+                sample = {
+                    "corridor": "EAPS Cross-Border Bilateral Gateway (Uganda-Kenya)",
+                    "anomalous_as_path": "AS37153 (Unauthorized Transit Route)",
+                    "rpki_state": "INVALID_PREFIX_ORIGIN",
+                    "defense_action": "BGP Flowspec Prefix Null-Route Active",
+                    "soar_remediation": "Failover to Encrypted Private Fibernet Tunnel",
+                    "mttr": "0.84s Automated Failover"
+                };
+            } else if (id.includes('SQLI') || id.includes('URA')) {
+                sample = {
+                    "endpoint": "/treasury/tax-clearing/ura",
+                    "payload": "URA-REF-88' OR 1=1 UNION SELECT password_hash FROM admin_users--",
+                    "coraza_verdict": "RULE_942100_TRIGGERED (SQL Injection Detected)",
+                    "action": "Immediate 403 Forbidden + IP Blacklist",
+                    "soar_remediation": "SOAR-PB-22 Executed; Alert Dispatched to CERT"
                 };
             } else {
                 sample = {
@@ -2727,12 +2863,11 @@
                     "instructing_agent": "Stanbic Bank Uganda (SBICUGKX)",
                     "settlement_amount": "UGX 4,200,000,000.00",
                     "status": "SETTLED_200_OK",
-                    "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                    "chain_of_custody": "Evidence stored under Uganda Electronic Transactions Act Section 8"
+                    "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
                 };
             }
 
-            content.innerHTML = `<pre>${JSON.stringify(sample, null, 2)}</pre>`;
+            content.innerHTML = `<pre style="background: #0f172a; color: #38bdf8; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 12px; overflow-x: auto; line-height: 1.5;">${JSON.stringify(sample, null, 2)}</pre>`;
             modal.style.display = "flex";
         }
 
@@ -3032,8 +3167,112 @@
                     auditBlocks.innerText = (cur + 1).toLocaleString();
                 }
             }
+
+            // 6. Update Threat Mitigations Tab (Coraza WAF & Suricata DPI Log)
+            if (Math.random() > 0.3) {
+                const threatPool = [
+                    {
+                        ip: "185.220.101.5",
+                        origin: "Tor Exit Node",
+                        subsystem: "/swift/mt103/inbound",
+                        sig: "SWIFT Field 20/32A Tamper ($12.5M Outlier)",
+                        rule: "CRS 942100 (Cryptographic Invalidation)",
+                        verdict: "Coraza WAF Drop",
+                        packetId: "SWIFT-HEIST-01"
+                    },
+                    {
+                        ip: "45.154.255.89",
+                        origin: "DarkPink APT Proxy",
+                        subsystem: "/rtgs/settle/pacs.008",
+                        sig: "ISO 20022 XML Entity Expansion (XEE Exploit)",
+                        rule: "CRS 933150 (XML Schema Strict Validation)",
+                        verdict: "Schema Parser Drop",
+                        packetId: "ISO-XEE-03"
+                    },
+                    {
+                        ip: "194.26.29.112",
+                        origin: "Mirai Botnet Cluster",
+                        subsystem: "/mobile-money/mtn-ug/escrow",
+                        sig: "High-Rate Replay Attack (650 txns/sec)",
+                        rule: "CRS 912120 (Rate Limit Violation)",
+                        verdict: "Auto-Throttled",
+                        packetId: "MM-REPLAY-02"
+                    },
+                    {
+                        ip: "103.152.220.4",
+                        origin: "Lazarus C2 Infrastructure",
+                        subsystem: "/eaps/kenya-uganda/remit",
+                        sig: "BGP Hijack & RPKI Prefix Spoofing",
+                        rule: "BGP-RPKI & Mutual TLS Route Rejection",
+                        verdict: "Route Blackholed",
+                        packetId: "EAPS-BGP-04"
+                    },
+                    {
+                        ip: "198.51.100.42",
+                        origin: "Bulletproof VPS (Seychelles)",
+                        subsystem: "/treasury/tax-clearing/ura",
+                        sig: "Blind SQL Injection in Settlement Memo",
+                        rule: "CRS 942100 (SQLi Signature Intercept)",
+                        verdict: "Coraza WAF Drop",
+                        packetId: "URA-SQLI-05"
+                    },
+                    {
+                        ip: "91.240.118.23",
+                        origin: "Ransomhub Affiliate",
+                        subsystem: "/swift/mt103/inbound",
+                        sig: "Malicious ISO Header Smuggling",
+                        rule: "CRS 921110 (HTTP Header Smuggling)",
+                        verdict: "TCP RST Reset",
+                        packetId: "SWIFT-SMUGGLE-06"
+                    }
+                ];
+
+                const threat = threatPool[Math.floor(Math.random() * threatPool.length)];
+
+                // Increment Threat Blocked Counter
+                const threatVal = document.getElementById("threatBlockedVal");
+                if (threatVal) {
+                    let cur = parseInt(threatVal.innerText.replace(/,/g, '')) || 1960;
+                    threatVal.innerText = (cur + 1).toLocaleString();
+                    flashElement("threatBlockedVal");
+                }
+
+                // Increment 4xx metric on main overview
+                if (typeof bankState !== 'undefined' && bankState.statusCodes) {
+                    bankState.statusCodes.c4xx += 1;
+                    const v4xx = document.getElementById("val-4xx");
+                    if (v4xx) {
+                        v4xx.innerText = bankState.statusCodes.c4xx.toLocaleString();
+                        flashElement("val-4xx");
+                    }
+                }
+
+                // Append live row to Threat Log table
+                const secTable = document.getElementById("secTableBody");
+                if (secTable) {
+                    const row = document.createElement("tr");
+                    row.className = "stream-threat-row";
+                    row.style.background = "rgba(220, 38, 38, 0.08)";
+                    row.innerHTML = `
+                        <td>${timeStr}</td>
+                        <td><code>${threat.ip}</code> <span style="font-size: 10px; color: #94a3b8;">(${threat.origin})</span></td>
+                        <td><code>${threat.subsystem}</code></td>
+                        <td style="color: #f87171; font-weight: 600;">${threat.sig}</td>
+                        <td><span style="font-size: 11px; font-family: monospace; color: #cbd5e1;">${threat.rule}</span></td>
+                        <td><span class="sec-badge sec-badge-block">${threat.verdict}</span></td>
+                        <td><button class="cf-btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="viewPacket('${threat.packetId}')">Inspect</button></td>
+                    `;
+                    secTable.insertBefore(row, secTable.firstChild);
+                    if (secTable.children.length > 10) secTable.removeChild(secTable.lastChild);
+                }
+            }
+
         }
 
     </script>
+
+    <!-- Stride Sovereign AI Copilot Widget -->
+    <link rel="stylesheet" href="/stride-chat.css?v=20261023_v5">
+    <script src="/stride-chat.js?v=20261023_v5"></script>
 </body>
 </html>
