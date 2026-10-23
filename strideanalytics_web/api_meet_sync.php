@@ -293,7 +293,7 @@ if ($action === 'audio_put') {
 
     $b64 = $input['b64'] ?? '';
     $sr = (int)($input['sr'] ?? 12000);
-    if (empty($b64) || strlen($b64) > 65000) {
+    if (empty($b64) || strlen($b64) > 180000) {
         echo json_encode(['status' => 'EMPTY_OR_OVERSIZED']);
         exit;
     }
@@ -310,7 +310,7 @@ if ($action === 'audio_put') {
 
         // Keep only chunks from the last 2.8 seconds
         $chunks = array_values(array_filter($chunks, function($c) use ($now) {
-            return isset($c['ts']) && (($now - (float)$c['ts']) < 2.8);
+            return isset($c['ts']) && (($now - (float)$c['ts']) < 5.0);
         }));
 
         // ANTI-ECHO ACTIVE-SPEAKER FLOOR LOCK (1.35s):
@@ -320,7 +320,7 @@ if ($action === 'audio_put') {
             $latestChunk = end($chunks);
             $latestRole = $latestChunk['role'] ?? '';
             $latestTs = (float)($latestChunk['ts'] ?? 0);
-            if ($latestRole !== '' && $latestRole !== $role && ($now - $latestTs) < 1.35) {
+            if ($latestRole !== '' && $latestRole !== $role && ($now - $latestTs) < 1.10) {
                 @flock($fp, LOCK_UN);
                 fclose($fp);
                 echo json_encode(['status' => 'ECHO_GATED', 'active_speaker' => $latestRole]);
@@ -339,8 +339,8 @@ if ($action === 'audio_put') {
         ];
 
         // Cap at 25 recent chunks
-        if (count($chunks) > 25) {
-            $chunks = array_slice($chunks, -25);
+        if (count($chunks) > 40) {
+            $chunks = array_slice($chunks, -40);
         }
 
         ftruncate($fp, 0);
@@ -375,7 +375,7 @@ if ($action === 'audio_poll') {
     foreach ($chunks as $c) {
         $cSeq = (int)($c['seq'] ?? 0);
         if ($cSeq > $latestSeq) $latestSeq = $cSeq;
-        if (($c['role'] ?? '') !== $myRole && $cSeq > $since && (($now - (float)($c['ts'] ?? 0)) < 3.5)) {
+        if (($c['role'] ?? '') !== $myRole && $cSeq > $since && (($now - (float)($c['ts'] ?? 0)) < 5.0)) {
             // If sender was just muted, skip
             $senderRole = $c['role'];
             if ($senderRole !== 'chairman' && !empty($state['muted_roles'][$senderRole])) {
