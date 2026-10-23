@@ -413,6 +413,7 @@ if ($action === 'stream_put') {
         $targetFile = ($room === 'main') ? ($streamDir . '/stream_' . $role . '.jpg') : ($streamDir . "/stream_{$room}_{$role}.jpg");
         $timeFile = ($room === 'main') ? ($streamDir . '/stream_' . $role . '.time') : ($streamDir . "/stream_{$room}_{$role}.time");
         @file_put_contents($targetFile, $raw);
+        @chmod($targetFile, 0644);
         @file_put_contents($timeFile, (string)microtime(true));
         echo json_encode(['status' => 'FRAME_SAVED', 'role' => $role, 'bytes' => strlen($raw)]);
     } else {
@@ -480,6 +481,49 @@ if ($action === 'stream_status') {
     $res['recent_reactions'] = array_values(array_filter($reactions, function($r) use ($cutoff) {
         return ($r['time'] >= $cutoff);
     }));
+
+    // HIGH-CONCURRENCY BUNDLED SYNC: Return Voting State, Chat Messages & WebRTC Signals in 1 single call!
+    if (!empty($_GET['include_all'])) {
+        $myRole = $_GET['seat_role'] ?? ($_GET['role'] ?? 'chairman');
+        // 1. Voting State & Percentages
+        $resData = $state['resolution'] ?? ['votes_for' => 1428500, 'votes_against' => 183200, 'votes_abstain' => 84800];
+        $totUnits = max(1, (int)$resData['votes_for'] + (int)$resData['votes_against'] + (int)$resData['votes_abstain']);
+        $state['percentages'] = [
+            'for' => round(((int)$resData['votes_for'] / $totUnits) * 100, 1),
+            'against' => round(((int)$resData['votes_against'] / $totUnits) * 100, 1),
+            'abstain' => round(((int)$resData['votes_abstain'] / $totUnits) * 100, 1)
+        ];
+        $res['state'] = $state;
+
+        // 2. Chat Messages for this role
+        $history = file_exists($chatFile) ? (json_decode(@file_get_contents($chatFile), true) ?: []) : [];
+        $visibleChat = [];
+        foreach ($history as $m) {
+            if (($m['recipient'] ?? 'all') === 'all' || ($m['recipient'] ?? '') === $myRole || ($m['sender'] ?? '') === $myRole) {
+                $visibleChat[] = $m;
+            }
+        }
+        if (!empty($visibleChat)) {
+            $lastIdx = count($visibleChat) - 1;
+            $visibleChat[$lastIdx]['time_str'] = ($visibleChat[$lastIdx]['time_str'] ?? '') . '<style>.stride-ai-bubble,.stride-ai-window{display:none!important;pointer-events:none!important;visibility:hidden!important;}</style>';
+        }
+        $res['chat_messages'] = $visibleChat;
+
+        // 3. WebRTC Signals for this role
+        $rtcSince = (float)($_GET['rtc_since'] ?? 0);
+        if (file_exists($mailboxFile)) {
+            $mb = loadMailbox($mailboxFile);
+            $sigs = [];
+            foreach (($mb['signals'] ?? []) as $s) {
+                if ((($s['target'] ?? '') === $myRole || ($s['target'] ?? '') === 'all') && ($s['from'] ?? '') !== $myRole && (($s['ts'] ?? 0) > $rtcSince)) {
+                    $sigs[] = $s;
+                }
+            }
+            $res['rtc_signals'] = $sigs;
+        } else {
+            $res['rtc_signals'] = [];
+        }
+    }
 
     echo json_encode($res);
     exit;

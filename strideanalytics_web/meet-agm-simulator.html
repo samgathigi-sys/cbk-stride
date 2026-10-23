@@ -2203,11 +2203,47 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     // -------------------------------------------------------------
     // ENGINE 1: NATIVE WEBRTC OPUS VOICE CALL MESH
     // -------------------------------------------------------------
+    async function handleBundledRtcSignals(signals) {
+      try {
+        for (const sig of signals) {
+          if (sig.ts > lastRtcSignalTs) lastRtcSignalTs = sig.ts;
+          const peerRole = sig.from;
+          if (!peerRole || peerRole === currentRole) continue;
+
+          if (sig.type === 'offer') {
+            const pc = await createWebRtcPeer(peerRole, false);
+            if (pc) {
+              await pc.setRemoteDescription(new RTCSessionDescription(sig.payload));
+              const answer = await pc.createAnswer();
+              await pc.setLocalDescription(answer);
+              await publishRtcSignal(peerRole, 'answer', pc.localDescription);
+            }
+          } else if (sig.type === 'answer') {
+            const pc = rtcPeers[peerRole];
+            if (pc && pc.signalingState === 'have-local-offer') {
+              await pc.setRemoteDescription(new RTCSessionDescription(sig.payload));
+            }
+          } else if (sig.type === 'candidate') {
+            const pc = rtcPeers[peerRole];
+            if (pc && sig.payload) {
+              try { await pc.addIceCandidate(new RTCIceCandidate(sig.payload)); } catch (e) {}
+            }
+          }
+        }
+        if (localStream) {
+          ALL_ROLES.forEach(peerRole => {
+            if (peerRole !== currentRole && (latestSeatsMap[peerRole] || (window.activeVideoRoles && window.activeVideoRoles[peerRole]))) {
+              if (!rtcPeers[peerRole] && currentRole < peerRole) {
+                createWebRtcPeer(peerRole, true);
+              }
+            }
+          });
+        }
+      } catch (e) {}
+    }
+
     function startWebRtcVoiceMesh() {
       if (!window.RTCPeerConnection) return;
-      if (!rtcPollInterval) {
-        rtcPollInterval = setInterval(pollWebRtcSignals, 900);
-      }
       // Initiate offers to other seated roles
       ALL_ROLES.forEach(peerRole => {
         if (peerRole !== currentRole && (latestSeatsMap[peerRole] || (window.activeVideoRoles && window.activeVideoRoles[peerRole]))) {
@@ -2431,7 +2467,24 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
       }
     }
 
+        function needsHttpAudioFallback() {
+      let otherPeers = 0;
+      let unbridgedPeers = 0;
+      ALL_ROLES.forEach(r => {
+        if (r !== currentRole && (latestSeatsMap[r] || (window.activeVideoRoles && window.activeVideoRoles[r]))) {
+          otherPeers++;
+          if (!rtcAudioConnected[r]) unbridgedPeers++;
+        }
+      });
+      // If nobody else is in the room yet, or all peers are connected via P2P WebRTC, 0 HTTP audio requests needed!
+      return (otherPeers > 0 && unbridgedPeers > 0);
+    }
+
     async function flushOutgoingPcmQueue(sampleRate) {
+      if (!needsHttpAudioFallback()) {
+        outgoingPcmQueue = [];
+        return;
+      }
       if (isSendingAudio || outgoingPcmQueue.length === 0) return;
       isSendingAudio = true;
 
@@ -2476,7 +2529,7 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
       startWebRtcVoiceMesh();
       if (audioPollInterval) return;
       audioPollInterval = setInterval(async () => {
-        if (isPollingAudio) return;
+        if (isPollingAudio || !needsHttpAudioFallback()) return;
         isPollingAudio = true;
         try {
           const resp = await fetch(`${API_URL}?action=audio_poll&role=${encodeURIComponent(currentRole)}&room=${encodeURIComponent(currentRoom)}&since=${lastAudioSeq}`);
@@ -2773,10 +2826,20 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     function startRemoteStreamIngest() {
       setInterval(async () => {
         try {
-          const hbQuery = hasClaimedValidSeat ? `&seat_role=${encodeURIComponent(currentRole)}&client_id=${encodeURIComponent(kikaoClientId)}` : '';
-          const statusResp = await fetch(`${API_URL}?action=stream_status&room=${encodeURIComponent(currentRoom)}${hbQuery}`);
+          const hbQuery = hasClaimedValidSeat ? `&seat_role=${encodeURIComponent(currentRole)}&client_id=${encodeURIComponent(kikaoClientId)}` : `&seat_role=${encodeURIComponent(currentRole)}`;
+          const statusResp = await fetch(`${API_URL}?action=stream_status&include_all=1&rtc_since=${lastRtcSignalTs}&room=${encodeURIComponent(currentRoom)}${hbQuery}`);
           if (!statusResp.ok) return;
           const statusJson = await statusResp.json();
+
+          if (statusJson.state) {
+            renderState(statusJson.state);
+          }
+          if (statusJson.chat_messages) {
+            renderChatMessages(statusJson.chat_messages);
+          }
+          if (statusJson.rtc_signals && Array.isArray(statusJson.rtc_signals) && statusJson.rtc_signals.length > 0) {
+            handleBundledRtcSignals(statusJson.rtc_signals);
+          }
 
           if (statusJson.seats) {
             latestSeatsMap = statusJson.seats;
@@ -2941,7 +3004,8 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
         clearTimeout(watchdog);
         ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 650);
       };
-      tempImg.src = `${API_URL}?action=stream_get&role=${role}&room=${encodeURIComponent(currentRoom)}&t=${Date.now()}`;
+      const staticFile = (currentRoom === 'main') ? `stream_${role}.jpg` : `stream_${encodeURIComponent(currentRoom)}_${role}.jpg`;
+      tempImg.src = `${staticFile}?t=${Date.now()}`;
     }
 
     function updatePeerBadge(elemId, isActive, label) {
@@ -3683,11 +3747,9 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
       }
     }
 
-    // Initialize state polling
+    // Initialize state polling (unified inside startRemoteStreamIngest include_all=1)
     pollState();
     pollChat();
-    setInterval(pollChat, 1400);
-    pollInterval = setInterval(pollState, 2000);
     startRemoteStreamIngest();
     startRemoteVoiceIngest();
   </script>
