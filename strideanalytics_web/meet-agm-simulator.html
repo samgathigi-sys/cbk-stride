@@ -2078,14 +2078,234 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
         document.getElementById('telecastStatus').style.color = '#10b981';
 
         attachVoiceVisualizer(localStream, 'tile_' + currentRole);
+        startLiveVoiceBroadcast(localStream);
         startFrameBroadcast();
         startRemoteStreamIngest();
+        startRemoteVoiceIngest();
 
       } catch (err) {
         alert('Could not access camera/microphone: ' + err.message);
         document.getElementById('telecastStatus').innerText = 'Camera Blocked';
         document.getElementById('telecastStatus').style.color = '#ef4444';
       }
+    }
+
+
+    // -------------------------------------------------------------
+    // REAL-TIME CROSS-DEVICE VOICE AUDIO ENGINE (12kHz PCM RELAY)
+    // Captures microphone audio, downsamples to 12kHz Int16 PCM,
+    // and plays peer voice streams seamlessly across all devices.
+    // -------------------------------------------------------------
+    let sharedAudioCtx = null;
+    let micCaptureProcessor = null;
+    let micCaptureSource = null;
+    let audioPollInterval = null;
+    let lastAudioSeq = 0;
+    let peerNextPlayTime = {};
+    let isRemoteAudioPlaying = false;
+    let remoteSpeakTimeouts = {};
+
+    function ensureSharedAudioContext() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return null;
+        if (!sharedAudioCtx) {
+          sharedAudioCtx = new AudioCtx();
+        }
+        if (sharedAudioCtx.state === 'suspended') {
+          sharedAudioCtx.resume().catch(() => {});
+        }
+        return sharedAudioCtx;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Unlock AudioContext on any click/touch so mobile browsers play incoming voice immediately
+    ['click', 'touchstart', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        ensureSharedAudioContext();
+      }, { passive: true });
+    });
+
+    function startLiveVoiceBroadcast(stream) {
+      try {
+        const ctx = ensureSharedAudioContext();
+        if (!ctx || !stream || stream.getAudioTracks().length === 0) return;
+
+        if (micCaptureProcessor) {
+          try { micCaptureProcessor.disconnect(); } catch (e) {}
+          micCaptureProcessor = null;
+        }
+        if (micCaptureSource) {
+          try { micCaptureSource.disconnect(); } catch (e) {}
+          micCaptureSource = null;
+        }
+
+        const targetSampleRate = 12000;
+        const inputSampleRate = ctx.sampleRate;
+        const ratio = inputSampleRate / targetSampleRate;
+
+        micCaptureSource = ctx.createMediaStreamSource(stream);
+        micCaptureProcessor = ctx.createScriptProcessor(4096, 1, 1);
+
+        let pcmAccumulator = [];
+        let energySum = 0;
+        let sampleCount = 0;
+        const CHUNK_SAMPLES = 4800; // 400ms at 12,000 Hz
+
+        micCaptureProcessor.onaudioprocess = function(e) {
+          if (!stream.active || isMicMuted || isStatutoryMuted) {
+            pcmAccumulator = [];
+            energySum = 0;
+            sampleCount = 0;
+            return;
+          }
+
+          const inputData = e.inputBuffer.getChannelData(0);
+          // Downsample from inputSampleRate (e.g. 48000) to 12000 Hz
+          let idx = 0;
+          while (idx < inputData.length) {
+            const sIdx = Math.min(inputData.length - 1, Math.floor(idx));
+            let sample = inputData[sIdx];
+            // Soft anti-feedback attenuation if remote speaker is playing on the same device
+            if (isRemoteAudioPlaying) {
+              sample *= 0.35;
+            }
+            energySum += Math.abs(sample);
+            sampleCount++;
+
+            // Clamp and convert Float32 (-1..1) to Int16 (-32768..32767)
+            const clamped = Math.max(-1, Math.min(1, sample));
+            const int16 = clamped < 0 ? Math.round(clamped * 32768) : Math.round(clamped * 32767);
+            pcmAccumulator.push(int16);
+
+            idx += ratio;
+          }
+
+          if (pcmAccumulator.length >= CHUNK_SAMPLES) {
+            const chunkSamples = pcmAccumulator.splice(0, CHUNK_SAMPLES);
+            const avgEnergy = sampleCount > 0 ? (energySum / sampleCount) : 0;
+            energySum = 0;
+            sampleCount = 0;
+
+            // Only transmit when voice energy is above silence floor (prevents static/echo)
+            if (avgEnergy > 0.0045) {
+              sendPcmChunkToRoom(chunkSamples, targetSampleRate);
+            }
+          }
+        };
+
+        // Connect processor through a zero-gain node so you never hear your own local mic echo
+        const zeroGain = ctx.createGain();
+        zeroGain.gain.value = 0;
+        micCaptureSource.connect(micCaptureProcessor);
+        micCaptureProcessor.connect(zeroGain);
+        zeroGain.connect(ctx.destination);
+      } catch (err) {
+        console.warn('Voice broadcast init warning:', err);
+      }
+    }
+
+    async function sendPcmChunkToRoom(int16List, sampleRate) {
+      try {
+        const int16Arr = new Int16Array(int16List);
+        const bytes = new Uint8Array(int16Arr.buffer);
+        let binary = '';
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const b64 = btoa(binary);
+
+        await fetch(`${API_URL}?action=audio_put&room=${encodeURIComponent(currentRoom)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            role: currentRole,
+            sr: sampleRate,
+            b64: b64
+          })
+        });
+      } catch (e) {}
+    }
+
+    function startRemoteVoiceIngest() {
+      if (audioPollInterval) return;
+      audioPollInterval = setInterval(async () => {
+        try {
+          const resp = await fetch(`${API_URL}?action=audio_poll&role=${encodeURIComponent(currentRole)}&room=${encodeURIComponent(currentRoom)}&since=${lastAudioSeq}`);
+          if (!resp.ok) return;
+          const data = await resp.json();
+          if (data.latest_seq && data.latest_seq > lastAudioSeq) {
+            lastAudioSeq = data.latest_seq;
+          }
+          if (data.chunks && Array.isArray(data.chunks) && data.chunks.length > 0) {
+            data.chunks.forEach(c => {
+              playIncomingPcmChunk(c.role, c.b64, c.sr || 12000);
+            });
+          }
+        } catch (e) {}
+      }, 320);
+    }
+
+    function playIncomingPcmChunk(senderRole, b64, sampleRate) {
+      if (senderRole === currentRole) return;
+      const ctx = ensureSharedAudioContext();
+      if (!ctx) return;
+
+      try {
+        const binary = atob(b64);
+        const byteLen = binary.length;
+        const bytes = new Uint8Array(byteLen);
+        for (let i = 0; i < byteLen; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        const int16Arr = new Int16Array(bytes.buffer);
+        const numSamples = int16Arr.length;
+        if (numSamples === 0) return;
+
+        const audioBuffer = ctx.createBuffer(1, numSamples, sampleRate);
+        const channelData = audioBuffer.getChannelData(0);
+        for (let i = 0; i < numSamples; i++) {
+          channelData[i] = int16Arr[i] / 32768.0;
+        }
+
+        const source = ctx.createBufferSource();
+        source.buffer = audioBuffer;
+
+        // Slight gain boost so mobile speakers sound loud & clear
+        const gainNode = ctx.createGain();
+        gainNode.gain.value = 1.35;
+        source.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+        if (!peerNextPlayTime[senderRole] || peerNextPlayTime[senderRole] < now || (peerNextPlayTime[senderRole] - now) > 1.8) {
+          peerNextPlayTime[senderRole] = now + 0.04;
+        }
+
+        const startAt = peerNextPlayTime[senderRole];
+        peerNextPlayTime[senderRole] = startAt + audioBuffer.duration;
+
+        isRemoteAudioPlaying = true;
+        source.onended = () => {
+          if (ctx.currentTime >= (peerNextPlayTime[senderRole] - 0.05)) {
+            isRemoteAudioPlaying = false;
+          }
+        };
+        source.start(startAt);
+
+        // Highlight speaker tile in green while their voice is heard
+        const speakerTile = document.getElementById('tile_' + senderRole);
+        if (speakerTile) {
+          speakerTile.classList.add('speaking');
+          if (remoteSpeakTimeouts[senderRole]) clearTimeout(remoteSpeakTimeouts[senderRole]);
+          remoteSpeakTimeouts[senderRole] = setTimeout(() => {
+            speakerTile.classList.remove('speaking');
+          }, Math.ceil((peerNextPlayTime[senderRole] - now) * 1000) + 150);
+        }
+      } catch (e) {}
     }
 
     function attachVoiceVisualizer(stream, targetTileId) {
@@ -2132,8 +2352,12 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
         const myTile = document.getElementById('tile_' + currentRole);
         if (myTile) myTile.classList.remove('statutory-muted');
 
-        if (localStream) {
+        if (localStream && localStream.getAudioTracks().length > 0) {
           localStream.getAudioTracks().forEach(track => { track.enabled = true; });
+          startLiveVoiceBroadcast(localStream);
+        } else {
+          // Auto-start microphone + camera if user clicks Unmute before clicking Join Call
+          startLiveCameraAndTelecast();
         }
         if (btn) {
           btn.innerHTML = '🎙️ Mute My Mic (Kill Echo)';
@@ -3178,6 +3402,7 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     setInterval(pollChat, 1400);
     pollInterval = setInterval(pollState, 2000);
     startRemoteStreamIngest();
+    startRemoteVoiceIngest();
   </script>
 
 
