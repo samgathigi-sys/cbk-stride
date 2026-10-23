@@ -320,7 +320,7 @@ if ($action === 'audio_put') {
             $latestChunk = end($chunks);
             $latestRole = $latestChunk['role'] ?? '';
             $latestTs = (float)($latestChunk['ts'] ?? 0);
-            if ($latestRole !== '' && $latestRole !== $role && ($now - $latestTs) < 1.10) {
+            if ($latestRole !== '' && $latestRole !== $role && ($now - $latestTs) < 0.70) {
                 @flock($fp, LOCK_UN);
                 fclose($fp);
                 echo json_encode(['status' => 'ECHO_GATED', 'active_speaker' => $latestRole]);
@@ -652,25 +652,34 @@ if ($action === 'rtc_publish') {
         exit;
     }
     
-    $mb = loadMailbox($mailboxFile);
     $now = microtime(true);
-    
-    // Purge signals older than 45 seconds
-    $mb['signals'] = array_values(array_filter($mb['signals'], function($s) use ($now) {
-        return ($now - ($s['ts'] ?? 0) < 45.0);
-    }));
-    
-    $mb['signals'][] = [
-        'id' => uniqid('sig_', true),
-        'from' => $from,
-        'target' => $target,
-        'type' => $type,
-        'payload' => $payload,
-        'ts' => $now
-    ];
-    $mb['updated_at'] = $now;
-    
-    @file_put_contents($mailboxFile, json_encode($mb, JSON_PRETTY_PRINT));
+    $fp = @fopen($mailboxFile, 'c+');
+    if ($fp) {
+        @flock($fp, LOCK_EX);
+        $raw = stream_get_contents($fp);
+        $mb = json_decode($raw, true);
+        if (!is_array($mb) || !isset($mb['signals']) || !is_array($mb['signals'])) {
+            $mb = getInitialMailbox();
+        }
+        $mb['signals'] = array_values(array_filter($mb['signals'], function($s) use ($now) {
+            return ($now - ($s['ts'] ?? 0) < 45.0);
+        }));
+        $mb['signals'][] = [
+            'id' => uniqid('sig_', true),
+            'from' => $from,
+            'target' => $target,
+            'type' => $type,
+            'payload' => $payload,
+            'ts' => $now
+        ];
+        $mb['updated_at'] = $now;
+        ftruncate($fp, 0);
+        rewind($fp);
+        fwrite($fp, json_encode($mb));
+        fflush($fp);
+        @flock($fp, LOCK_UN);
+        fclose($fp);
+    }
     echo json_encode(['status' => 'RTC_SIGNAL_PUBLISHED', 'from' => $from, 'type' => $type]);
     exit;
 }

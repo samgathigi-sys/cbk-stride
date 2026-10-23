@@ -2106,13 +2106,12 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
 
 
     // -------------------------------------------------------------
-    // REAL-TIME CROSS-DEVICE VOICE AUDIO ENGINE (CONTINUOUS HD TELECOM)
-    // - Zero-Drop Coalescing Upload Queue (never drops chunks while POST is in flight!)
-    // - 1.6s Speech Hangover Timer (never cuts quiet syllables or pauses between words!)
-    // - 240ms Lookahead Jitter Cushion (absorbs 4G mobile network jitter for unbroken speech!)
-    // - Speakerphone Acoustic Echo Gate (mutes mic while speaker plays + 450ms tail)
+    // REAL-TIME CROSS-DEVICE VOICE AUDIO ENGINE (MOBILE PHONE CONVO)
+    // Engine 1: Native WebRTC Opus Voice Mesh (RTCPeerConnection + Hardware AEC3)
+    // Engine 2: Anti-Aliased Telecom DSP Relay (Biquad Voice Filter + Compressor + 550ms Jitter Cushion)
     // -------------------------------------------------------------
     let sharedAudioCtx = null;
+    let telecomOutputNode = null;
     let micCaptureProcessor = null;
     let micCaptureSource = null;
     let audioPollInterval = null;
@@ -2127,12 +2126,61 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     let remoteSpeakerBusyUntil = 0;
     let remoteSpeakTimeouts = {};
 
+    // WebRTC Native Opus Audio Mesh State
+    let rtcPeers = {};
+    let rtcAudioConnected = {};
+    let rtcAudioElements = {};
+    let lastRtcSignalTs = 0;
+    let rtcPollInterval = null;
+
+    const RTC_ICE_CONFIG = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        {
+          urls: 'turn:openrelay.metered.ca:80',
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443',
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
+        }
+      ]
+    };
+
     function ensureSharedAudioContext() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return null;
         if (!sharedAudioCtx) {
           sharedAudioCtx = new AudioCtx();
+          // Build Mobile Phone Telecom DSP Chain (High-Pass 120Hz -> Low-Pass 3700Hz -> DynamicsCompressor)
+          const hpFilter = sharedAudioCtx.createBiquadFilter();
+          hpFilter.type = 'highpass';
+          hpFilter.frequency.value = 125;
+
+          const lpFilter = sharedAudioCtx.createBiquadFilter();
+          lpFilter.type = 'lowpass';
+          lpFilter.frequency.value = 3700;
+
+          const compressor = sharedAudioCtx.createDynamicsCompressor();
+          compressor.threshold.value = -24;
+          compressor.knee.value = 18;
+          compressor.ratio.value = 4;
+          compressor.attack.value = 0.005;
+          compressor.release.value = 0.15;
+
+          const masterGain = sharedAudioCtx.createGain();
+          masterGain.gain.value = 1.35;
+
+          hpFilter.connect(lpFilter);
+          lpFilter.connect(compressor);
+          compressor.connect(masterGain);
+          masterGain.connect(sharedAudioCtx.destination);
+
+          telecomOutputNode = hpFilter;
         }
         if (sharedAudioCtx.state === 'suspended') {
           sharedAudioCtx.resume().catch(() => {});
@@ -2146,10 +2194,156 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     ['click', 'touchstart', 'keydown'].forEach(evt => {
       window.addEventListener(evt, () => {
         ensureSharedAudioContext();
+        Object.values(rtcAudioElements).forEach(el => {
+          if (el && el.paused) el.play().catch(() => {});
+        });
       }, { passive: true });
     });
 
+    // -------------------------------------------------------------
+    // ENGINE 1: NATIVE WEBRTC OPUS VOICE CALL MESH
+    // -------------------------------------------------------------
+    function startWebRtcVoiceMesh() {
+      if (!window.RTCPeerConnection) return;
+      if (!rtcPollInterval) {
+        rtcPollInterval = setInterval(pollWebRtcSignals, 900);
+      }
+      // Initiate offers to other seated roles
+      ALL_ROLES.forEach(peerRole => {
+        if (peerRole !== currentRole && (latestSeatsMap[peerRole] || (window.activeVideoRoles && window.activeVideoRoles[peerRole]))) {
+          if (!rtcPeers[peerRole] && currentRole < peerRole) {
+            createWebRtcPeer(peerRole, true);
+          }
+        }
+      });
+    }
+
+    async function createWebRtcPeer(peerRole, isInitiator) {
+      if (!window.RTCPeerConnection) return null;
+      try {
+        if (rtcPeers[peerRole]) {
+          try { rtcPeers[peerRole].close(); } catch (e) {}
+        }
+        const pc = new RTCPeerConnection(RTC_ICE_CONFIG);
+        rtcPeers[peerRole] = pc;
+
+        if (localStream) {
+          localStream.getAudioTracks().forEach(track => {
+            pc.addTrack(track, localStream);
+          });
+        }
+
+        pc.onicecandidate = (evt) => {
+          if (evt.candidate) {
+            publishRtcSignal(peerRole, 'candidate', evt.candidate);
+          }
+        };
+
+        pc.ontrack = (evt) => {
+          const stream = (evt.streams && evt.streams[0]) ? evt.streams[0] : new MediaStream([evt.track]);
+          let audioEl = rtcAudioElements[peerRole];
+          if (!audioEl) {
+            audioEl = document.createElement('audio');
+            audioEl.autoplay = true;
+            audioEl.playsInline = true;
+            audioEl.style.display = 'none';
+            document.body.appendChild(audioEl);
+            rtcAudioElements[peerRole] = audioEl;
+          }
+          audioEl.srcObject = stream;
+          audioEl.play().catch(() => {});
+          rtcAudioConnected[peerRole] = true;
+          attachVoiceVisualizer(stream, 'tile_' + peerRole);
+        };
+
+        pc.onconnectionstatechange = () => {
+          const st = pc.connectionState;
+          if (st === 'connected') {
+            rtcAudioConnected[peerRole] = true;
+          } else if (st === 'disconnected' || st === 'failed' || st === 'closed') {
+            rtcAudioConnected[peerRole] = false;
+          }
+        };
+
+        if (isInitiator) {
+          const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: false });
+          await pc.setLocalDescription(offer);
+          await publishRtcSignal(peerRole, 'offer', pc.localDescription);
+        }
+
+        return pc;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function publishRtcSignal(targetRole, type, payload) {
+      try {
+        await fetch(`${API_URL}?action=rtc_publish&room=${encodeURIComponent(currentRoom)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: currentRole,
+            target: targetRole,
+            type: type,
+            payload: payload
+          })
+        });
+      } catch (e) {}
+    }
+
+    async function pollWebRtcSignals() {
+      try {
+        const resp = await fetch(`${API_URL}?action=rtc_poll&role=${encodeURIComponent(currentRole)}&room=${encodeURIComponent(currentRoom)}&since=${lastRtcSignalTs}`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data.signals && Array.isArray(data.signals)) {
+          for (const sig of data.signals) {
+            if (sig.ts > lastRtcSignalTs) lastRtcSignalTs = sig.ts;
+            const peerRole = sig.from;
+            if (!peerRole || peerRole === currentRole) continue;
+
+            if (sig.type === 'offer') {
+              const pc = await createWebRtcPeer(peerRole, false);
+              if (pc) {
+                await pc.setRemoteDescription(new RTCSessionDescription(sig.payload));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                await publishRtcSignal(peerRole, 'answer', pc.localDescription);
+              }
+            } else if (sig.type === 'answer') {
+              const pc = rtcPeers[peerRole];
+              if (pc && pc.signalingState === 'have-local-offer') {
+                await pc.setRemoteDescription(new RTCSessionDescription(sig.payload));
+              }
+            } else if (sig.type === 'candidate') {
+              const pc = rtcPeers[peerRole];
+              if (pc && sig.payload) {
+                try { await pc.addIceCandidate(new RTCIceCandidate(sig.payload)); } catch (e) {}
+              }
+            }
+          }
+        }
+        // Also check if any newly joined seat needs a WebRTC offer from us
+        if (localStream) {
+          ALL_ROLES.forEach(peerRole => {
+            if (peerRole !== currentRole && (latestSeatsMap[peerRole] || (window.activeVideoRoles && window.activeVideoRoles[peerRole]))) {
+              if (!rtcPeers[peerRole] && currentRole < peerRole) {
+                createWebRtcPeer(peerRole, true);
+              }
+            }
+          });
+        }
+      } catch (e) {}
+    }
+
+    // -------------------------------------------------------------
+    // ENGINE 2: ANTI-ALIASED TELECOM DSP RELAY (CONTINUOUS STREAM)
+    // -------------------------------------------------------------
     function startLiveVoiceBroadcast(stream) {
+      // Start native WebRTC Opus Voice Mesh first
+      startWebRtcVoiceMesh();
+
       try {
         const ctx = ensureSharedAudioContext();
         if (!ctx || !stream || stream.getAudioTracks().length === 0) return;
@@ -2163,7 +2357,7 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
           micCaptureSource = null;
         }
 
-        const targetSampleRate = 10000; // 10kHz wideband telecom (crisp voice, 20% faster upload)
+        const targetSampleRate = 8000; // Standard 8,000 Hz GSM/Mobile Phone Rate (ultra-lightweight & smooth)
         const inputSampleRate = ctx.sampleRate;
         const ratio = inputSampleRate / targetSampleRate;
 
@@ -2173,10 +2367,9 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
         let pcmAccumulator = [];
         let energySum = 0;
         let sampleCount = 0;
-        const CHUNK_SAMPLES = 3600; // 360ms per frame at 10,000 Hz
+        const CHUNK_SAMPLES = 4000; // 500ms continuous frame at 8,000 Hz
 
         micCaptureProcessor.onaudioprocess = function(e) {
-          // Speakerphone Echo Gate: pause mic capture while loudspeaker is actively playing remote voice
           if (!stream.active || isMicMuted || isStatutoryMuted || (ctx.currentTime < remoteSpeakerBusyUntil)) {
             pcmAccumulator = [];
             energySum = 0;
@@ -2186,15 +2379,20 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
 
           const inputData = e.inputBuffer.getChannelData(0);
           let idx = 0;
+          // Boxcar Anti-Aliasing Averager: averages all native samples in each downsampled step for silky-smooth voice!
           while (idx < inputData.length) {
-            const sIdx = Math.min(inputData.length - 1, Math.floor(idx));
-            // Slight pre-gain (1.25x) so normal speaking distance is captured clearly
-            const sample = inputData[sIdx] * 1.25;
+            const startI = Math.floor(idx);
+            const endI = Math.min(inputData.length, Math.max(startI + 1, Math.floor(idx + ratio)));
+            let sum = 0;
+            for (let k = startI; k < endI; k++) {
+              sum += inputData[k];
+            }
+            const avgSample = (sum / (endI - startI)) * 1.3;
 
-            energySum += Math.abs(sample);
+            energySum += Math.abs(avgSample);
             sampleCount++;
 
-            const clamped = Math.max(-1, Math.min(1, sample));
+            const clamped = Math.max(-1, Math.min(1, avgSample));
             const int16 = clamped < 0 ? Math.round(clamped * 32768) : Math.round(clamped * 32767);
             pcmAccumulator.push(int16);
 
@@ -2208,15 +2406,14 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
             sampleCount = 0;
 
             const nowMs = Date.now();
-            if (avgEnergy > 0.0035) {
-              // Trigger 1.6-second hangover so quiet syllables & pauses between words are NEVER cut off!
-              speechHangoverUntil = nowMs + 1600;
+            if (avgEnergy > 0.0028) {
+              // 2.2-second speech hangover so whole sentences flow continuously without breaking!
+              speechHangoverUntil = nowMs + 2200;
             }
 
             if (nowMs < speechHangoverUntil && (ctx.currentTime >= remoteSpeakerBusyUntil)) {
-              // Push to zero-drop queue so no syllable is EVER lost while a network request is in flight!
               outgoingPcmQueue.push(chunkSamples);
-              if (outgoingPcmQueue.length > 8) {
+              if (outgoingPcmQueue.length > 10) {
                 outgoingPcmQueue.shift();
               }
               flushOutgoingPcmQueue(targetSampleRate);
@@ -2240,7 +2437,6 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
 
       try {
         while (outgoingPcmQueue.length > 0) {
-          // Coalesce all currently queued chunks into one continuous buffer so we never fall behind!
           const batchArrays = outgoingPcmQueue.splice(0, outgoingPcmQueue.length);
           let totalLen = 0;
           for (let i = 0; i < batchArrays.length; i++) totalLen += batchArrays[i].length;
@@ -2277,6 +2473,7 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     }
 
     function startRemoteVoiceIngest() {
+      startWebRtcVoiceMesh();
       if (audioPollInterval) return;
       audioPollInterval = setInterval(async () => {
         if (isPollingAudio) return;
@@ -2302,7 +2499,7 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
             data.chunks.forEach(c => {
               if (!seenAudioSeqs.has(c.seq)) {
                 seenAudioSeqs.add(c.seq);
-                playIncomingPcmChunk(c.role, c.b64, c.sr || 10000);
+                playIncomingPcmChunk(c.role, c.b64, c.sr || 8000);
               }
             });
             if (seenAudioSeqs.size > 250) {
@@ -2314,11 +2511,12 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
         } finally {
           isPollingAudio = false;
         }
-      }, 240);
+      }, 220);
     }
 
     function playIncomingPcmChunk(senderRole, b64, sampleRate) {
-      if (senderRole === currentRole) return;
+      // If Native WebRTC Opus audio is already connected to this peer, let hardware WebRTC handle it!
+      if (senderRole === currentRole || rtcAudioConnected[senderRole]) return;
       const ctx = ensureSharedAudioContext();
       if (!ctx) return;
 
@@ -2335,8 +2533,7 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
 
         const audioBuffer = ctx.createBuffer(1, numSamples, sampleRate);
         const channelData = audioBuffer.getChannelData(0);
-        // Gentle 3ms de-click envelope at chunk boundaries
-        const fadeSamples = Math.min(32, Math.floor(numSamples / 20));
+        const fadeSamples = Math.min(24, Math.floor(numSamples / 30));
         for (let i = 0; i < numSamples; i++) {
           let env = 1.0;
           if (i < fadeSamples) env = i / fadeSamples;
@@ -2346,26 +2543,21 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
 
         const source = ctx.createBufferSource();
         source.buffer = audioBuffer;
-
-        const gainNode = ctx.createGain();
-        gainNode.gain.value = 1.15;
-        source.connect(gainNode);
-        gainNode.connect(ctx.destination);
+        source.connect(telecomOutputNode || ctx.destination);
 
         const now = ctx.currentTime;
-        // 240ms initial jitter cushion when a new sentence starts so consecutive chunks play back-to-back without breaking!
+        // 550ms Continuous Jitter Buffer on new sentences so mobile 4G packets never run dry mid-sentence!
         if (!peerNextPlayTime[senderRole] || peerNextPlayTime[senderRole] < now) {
-          peerNextPlayTime[senderRole] = now + 0.24;
-        } else if ((peerNextPlayTime[senderRole] - now) > 3.8) {
-          peerNextPlayTime[senderRole] = now + 0.24;
+          peerNextPlayTime[senderRole] = now + 0.55;
+        } else if ((peerNextPlayTime[senderRole] - now) > 5.0) {
+          peerNextPlayTime[senderRole] = now + 0.55;
         }
 
         const startAt = peerNextPlayTime[senderRole];
         const endAt = startAt + audioBuffer.duration;
         peerNextPlayTime[senderRole] = endAt;
 
-        // Gate local mic during speaker playback + 420ms acoustic tail
-        remoteSpeakerBusyUntil = Math.max(remoteSpeakerBusyUntil, endAt + 0.42);
+        remoteSpeakerBusyUntil = Math.max(remoteSpeakerBusyUntil, endAt + 0.35);
 
         source.start(startAt);
 
@@ -2470,7 +2662,7 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
               if (intervalId) clearInterval(intervalId);
               intervalId = setInterval(function() {
                 self.postMessage('tick');
-              }, 45);
+              }, 115);
             } else if (e.data === 'stop') {
               if (intervalId) clearInterval(intervalId);
               intervalId = null;
@@ -2601,7 +2793,9 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
           }
 
           // Update Presence indicators & custom tile names for all 6 roles
+          if (!window.activeVideoRoles) window.activeVideoRoles = {};
           ALL_ROLES.forEach(r => {
+            window.activeVideoRoles[r] = Boolean(statusJson[r + '_active']);
             const seatLock = latestSeatsMap[r];
             const isPresent = Boolean(statusJson[r + '_active'] || seatLock);
             const labelText = seatLock && seatLock.custom_name ? seatLock.custom_name.split(' ')[0].toUpperCase() : r.toUpperCase();
@@ -2709,6 +2903,10 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     }
 
     function loopRemoteIngest(role) {
+      if (window.activeVideoRoles && !window.activeVideoRoles[role]) {
+        ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 800);
+        return;
+      }
       const targetImg = document.getElementById('img_' + role);
       const targetAvatar = document.getElementById('avatar_' + role);
       const targetTile = document.getElementById('tile_' + role);
@@ -2735,13 +2933,13 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
         targetImg.style.display = 'block';
         if (targetAvatar) targetAvatar.style.display = 'none';
         if (targetTile) targetTile.classList.add('active-live');
-        ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 45); // Rapid next frame
+        ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 115); // Rapid next frame
       };
       tempImg.onerror = () => {
         if (finished) return;
         finished = true;
         clearTimeout(watchdog);
-        ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 250);
+        ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 650);
       };
       tempImg.src = `${API_URL}?action=stream_get&role=${role}&room=${encodeURIComponent(currentRoom)}&t=${Date.now()}`;
     }
