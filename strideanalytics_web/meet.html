@@ -997,6 +997,28 @@
       <!-- Alert Banner if redirected from a taken seat -->
       <div id="seatLobbyAlert" style="display: none; margin-top: 12px; background: rgba(220, 38, 38, 0.15); border: 1px solid #ef4444; color: #fecaca; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;"></div>
 
+      <!-- MULTI-CHAMA / PRIVATE GROUP ROOM ISOLATION BAR -->
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 14px; background: linear-gradient(135deg, rgba(2, 132, 199, 0.14), rgba(16, 185, 129, 0.10)); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.4);">
+        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px;">
+          <label for="chamaRoomInput" style="font-size: 11.5px; font-weight: 800; color: #38bdf8; white-space: nowrap;">🏛️ Your Chama / Group Room:</label>
+          <input id="chamaRoomInput" type="text" placeholder="e.g. umoja-chama or imara-sacco" onkeydown="if(event.key==='Enter') switchChamaRoom()" style="flex: 1; background: #090e1a; border: 1px solid #0284c7; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', monospace; font-weight: 700; outline: none;">
+          <button onclick="switchChamaRoom()" style="background: #0284c7; border: none; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+            Go / Switch Room
+          </button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <button onclick="generateRandomChamaRoom()" style="background: rgba(168, 85, 247, 0.18); border: 1px solid rgba(168, 85, 247, 0.5); color: #e9d5ff; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;" title="Create a brand-new isolated room for your Chama">
+            🎲 New Private Chama Room
+          </button>
+          <button onclick="copyChamaInviteLink()" style="background: linear-gradient(135deg, #059669, #10b981); border: none; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);" title="Copy link to share on WhatsApp so your Chama members join THIS exact private room">
+            📲 Copy Invite Link for My Chama
+          </button>
+        </div>
+        <div style="width: 100%; font-size: 10.5px; color: #cbd5e1; margin-top: 2px;">
+          💡 <strong>Testing with your Chama?</strong> Type your Chama name above (e.g. <code style="color:#38bdf8;">umoja-chama</code>), click <strong>Go</strong>, then click <strong>📲 Copy Invite Link</strong> and paste it in your WhatsApp group. Your 6 seats are 100% isolated from other groups!
+        </div>
+      </div>
+
       <!-- Optional Custom Display Name + Summary Bar -->
       <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 14px; background: #0b0f19; padding: 10px 14px; border-radius: 10px; border: 1px solid #1e293b;">
         <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 240px;">
@@ -1052,6 +1074,12 @@
       <span id="demoTimerBadge" style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #fbbf24; padding: 3px 10px; border-radius: 6px; font-size: 10.5px; font-family: 'JetBrains Mono', monospace; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;" title="10-Minute Interactive Test Drive Limit">
         ⏱️ DEMO: <span id="demoTimerDisplay">10:00</span>
       </span>
+      <span id="activeRoomHeaderBadge" onclick="openSeatLobbyModal()" style="cursor: pointer; background: rgba(2, 132, 199, 0.18); border: 1px solid #38bdf8; color: #e0f2fe; padding: 3px 10px; border-radius: 6px; font-size: 10.5px; font-family: 'JetBrains Mono', monospace; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;" title="Click to switch Chama Room or copy invite link">
+        🏛️ ROOM: <span id="activeRoomHeaderText">MAIN</span>
+      </span>
+      <button onclick="copyChamaInviteLink()" class="btn-action" style="font-size: 10px; background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; font-weight: 800; padding: 3px 8px;" title="Copy direct WhatsApp invite link for this private Chama room">
+        📲 Share Chama Link
+      </button>
     </div>
     <div style="display: flex; align-items: center; gap: 6px;">
       <button onclick="openSeatLobbyModal()" class="btn-action" style="font-size: 10.5px; background: rgba(16, 185, 129, 0.12); border-color: #10b981; color: #ecfdf5;">
@@ -1620,7 +1648,87 @@
       }
     ];
 
+        function syncRoomInputAndBadges() {
+      const rInp = document.getElementById('chamaRoomInput');
+      if (rInp) rInp.value = currentRoom;
+      const rBadge = document.getElementById('activeRoomHeaderText');
+      if (rBadge) rBadge.innerText = currentRoom.toUpperCase();
+    }
+
+    async function switchChamaRoom(explicitRoom) {
+      const rInp = document.getElementById('chamaRoomInput');
+      let rawRoom = explicitRoom || (rInp ? rInp.value.trim() : 'main');
+      rawRoom = rawRoom.toLowerCase().replace(/[^a-z0-9_-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      if (!rawRoom) rawRoom = 'main';
+
+      // Release seat in old room if we had one
+      if (hasClaimedValidSeat && currentRoom !== rawRoom) {
+        try {
+          await fetch(`${API_URL}?action=seat_release&room=${encodeURIComponent(currentRoom)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ client_id: kikaoClientId })
+          });
+        } catch (e) {}
+      }
+
+      currentRoom = rawRoom;
+      hasClaimedValidSeat = false;
+      sessionStorage.removeItem('kikao_claimed_role');
+
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('room', currentRoom);
+      newUrl.searchParams.delete('role');
+      window.history.replaceState({}, '', newUrl);
+
+      syncRoomInputAndBadges();
+
+      try {
+        const statusResp = await fetch(`${API_URL}?action=stream_status&room=${encodeURIComponent(currentRoom)}`);
+        if (statusResp.ok) {
+          const statusJson = await statusResp.json();
+          latestSeatsMap = statusJson.seats || {};
+        }
+      } catch (e) {}
+
+      renderSeatLobbyCards();
+      pollState();
+      pollChat();
+      pollFiles();
+    }
+
+    function generateRandomChamaRoom() {
+      const prefixes = ['umoja', 'upendo', 'imara', 'baraka', 'amani', 'faida', 'stawi', 'taifa'];
+      const pick = prefixes[Math.floor(Math.random() * prefixes.length)];
+      const num = Math.floor(100 + Math.random() * 900);
+      const newRoom = `${pick}-chama-${num}`;
+      const rInp = document.getElementById('chamaRoomInput');
+      if (rInp) rInp.value = newRoom;
+      switchChamaRoom(newRoom);
+    }
+
+    function copyChamaInviteLink() {
+      const rInp = document.getElementById('chamaRoomInput');
+      if (rInp && rInp.value.trim() && rInp.value.trim().toLowerCase() !== currentRoom) {
+        switchChamaRoom(rInp.value.trim());
+      }
+      const inviteUrl = `https://strideanalytics.co.ke/kikao?room=${encodeURIComponent(currentRoom)}`;
+      const waText = `🏛️ Join our private Chama Boardroom on Stride Kikao™ (Room: ${currentRoom.toUpperCase()}):
+${inviteUrl}
+
+Pick one of the 6 open seats when you open the link!`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(inviteUrl);
+      }
+      alert(`✅ Copied Private Room Link for "${currentRoom.toUpperCase()}":
+
+${inviteUrl}
+
+Share this link on WhatsApp with your Chama/group members—only people with this room link will sit in your 6 seats!`);
+    }
+
     function openSeatLobbyModal(alertMsg = '') {
+      syncRoomInputAndBadges();
       const modal = document.getElementById('seatLobbyModal');
       const alertBox = document.getElementById('seatLobbyAlert');
       if (alertMsg) {
@@ -1800,6 +1908,7 @@
       // Otherwise, open the 6-Seat Boardroom Lobby so the tester picks from the available slots!
       openSeatLobbyModal();
     }
+    syncRoomInputAndBadges();
     setTimeout(initSeatCoordination, 150);
 
     function copyRoleInvite(role) {
@@ -1857,7 +1966,7 @@
     async function statutoryMuteAll() {
       if (currentRole !== 'chairman') return;
       try {
-        await fetch(API_URL + '?action=mute_peer', {
+        await fetch(`${API_URL}?action=mute_peer&room=${encodeURIComponent(currentRoom)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ target: 'all', mute: true })
@@ -1871,7 +1980,7 @@
     async function statutoryMuteIndividual(targetRole) {
       if (currentRole !== 'chairman') return;
       try {
-        await fetch(API_URL + '?action=mute_peer', {
+        await fetch(`${API_URL}?action=mute_peer&room=${encodeURIComponent(currentRoom)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ target: targetRole, mute: true })
@@ -2083,7 +2192,7 @@
       const abortTimer = setTimeout(() => controller.abort(), 1200);
 
       try {
-        await fetch(`${API_URL}?action=stream_put&role=${currentRole}`, {
+        await fetch(`${API_URL}?action=stream_put&role=${currentRole}&room=${encodeURIComponent(currentRoom)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
           body: dataUrl,
@@ -2247,7 +2356,7 @@
         clearTimeout(watchdog);
         ingestLoops[role] = setTimeout(() => loopRemoteIngest(role), 250);
       };
-      tempImg.src = `${API_URL}?action=stream_get&role=${role}&t=${Date.now()}`;
+      tempImg.src = `${API_URL}?action=stream_get&role=${role}&room=${encodeURIComponent(currentRoom)}&t=${Date.now()}`;
     }
 
     function updatePeerBadge(elemId, isActive, label) {
@@ -2263,7 +2372,7 @@
     }
 
     function reconnectStreams() {
-      fetch(API_URL + '?action=rtc_reset').then(() => {
+      fetch(`${API_URL}?action=rtc_reset&room=${encodeURIComponent(currentRoom)}`).then(() => {
         startRemoteStreamIngest();
       });
     }
@@ -2449,7 +2558,7 @@
       showTileReaction(currentRole, emoji, type);
 
       try {
-        await fetch(`${API_URL}?action=reaction_send`, {
+        await fetch(`${API_URL}?action=reaction_send&room=${encodeURIComponent(currentRoom)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -2670,7 +2779,7 @@
         pBar.style.width = '65%';
         pPct.innerText = '65%';
 
-        const resp = await fetch(`${API_URL}?action=file_upload`, {
+        const resp = await fetch(`${API_URL}?action=file_upload&room=${encodeURIComponent(currentRoom)}`, {
           method: 'POST',
           body: formData
         });
@@ -2697,7 +2806,7 @@
 
     async function pollFiles() {
       try {
-        const resp = await fetch(`${API_URL}?action=files_list`);
+        const resp = await fetch(`${API_URL}?action=files_list&room=${encodeURIComponent(currentRoom)}`);
         if (!resp.ok) return;
         const data = await resp.json();
         const files = data.files || [];
@@ -2790,7 +2899,7 @@
       inp.value = '';
 
       try {
-        await fetch(`${API_URL}?action=chat_send`, {
+        await fetch(`${API_URL}?action=chat_send&room=${encodeURIComponent(currentRoom)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -2805,7 +2914,7 @@
 
     async function pollChat() {
       try {
-        const resp = await fetch(`${API_URL}?action=chat_get&role=${currentRole}`);
+        const resp = await fetch(`${API_URL}?action=chat_get&role=${currentRole}&room=${encodeURIComponent(currentRoom)}`);
         if (!resp.ok) return;
         const data = await resp.json();
         const messages = data.messages || [];
@@ -2884,7 +2993,7 @@
 
     async function pollState() {
       try {
-        const resp = await fetch(API_URL + '?action=status');
+        const resp = await fetch(`${API_URL}?action=status&room=${encodeURIComponent(currentRoom)}`);
         if (!resp.ok) return;
         const json = await resp.json();
         renderState(json.state);
@@ -2954,7 +3063,7 @@
       }
 
       try {
-        const resp = await fetch(API_URL + '?action=vote', {
+        const resp = await fetch(`${API_URL}?action=vote&room=${encodeURIComponent(currentRoom)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ voter: voterName, choice: choice, units: units })

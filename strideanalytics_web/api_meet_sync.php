@@ -15,6 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $room = preg_replace('/[^a-zA-Z0-9_\-]/', '', $_GET['room'] ?? ($_POST['room'] ?? 'main'));
 if (empty($room)) $room = 'main';
+$room = strtolower(substr($room, 0, 40));
+
+// Auto-purge stale custom room demo files older than 2 hours (1% probability per request)
+if (mt_rand(1, 100) === 1) {
+    $nowTs = time();
+    foreach (glob(__DIR__ . '/{meet_state_*,meet_seats_*,meet_chat_*,meet_reactions_*,meet_mailbox_*,stream_*_*}', GLOB_BRACE) as $staleFile) {
+        if (is_file($staleFile) && ($nowTs - @filemtime($staleFile)) > 7200) {
+            @unlink($staleFile);
+        }
+    }
+}
 
 // -------------------------------------------------------------
 // OPTIONAL SALTED LINK TOKEN VERIFICATION (HMAC‑SHA256 room‑locking)
