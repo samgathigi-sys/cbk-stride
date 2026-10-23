@@ -483,6 +483,7 @@ if ($action === 'chat_send') {
     $input = json_decode($rawInput, true) ?: $_POST;
     
     $sender = $input['sender'] ?? 'member';
+    $customSenderName = trim(strip_tags($input['sender_name'] ?? ''));
     $recipient = $input['recipient'] ?? 'all';
     $text = trim($input['text'] ?? '');
     
@@ -496,7 +497,7 @@ if ($action === 'chat_send') {
     $msg = [
         'id' => uniqid('msg_'),
         'sender' => $sender,
-        'sender_title' => $roleTitles[$sender] ?? $sender,
+        'sender_title' => !empty($customSenderName) ? $customSenderName : ($roleTitles[$sender] ?? $sender),
         'recipient' => $recipient,
         'recipient_title' => ($recipient === 'all') ? 'Everyone (Floor)' : ($roleTitles[$recipient] ?? $recipient),
         'is_private' => ($recipient !== 'all'),

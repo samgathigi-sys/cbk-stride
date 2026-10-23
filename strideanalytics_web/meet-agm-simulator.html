@@ -820,6 +820,10 @@
       padding: 10px 12px;
       background: #090e1a;
       border-top: 1px solid #1e293b;
+      border-bottom: 1px solid #1e293b;
+      position: relative;
+      z-index: 40;
+      pointer-events: auto;
     }
     .chat-emoji-quickbar {
       display: flex;
@@ -843,12 +847,17 @@
     .chat-text-input {
       flex: 1;
       background: #131d33;
-      border: 1px solid #334155;
+      border: 1.5px solid #0284c7;
       border-radius: 6px;
-      padding: 8px 10px;
+      padding: 10px 12px;
       color: #ffffff;
-      font-size: 11.5px;
+      font-size: 14px;
       outline: none;
+      pointer-events: auto !important;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      position: relative;
+      z-index: 45;
     }
     .chat-text-input:focus {
       border-color: #0284c7;
@@ -1326,6 +1335,9 @@
           <button type="button" id="btnRaiseHand" onclick="toggleRaiseHand()" class="btn-reaction btn-hand-toggle" title="Raise Hand to Speak">
             ✋ <span id="lblHand">Raise Hand</span>
           </button>
+          <button type="button" onclick="openAndFocusChat()" class="btn-reaction" style="width: auto; padding: 0 10px; font-size: 11px; font-weight: 800; color: #38bdf8; border-color: #0284c7; gap: 4px;" title="Open Boardroom Chat & Type Message">
+            💬 <span>Chat</span>
+          </button>
         </div>
 
 
@@ -1490,14 +1502,7 @@
           </div>
         </div>
 
-        <!-- Chat Messages Scroll Area -->
-        <div id="chatMessagesList" class="chat-messages-scroll">
-          <div style="text-align: center; color: #64748b; font-size: 10.5px; padding: 20px 10px;">
-            💬 Sovereign Boardroom Chat initialized.<br>Send a message to <strong>Everyone</strong> or select a delegate for a <strong>Private 1-to-1 Direct Message</strong>.
-          </div>
-        </div>
-
-        <!-- Chat Input & Quick Reaction Bar -->
+        <!-- Chat Input & Quick Reaction Bar (Placed at Top for Instant Mobile & Desktop Typing) -->
         <div class="chat-input-wrapper">
           <div class="chat-emoji-quickbar">
             <button type="button" onclick="insertChatEmoji('👍 ')">👍 Agree</button>
@@ -1508,10 +1513,17 @@
             <button type="button" onclick="insertChatEmoji('❓ Question: ')">❓ Query</button>
           </div>
           <div style="display: flex; gap: 6px;">
-            <input type="text" id="chatMessageInput" class="chat-text-input" placeholder="Message Everyone..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-            <button onclick="sendChatMessage()" class="chat-send-btn">
+            <input type="text" id="chatMessageInput" autocomplete="off" class="chat-text-input" placeholder="Type your message here..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMessage();}">
+            <button type="button" onclick="sendChatMessage()" class="chat-send-btn">
               <span>Send</span> ➔
             </button>
+          </div>
+        </div>
+
+        <!-- Chat Messages Scroll Area -->
+        <div id="chatMessagesList" class="chat-messages-scroll">
+          <div style="text-align: center; color: #64748b; font-size: 10.5px; padding: 20px 10px;">
+            💬 Sovereign Boardroom Chat initialized.<br>Type above to send a message to <strong>Everyone</strong> or select a delegate for a <strong>Private 1-to-1 Direct Message</strong>.
           </div>
         </div>
       </div>
@@ -3031,6 +3043,15 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     // -------------------------------------------------------------
     // LIVE CHAT & DIRECT MESSAGING (1-TO-ALL & 1-TO-1 DM)
     // -------------------------------------------------------------
+    function openAndFocusChat() {
+      switchPanelTab('chat');
+      const inp = document.getElementById('chatMessageInput');
+      if (inp) {
+        inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => inp.focus(), 150);
+      }
+    }
+
     function switchPanelTab(tab) {
       currentPanelTab = tab;
       const tabBallot = document.getElementById('tabContentBallot');
@@ -3051,6 +3072,10 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
         unreadChatCount = 0;
         if (badge) badge.style.display = 'none';
         scrollChatToBottom();
+        setTimeout(() => {
+          const inp = document.getElementById('chatMessageInput');
+          if (inp) inp.focus();
+        }, 80);
       } else if (tab === 'files') {
         if (tabBallot) tabBallot.style.display = 'none';
         if (tabChat) tabChat.style.display = 'none';
@@ -3213,12 +3238,16 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
 
       inp.value = '';
 
+      const myLock = latestSeatsMap && latestSeatsMap[currentRole];
+      const myCustomName = (myLock && myLock.custom_name) ? myLock.custom_name : (sessionStorage.getItem('kikao_custom_name') || '');
+
       try {
         await fetch(`${API_URL}?action=chat_send&room=${encodeURIComponent(currentRoom)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             sender: currentRole,
+            sender_name: myCustomName,
             recipient: recipient,
             text: text
           })
@@ -3404,10 +3433,5 @@ Share this link on WhatsApp with your Chama/group members—only people with thi
     startRemoteStreamIngest();
     startRemoteVoiceIngest();
   </script>
-
-
-    <!-- Stride Sovereign AI Copilot Widget -->
-    <link rel="stylesheet" href="/stride-chat.css?v=20261023_v5">
-    <script src="/stride-chat.js?v=20261023_v5"></script>
 </body>
 </html>
